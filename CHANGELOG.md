@@ -1,0 +1,91 @@
+# سجل تغييرات المشروع (Changelog)
+
+## [PROMPT 011] - 2026-08-27 (نموذج بيانات المشاريع)
+### أُضيف (Added)
+- **نماذج البيانات الكاملة:** إنشاء `Project`, `ProjectMember`, `ProjectVersion`, `ProjectAsset`, `ProjectActivity` لتشمل جميع الحقول المطلوبة لبناء محرر الوسائط مستقبلاً.
+- **حالات المشروع الجديدة:** تحديث الحالات لتتوافق مع نظام المعالجة (`DRAFT`, `PROCESSING`, `READY`, `EXPORTING`, `COMPLETED`, `FAILED`, `ARCHIVED`, `DELETED`).
+- **تحديث مستودع المشاريع (`ProjectRepository`):**
+  - دعم البحث (Search) والفرز (Sort) وتقسيم الصفحات (Pagination عبر `limit` حالياً).
+  - إضافة واجهة لإنشاء وقراءة النسخ (Versioning).
+  - تسجيل نشاطات المشروع (`ProjectActivity`) بشكل تلقائي عند الإنشاء أو التعديل (Auto-save) أو إنشاء نسخ.
+- **تحديث قواعد `firestore.rules`:** حماية مجموعات `project_activities` و `project_versions`.
+
+## [PROMPT 010] - 2026-08-27 (قسم الإعدادات والتفضيلات)
+### أُضيف (Added)
+- **شاشة الإعدادات الشاملة (SettingsScreen):** تصميم جديد كلياً يعتمد على قائمة رئيسية مع قوائم فرعية للتفضيلات.
+- **إدارة التفضيلات (UserPreferences):** توسيع النموذج ليشمل السمة (المظهر)، تقليل الحركة، لغة العرض، المدينة (لحساب المواقيت)، إعدادات الإشعارات، إعدادات المحراب، الجودة، وقفل التطبيق.
+- **مزامنة التفضيلات (Sync):** تم تحديث `AuthRepository` و `FirebaseAuthRepositoryImpl` لحفظ الإعدادات بشكل متزامن في Firestore وتطبيقها محلياً فوراً.
+- **حذف الحساب:** إضافة خيار لحذف الحساب نهائياً مع نافذة تأكيد تحذيرية لحماية المستخدم.
+- **السمة التلقائية:** تم ربط `MainActivity` مع التفضيلات لتحديث سمة التطبيق (فاتح/داكن/تلقائي) بمجرد تغييرها.
+
+## [PROMPT 009] - 2026-08-27 (الرئيسية وإدارة المشاريع)
+### أُضيف (Added)
+- **نموذج المشاريع (Project Model):** تم إنشاء `Project` مع دعم `id, ownerId, status, scenes, assets, version, timestamps`.
+- **مستودع المشاريع (ProjectRepository):** تم تنفيذ `FirebaseProjectRepositoryImpl` مع دعم إنشاء، نسخ، حذف (Soft Delete)، أرشفة واستعادة.
+- **الصفحة الرئيسية (HomeScreen):** تصميم الواجهة الجديدة لعرض الترحيب، زر إنشاء فيديو، اختصارات المحراب والومضات، وقائمة "المشاريع الأخيرة".
+- **إدارة المشاريع (StudioScreen):** صفحة لإدارة جميع المشاريع، تدعم البحث (Search)، التصفية (Filter)، الترتيب (Sort)، بالإضافة لخيارات النسخ والأرشفة والحذف.
+- **محرر المشروع (ProjectEditorScreen):** واجهة لفتح المشروع مع دعم **الحفظ التلقائي** (Auto-Save مع `debounce 1500ms`) عبر `ProjectEditorViewModel`.
+- **قواعد Firestore (Firestore Rules):** تم تحديث قواعد Firestore للمشاريع بحيث لا يرى المستخدم إلا مشاريعه أو ما تمت مشاركته معه، ولا يستطيع الحذف إلا مالك المشروع.
+
+
+## [PROMPT 008] - 2026-08-27 (الحساب والأدوار والصلاحيات)
+### أُضيف (Added)
+- **ملف المستخدم (UserProfile):** تم تحديث نماذج البيانات وتحديث `AuthRepository` ليعيد `UserProfile` الكامل للمستخدم بما يشمل بيانات دوره (Role).
+- **إدارة الأدوار (Role-Based Access Control):** إنشاء نظام أدوار: `USER`, `CREATOR`, `REVIEWER`, `ADMIN`, `OWNER`.
+- **شاشة الملف الشخصي (ProfileScreen):** تم إنشاء شاشة الملف الشخصي كبديل لشاشة الإعدادات، تتيح للمستخدم تعديل بياناته (الاسم والصورة) وعرض دوره الحالي وتسجيل الخروج.
+- **حراسة المسارات (Route Guards):** تعديل `AppNavigation` لحماية `AdminScreen` والسماح فقط للأدوار الإدارية (`ADMIN`, `OWNER`) بالوصول، وعرض شاشة خطأ مخصصة للمستخدمين غير المصرح لهم.
+- **قواعد Firestore (Firestore Rules):** تحديث `firestore.rules` لإضافة القواعد التي تمنع المستخدم العادي من تعديل دوره (Role)، رصيده، أو خطته. وتسمح بالوصول لبيانات كل مستخدم حسب دوره، مع منع المدراء من ترقية حساب إلى مالك (OWNER) إلا إذا كان المنفذ مالكاً.
+
+
+## [PROMPT 007] - 2026-08-27 (ربط Firebase والمصادقة)
+### أُضيف (Added)
+- **خدمات Firebase:** إضافة تبعيات `firebase-auth`، `firebase-firestore` و Play Services Credentials، واستخدام إعدادات `google-services` الجاهزة في المشروع.
+- **طبقة مستودع المصادقة (AuthRepository):** إنشاء واجهة `AuthRepository` و تطبيقها في `FirebaseAuthRepositoryImpl` للتعامل مع تسجيل الدخول، إنشاء الحساب، التحقق، استعادة الكلمة، وحذف الحساب.
+- **إدارة الحالة (AuthViewModel):** إنشاء `AuthViewModel` يستخدم تدفقات الحالة `StateFlow` للتعامل مع واجهات التطبيق وتوفير حالة الجلسة (`Loading`, `Success`, `Error`).
+- **حماية المسارات (Route Guards):** تحديث `AppNavigation` للاعتماد على الحالة الفعلية للمستخدم عبر Firebase Auth بدلاً من الحالة الوهمية، وإضافة شاشة `RegisterScreen`.
+- **قواعد الحماية الأولية (Firestore Rules):** إنشاء ملف `firestore.rules` لمنع أي مستخدم من قراءة أو كتابة بيانات مستخدم آخر (`users/{userId}`).
+
+## [PROMPT 006] - 2026-08-26 (مكونات الواجهة والنماذج المؤقتة)
+### أُضيف (Added)
+- **نماذج البيانات التجريبية (Preview Models):** إنشاء نماذج مبسطة (UserPreview, ProjectPreview, VideoPreview, AudioItem, FlashItem, SourcePreview, NotificationPreview, SubscriptionPreview).
+- **بيانات تجريبية مفصولة (Mock Data):** إنشاء ملف `MockData.kt` مستقل تماماً لضمان عدم تداخله مع طبقة الإنتاج (Production / Firebase Repositories).
+- **مكونات الواجهة (UI Components):** 
+  - بناء بطاقات العرض: `SirajProjectCard`، `SirajVideoCard`، `SirajAudioCard`، `SirajSourceCard`، و `SirajFlashCard`.
+  - بناء شارة التحقق الشرعي `VerificationStatusBadge`.
+  - بناء مؤشر التقدم `SirajProgressBar` وقائمة التحميل الهيكلية `SkeletonList`.
+  - بناء نافذة التأكيد `SirajConfirmationDialog`.
+- دمج المكونات والبيانات التجريبية في شاشات التطبيق (`HomeScreen`, `StudioScreen`, `AudioLibraryScreen`, `FlashesScreen`, `DetailsScreen`) لاختبار الواجهة قبل ربط الخدمات الخارجية.
+
+## [PROMPT 005] - 2026-08-26 (هيكل التطبيق والتنقل)
+### أُضيف (Added)
+- **الهيكل الملاحي (App Navigation):** إضافة كافة شاشات المشروع الأساسية (Splash, Onboarding, Login, Main Tabs, Settings, Admin, Details).
+- **التنقل المتكيف (Adaptive Navigation):** بناء `MainShellScreen` الذي يعرض شريط تنقل سفلي (`BottomNavigationBar`) للهواتف، وشريط تنقل جانبي (`NavigationRail`) للشاشات الكبيرة (الأجهزة اللوحية).
+- **الروابط العميقة (Deep Links):** تجهيز صفحة `DetailsScreen` وتكوينها لدعم الروابط العميقة `siraj://details/{id}`.
+- **حارس المصادقة (Auth Guard):** تطبيق حارس تنقل مبدئي يمنع الوصول لصفحات المحتوى والإدارة دون تسجيل دخول، ويعيد التوجيه لصفحة `Login`.
+- استخدام شاشات الحالة `EmptyScreen` و `ErrorScreen` لملء الصفحات الفارغة للمكتبة الصوتية والومضات.
+
+## [PROMPT 004] - 2026-08-26 (الهوية ونظام التصميم)
+### أُضيف (Added)
+- **الألوان (Colors):** توحيد الألوان باستخدام الهوية البصرية (الكحلي العميق للأساسي، الأزرق السماوي للثانوي، الأبيض، ولمسات ذهبية).
+- **الخطوط (Typography):** ضبط أوزان وأحجام النصوص (Typography) لدعم القراءة باللغة العربية بناءً على خطوط النظام الافتراضية مع مسافات مريحة.
+- **المسافات والانحناءات (Shapes):** ضبط حواف البطاقات والأزرار (8dp، 16dp) لتكون مريحة للعين.
+- **المكونات المشتركة:** تحديث `SirajButton`، `SirajCard`، و `SirajTextField` لاستخدام قيم الـ `MaterialTheme` بشكل صارم وتوفير معاينات للوضعين الفاتح والداكن.
+- **حركات الانتقال:** إضافة حركات تلاشي هادئة (`Fade`) لتنقلات الصفحات داخل `AppNavigation`.
+### قرارات تقنية (Technical Decisions)
+- تعطيل `dynamicColor` في الثيم افتراضياً لفرض هوية "سراج" البصرية وعدم الاعتماد على ألوان خلفيات النظام، مما يضمن ظهور التطبيق بشكل متناسق دائماً.
+
+## [PROMPT 003] - 2026-08-26 (تأسيس بنية المشروع)
+### أُضيف (Added)
+- تأسيس بنية المشروع باستخدام Clean Architecture (Feature-First) بما يتوافق مع بيئة `Kotlin/Compose`.
+- إنشاء حزم: `core`, `domain`, `data`, `features`.
+- إعداد ملفات البيئة (`.env` و `.env.example`).
+- إضافة صفحات واجهات فارغة كمكونات للحالات: `LoadingScreen`, `ErrorScreen`, `EmptyScreen`, `OfflineScreen`.
+
+## [PROMPT 002] - 2026-08-26 (التخصيص ونظام حفظ السياق)
+### أُضيف (Added)
+- إنشاء ملفات التوثيق وحفظ السياق: `PROJECT_CONTEXT.md`، `README.md`، `ARCHITECTURE.md`، `SECURITY.md`، `TEST_PLAN.md`، `KNOWN_LIMITATIONS.md`.
+
+## [PROMPT 001] - 2026-08-26 (تأسيس المشروع)
+### أُضيف (Added)
+- إنشاء تطبيق Android أولي باستخدام `Jetpack Compose` و `Kotlin`.
+- تحديث `applicationId` و `namespace`.
