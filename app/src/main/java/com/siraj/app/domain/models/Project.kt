@@ -52,22 +52,6 @@ data class ProjectVersion(
     val createdAt: Long = System.currentTimeMillis()
 )
 
-enum class AssetType {
-    IMAGE, VIDEO, AUDIO, DOCUMENT
-}
-
-data class ProjectAsset(
-    val id: String = "",
-    val projectId: String = "",
-    val uploaderId: String = "",
-    val type: AssetType = AssetType.IMAGE,
-    val storagePath: String = "",
-    val url: String = "",
-    val filename: String = "",
-    val sizeBytes: Long = 0L,
-    val durationMs: Long? = null,
-    val createdAt: Long = System.currentTimeMillis()
-)
 
 enum class ActivityType {
     CREATED, EDITED, STATUS_CHANGED, MEMBER_ADDED, ASSET_UPLOADED, VERSION_CREATED, ARCHIVED, RESTORED, DELETED

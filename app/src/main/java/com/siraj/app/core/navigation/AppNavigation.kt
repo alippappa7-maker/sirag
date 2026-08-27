@@ -215,6 +215,9 @@ fun AppNavigation(
                         onNavigateBack = { navController.popBackStack() },
                         onNavigateToPlan = { projectId ->
                             navController.navigate(Screen.ContentPlan.createRoute(projectId))
+                        },
+                        onNavigateToAssetLibrary = { projectId ->
+                            navController.navigate(Screen.AssetLibrary.createRoute(projectId))
                         }
                     )
                 }
@@ -284,6 +287,53 @@ fun AppNavigation(
                         sceneId = sceneId,
                         onNavigateBack = { navController.popBackStack() }
                     )
+                }
+            }
+            
+            composable(
+                route = Screen.AssetLibrary.route,
+                arguments = listOf(
+                    navArgument("projectId") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+                    com.siraj.app.features.project.presentation.assets.AssetLibraryScreen(
+                        projectId = projectId,
+                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateToSearch = { navController.navigate(Screen.ExternalMediaSearch.createRoute(projectId)) }
+
+                    )
+            composable(
+
+                route = Screen.ExternalMediaSearch.route,
+
+                arguments = listOf(
+
+                    navArgument("projectId") { type = NavType.StringType }
+
+                )
+
+            ) { backStackEntry ->
+
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+
+                else {
+
+                    val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+
+                    com.siraj.app.features.project.presentation.assets.ExternalMediaSearchScreen(
+
+                        projectId = projectId,
+
+                        onNavigateBack = { navController.popBackStack() }
+
+                    )
+
+                }
+
+            }
                 }
             }
 

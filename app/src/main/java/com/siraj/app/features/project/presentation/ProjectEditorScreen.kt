@@ -34,6 +34,7 @@ fun ProjectEditorScreen(
     projectId: String,
     onNavigateBack: () -> Unit,
     onNavigateToPlan: (String) -> Unit,
+    onNavigateToAssetLibrary: (String) -> Unit,
     viewModel: ProjectEditorViewModel = viewModel(factory = ProjectEditorViewModelFactory(projectId))
 ) {
     val projectState by viewModel.projectState.collectAsState()
@@ -64,6 +65,9 @@ fun ProjectEditorScreen(
                         is SaveState.Saved -> Text("مسودة محفوظة", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(end = 16.dp))
                         is SaveState.Error -> Text("خطأ في الحفظ", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(end = 16.dp))
                         is SaveState.Idle -> {}
+                    }
+                    IconButton(onClick = { onNavigateToAssetLibrary(projectId) }) {
+                        Icon(Icons.Default.Search, contentDescription = "مدير الوسائط")
                     }
                     IconButton(onClick = { showDeleteDialog = true }) {
                         Icon(Icons.Filled.Delete, contentDescription = "حذف المشروع", tint = MaterialTheme.colorScheme.error)
