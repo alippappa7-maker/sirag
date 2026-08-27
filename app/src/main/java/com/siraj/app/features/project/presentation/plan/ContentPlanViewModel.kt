@@ -76,6 +76,54 @@ class ContentPlanViewModel(
         }
     }
     
+    
+    fun submitForReview() {
+        val current = _projectState.value
+        if (current is Resource.Success) {
+            val project = current.data
+            // Auto check
+            val unverifiedCount = project.contentPlan?.claims?.count { it.attachedSource?.reviewStatus != SourceVerificationStatus.VERIFIED } ?: 0
+            val riskLevel = project.contentPlan?.claims?.maxByOrNull { it.riskLevel }?.riskLevel ?: RiskLevel.LOW
+            
+            val log = ReviewLog(
+                projectId = project.id,
+                previousState = project.reviewState,
+                newState = ReviewState.SUBMITTED,
+                comments = "تم إرسال المشروع للمراجعة. عدد الادعاءات غير الموثقة: $unverifiedCount | مستوى الخطورة: ${riskLevel.name}"
+            )
+            
+            val updatedProject = project.copy(
+                reviewState = ReviewState.SUBMITTED,
+                reviewLogs = project.reviewLogs + log
+            )
+            
+            _projectState.value = Resource.Success(updatedProject)
+            viewModelScope.launch { pendingUpdates.emit(updatedProject) }
+        }
+    }
+
+    fun submitReviewDecision(decision: ReviewState, comments: String) {
+        val current = _projectState.value
+        if (current is Resource.Success) {
+            val project = current.data
+            
+            val log = ReviewLog(
+                projectId = project.id,
+                previousState = project.reviewState,
+                newState = decision,
+                comments = comments
+            )
+            
+            val updatedProject = project.copy(
+                reviewState = decision,
+                reviewLogs = project.reviewLogs + log
+            )
+            
+            _projectState.value = Resource.Success(updatedProject)
+            viewModelScope.launch { pendingUpdates.emit(updatedProject) }
+        }
+    }
+
     fun generateMockPlan() {
         // This is a stub for generating a plan using Gemini Backend later
         val current = _projectState.value

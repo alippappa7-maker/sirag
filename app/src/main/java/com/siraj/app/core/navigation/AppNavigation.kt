@@ -39,6 +39,10 @@ import com.siraj.app.features.studio.presentation.StudioScreen
 import com.siraj.app.features.ideation.presentation.IdeationScreen
 import com.siraj.app.features.project.presentation.plan.ContentPlanScreen
 
+import com.siraj.app.features.quran.presentation.QuranScreen
+import com.siraj.app.features.quran.presentation.SurahScreen
+
+
 @Composable
 fun AppNavigation(
     navController: NavHostController,
@@ -65,7 +69,7 @@ fun AppNavigation(
         Screen.Studio.route,
         Screen.Flashes.route,
         Screen.Audio.route,
-        Screen.Mihrab.route
+        Screen.Quran.route
     )
 
     val isMainScreen = mainRoutes.contains(currentRoute)
@@ -149,7 +153,7 @@ fun AppNavigation(
                     ) 
                 }
             }
-            composable(Screen.Mihrab.route) {
+            composable(Screen.Quran.route) {
                 if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
                 else { MihrabScreen() }
             }
@@ -211,6 +215,36 @@ fun AppNavigation(
                         onNavigateToPlan = { projectId ->
                             navController.navigate(Screen.ContentPlan.createRoute(projectId))
                         }
+                    )
+                }
+            }
+
+            
+            composable(Screen.Quran.route) {
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    QuranScreen(
+                        onNavigateToSurah = { surahId, surahName -> navController.navigate(Screen.Surah.createRoute(surahId, surahName)) },
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+            }
+            
+            composable(
+                route = Screen.Surah.route,
+                arguments = listOf(
+                    navArgument("surahId") { type = NavType.IntType },
+                    navArgument("surahName") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val surahId = backStackEntry.arguments?.getInt("surahId") ?: 1
+                    val surahName = backStackEntry.arguments?.getString("surahName") ?: ""
+                    SurahScreen(
+                        surahId = surahId,
+                        surahName = surahName,
+                        onNavigateBack = { navController.popBackStack() }
                     )
                 }
             }

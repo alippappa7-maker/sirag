@@ -21,7 +21,7 @@ fun MainShellScreen(
         NavItem.Studio,
         NavItem.Flashes,
         NavItem.Audio,
-        NavItem.Mihrab
+        NavItem.Quran
     )
 
     // A simple responsive layout using BoxWithConstraints

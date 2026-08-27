@@ -23,6 +23,29 @@ import com.siraj.app.domain.models.*
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.window.Dialog
 
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+
+
+fun translateReviewState(state: ReviewState): String {
+    return when(state) {
+        ReviewState.DRAFT -> "مسودة"
+        ReviewState.SUBMITTED -> "تم الإرسال"
+        ReviewState.IN_REVIEW -> "قيد المراجعة"
+        ReviewState.CHANGES_REQUESTED -> "مطلوب تعديلات"
+        ReviewState.APPROVED -> "معتمد"
+        ReviewState.REJECTED -> "مرفوض"
+        ReviewState.PUBLISHED -> "منشور"
+        ReviewState.SUSPENDED -> "معلق"
+        ReviewState.CORRECTED -> "تم التصحيح"
+    }
+}
+
+fun formatDate(timestamp: Long): String {
+    return SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()).format(Date(timestamp))
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +106,10 @@ fun ContentPlanScreen(
                             onSendReview = viewModel::sendForReview,
                             onUpdateSource = viewModel::updateClaimSource,
                             onRemoveSource = viewModel::removeClaimSource,
-                            onSendSourceForReview = viewModel::sendSourceForReview
+                            onSendSourceForReview = viewModel::sendSourceForReview,
+                            project = project,
+                            onSubmitForReview = viewModel::submitForReview,
+                            onSubmitReviewDecision = viewModel::submitReviewDecision
                         )
                     }
                 }
@@ -92,159 +118,175 @@ fun ContentPlanScreen(
     }
 }
 
+
 @Composable
 fun PlanEditor(
     plan: ContentPlan,
     brief: ContentBrief,
     onUpdate: ((ContentPlan) -> ContentPlan) -> Unit,
+    onSave: (ContentPlan) -> Unit = {},
     onSendReview: () -> Unit,
     onUpdateSource: (String, Source) -> Unit,
     onRemoveSource: (String) -> Unit,
-    onSendSourceForReview: (String) -> Unit
+    onSendSourceForReview: (String) -> Unit,
+    project: Project,
+    onSubmitForReview: () -> Unit,
+    onSubmitReviewDecision: (ReviewState, String) -> Unit
 ) {
     var selectedTab by remember { mutableStateOf(0) }
-    
-    val pendingClaims = plan.claims.filter { it.riskLevel == RiskLevel.HIGH && it.reviewStatus != ReviewStatus.APPROVED }
-    
-    Column(modifier = Modifier.fillMaxSize()) {
-        // Disclaimer Card
-        Card(
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
-        ) {
-            Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onTertiaryContainer)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    "تنبيه: هذه المسودة المولدة تعبر عن صياغة إبداعية، وليست فتوى دينية. النصوص الشرعية يجب التحقق منها.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer
-                )
-            }
+    var showSubmitDialog by remember { mutableStateOf(false) }
+    var showReviewerDialog by remember { mutableStateOf(false) }
+
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        // Review Status Banner
+        val bannerColor = when(project.reviewState) {
+            ReviewState.APPROVED, ReviewState.PUBLISHED -> Color(0xFF4CAF50)
+            ReviewState.CHANGES_REQUESTED, ReviewState.REJECTED -> MaterialTheme.colorScheme.error
+            ReviewState.DRAFT -> MaterialTheme.colorScheme.onSurfaceVariant
+            else -> Color(0xFFFFA000)
         }
         
-        TabRow(selectedTabIndex = selectedTab) {
-            Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }, text = { Text("السيناريو") })
-            Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }, text = { 
-                Text("الادعاءات والمصادر ${if(pendingClaims.isNotEmpty()) "(${pendingClaims.size})" else ""}") 
-            })
-        }
-        
-        if (selectedTab == 0) {
-            // Script Tab
-            Column(
-                modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    OutlinedCard(modifier = Modifier.weight(1f)) {
-                        Column(modifier = Modifier.padding(8.dp)) {
-                            Text("الجمهور", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
-                            Text(brief.targetAudience, style = MaterialTheme.typography.bodyMedium)
-                        }
-                    }
-                    OutlinedCard(modifier = Modifier.weight(1f)) {
-                        Column(modifier = Modifier.padding(8.dp)) {
-                            Text("المدة التقديرية", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
-                            Text(plan.estimatedDuration, style = MaterialTheme.typography.bodyMedium)
-                        }
+        Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = bannerColor.copy(alpha = 0.1f)), border = androidx.compose.foundation.BorderStroke(1.dp, bannerColor)) {
+            Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Column {
+                    Text("حالة الاعتماد: ${translateReviewState(project.reviewState)}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = bannerColor)
+                    if (project.reviewState == ReviewState.DRAFT || project.reviewState == ReviewState.CHANGES_REQUESTED) {
+                        Text("يجب إرسال المحتوى للمراجعة قبل النشر.", style = MaterialTheme.typography.bodySmall)
                     }
                 }
-            
-                OutlinedTextField(
-                    value = plan.title,
-                    onValueChange = { s -> onUpdate { it.copy(title = s) } },
-                    label = { Text("العنوان") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                OutlinedTextField(
-                    value = plan.hook,
-                    onValueChange = { s -> onUpdate { it.copy(hook = s) } },
-                    label = { Text("الخطاف (المقدمة الجاذبة)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    minLines = 2
-                )
-                OutlinedTextField(
-                    value = plan.mainPoints,
-                    onValueChange = { s -> onUpdate { it.copy(mainPoints = s) } },
-                    label = { Text("النقاط الرئيسية (جسم المحتوى)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    minLines = 5
-                )
-                OutlinedTextField(
-                    value = plan.conclusion,
-                    onValueChange = { s -> onUpdate { it.copy(conclusion = s) } },
-                    label = { Text("الخاتمة / الرسالة") },
-                    modifier = Modifier.fillMaxWidth(),
-                    minLines = 2
-                )
-                OutlinedTextField(
-                    value = plan.callToAction,
-                    onValueChange = { s -> onUpdate { it.copy(callToAction = s) } },
-                    label = { Text("الدعوة لاتخاذ إجراء (CTA)") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(32.dp))
+                if (project.reviewState == ReviewState.DRAFT || project.reviewState == ReviewState.CHANGES_REQUESTED) {
+                    Button(onClick = { showSubmitDialog = true }) {
+                        Text("إرسال للمراجعة")
+                    }
+                } else if (project.reviewState == ReviewState.SUBMITTED || project.reviewState == ReviewState.IN_REVIEW) {
+                    // Mock Reviewer Action
+                    OutlinedButton(onClick = { showReviewerDialog = true }) {
+                        Text("أدوات المراجع")
+                    }
+                }
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TabRow(selectedTabIndex = selectedTab) {
+            Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }, text = { Text("الادعاءات والمصادر") })
+            Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }, text = { Text("سجل المراجعة") })
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        if (selectedTab == 0) {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.weight(1f)) {
+                items(plan.claims) { claim ->
+                    val isEditable = project.reviewState == ReviewState.DRAFT || project.reviewState == ReviewState.CHANGES_REQUESTED
+                    ClaimCard(claim = claim, onUpdateSource = onUpdateSource, onRemoveSource = onRemoveSource, onSendSourceForReview = onSendSourceForReview, isEditable = isEditable)
+                }
             }
         } else {
-            // Claims Tab
-            Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                if (plan.claims.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("لا توجد ادعاءات شرعية حساسة تم رصدها.")
-                    }
-                } else {
-                    Text("الادعاءات والنصوص المستخرجة (${plan.claims.size})", fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("يتم فصل الحقائق والنصوص الشرعية عن الصياغة الإبداعية لمراجعتها وإرفاق المصادر.", style = MaterialTheme.typography.bodySmall)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(plan.claims) { claim ->
-                            ClaimCard(claim = claim, onUpdateSource = onUpdateSource, onRemoveSource = onRemoveSource, onSendSourceForReview = onSendSourceForReview)
-                        }
-                        
-                        item {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            if (pendingClaims.isNotEmpty()) {
-                                Button(
-                                    onClick = onSendReview,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                                ) {
-                                    Icon(Icons.Default.Warning, contentDescription = null)
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text("إرسال الادعاءات للمراجعة الشرعية")
-                                }
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text("لا يمكن نقل المحتوى للإنتاج قبل مراجعة واعتماد الادعاءات الحساسة.", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
-                            } else {
-                                Button(
-                                    onClick = { /* Move to Production */ },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                                ) {
-                                    Icon(Icons.Default.CheckCircle, contentDescription = null)
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text("المحتوى جاهز للإنتاج والتصدير")
-                                }
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.weight(1f)) {
+                if (project.reviewLogs.isEmpty()) {
+                    item { Text("لا يوجد سجل للمراجعة بعد.", modifier = Modifier.padding(16.dp)) }
+                }
+                items(project.reviewLogs.sortedByDescending { it.timestamp }) { log ->
+                    Card(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                Text("${translateReviewState(log.previousState)} -> ${translateReviewState(log.newState)}", fontWeight = FontWeight.Bold)
+                                Text(formatDate(log.timestamp), style = MaterialTheme.typography.bodySmall)
                             }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(log.comments, style = MaterialTheme.typography.bodyMedium)
+                            Text("بواسطة: ${log.actorId}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
             }
         }
     }
+    
+    if (showSubmitDialog) {
+        val unverifiedCount = plan.claims.count { it.attachedSource?.reviewStatus != SourceVerificationStatus.VERIFIED }
+        val hasHighRisk = plan.claims.any { it.riskLevel == RiskLevel.HIGH }
+        
+        Dialog(onDismissRequest = { showSubmitDialog = false }) {
+            Card(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("تأكيد الإرسال", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    Text("هل أنت متأكد من إرسال المحتوى للمراجعة؟")
+                    
+                    HorizontalDivider()
+                    
+                    Text("تقرير الفحص الآلي:", fontWeight = FontWeight.Bold)
+                    Text("• ادعاءات غير موثقة: $unverifiedCount", color = if (unverifiedCount > 0) MaterialTheme.colorScheme.error else Color(0xFF4CAF50))
+                    if (hasHighRisk) {
+                        Text("• تنبيه: يحتوي المحتوى على ادعاءات عالية الخطورة وتتطلب مراجعة بشرية متخصصة.", color = MaterialTheme.colorScheme.error)
+                    }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                        TextButton(onClick = { showSubmitDialog = false }) { Text("إلغاء") }
+                        Button(onClick = { 
+                            onSubmitForReview()
+                            showSubmitDialog = false
+                        }) {
+                            Text("تأكيد الإرسال")
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    if (showReviewerDialog) {
+        var reviewerComment by remember { mutableStateOf("") }
+        Dialog(onDismissRequest = { showReviewerDialog = false }) {
+            Card(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("شاشة المراجع", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    OutlinedTextField(
+                        value = reviewerComment,
+                        onValueChange = { reviewerComment = it },
+                        label = { Text("أضف تعليقاً يبرر قرارك...") },
+                        modifier = Modifier.fillMaxWidth(),
+                        minLines = 3
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        TextButton(onClick = { 
+                            onSubmitReviewDecision(ReviewState.REJECTED, reviewerComment.ifEmpty { "تم الرفض بدون تعليق" })
+                            showReviewerDialog = false
+                        }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)) {
+                            Text("رفض")
+                        }
+                        
+                        TextButton(onClick = { 
+                            onSubmitReviewDecision(ReviewState.CHANGES_REQUESTED, reviewerComment.ifEmpty { "مطلوب تعديلات" })
+                            showReviewerDialog = false
+                        }, colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFFFFA000))) {
+                            Text("طلب تعديل")
+                        }
+                        
+                        Button(onClick = { 
+                            onSubmitReviewDecision(ReviewState.APPROVED, reviewerComment.ifEmpty { "تم الاعتماد" })
+                            showReviewerDialog = false
+                        }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))) {
+                            Text("اعتماد")
+                        }
+                    }
+                    TextButton(onClick = { showReviewerDialog = false }, modifier = Modifier.fillMaxWidth()) { Text("إلغاء") }
+                }
+            }
+        }
+    }
 }
-
-
 @Composable
 fun ClaimCard(
     claim: ContentClaim,
     onUpdateSource: (String, Source) -> Unit,
     onRemoveSource: (String) -> Unit,
-    onSendSourceForReview: (String) -> Unit
+    onSendSourceForReview: (String) -> Unit,
+    isEditable: Boolean
 ) {
     val riskColor = when (claim.riskLevel) {
         RiskLevel.HIGH -> MaterialTheme.colorScheme.error
@@ -313,10 +355,10 @@ fun ClaimCard(
                                 Text("إرسال للمراجعة")
                             }
                         }
-                        TextButton(onClick = { showSourceDialog = true }) {
+                        TextButton(onClick = { showSourceDialog = true }, enabled = isEditable) {
                             Text(if (attachedSource.reviewStatus == SourceVerificationStatus.VERIFIED) "تعديل (سينشئ نسخة جديدة)" else "تعديل")
                         }
-                        TextButton(onClick = { onRemoveSource(claim.id) }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)) {
+                        TextButton(onClick = { onRemoveSource(claim.id) }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error), enabled = isEditable) {
                             Text("إزالة")
                         }
                     }
@@ -324,7 +366,7 @@ fun ClaimCard(
             } else {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Text("حالة المصدر: مفقود", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-                    OutlinedButton(onClick = { showSourceDialog = true }) {
+                    OutlinedButton(onClick = { showSourceDialog = true }, enabled = isEditable) {
                         Text("إرفاق مصدر")
                     }
                 }

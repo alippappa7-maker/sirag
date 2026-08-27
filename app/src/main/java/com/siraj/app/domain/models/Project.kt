@@ -15,6 +15,8 @@ data class Project(
     val title: String = "",
     val description: String = "",
     val status: ProjectStatus = ProjectStatus.DRAFT,
+    val reviewState: ReviewState = ReviewState.DRAFT,
+    val reviewLogs: List<ReviewLog> = emptyList(),
     val thumbnailUrl: String? = null,
     val sceneCount: Int = 0,
     val durationMs: Long = 0L,
