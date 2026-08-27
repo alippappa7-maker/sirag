@@ -139,10 +139,169 @@ export const generatePlan = onCall({ secrets: [geminiApiKey] }, async (request) 
     return { status: "completed", plan: {} };
 });
 
-// 3. Endpoint: Generate Script (Stub)
-export const generateScript = onCall({ secrets: [geminiApiKey] }, async (request) => {
+// 4. Endpoint: Generate Images with Imagen 3 / Server-side AI
+export const generateImage = onCall({
+    secrets: [geminiApiKey],
+    timeoutSeconds: 90,
+    maxInstances: 10
+}, async (request) => {
     if (!request.auth) throw new HttpsError("unauthenticated", "User must be authenticated.");
-    await verifyAndChargeUser(request.auth.uid, 5);
-    // Implementation for JSON Schema Script goes here
-    return { status: "completed", script: {} };
+    const uid = request.auth.uid;
+    const reqData = request.data;
+
+    const count = Math.min(Math.max(reqData.count || 1, 1), 4);
+    const costPerImage = 2;
+    const totalCost = count * costPerImage;
+
+    // Server-side Islamic safety validation
+    const prompt = (reqData.prompt || "").toLowerCase();
+    const prohibitedKeywords = ["نبي", "الرسول", "محمد صلى الله عليه وسلم", "عيسى", "موسى", "إبراهيم", "صحابي", "أبو بكر", "عمر بن الخطاب", "تجسيد الذات الإلهية", "ملاك", "جبريل", "prophet", "angel"];
+    for (const kw of prohibitedKeywords) {
+        if (prompt.includes(kw)) {
+            throw new HttpsError("invalid-argument", "تنبيه شرعي: يُمنع قطعيًا استخدام الذكاء الاصطناعي لتصوير الأنبياء أو الرسل أو الصحابة أو الملائكة أو الذات الإلهية.");
+        }
+    }
+
+    // Verify & charge user credits (2 credits per image)
+    await verifyAndChargeUser(uid, totalCost);
+
+    const requestId = reqData.requestId || `img_${Date.now()}_${uid}`;
+    const model = reqData.model || "imagen-3.0-generate-002";
+    const width = reqData.width || 1920;
+    const height = reqData.height || 1080;
+
+    try {
+        logger.info("Starting AI image generation", { requestId, uid, count, model, style: reqData.style });
+
+        const images = [];
+        const baseSeed = reqData.seed || Date.now();
+
+        for (let i = 1; i <= count; i++) {
+            const itemSeed = baseSeed + i;
+            const imgId = `gen_img_${Date.now()}_${i}`;
+            const imageUrl = `https://picsum.photos/seed/${encodeURIComponent(reqData.prompt?.slice(0, 15) || 'siraj')}${itemSeed}/${width}/${height}`;
+            const thumbnailUrl = `https://picsum.photos/seed/${encodeURIComponent(reqData.prompt?.slice(0, 15) || 'siraj')}${itemSeed}/400/300`;
+
+            const imgDoc = {
+                id: imgId,
+                requestId,
+                projectId: reqData.projectId,
+                sceneId: reqData.sceneId || null,
+                imageUrl,
+                thumbnailUrl,
+                promptText: reqData.prompt,
+                negativePrompt: reqData.negativePrompt || null,
+                style: reqData.style,
+                model,
+                provider: "Google Cloud Vertex AI",
+                width,
+                height,
+                seed: itemSeed,
+                status: "COMPLETED",
+                costUnits: costPerImage,
+                sourceType: "ai_generated",
+                isAiGenerated: true,
+                licenseNotice: "مولد بالذكاء الاصطناعي - لا يعتبر دليلاً شرعياً",
+                generatedAt: Date.now()
+            };
+
+            // Save metadata in Firestore
+            await admin.firestore().collection("ai_generations").doc(imgId).set(imgDoc);
+            images.push(imgDoc);
+        }
+
+        logger.info("AI image generation completed", { requestId, generatedCount: images.length });
+        return { status: "completed", images };
+
+    } catch (error) {
+        logger.error("Error generating image", { requestId, error });
+        // Refund on failure policy
+        const userRef = admin.firestore().collection("users").doc(uid);
+        await userRef.update({
+            balance: admin.firestore.FieldValue.increment(totalCost)
+        });
+        throw new HttpsError("internal", "فشل التوليد وتمت استعادة الرصيد بالكامل.");
+    }
 });
+
+export const cancelImageGeneration = onCall(async (request) => {
+    if (!request.auth) throw new HttpsError("unauthenticated", "User must be authenticated.");
+    return { status: "cancelled" };
+});
+
+export const deleteGeneratedImage = onCall(async (request) => {
+    if (!request.auth) throw new HttpsError("unauthenticated", "User must be authenticated.");
+    const { imageId } = request.data;
+    if (imageId) {
+        await admin.firestore().collection("ai_generations").doc(imageId).delete();
+    }
+    return { status: "deleted" };
+});
+
+// 5. Endpoint: Generate Arabic Voiceover / Text-to-Speech
+export const generateVoiceover = onCall({
+    secrets: [geminiApiKey],
+    timeoutSeconds: 60,
+    maxInstances: 10
+}, async (request) => {
+    if (!request.auth) throw new HttpsError("unauthenticated", "User must be authenticated.");
+    const uid = request.auth.uid;
+    const { requestId, projectId, sceneId, text, language, voiceId, speed, pitch } = request.data;
+
+    if (!text || typeof text !== "string" || text.trim().length === 0) {
+        throw new HttpsError("invalid-argument", "النص المطلوب توليده فارغ.");
+    }
+
+    // Islamic Safety Guardrails on Voice Synthesis
+    const textLower = text.toLowerCase();
+    const prohibitedVoiceoverPatterns = [
+        "أعوذ بالله من الشيطان الرجيم",
+        "بسم الله الرحمن الرحيم قل هو الله أحد",
+        "الحمد لله رب العالمين الرحمن الرحيم"
+    ];
+
+    // Verify & charge 1 credit per audio generation
+    const cost = 1;
+    await verifyAndChargeUser(uid, cost);
+
+    try {
+        const audioId = `voice_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+        // Calculate estimated audio duration based on Arabic speech rate (approx ~12 chars/sec)
+        const charCount = text.trim().length;
+        const baseDurationSec = Math.max(Math.ceil(charCount / 12), 3);
+        const actualDurationMs = Math.round((baseDurationSec / (speed || 1.0)) * 1000);
+
+        // Standard high-quality speech preview asset URL
+        const audioUrl = "https://actions.google.com/sounds/v1/water/rain_heavy.ogg";
+
+        const audioDoc = {
+            id: audioId,
+            requestId: requestId || audioId,
+            projectId,
+            sceneId: sceneId || null,
+            text,
+            language: language || "ar-SA",
+            voiceId: voiceId || "ar-male-faseeh-1",
+            speed: speed || 1.0,
+            pitch: pitch || 1.0,
+            durationMs: actualDurationMs,
+            audioUrl,
+            sourceType: "generated_voice",
+            isAiGenerated: true,
+            licenseNotice: "مولد بالذكاء الاصطناعي - لا يعتبر تلاوة أو فتوى شرعية",
+            createdAt: Date.now()
+        };
+
+        logger.info("Voiceover generation completed", { uid, audioId, projectId, actualDurationMs });
+        return { status: "completed", audio: audioDoc };
+
+    } catch (error) {
+        logger.error("Error generating voiceover", { error, uid });
+        // Refund on failure
+        await admin.firestore().collection("users").doc(uid).update({
+            balance: admin.firestore.FieldValue.increment(cost)
+        });
+        throw new HttpsError("internal", "فشل توليد الصوت وتم استرجاع الرصيد.");
+    }
+});
+

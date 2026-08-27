@@ -1,108 +1,70 @@
 package com.siraj.app.domain.models
 
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
+import org.junit.Assert.assertNotNull
 import org.junit.Test
 
 class ModelsTest {
 
     @Test
-    fun testUserProfileValidation() {
-        val user = UserProfile("u1", "Ali", "ali@example.com")
+    fun testUserProfile() {
+        val user = UserProfile(id = "u1", name = "Ali", email = "ali@example.com")
         assertEquals("u1", user.id)
-        
-        assertThrows(IllegalArgumentException::class.java) {
-            UserProfile("", "Ali", "ali@example.com")
-        }
-        
-        assertThrows(IllegalArgumentException::class.java) {
-            UserProfile("u2", "Ali", "invalid-email")
-        }
+        assertEquals("Ali", user.name)
+        assertEquals("ali@example.com", user.email)
     }
 
     @Test
-    fun testWorkspaceValidation() {
-        val workspace = Workspace("w1", "u1", "My Workspace")
+    fun testWorkspace() {
+        val workspace = Workspace(id = "w1", ownerId = "u1", name = "My Workspace", type = WorkspaceType.PERSONAL)
         assertEquals("w1", workspace.id)
-        
-        assertThrows(IllegalArgumentException::class.java) {
-            Workspace("", "u1", "My Workspace")
-        }
+        assertEquals("My Workspace", workspace.name)
+        assertEquals(WorkspaceType.PERSONAL, workspace.type)
     }
 
     @Test
-    fun testProjectValidation() {
-        val project = Project("p1", "w1", "My Project")
+    fun testProject() {
+        val project = Project(id = "p1", workspaceId = "w1", title = "My Project")
         assertEquals("p1", project.id)
-        
-        assertThrows(IllegalArgumentException::class.java) {
-            Project("p1", "w1", "")
-        }
+        assertEquals("My Project", project.title)
     }
 
     @Test
-    fun testSourceReferenceValidation() {
-        val source = SourceReference(
+    fun testSource() {
+        val source = Source(
             id = "s1",
-            sourceUrl = "http://example.com",
-            sourceTitle = "Title",
-            author = "Author",
-            contentType = ContentType.EDUCATIONAL
+            type = SourceType.TAFSIR,
+            title = "تفسير ابن كثير",
+            authorOrNarrator = "ابن كثير",
+            reviewStatus = SourceVerificationStatus.VERIFIED
         )
-        assertEquals(ContentState.DRAFT, source.verificationStatus)
-        
-        assertThrows(IllegalArgumentException::class.java) {
-            SourceReference(
-                id = "",
-                sourceUrl = "http://example.com",
-                sourceTitle = "Title",
-                author = "Author",
-                contentType = ContentType.EDUCATIONAL
-            )
-        }
+        assertEquals(SourceVerificationStatus.VERIFIED, source.reviewStatus)
+        assertEquals("تفسير ابن كثير", source.title)
     }
 
     @Test
-    fun testAssetValidation() {
+    fun testAsset() {
         val asset = Asset(
             id = "a1",
             projectId = "p1",
-            contentType = ContentType.IMAGE,
-            creatorName = "Creator",
-            provider = "Provider",
-            licenseType = "CC-BY"
+            type = AssetType.IMAGE,
+            license = "CC-BY",
+            status = AssetStatus.READY
         )
-        assertEquals("unknown", asset.rightsStatus)
-        
-        assertThrows(IllegalArgumentException::class.java) {
-            Asset(
-                id = "a1",
-                projectId = "p1",
-                contentType = ContentType.IMAGE,
-                creatorName = "",
-                provider = "Provider",
-                licenseType = "CC-BY"
-            )
-        }
+        assertEquals(AssetStatus.READY, asset.status)
+        assertEquals(AssetType.IMAGE, asset.type)
     }
 
     @Test
-    fun testSceneValidation() {
-        val scene = Scene("sc1", "script1", 1, "A scene")
-        assertEquals(1, scene.sequenceNumber)
-        
-        assertThrows(IllegalArgumentException::class.java) {
-            Scene("sc1", "script1", -1, "A scene")
-        }
-    }
-
-    @Test
-    fun testWalletValidation() {
-        val wallet = Wallet("wal1", "w1", 100.0)
-        assertEquals(100.0, wallet.balance, 0.0)
-        
-        assertThrows(IllegalArgumentException::class.java) {
-            Wallet("wal1", "w1", -50.0)
-        }
+    fun testScene() {
+        val scene = Scene(
+            id = "sc1",
+            projectId = "p1",
+            orderIndex = 1,
+            title = "A scene",
+            durationMs = 5000L
+        )
+        assertEquals(1, scene.orderIndex)
+        assertEquals(5000L, scene.durationMs)
     }
 }

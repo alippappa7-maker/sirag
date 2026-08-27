@@ -266,6 +266,9 @@ fun AppNavigation(
                         onNavigateBack = { navController.popBackStack() },
                         onNavigateToSceneEditor = { sceneId -> 
                             navController.navigate(Screen.SceneEditor.createRoute(projectId, sceneId))
+                        },
+                        onNavigateToPreview = {
+                            navController.navigate(Screen.ProjectPreview.createRoute(projectId))
                         }
                     )
                 }
@@ -285,7 +288,19 @@ fun AppNavigation(
                     com.siraj.app.features.project.presentation.scenes.SceneEditorScreen(
                         projectId = projectId,
                         sceneId = sceneId,
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateToAiGenerator = { pid, sid ->
+                            navController.navigate(Screen.AiImageGenerator.createRoute(pid, sid))
+                        },
+                        onNavigateToAudioStudio = { pid, sid, initialText ->
+                            navController.navigate(Screen.AudioStudio.createRoute(pid, sid, initialText))
+                        },
+                        onNavigateToSoundtracks = { pid, sid ->
+                            navController.navigate(Screen.SoundtrackLibrary.createRoute(pid, sid))
+                        },
+                        onNavigateToSubtitles = { pid, sid, initialText ->
+                            navController.navigate(Screen.SubtitleEditor.createRoute(pid, sid, initialText))
+                        }
                     )
                 }
             }
@@ -302,38 +317,194 @@ fun AppNavigation(
                     com.siraj.app.features.project.presentation.assets.AssetLibraryScreen(
                         projectId = projectId,
                         onNavigateBack = { navController.popBackStack() },
-                        onNavigateToSearch = { navController.navigate(Screen.ExternalMediaSearch.createRoute(projectId)) }
-
+                        onNavigateToSearch = { navController.navigate(Screen.ExternalMediaSearch.createRoute(projectId)) },
+                        onNavigateToAiGenerator = { navController.navigate(Screen.AiImageGenerator.createRoute(projectId)) },
+                        onNavigateToAudioStudio = { navController.navigate(Screen.AudioStudio.createRoute(projectId)) },
+                        onNavigateToSoundtracks = { navController.navigate(Screen.SoundtrackLibrary.createRoute(projectId)) }
                     )
-            composable(
-
-                route = Screen.ExternalMediaSearch.route,
-
-                arguments = listOf(
-
-                    navArgument("projectId") { type = NavType.StringType }
-
-                )
-
-            ) { backStackEntry ->
-
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-
-                else {
-
-                    val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
-
-                    com.siraj.app.features.project.presentation.assets.ExternalMediaSearchScreen(
-
-                        projectId = projectId,
-
-                        onNavigateBack = { navController.popBackStack() }
-
-                    )
-
                 }
-
             }
+
+            composable(
+                route = Screen.ExternalMediaSearch.route,
+                arguments = listOf(
+                    navArgument("projectId") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+                    com.siraj.app.features.project.presentation.assets.ExternalMediaSearchScreen(
+                        projectId = projectId,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+            }
+
+            composable(
+                route = Screen.AiImageGenerator.route,
+                arguments = listOf(
+                    navArgument("projectId") { type = NavType.StringType },
+                    navArgument("sceneId") { 
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    }
+                )
+            ) { backStackEntry ->
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+                    val sceneId = backStackEntry.arguments?.getString("sceneId")
+                    com.siraj.app.features.project.presentation.ai.AiImageGeneratorScreen(
+                        projectId = projectId,
+                        sceneId = sceneId,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+            }
+
+            composable(
+                route = Screen.AudioStudio.route,
+                arguments = listOf(
+                    navArgument("projectId") { type = NavType.StringType },
+                    navArgument("sceneId") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    },
+                    navArgument("initialText") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    }
+                )
+            ) { backStackEntry ->
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+                    val sceneId = backStackEntry.arguments?.getString("sceneId")
+                    val rawInitialText = backStackEntry.arguments?.getString("initialText") ?: ""
+                    val decodedInitialText = try {
+                        java.net.URLDecoder.decode(rawInitialText, "UTF-8")
+                    } catch (_: Exception) {
+                        rawInitialText
+                    }
+                    com.siraj.app.features.project.presentation.audio.AudioStudioScreen(
+                        projectId = projectId,
+                        sceneId = sceneId,
+                        initialNarrationText = decodedInitialText,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+            }
+
+            composable(
+                route = Screen.SoundtrackLibrary.route,
+                arguments = listOf(
+                    navArgument("projectId") { type = NavType.StringType },
+                    navArgument("sceneId") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    }
+                )
+            ) { backStackEntry ->
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+                    val sceneId = backStackEntry.arguments?.getString("sceneId")
+                    com.siraj.app.features.project.presentation.soundtrack.SoundtrackLibraryScreen(
+                        projectId = projectId,
+                        sceneId = sceneId,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+            }
+
+            composable(
+                route = Screen.SubtitleEditor.route,
+                arguments = listOf(
+                    navArgument("projectId") { type = NavType.StringType },
+                    navArgument("sceneId") { type = NavType.StringType },
+                    navArgument("initialText") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    }
+                )
+            ) { backStackEntry ->
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+                    val sceneId = backStackEntry.arguments?.getString("sceneId") ?: ""
+                    val rawInitialText = backStackEntry.arguments?.getString("initialText")
+                    val decodedInitialText = if (!rawInitialText.isNullOrBlank()) {
+                        try { java.net.URLDecoder.decode(rawInitialText, "UTF-8") } catch (_: Exception) { rawInitialText }
+                    } else ""
+                    com.siraj.app.features.project.presentation.subtitles.SubtitleEditorScreen(
+                        projectId = projectId,
+                        sceneId = sceneId,
+                        initialSceneText = decodedInitialText,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+            }
+
+            composable(
+                route = Screen.ProjectPreview.route,
+                arguments = listOf(navArgument("projectId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+                    com.siraj.app.features.project.presentation.preview.ProjectPreviewScreen(
+                        projectId = projectId,
+                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateToSceneEdit = { sceneId ->
+                            navController.navigate(Screen.SceneEditor.createRoute(projectId, sceneId))
+                        },
+                        onNavigateToSubtitles = { sceneId ->
+                            navController.navigate(Screen.SubtitleEditor.createRoute(projectId, sceneId))
+                        },
+                        onNavigateToExportJob = {
+                            navController.navigate(Screen.ProjectExport.createRoute(projectId))
+                        }
+                    )
+                }
+            }
+
+            composable(
+                route = Screen.ProjectExport.route,
+                arguments = listOf(navArgument("projectId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+                    com.siraj.app.features.project.presentation.export.ProjectExportScreen(
+                        projectId = projectId,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+            }
+
+            composable(
+                route = Screen.ProductionJobs.route,
+                arguments = listOf(
+                    navArgument("projectId") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    }
+                )
+            ) { backStackEntry ->
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val projectId = backStackEntry.arguments?.getString("projectId")
+                    com.siraj.app.features.project.presentation.jobs.ProductionJobsScreen(
+                        projectId = projectId,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
                 }
             }
 

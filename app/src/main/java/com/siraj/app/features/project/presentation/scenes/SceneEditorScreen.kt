@@ -31,6 +31,10 @@ fun SceneEditorScreen(
     projectId: String,
     sceneId: String,
     onNavigateBack: () -> Unit,
+    onNavigateToAiGenerator: (projectId: String, sceneId: String) -> Unit = { _, _ -> },
+    onNavigateToAudioStudio: (projectId: String, sceneId: String, initialText: String) -> Unit = { _, _, _ -> },
+    onNavigateToSoundtracks: (projectId: String, sceneId: String) -> Unit = { _, _ -> },
+    onNavigateToSubtitles: (projectId: String, sceneId: String, initialText: String) -> Unit = { _, _, _ -> },
     viewModel: SceneEditorViewModel = viewModel(factory = SceneEditorViewModelFactory(projectId, sceneId))
 ) {
     val scene by viewModel.sceneState.collectAsState()
@@ -62,6 +66,9 @@ fun SceneEditorScreen(
                     IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "عودة") }
                 },
                 actions = {
+                    IconButton(onClick = { onNavigateToAiGenerator(projectId, sceneId) }) {
+                        Icon(Icons.Default.Add, contentDescription = "توليد صورة بالذكاء الاصطناعي")
+                    }
                     IconButton(onClick = { viewModel.undo() }, enabled = canUndo) {
                         Icon(Icons.AutoMirrored.Filled.Undo, contentDescription = "تراجع")
                     }
@@ -122,6 +129,26 @@ fun SceneEditorScreen(
                 modifier = Modifier.fillMaxWidth().height(120.dp),
                 maxLines = 5
             )
+
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilledTonalButton(
+                    onClick = { onNavigateToAudioStudio(projectId, sceneId, scene!!.narrationText) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.PlayArrow, contentDescription = null)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("التعليق الصوتي", maxLines = 1)
+                }
+
+                FilledTonalButton(
+                    onClick = { onNavigateToSoundtracks(projectId, sceneId) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.Notifications, contentDescription = null)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("المؤثرات والخلفية", maxLines = 1)
+                }
+            }
             
             // On-Screen Text (Caption)
             OutlinedTextField(
@@ -133,6 +160,15 @@ fun SceneEditorScreen(
                 modifier = Modifier.fillMaxWidth().height(100.dp),
                 maxLines = 4
             )
+
+            FilledTonalButton(
+                onClick = { onNavigateToSubtitles(projectId, sceneId, scene!!.narrationText.ifBlank { sceneText.text }) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.Edit, contentDescription = null)
+                Spacer(modifier = Modifier.width(6.dp))
+                Text("محرر الترجمة والشارات (Subtitles & Timing)")
+            }
             
             // Formatting Controls for On-Screen Text
             Text("تنسيق النص على الشاشة", style = MaterialTheme.typography.titleMedium)
@@ -270,6 +306,15 @@ fun SceneEditorScreen(
                         })
                     }
                 }
+            }
+
+            FilledTonalButton(
+                onClick = { onNavigateToAiGenerator(projectId, sceneId) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("توليد خلفية وصور بالذكاء الاصطناعي للمشهد")
             }
             
             Spacer(modifier = Modifier.height(32.dp))

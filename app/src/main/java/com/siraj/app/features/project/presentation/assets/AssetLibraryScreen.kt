@@ -9,12 +9,12 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AudioFile
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Image
-import androidx.compose.material.icons.filled.VideoFile
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,6 +34,9 @@ fun AssetLibraryScreen(
     projectId: String,
     onNavigateBack: () -> Unit,
     onNavigateToSearch: () -> Unit,
+    onNavigateToAiGenerator: () -> Unit = {},
+    onNavigateToAudioStudio: () -> Unit = {},
+    onNavigateToSoundtracks: () -> Unit = {},
     viewModel: AssetLibraryViewModel = viewModel(factory = AssetLibraryViewModelFactory(projectId))
 ) {
     val assetsState by viewModel.assetsState.collectAsState()
@@ -55,6 +58,9 @@ fun AssetLibraryScreen(
                     IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "عودة") }
                 },
                 actions = {
+                    IconButton(onClick = onNavigateToSoundtracks) { Icon(Icons.Default.PlayArrow, "مكتبة المؤثرات الصوتية") }
+                    IconButton(onClick = onNavigateToAudioStudio) { Icon(Icons.Default.Notifications, "الاستوديو الصوتي") }
+                    IconButton(onClick = onNavigateToAiGenerator) { Icon(Icons.Default.Add, "توليد بالذكاء الاصطناعي") }
                     IconButton(onClick = onNavigateToSearch) { Icon(Icons.Default.Search, "بحث عن وسائط خارجية") }
                 }
             )
@@ -121,10 +127,10 @@ fun AssetCard(
                 contentAlignment = Alignment.Center
             ) {
                 val icon = when (asset.type) {
-                    AssetType.IMAGE -> Icons.Default.Image
-                    AssetType.VIDEO -> Icons.Default.VideoFile
-                    AssetType.AUDIO -> Icons.Default.AudioFile
-                    else -> Icons.Default.Image
+                    AssetType.IMAGE -> Icons.Default.Face
+                    AssetType.VIDEO -> Icons.Default.PlayArrow
+                    AssetType.AUDIO -> Icons.Default.Notifications
+                    else -> Icons.Default.Face
                 }
                 Icon(icon, contentDescription = null, modifier = Modifier.size(48.dp), tint = Color.White)
             }

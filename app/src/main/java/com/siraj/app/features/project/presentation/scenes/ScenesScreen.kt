@@ -30,6 +30,7 @@ fun ScenesScreen(
     projectId: String,
     onNavigateBack: () -> Unit,
     onNavigateToSceneEditor: (String) -> Unit,
+    onNavigateToPreview: () -> Unit = {},
     viewModel: ScenesViewModel = viewModel(factory = ScenesViewModelFactory(projectId))
 ) {
     val projectState by viewModel.projectState.collectAsState()
@@ -53,6 +54,9 @@ fun ScenesScreen(
                     IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "عودة") }
                 },
                 actions = {
+                    IconButton(onClick = onNavigateToPreview) {
+                        Icon(Icons.Default.PlayArrow, contentDescription = "معاينة المشروع كامل")
+                    }
                     if (canUndo) {
                         IconButton(onClick = { viewModel.undoLastChange() }) {
                             Icon(Icons.Default.Undo, contentDescription = "تراجع")
