@@ -52,6 +52,7 @@ fun formatDate(timestamp: Long): String {
 fun ContentPlanScreen(
     projectId: String,
     onNavigateBack: () -> Unit,
+    onNavigateToScenes: (String) -> Unit = {},
     viewModel: ContentPlanViewModel = viewModel(factory = ContentPlanViewModelFactory(projectId))
 ) {
     val projectState by viewModel.projectState.collectAsState()
@@ -109,7 +110,8 @@ fun ContentPlanScreen(
                             onSendSourceForReview = viewModel::sendSourceForReview,
                             project = project,
                             onSubmitForReview = viewModel::submitForReview,
-                            onSubmitReviewDecision = viewModel::submitReviewDecision
+                            onSubmitReviewDecision = viewModel::submitReviewDecision,
+                            onNavigateToScenes = onNavigateToScenes
                         )
                     }
                 }
@@ -131,7 +133,8 @@ fun PlanEditor(
     onSendSourceForReview: (String) -> Unit,
     project: Project,
     onSubmitForReview: () -> Unit,
-    onSubmitReviewDecision: (ReviewState, String) -> Unit
+    onSubmitReviewDecision: (ReviewState, String) -> Unit,
+    onNavigateToScenes: (String) -> Unit
 ) {
     var selectedTab by remember { mutableStateOf(0) }
     var showSubmitDialog by remember { mutableStateOf(false) }
@@ -162,6 +165,10 @@ fun PlanEditor(
                     // Mock Reviewer Action
                     OutlinedButton(onClick = { showReviewerDialog = true }) {
                         Text("أدوات المراجع")
+                    }
+                } else if (project.reviewState == ReviewState.APPROVED || project.reviewState == ReviewState.PUBLISHED) {
+                    Button(onClick = { onNavigateToScenes(project.id) }) {
+                        Text("إنتاج المشاهد")
                     }
                 }
             }

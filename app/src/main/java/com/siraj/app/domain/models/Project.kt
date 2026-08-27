@@ -27,7 +27,8 @@ data class Project(
     val archivedAt: Long? = null,
     val currentVersionId: String? = null,
     val brief: ContentBrief = ContentBrief(),
-    val contentPlan: ContentPlan? = null
+    val contentPlan: ContentPlan? = null,
+    val scenes: List<Scene> = emptyList()
 )
 
 enum class MemberRole {
@@ -95,4 +96,34 @@ data class ContentBrief(
     val hasQuran: Boolean = false,
     val hasHadith: Boolean = false,
     val hasFatwa: Boolean = false
+)
+
+
+enum class SceneStatus {
+    DRAFT, GENERATED, EDITED, APPROVED, FAILED
+}
+
+enum class BackgroundType {
+    IMAGE, VIDEO, SOLID_COLOR, GRADIENT, BLUR
+}
+
+enum class TransitionType {
+    NONE, FADE, SLIDE, WIPE, ZOOM, DISSOLVE
+}
+
+data class Scene(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val projectId: String,
+    val versionId: String = "1",
+    val orderIndex: Int = 0,
+    val title: String = "",
+    val narrationText: String = "",
+    val durationMs: Long = 5000L,
+    val transition: TransitionType = TransitionType.FADE,
+    val backgroundType: BackgroundType = BackgroundType.IMAGE,
+    val status: SceneStatus = SceneStatus.DRAFT,
+    val claimIds: List<String> = emptyList(),
+    val assetIds: List<String> = emptyList(),
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
 )

@@ -33,6 +33,7 @@ import com.siraj.app.features.home.presentation.HomeScreen
 import com.siraj.app.features.mihrab.presentation.MihrabScreen
 import com.siraj.app.features.onboarding.presentation.OnboardingScreen
 import com.siraj.app.features.settings.presentation.ProfileScreen
+import com.siraj.app.features.project.presentation.scenes.ScenesScreen
 import com.siraj.app.features.settings.presentation.WorkspaceSettingsScreen
 import com.siraj.app.features.splash.presentation.SplashScreen
 import com.siraj.app.features.studio.presentation.StudioScreen
@@ -249,6 +250,21 @@ fun AppNavigation(
                 }
             }
 
+            
+            composable(
+                route = Screen.Scenes.route,
+                arguments = listOf(navArgument("projectId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+                    ScenesScreen(
+                        projectId = projectId,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+            }
+
             composable(Screen.Ideation.route) {
                 if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
                 else {
@@ -272,7 +288,8 @@ fun AppNavigation(
                     val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
                     ContentPlanScreen(
                         projectId = projectId,
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateToScenes = { pid -> navController.navigate(Screen.Scenes.createRoute(pid)) }
                     )
                 }
             }
