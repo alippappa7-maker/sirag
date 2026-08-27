@@ -23,3 +23,15 @@
 4. أضف تطبيق Android باستخدام الـ Package Name: `com.siraj.app`.
 5. حمّل ملف `google-services.json`.
 6. قم برفع ملف `google-services.json` إلى مجلد `app/` عبر واجهة AI Studio ليعمل النظام على بيئتك الخاصة.
+
+
+## إعداد الخادم والأمان (Firebase Cloud Functions)
+
+لضمان أعلى درجات الأمان وحماية المفاتيح، لا يقوم التطبيق بالاتصال المباشر بمزود الذكاء الاصطناعي. بدلاً من ذلك، يستخدم Firebase Cloud Functions كخادم وسيط.
+
+### خطوات نشر الخادم:
+1. تأكد من تثبيت أدوات Firebase CLI: `npm install -g firebase-tools`
+2. سجل الدخول وانتقل لمجلد الخادم: `cd functions`
+3. قم بتكوين سر Gemini في بيئة Google Cloud:
+   `firebase functions:secrets:set GEMINI_API_KEY`
+4. انشر الخادم: `npm run deploy`

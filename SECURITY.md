@@ -19,3 +19,12 @@
 ## التعامل مع الأسرار (Secrets)
 - يُحظر تماماً وضع أي مفاتيح API (مثل Gemini) داخل كود التطبيق (`frontend`).
 - يجب إدارة الأسرار عن طريق Cloud Functions / Secret Manager.
+
+
+## Workspace Security Model
+The app implements a strict, role-based access control (RBAC) system for workspaces:
+- **Roles**: `OWNER`, `MANAGER`, `EDITOR`, `REVIEWER`, `VIEWER`.
+- **Enforcement**: Roles are validated in Firestore Security Rules (`hasWorkspaceRole`).
+- **Data Isolation**: Projects are completely isolated within their `workspaceId`. A user cannot read a project unless they have at least a `VIEWER` role in its workspace.
+- **Privilege Escalation Protection**: Firestore rules explicitly prevent a `MANAGER` from upgrading a user to `OWNER` or demoting an `OWNER`. Only the current `OWNER` can transfer ownership.
+- **Audit Logs**: All sensitive workspace operations (invites, role changes, removals, ownership transfers) are logged to the `audit_logs` collection.

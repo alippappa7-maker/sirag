@@ -23,7 +23,8 @@ data class Project(
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
     val archivedAt: Long? = null,
-    val currentVersionId: String? = null
+    val currentVersionId: String? = null,
+    val brief: ContentBrief = ContentBrief()
 )
 
 enum class MemberRole {
@@ -75,4 +76,20 @@ data class ProjectActivity(
     val type: ActivityType = ActivityType.EDITED,
     val details: String = "",
     val timestamp: Long = System.currentTimeMillis()
+)
+
+
+data class ContentBrief(
+    val idea: String = "",
+    val contentType: String = "فيديو",
+    val targetAudience: String = "عام",
+    val language: String = "العربية الفصحى",
+    val duration: String = "قصير (أقل من دقيقة)",
+    val platform: String = "TikTok / Reels (9:16)",
+    val visualStyle: String = "موشن جرافيك",
+    val voiceType: String = "صوت رجالي رخيم",
+    val template: String = "فارغ",
+    val hasQuran: Boolean = false,
+    val hasHadith: Boolean = false,
+    val hasFatwa: Boolean = false
 )
