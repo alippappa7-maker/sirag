@@ -18,6 +18,12 @@ class ScenesViewModel(
     private val _projectState = MutableStateFlow<Resource<Project>>(Resource.Loading)
     val projectState: StateFlow<Resource<Project>> = _projectState.asStateFlow()
 
+    private val _undoStack = MutableStateFlow<List<Project>>(emptyList())
+    val canUndo: StateFlow<Boolean> = _undoStack.map { it.isNotEmpty() }.stateIn(viewModelScope, SharingStarted.Lazily, false)
+
+    private val _uiMessage = MutableSharedFlow<String>()
+    val uiMessage = _uiMessage.asSharedFlow()
+
     init {
         loadProject()
     }
@@ -71,22 +77,14 @@ class ScenesViewModel(
             val scene = project.scenes.find { it.id == sceneId }
             
             if (scene?.status == SceneStatus.APPROVED) {
-                val log = ReviewLog(
-                    projectId = project.id,
-                    previousState = project.reviewState,
-                    newState = ReviewState.CHANGES_REQUESTED,
-                    comments = "تم حذف مشهد معتمد (${scene.title}). مطلوب إعادة المراجعة."
-                )
-                val updatedProject = project.copy(
-                    scenes = project.scenes.filter { it.id != sceneId },
-                    reviewState = ReviewState.CHANGES_REQUESTED,
-                    reviewLogs = project.reviewLogs + log
-                )
-                saveProject(updatedProject)
-            } else {
-                val updatedScenes = project.scenes.filter { it.id != sceneId }
-                saveProject(project.copy(scenes = updatedScenes))
+                viewModelScope.launch {
+                    _uiMessage.emit("لا يمكن حذف مشهد معتمد. الرجاء إعادة مراجعة المشروع أولاً.")
+                }
+                return
             }
+            
+            val updatedScenes = project.scenes.filter { it.id != sceneId }
+            saveProject(project.copy(scenes = updatedScenes))
         }
     }
 
@@ -94,9 +92,26 @@ class ScenesViewModel(
         val current = _projectState.value
         if (current is Resource.Success) {
             val project = current.data
-            val updatedScenes = project.scenes.map { if (it.id == updatedScene.id) updatedScene.copy(updatedAt = System.currentTimeMillis()) else it }
+            // If the scene was approved and they modified it, reset its status to EDITED
+            val sceneToUpdate = if (updatedScene.status == SceneStatus.APPROVED && isSceneModified(updatedScene, project)) {
+                updatedScene.copy(status = SceneStatus.EDITED, updatedAt = System.currentTimeMillis())
+            } else {
+                updatedScene.copy(updatedAt = System.currentTimeMillis())
+            }
+            
+            val updatedScenes = project.scenes.map { if (it.id == updatedScene.id) sceneToUpdate else it }
             saveProject(project.copy(scenes = updatedScenes))
         }
+    }
+
+    private fun isSceneModified(updatedScene: Scene, project: Project): Boolean {
+        val oldScene = project.scenes.find { it.id == updatedScene.id } ?: return true
+        return oldScene.narrationText != updatedScene.narrationText ||
+               oldScene.durationMs != updatedScene.durationMs ||
+               oldScene.transition != updatedScene.transition ||
+               oldScene.backgroundType != updatedScene.backgroundType ||
+               oldScene.claimIds != updatedScene.claimIds ||
+               oldScene.assetIds != updatedScene.assetIds
     }
 
     fun reorderScenes(fromIndex: Int, toIndex: Int) {
@@ -134,6 +149,23 @@ class ScenesViewModel(
             saveProject(project.copy(scenes = newScenes))
         }
     }
+
+    fun undoLastChange() {
+        val stack = _undoStack.value.toMutableList()
+        if (stack.isNotEmpty()) {
+            val previousProject = stack.removeLast()
+            _undoStack.value = stack
+            
+            // Note: Recalculate duration before restoring just in case
+            val totalMs = previousProject.scenes.sumOf { it.durationMs }
+            val projectToRestore = previousProject.copy(durationMs = totalMs)
+            
+            _projectState.value = Resource.Success(projectToRestore)
+            viewModelScope.launch {
+                projectRepository.updateProject(projectToRestore)
+            }
+        }
+    }
     
     private fun calculateAndUpdateTotalDuration(project: Project) {
         val totalMs = project.scenes.sumOf { it.durationMs }
@@ -147,11 +179,19 @@ class ScenesViewModel(
     }
 
     private fun saveProject(project: Project) {
-        _projectState.value = Resource.Success(project)
+        val current = _projectState.value
+        if (current is Resource.Success) {
+            // Only push to undo stack if scenes actually changed to avoid massive stacks
+            if (current.data.scenes != project.scenes) {
+                _undoStack.value = _undoStack.value + current.data
+            }
+        }
+        
+        val totalMs = project.scenes.sumOf { it.durationMs }
+        val updatedProject = project.copy(durationMs = totalMs)
+        
+        _projectState.value = Resource.Success(updatedProject)
         viewModelScope.launch {
-            val totalMs = project.scenes.sumOf { it.durationMs }
-            val updatedProject = project.copy(durationMs = totalMs)
-            _projectState.value = Resource.Success(updatedProject)
             projectRepository.updateProject(updatedProject)
         }
     }

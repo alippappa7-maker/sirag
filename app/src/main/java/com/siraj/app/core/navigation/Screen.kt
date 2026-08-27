@@ -20,6 +20,10 @@ sealed class Screen(val route: String) {
         fun createRoute(id: String) = "details/$id"
         const val DEEP_LINK_URI = "siraj://details"
     }
+    
+    object SceneEditor : Screen("scene_editor/{projectId}/{sceneId}") {
+        fun createRoute(projectId: String, sceneId: String) = "scene_editor/$projectId/$sceneId"
+    }
 
     object Ideation : Screen("ideation")
     object Quran : Screen("quran")

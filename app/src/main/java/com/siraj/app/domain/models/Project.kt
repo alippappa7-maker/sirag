@@ -127,3 +127,41 @@ data class Scene(
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
 )
+
+data class SceneAsset(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val sceneId: String = "",
+    val projectId: String = "",
+    val type: AssetType = AssetType.IMAGE,
+    val url: String = "",
+    val durationMs: Long? = null,
+    val orderIndex: Int = 0,
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+data class SceneText(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val sceneId: String = "",
+    val text: String = "",
+    val type: String = "caption", // narration, caption, overlay
+    val startTimeMs: Long = 0L,
+    val durationMs: Long = 5000L,
+    val isIslamicText: Boolean = false,
+    val sourceTextId: String? = null,
+    val fontFamily: String = "Default",
+    val fontSize: Float = 16f,
+    val fontColor: String = "#FFFFFF",
+    val alignment: String = "Center",
+    val position: String = "Bottom",
+    val showSource: Boolean = false
+)
+
+data class SceneAudio(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val sceneId: String = "",
+    val url: String = "",
+    val type: String = "voiceover", // voiceover, background_music, sfx
+    val startTimeMs: Long = 0L,
+    val durationMs: Long? = null,
+    val volume: Float = 1.0f
+)

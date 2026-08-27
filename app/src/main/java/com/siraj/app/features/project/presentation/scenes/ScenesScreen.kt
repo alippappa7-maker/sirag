@@ -6,6 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
@@ -20,18 +22,30 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.siraj.app.core.utils.Resource
 import com.siraj.app.domain.models.*
+import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScenesScreen(
     projectId: String,
     onNavigateBack: () -> Unit,
+    onNavigateToSceneEditor: (String) -> Unit,
     viewModel: ScenesViewModel = viewModel(factory = ScenesViewModelFactory(projectId))
 ) {
     val projectState by viewModel.projectState.collectAsState()
-    var sceneToEdit by remember { mutableStateOf<Scene?>(null) }
+    val canUndo by viewModel.canUndo.collectAsState()
+    
+    
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.uiMessage.collectLatest { msg ->
+            snackbarHostState.showSnackbar(msg)
+        }
+    }
     
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text("إنتاج المشاهد") },
@@ -39,6 +53,11 @@ fun ScenesScreen(
                     IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "عودة") }
                 },
                 actions = {
+                    if (canUndo) {
+                        IconButton(onClick = { viewModel.undoLastChange() }) {
+                            Icon(Icons.Default.Undo, contentDescription = "تراجع")
+                        }
+                    }
                     val currentProj = (projectState as? Resource.Success)?.data
                     if (currentProj != null) {
                         val durationSeconds = currentProj.durationMs / 1000
@@ -82,15 +101,15 @@ fun ScenesScreen(
                             items(project.scenes.sortedBy { it.orderIndex }) { scene ->
                                 SceneCard(
                                     scene = scene,
-                                    onEdit = { sceneToEdit = scene },
+                                    onEdit = { onNavigateToSceneEditor(scene.id) },
                                     onDelete = { viewModel.deleteScene(scene.id) },
                                     onDuplicate = { viewModel.duplicateScene(scene) },
                                     onMoveUp = { 
-                                        val index = project.scenes.indexOf(scene)
+                                        val index = project.scenes.sortedBy { it.orderIndex }.indexOf(scene)
                                         if (index > 0) viewModel.reorderScenes(index, index - 1)
                                     },
                                     onMoveDown = {
-                                        val index = project.scenes.indexOf(scene)
+                                        val index = project.scenes.sortedBy { it.orderIndex }.indexOf(scene)
                                         if (index < project.scenes.size - 1) viewModel.reorderScenes(index, index + 1)
                                     },
                                     project = project
@@ -102,21 +121,7 @@ fun ScenesScreen(
             }
         }
         
-        if (sceneToEdit != null) {
-            val currentProj = (projectState as? Resource.Success)?.data
-            if (currentProj != null) {
-                SceneEditorDialog(
-                    scene = sceneToEdit!!,
-                    project = currentProj,
-                    onDismiss = { sceneToEdit = null },
-                    onSave = { updated -> 
-                        viewModel.updateScene(updated)
-                        sceneToEdit = null
-                    }
-                )
-            }
-        }
-    }
+}
 }
 
 @Composable
@@ -170,6 +175,13 @@ fun SceneCard(
                         onClick = {},
                         label = { Text(scene.transition.name) }
                     )
+                    if (scene.status == SceneStatus.APPROVED) {
+                        AssistChip(
+                            onClick = {},
+                            label = { Text("معتمد") },
+                            colors = AssistChipDefaults.assistChipColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                        )
+                    }
                 }
                 Row {
                     IconButton(onClick = onDuplicate) { Icon(Icons.Default.AddCircle, contentDescription = "نسخ") }
@@ -188,108 +200,3 @@ fun SceneCard(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SceneEditorDialog(
-    scene: Scene,
-    project: Project,
-    onDismiss: () -> Unit,
-    onSave: (Scene) -> Unit
-) {
-    var title by remember { mutableStateOf(scene.title) }
-    var text by remember { mutableStateOf(scene.narrationText) }
-    var durationSec by remember { mutableStateOf((scene.durationMs / 1000).toString()) }
-    var transition by remember { mutableStateOf(scene.transition) }
-    var backgroundType by remember { mutableStateOf(scene.backgroundType) }
-    
-    var expandedTransition by remember { mutableStateOf(false) }
-    var expandedBackground by remember { mutableStateOf(false) }
-
-    Dialog(onDismissRequest = onDismiss, properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)) {
-        Surface(modifier = Modifier.fillMaxSize().padding(16.dp), shape = MaterialTheme.shapes.large) {
-            Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                Text("تعديل المشهد", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text("عنوان المشهد") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                OutlinedTextField(
-                    value = text,
-                    onValueChange = { text = it },
-                    label = { Text("نص التعليق الصوتي") },
-                    modifier = Modifier.fillMaxWidth().height(100.dp),
-                    supportingText = { Text("ملاحظة: تعديل النصوص الشرعية يخضع للمراجعة") }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                OutlinedTextField(
-                    value = durationSec,
-                    onValueChange = { durationSec = it.filter { char -> char.isDigit() } },
-                    label = { Text("المدة (بالثواني)") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                // Selectors
-                ExposedDropdownMenuBox(expanded = expandedTransition, onExpandedChange = { expandedTransition = !expandedTransition }) {
-                    OutlinedTextField(
-                        value = transition.name,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("نوع الانتقال") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTransition) },
-                        modifier = Modifier.menuAnchor().fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(expanded = expandedTransition, onDismissRequest = { expandedTransition = false }) {
-                        TransitionType.values().forEach { t ->
-                            DropdownMenuItem(text = { Text(t.name) }, onClick = { transition = t; expandedTransition = false })
-                        }
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                ExposedDropdownMenuBox(expanded = expandedBackground, onExpandedChange = { expandedBackground = !expandedBackground }) {
-                    OutlinedTextField(
-                        value = backgroundType.name,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("نوع الخلفية") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedBackground) },
-                        modifier = Modifier.menuAnchor().fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(expanded = expandedBackground, onDismissRequest = { expandedBackground = false }) {
-                        BackgroundType.values().forEach { b ->
-                            DropdownMenuItem(text = { Text(b.name) }, onClick = { backgroundType = b; expandedBackground = false })
-                        }
-                    }
-                }
-                
-                Spacer(modifier = Modifier.weight(1f))
-                
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    TextButton(onClick = onDismiss) { Text("إلغاء") }
-                    Button(onClick = {
-                        val updated = scene.copy(
-                            title = title,
-                            narrationText = text,
-                            durationMs = (durationSec.toLongOrNull() ?: 5L) * 1000,
-                            transition = transition,
-                            backgroundType = backgroundType,
-                            status = SceneStatus.EDITED
-                        )
-                        onSave(updated)
-                    }) {
-                        Text("حفظ المشهد")
-                    }
-                }
-            }
-        }
-    }
-}

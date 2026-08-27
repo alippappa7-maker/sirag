@@ -260,6 +260,28 @@ fun AppNavigation(
                     val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
                     ScenesScreen(
                         projectId = projectId,
+                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateToSceneEditor = { sceneId -> 
+                            navController.navigate(Screen.SceneEditor.createRoute(projectId, sceneId))
+                        }
+                    )
+                }
+            }
+            
+            composable(
+                route = Screen.SceneEditor.route,
+                arguments = listOf(
+                    navArgument("projectId") { type = NavType.StringType },
+                    navArgument("sceneId") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+                    val sceneId = backStackEntry.arguments?.getString("sceneId") ?: ""
+                    com.siraj.app.features.project.presentation.scenes.SceneEditorScreen(
+                        projectId = projectId,
+                        sceneId = sceneId,
                         onNavigateBack = { navController.popBackStack() }
                     )
                 }
