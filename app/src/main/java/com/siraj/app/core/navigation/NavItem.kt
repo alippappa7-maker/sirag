@@ -9,5 +9,5 @@ sealed class NavItem(val route: String, val title: String, val icon: ImageVector
     object Studio : NavItem(Screen.Studio.route, "الاستوديو", Icons.Default.Build)
     object Flashes : NavItem(Screen.Flashes.route, "ومضات", Icons.Default.PlayArrow)
     object Audio : NavItem(Screen.Audio.route, "صوتيات", Icons.Default.List)
-    object Quran : NavItem(Screen.Quran.route, "القرآن", Icons.Default.Book)
+    object Quran : NavItem(Screen.Quran.route, "المحراب", Icons.Default.Book)
 }

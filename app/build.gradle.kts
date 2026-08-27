@@ -14,7 +14,7 @@ android {
   compileSdk { version = release(36) { minorApiLevel = 1 } }
 
   defaultConfig {
-    applicationId = "com.siraj.app"
+    applicationId = "com.aistudio.siraj.kxlq"
     minSdk = 24
     targetSdk = 36
     versionCode = 1
@@ -99,12 +99,11 @@ dependencies {
   implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.room.ktx)
   implementation(libs.androidx.room.runtime)
-  // implementation(libs.coil.compose)
+  implementation(libs.coil.compose)
   implementation(libs.converter.moshi)
   implementation(libs.firebase.ai)
   // Uncomment to use Firestore:
   implementation(libs.firebase.firestore)
-  implementation(libs.firebase.storage)
   implementation(libs.firebase.storage)
 
   // Uncomment ALL FOUR of the following dependencies together to use Firebase Auth and Google
@@ -121,6 +120,10 @@ dependencies {
   implementation(libs.okhttp)
   // implementation(libs.play.services.location)
   implementation(libs.retrofit)
+  implementation(libs.media3.exoplayer)
+  implementation(libs.media3.exoplayer.dash)
+  implementation(libs.media3.exoplayer.hls)
+  implementation(libs.media3.ui)
   testImplementation(libs.androidx.compose.ui.test.junit4)
   testImplementation(libs.androidx.core)
   testImplementation(libs.androidx.junit)

@@ -10,6 +10,8 @@
 - Gradle (Kotlin DSL).
 
 ## آخر برومبت منفذ
+034 (بناء قسم المحراب)
+033 (مشغل الفيديو - Video Player)
 032 (واجهة تصدير الفيديو والتنزيل والمشاركة - Export Video & Sharing)
 031 (محرك تركيب وتصيير الفيديو السحابي - Video Composition Engine & Cloud Run Worker)
 030 (طابور إنتاج الفيديو - Production Jobs & Cloud Tasks Queue)
