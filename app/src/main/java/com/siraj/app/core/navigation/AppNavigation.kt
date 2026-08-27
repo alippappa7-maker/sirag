@@ -36,6 +36,8 @@ import com.siraj.app.features.settings.presentation.ProfileScreen
 import com.siraj.app.features.settings.presentation.WorkspaceSettingsScreen
 import com.siraj.app.features.splash.presentation.SplashScreen
 import com.siraj.app.features.studio.presentation.StudioScreen
+import com.siraj.app.features.ideation.presentation.IdeationScreen
+import com.siraj.app.features.project.presentation.plan.ContentPlanScreen
 
 @Composable
 fun AppNavigation(
@@ -140,6 +142,9 @@ fun AppNavigation(
                     StudioScreen(
                         onNavigateToProject = { projectId ->
                             navController.navigate(Screen.ProjectEditor.createRoute(projectId))
+                        },
+                        onNavigateToIdeation = {
+                            navController.navigate(Screen.Ideation.route)
                         }
                     ) 
                 }
@@ -202,6 +207,37 @@ fun AppNavigation(
                     val id = backStackEntry.arguments?.getString("id") ?: ""
                     com.siraj.app.features.project.presentation.ProjectEditorScreen(
                         projectId = id,
+                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateToPlan = { projectId ->
+                            navController.navigate(Screen.ContentPlan.createRoute(projectId))
+                        }
+                    )
+                }
+            }
+
+            composable(Screen.Ideation.route) {
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    IdeationScreen(
+                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateToProject = { projectId ->
+                            navController.navigate(Screen.ProjectEditor.createRoute(projectId)) {
+                                popUpTo(Screen.Studio.route)
+                            }
+                        }
+                    )
+                }
+            }
+
+            composable(
+                route = Screen.ContentPlan.route,
+                arguments = listOf(navArgument("projectId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+                    ContentPlanScreen(
+                        projectId = projectId,
                         onNavigateBack = { navController.popBackStack() }
                     )
                 }

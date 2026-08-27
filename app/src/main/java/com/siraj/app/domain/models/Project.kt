@@ -24,7 +24,8 @@ data class Project(
     val updatedAt: Long = System.currentTimeMillis(),
     val archivedAt: Long? = null,
     val currentVersionId: String? = null,
-    val brief: ContentBrief = ContentBrief()
+    val brief: ContentBrief = ContentBrief(),
+    val contentPlan: ContentPlan? = null
 )
 
 enum class MemberRole {

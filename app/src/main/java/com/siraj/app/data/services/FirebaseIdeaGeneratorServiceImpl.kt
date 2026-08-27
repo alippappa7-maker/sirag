@@ -1,8 +1,7 @@
 package com.siraj.app.data.services
 
 import com.google.firebase.functions.FirebaseFunctions
-import com.google.firebase.functions.ktx.functions
-import com.google.firebase.ktx.Firebase
+import java.util.concurrent.TimeUnit
 import com.siraj.app.core.utils.Resource
 import com.siraj.app.domain.models.GeneratedIdea
 import com.siraj.app.domain.models.IdeaGenerationRequest
@@ -12,7 +11,7 @@ import kotlinx.coroutines.tasks.await
 
 class FirebaseIdeaGeneratorServiceImpl(
     // Using a specific region is recommended for Cloud Functions, e.g., europe-west3
-    private val functions: FirebaseFunctions = Firebase.functions
+    private val functions: FirebaseFunctions = FirebaseFunctions.getInstance()
 ) : IdeaGeneratorService {
 
     override suspend fun generateIdeas(request: IdeaGenerationRequest): Resource<List<GeneratedIdea>> {
@@ -29,7 +28,7 @@ class FirebaseIdeaGeneratorServiceImpl(
 
             // Calls the secure Cloud Function (timeout 60s)
             val result = functions.getHttpsCallable("generateIdeas")
-                .withTimeout(60000L)
+                .withTimeout(60000L, TimeUnit.MILLISECONDS)
                 .call(data)
                 .await()
 

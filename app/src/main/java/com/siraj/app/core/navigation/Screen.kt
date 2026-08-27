@@ -21,6 +21,12 @@ sealed class Screen(val route: String) {
         const val DEEP_LINK_URI = "siraj://details"
     }
 
+    object Ideation : Screen("ideation")
+    
+    object ContentPlan : Screen("content_plan/{projectId}") {
+        fun createRoute(projectId: String) = "content_plan/$projectId"
+    }
+
     object ProjectEditor : Screen("project/{id}") {
         fun createRoute(id: String) = "project/$id"
     }

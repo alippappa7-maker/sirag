@@ -33,6 +33,7 @@ import com.siraj.app.domain.models.ContentTemplate
 fun ProjectEditorScreen(
     projectId: String,
     onNavigateBack: () -> Unit,
+    onNavigateToPlan: (String) -> Unit,
     viewModel: ProjectEditorViewModel = viewModel(factory = ProjectEditorViewModelFactory(projectId))
 ) {
     val projectState by viewModel.projectState.collectAsState()
@@ -123,7 +124,9 @@ fun ProjectEditorScreen(
                         project = project,
                         onTitleChange = viewModel::updateTitle,
                         onBriefChange = viewModel::updateBrief,
-                        onGeneratePlan = { viewModel.generatePlan(onNavigateBack) },
+                        onGeneratePlan = { 
+                            viewModel.generatePlan { onNavigateToPlan(projectId) } 
+                        },
                         onBrowseTemplates = { showTemplateBrowser = true }
                     )
                 }

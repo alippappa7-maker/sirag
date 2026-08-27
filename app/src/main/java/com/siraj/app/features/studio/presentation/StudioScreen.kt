@@ -14,17 +14,28 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.siraj.app.core.utils.Resource
 import com.siraj.app.domain.models.Project
+import androidx.compose.material.icons.filled.Add
 import com.siraj.app.domain.models.ProjectStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudioScreen(
     onNavigateToProject: (String) -> Unit = {},
+    onNavigateToIdeation: () -> Unit = {},
     viewModel: StudioViewModel = viewModel(factory = StudioViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Scaffold(
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = onNavigateToIdeation,
+                icon = { Icon(Icons.Default.Add, contentDescription = "فكرة جديدة") },
+                text = { Text("فكرة جديدة") }
+            )
+        }
+    ) { paddingValues ->
+        Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
         Text(text = "إدارة المشاريع", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -78,6 +89,7 @@ fun StudioScreen(
             }
         }
     }
+}
 }
 
 @Composable
