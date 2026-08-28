@@ -1,13 +1,17 @@
 package com.siraj.app.core.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LibraryBooks
+import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.ui.graphics.vector.ImageVector
 
-sealed class NavItem(val route: String, val title: String, val icon: ImageVector) {
-    object Home : NavItem(Screen.Home.route, "الرئيسية", Icons.Default.Home)
-    object Studio : NavItem(Screen.Studio.route, "الاستوديو", Icons.Default.Build)
-    object Flashes : NavItem(Screen.Flashes.route, "ومضات", Icons.Default.PlayArrow)
-    object Audio : NavItem(Screen.Audio.route, "صوتيات", Icons.Default.List)
-    object Quran : NavItem(Screen.Quran.route, "المحراب", Icons.Default.Book)
+sealed class NavItem(val title: String, val icon: ImageVector, val route: String) {
+    object Home : NavItem("الرئيسية", Icons.Default.Home, Screen.Home.route)
+    object Studio : NavItem("الاستوديو", Icons.Default.CameraAlt, Screen.Studio.route)
+    object Flashes : NavItem("فلاشات", Icons.Default.PlayCircle, "flashes")
+    object Library : NavItem("المكتبة", Icons.Default.LibraryBooks, Screen.Library.route)
+    object Mihrab : NavItem("المحراب", Icons.Default.Star, "mihrab")
 }

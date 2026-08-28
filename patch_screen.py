@@ -1,14 +1,11 @@
-with open('app/src/main/java/com/siraj/app/core/navigation/Screen.kt', 'r') as f:
+import sys
+
+with open("app/src/main/java/com/siraj/app/core/navigation/Screen.kt", "r") as f:
     content = f.read()
 
-new_route = """
-    object ProjectEditor : Screen("project/{id}") {
-        fun createRoute(id: String) = "project/$id"
-    }
-}
-"""
+if "object Flashes" not in content:
+    content = content.replace("object Audio : Screen(\"audio\")", "object Flashes : Screen(\"flashes\")\n    object Mihrab : Screen(\"mihrab\")\n    object Audio : Screen(\"audio\")")
 
-content = content.replace("}", new_route)
-
-with open('app/src/main/java/com/siraj/app/core/navigation/Screen.kt', 'w') as f:
+with open("app/src/main/java/com/siraj/app/core/navigation/Screen.kt", "w") as f:
     f.write(content)
+

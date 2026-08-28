@@ -1,5 +1,7 @@
 package com.siraj.app.core.navigation
 
+
+
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -10,12 +12,15 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.siraj.app.core.ui.components.ErrorScreen
@@ -30,6 +35,9 @@ import com.siraj.app.features.auth.presentation.RegisterScreen
 import com.siraj.app.features.details.presentation.DetailsScreen
 import com.siraj.app.features.flashes.presentation.FlashesScreen
 import com.siraj.app.features.home.presentation.HomeScreen
+import com.siraj.app.features.audio.presentation.AudioScreen
+import com.siraj.app.features.audio.presentation.AudioPlayerScreen
+import com.siraj.app.core.audio.MiniPlayer
 import com.siraj.app.features.mihrab.presentation.MihrabScreen
 import com.siraj.app.features.onboarding.presentation.OnboardingScreen
 import com.siraj.app.features.settings.presentation.ProfileScreen
@@ -39,9 +47,22 @@ import com.siraj.app.features.splash.presentation.SplashScreen
 import com.siraj.app.features.studio.presentation.StudioScreen
 import com.siraj.app.features.ideation.presentation.IdeationScreen
 import com.siraj.app.features.project.presentation.plan.ContentPlanScreen
-
 import com.siraj.app.features.quran.presentation.QuranScreen
 import com.siraj.app.features.quran.presentation.SurahScreen
+import com.siraj.app.features.mihrab.prayer.presentation.PrayerSettingsScreen
+import com.siraj.app.features.mihrab.prayer.presentation.PrayerTimesScreen
+import com.siraj.app.features.mihrab.qibla.presentation.QiblaScreen
+import com.siraj.app.features.mihrab.calendar.presentation.HijriCalendarScreen
+import com.siraj.app.features.mihrab.adhkar.presentation.AdhkarCategoriesScreen
+import com.siraj.app.features.mihrab.adhkar.presentation.AdhkarReaderScreen
+import com.siraj.app.features.search.presentation.SearchScreen
+import com.siraj.app.features.search.presentation.SearchViewModel
+import com.siraj.app.features.search.presentation.SearchViewModelFactory
+import com.siraj.app.domain.models.search.SearchCategory
+import androidx.compose.ui.platform.LocalContext
+import android.app.Application
+import java.net.URLDecoder
+
 
 
 @Composable
@@ -70,7 +91,7 @@ fun AppNavigation(
         Screen.Studio.route,
         Screen.Flashes.route,
         Screen.Audio.route,
-        Screen.Quran.route
+        Screen.Mihrab.route
     )
 
     val isMainScreen = mainRoutes.contains(currentRoute)
@@ -137,6 +158,15 @@ fun AppNavigation(
                         toggleTheme = toggleTheme,
                         onNavigateToProject = { projectId ->
                             navController.navigate(Screen.ProjectEditor.createRoute(projectId))
+                        },
+                        onNavigateToNotifications = {
+                            navController.navigate(Screen.NotificationCenter.route)
+                        },
+                        onNavigateToHistory = {
+                            navController.navigate(Screen.ActivityHistory.route)
+                        },
+                        onNavigateToSearch = {
+                            navController.navigate(Screen.Search.route)
                         }
                     ) 
                 }
@@ -154,9 +184,17 @@ fun AppNavigation(
                     ) 
                 }
             }
-            composable(Screen.Quran.route) {
+            composable(Screen.Mihrab.route) {
                 if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else { MihrabScreen() }
+                else { 
+                    MihrabScreen(
+                        onNavigateToQuran = { navController.navigate(Screen.Quran.route) },
+                        onNavigateToPrayerTimes = { navController.navigate(Screen.PrayerTimes.route) },
+                        onNavigateToQibla = { navController.navigate(Screen.Qibla.route) },
+                        onNavigateToCalendar = { navController.navigate(Screen.HijriCalendar.route) },
+                        onNavigateToAdhkar = { navController.navigate(Screen.AdhkarCategories.route) }
+                    ) 
+                }
             }
             composable(Screen.Audio.route) {
                 if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
@@ -177,6 +215,7 @@ fun AppNavigation(
                 else { 
                     com.siraj.app.features.settings.presentation.SettingsScreen(
                         onNavigateToWorkspaceSettings = { navController.navigate(Screen.WorkspaceSettings.route) },
+                        onNavigateToActivityHistory = { navController.navigate(Screen.ActivityHistory.route) },
                         onNavigateBack = { navController.popBackStack() },
                         onLogout = {
                             navController.navigate(Screen.Login.route) {
@@ -387,7 +426,7 @@ fun AppNavigation(
                     val rawInitialText = backStackEntry.arguments?.getString("initialText") ?: ""
                     val decodedInitialText = try {
                         java.net.URLDecoder.decode(rawInitialText, "UTF-8")
-                    } catch (_: Exception) {
+                    } catch (e: Exception) {
                         rawInitialText
                     }
                     com.siraj.app.features.project.presentation.audio.AudioStudioScreen(
@@ -440,7 +479,7 @@ fun AppNavigation(
                     val sceneId = backStackEntry.arguments?.getString("sceneId") ?: ""
                     val rawInitialText = backStackEntry.arguments?.getString("initialText")
                     val decodedInitialText = if (!rawInitialText.isNullOrBlank()) {
-                        try { java.net.URLDecoder.decode(rawInitialText, "UTF-8") } catch (_: Exception) { rawInitialText }
+                        try { java.net.URLDecoder.decode(rawInitialText, "UTF-8") } catch (e: Exception) { rawInitialText }
                     } else ""
                     com.siraj.app.features.project.presentation.subtitles.SubtitleEditorScreen(
                         projectId = projectId,
@@ -508,6 +547,11 @@ fun AppNavigation(
                 }
             }
 
+            composable(Screen.AudioPlayer.route) {
+                AudioPlayerScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
             composable(Screen.Ideation.route) {
                 if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
                 else {
@@ -537,6 +581,53 @@ fun AppNavigation(
                 }
             }
 
+            composable(Screen.NotificationCenter.route) {
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    com.siraj.app.features.notification.presentation.NotificationCenterScreen(
+                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateToSettings = { navController.navigate(Screen.NotificationSettings.route) },
+                        onNavigateToProject = { pid -> navController.navigate(Screen.ProjectEditor.createRoute(pid)) },
+                        onNavigateToReview = { rid -> navController.navigate(Screen.ReviewList.route) },
+                        onNavigateToAudio = { aid -> navController.navigate(Screen.Audio.route) },
+                        onNavigateToFlashes = { navController.navigate(Screen.Flashes.route) },
+                        onNavigateToMihrab = { navController.navigate(Screen.Mihrab.route) }
+                    )
+                }
+            }
+
+            composable(Screen.NotificationSettings.route) {
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    com.siraj.app.features.notification.presentation.NotificationSettingsScreen(
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+            }
+
+            composable(Screen.ActivityHistory.route) {
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    com.siraj.app.features.history.presentation.ActivityHistoryScreen(
+                        onNavigateBack = { navController.popBackStack() },
+                        onResumeVideo = { videoId ->
+                            // If it's a project ID, navigate to project preview or editor
+                            navController.navigate(Screen.ProjectPreview.createRoute(videoId))
+                        },
+                        onResumeAudio = { audioId ->
+                            navController.navigate(Screen.AudioPlayer.route)
+                        },
+                        onResumeQuran = { surahIdStr ->
+                            val surahId = surahIdStr.toIntOrNull() ?: 1
+                            navController.navigate(Screen.Surah.createRoute(surahId, "سورة"))
+                        },
+                        onResumeFlash = { _ ->
+                            navController.navigate(Screen.Flashes.route)
+                        }
+                    )
+                }
+            }
+
             composable(
                 route = Screen.Details.route,
                 arguments = listOf(navArgument("id") { type = NavType.StringType }),
@@ -545,16 +636,75 @@ fun AppNavigation(
                 val id = backStackEntry.arguments?.getString("id") ?: ""
                 DetailsScreen(id = id)
             }
+
+            composable(Screen.Search.route) {
+                val context = LocalContext.current
+                val searchViewModel: SearchViewModel = viewModel(
+                    factory = SearchViewModelFactory(
+                        application = context.applicationContext as Application,
+                        currentUserId = (authState as? Resource.Success)?.data?.uid ?: "user_default"
+                    )
+                )
+
+                SearchScreen(
+                    viewModel = searchViewModel,
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToResult = { item ->
+                        when (item.category) {
+                            SearchCategory.QURAN -> {
+                                if (item.targetRoute.isNotBlank()) {
+                                    navController.navigate(item.targetRoute)
+                                } else {
+                                    val surahId = item.extraMetadata["surahId"]?.toIntOrNull() ?: 1
+                                    navController.navigate(Screen.Surah.createRoute(surahId, item.title))
+                                }
+                            }
+                            SearchCategory.AUDIO -> {
+                                navController.navigate(Screen.AudioPlayer.route)
+                            }
+                            SearchCategory.FLASH -> {
+                                navController.navigate(Screen.Flashes.route)
+                            }
+                            SearchCategory.PROJECT -> {
+                                val projectId = item.extraMetadata["projectId"] ?: item.id.removePrefix("project_")
+                                navController.navigate(Screen.ProjectEditor.createRoute(projectId))
+                            }
+                            SearchCategory.TEMPLATE -> {
+                                navController.navigate(Screen.Ideation.route)
+                            }
+                            SearchCategory.SOURCE -> {
+                                val sourceId = item.id.removePrefix("src_")
+                                navController.navigate(Screen.Details.createRoute(sourceId))
+                            }
+                            SearchCategory.ALL -> {
+                                if (item.targetRoute.isNotBlank()) {
+                                    navController.navigate(item.targetRoute)
+                                }
+                            }
+                        }
+                    }
+                )
+            }
         }
     }
 
     if (isMainScreen) {
         MainShellScreen(navController = navController) { paddingValues ->
-            content(Modifier.padding(paddingValues))
+            Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+                content(Modifier)
+                MiniPlayer(
+                    modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp),
+                    onExpand = { navController.navigate(Screen.AudioPlayer.route) }
+                )
+            }
         }
     } else {
-        Box(modifier = Modifier) {
+        Box(modifier = Modifier.fillMaxSize()) {
             content(Modifier)
+            MiniPlayer(
+                modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp),
+                onExpand = { navController.navigate(Screen.AudioPlayer.route) }
+            )
         }
     }
 }

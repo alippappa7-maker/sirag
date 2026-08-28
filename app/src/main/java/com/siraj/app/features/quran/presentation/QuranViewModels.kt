@@ -8,6 +8,7 @@ import com.siraj.app.data.api.RetrofitClient
 import com.siraj.app.data.local.QuranDatabase
 import com.siraj.app.data.repository.QuranRepositoryImpl
 import com.siraj.app.domain.models.quran.Ayah
+import com.siraj.app.domain.models.quran.QuranReaderSettings
 import com.siraj.app.domain.models.quran.Surah
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +21,6 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
         RetrofitClient.quranApi,
         QuranDatabase.getDatabase(application).quranDao()
     )
-
     private val _surahs = MutableStateFlow<Resource<List<Surah>>>(Resource.Loading)
     val surahs: StateFlow<Resource<List<Surah>>> = _surahs.asStateFlow()
     
@@ -43,12 +43,11 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
     }
 }
 
-class SurahViewModel(application: Application, private val surahId: Int) : AndroidViewModel(application) {
+class QuranReaderViewModel(application: Application, private val surahId: Int) : AndroidViewModel(application) {
     private val repository = QuranRepositoryImpl(
         RetrofitClient.quranApi,
         QuranDatabase.getDatabase(application).quranDao()
     )
-
     private val _ayahs = MutableStateFlow<Resource<List<Ayah>>>(Resource.Loading)
     
     val ayahsWithBookmarks = combine(_ayahs, repository.getBookmarkedVerseKeys()) { result, bookmarks ->
@@ -58,6 +57,9 @@ class SurahViewModel(application: Application, private val surahId: Int) : Andro
             result
         }
     }
+
+    private val _settings = MutableStateFlow(QuranReaderSettings())
+    val settings = _settings.asStateFlow()
 
     init {
         loadAyahs()
@@ -79,8 +81,23 @@ class SurahViewModel(application: Application, private val surahId: Int) : Andro
     fun saveNote(verseKey: String, verseNumber: Int, note: String) {
         viewModelScope.launch {
             repository.saveNote(verseKey, surahId, verseNumber, note)
-            // Reload ayahs to get updated note
             loadAyahs()
         }
+    }
+
+    fun updateFontSize(newSize: Float) {
+        _settings.value = _settings.value.copy(fontSize = newSize)
+    }
+
+    fun toggleNightMode(isNightMode: Boolean) {
+        _settings.value = _settings.value.copy(isNightMode = isNightMode)
+    }
+
+    fun changeReciter(reciterId: Int) {
+        _settings.value = _settings.value.copy(selectedReciterId = reciterId)
+    }
+
+    fun updatePlaybackSpeed(speed: Float) {
+        _settings.value = _settings.value.copy(playbackSpeed = speed)
     }
 }

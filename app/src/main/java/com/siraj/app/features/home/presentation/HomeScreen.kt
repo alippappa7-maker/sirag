@@ -7,24 +7,42 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.siraj.app.core.utils.Resource
 import com.siraj.app.domain.models.Project
 
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.ui.platform.LocalContext
+import android.app.Application
+import com.siraj.app.features.notification.presentation.NotificationViewModel
+import com.siraj.app.features.notification.presentation.NotificationViewModelFactory
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     toggleTheme: () -> Unit,
     onNavigateToProject: (String) -> Unit = {},
-    viewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory())
+    onNavigateToNotifications: () -> Unit = {},
+    onNavigateToHistory: () -> Unit = {},
+    onNavigateToSearch: () -> Unit = {},
+    viewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory()),
+    notificationViewModel: NotificationViewModel = viewModel(
+        factory = NotificationViewModelFactory(LocalContext.current.applicationContext as Application)
+    )
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val notifState by notificationViewModel.uiState.collectAsState()
     var showCreateDialog by remember { mutableStateOf(false) }
     var newProjectTitle by remember { mutableStateOf("") }
 
@@ -83,9 +101,77 @@ fun HomeScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                IconButton(onClick = toggleTheme) {
-                    // Icon placeholder
-                    Text("🌓")
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = onNavigateToSearch,
+                        modifier = Modifier.testTag("home_search_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "البحث الشامل",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    IconButton(onClick = onNavigateToHistory) {
+                        Icon(
+                            imageVector = Icons.Default.History,
+                            contentDescription = "سجل النشاط والمتابعة"
+                        )
+                    }
+                    IconButton(onClick = onNavigateToNotifications) {
+                        BadgedBox(
+                            badge = {
+                                if (notifState.unreadCount > 0) {
+                                    Badge {
+                                        Text(
+                                            text = if (notifState.unreadCount > 99) "+99" else "${notifState.unreadCount}"
+                                        )
+                                    }
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = if (notifState.unreadCount > 0) Icons.Default.NotificationsActive else Icons.Default.Notifications,
+                                contentDescription = "مركز الإشعارات",
+                                tint = if (notifState.unreadCount > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                    IconButton(onClick = toggleTheme) {
+                        Text("🌓")
+                    }
+                }
+            }
+        }
+
+        // Global Search Card Banner
+        item {
+            Surface(
+                onClick = onNavigateToSearch,
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("home_search_banner")
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "بحث",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(22.dp)
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Text(
+                        text = "ابحث في القرآن، الصوتيات، الومضات، المصادر...",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }

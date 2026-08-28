@@ -105,6 +105,7 @@ dependencies {
   // Uncomment to use Firestore:
   implementation(libs.firebase.firestore)
   implementation(libs.firebase.storage)
+  implementation(libs.firebase.messaging)
 
   // Uncomment ALL FOUR of the following dependencies together to use Firebase Auth and Google
   // Sign-In via Credential Manager:
@@ -124,6 +125,7 @@ dependencies {
   implementation(libs.media3.exoplayer.dash)
   implementation(libs.media3.exoplayer.hls)
   implementation(libs.media3.ui)
+  implementation(libs.media3.session)
   testImplementation(libs.androidx.compose.ui.test.junit4)
   testImplementation(libs.androidx.core)
   testImplementation(libs.androidx.junit)

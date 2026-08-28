@@ -28,6 +28,12 @@ import com.siraj.app.core.ui.components.SirajTextField
 
 @Composable
 fun MihrabScreen(
+    onNavigateToQuran: () -> Unit = {},
+    onNavigateToPrayerTimes: () -> Unit = {},
+    onNavigateToQibla: () -> Unit = {},
+    onNavigateToCalendar: () -> Unit = {},
+    onNavigateToAdhkar: () -> Unit = {},
+
     viewModel: MihrabViewModel = viewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -71,7 +77,12 @@ fun MihrabScreen(
                 else -> {
                     MihrabContent(
                         state = state,
-                        onSearchQueryChanged = viewModel::onSearchQueryChanged
+                        onSearchQueryChanged = viewModel::onSearchQueryChanged,
+                        onNavigateToQuran = onNavigateToQuran,
+                        onNavigateToPrayerTimes = onNavigateToPrayerTimes,
+                        onNavigateToQibla = onNavigateToQibla,
+                        onNavigateToCalendar = onNavigateToCalendar,
+                        onNavigateToAdhkar = onNavigateToAdhkar
                     )
                 }
             }
@@ -104,7 +115,12 @@ fun MihrabTopBar() {
 @Composable
 fun MihrabContent(
     state: MihrabState,
-    onSearchQueryChanged: (String) -> Unit
+    onSearchQueryChanged: (String) -> Unit,
+    onNavigateToQuran: () -> Unit,
+    onNavigateToPrayerTimes: () -> Unit,
+    onNavigateToQibla: () -> Unit,
+    onNavigateToCalendar: () -> Unit,
+    onNavigateToAdhkar: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -173,7 +189,14 @@ fun MihrabContent(
                     items(state.shortcuts) { shortcut ->
                         ShortcutCard(
                             shortcut = shortcut,
-                            onClick = { /* TODO */ }
+                            onClick = { 
+                                when (shortcut.id) {
+                                    "prayer_times" -> onNavigateToPrayerTimes()
+                                    "qibla" -> onNavigateToQibla()
+                                    "hijri_calendar" -> onNavigateToCalendar()
+                                    "adhkar" -> onNavigateToAdhkar()
+                                }
+                            }
                         )
                     }
                 }
@@ -199,7 +222,13 @@ fun MihrabContent(
                             SectionCard(
                                 section = section,
                                 modifier = Modifier.weight(1f),
-                                onClick = { /* TODO */ }
+                                onClick = { 
+                                    if (section.id == "quran") {
+                                        onNavigateToQuran()
+                                    } else {
+                                        /* TODO */ 
+                                    }
+                                }
                             )
                         }
                         // Fill empty space if odd number

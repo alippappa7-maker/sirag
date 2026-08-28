@@ -38,6 +38,7 @@ enum class SettingsPage(val title: String) {
 @Composable
 fun SettingsScreen(
     onNavigateToWorkspaceSettings: () -> Unit = {},
+    onNavigateToActivityHistory: () -> Unit = {},
     onNavigateBack: () -> Unit,
     onLogout: () -> Unit,
     viewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory())
@@ -93,9 +94,9 @@ fun SettingsScreen(
                 SettingsPage.MIHRAB -> MihrabSettings(uiState, viewModel)
                 SettingsPage.VIDEO -> VideoSettings(uiState, viewModel)
                 SettingsPage.LIBRARY -> LibrarySettings(uiState, viewModel)
-                SettingsPage.PRIVACY -> PrivacySettings(uiState, viewModel)
+                SettingsPage.PRIVACY -> PrivacySettings(uiState, viewModel, onNavigateToActivityHistory)
                 SettingsPage.ISLAMIC -> IslamicSettings(uiState, viewModel)
-                SettingsPage.STORAGE -> StorageSettings(uiState, viewModel, onLogout)
+                SettingsPage.STORAGE -> StorageSettings(uiState, viewModel, onLogout, onNavigateToActivityHistory)
                 SettingsPage.SUPPORT -> SupportSettings()
                 SettingsPage.ABOUT -> AboutSettings()
             }

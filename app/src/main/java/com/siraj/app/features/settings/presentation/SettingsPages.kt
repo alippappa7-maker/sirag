@@ -77,18 +77,9 @@ fun LanguageSettings(uiState: SettingsUiState, viewModel: SettingsViewModel) {
 
 @Composable
 fun NotificationSettings(uiState: SettingsUiState, viewModel: SettingsViewModel) {
-    val prefs = uiState.profile?.preferences ?: return
-    Column(modifier = Modifier.padding(16.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-            Text("إشعارات الصلاة")
-            Switch(checked = prefs.prayerNotifications, onCheckedChange = { viewModel.updatePreferences { p -> p.copy(prayerNotifications = it) } })
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-            Text("إشعارات الأذكار")
-            Switch(checked = prefs.adhkarNotifications, onCheckedChange = { viewModel.updatePreferences { p -> p.copy(adhkarNotifications = it) } })
-        }
-    }
+    com.siraj.app.features.notification.presentation.NotificationSettingsScreen(
+        onNavigateBack = {}
+    )
 }
 
 @Composable
@@ -146,7 +137,11 @@ fun LibrarySettings(uiState: SettingsUiState, viewModel: SettingsViewModel) {
 }
 
 @Composable
-fun PrivacySettings(uiState: SettingsUiState, viewModel: SettingsViewModel) {
+fun PrivacySettings(
+    uiState: SettingsUiState,
+    viewModel: SettingsViewModel,
+    onNavigateToActivityHistory: () -> Unit = {}
+) {
     val prefs = uiState.profile?.preferences ?: return
     Column(modifier = Modifier.padding(16.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
@@ -155,6 +150,21 @@ fun PrivacySettings(uiState: SettingsUiState, viewModel: SettingsViewModel) {
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text("يمكن تفعيل البصمة أو الوجه في حال تم تفعيل القفل.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        
+        Spacer(modifier = Modifier.height(24.dp))
+        HorizontalDivider()
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("سجل النشاط والخصوصية", style = MaterialTheme.typography.titleMedium)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text("التحكم في حفظ مواضع المشاهدة والاستماع وسياسة الاحتفاظ بالبيانات.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(modifier = Modifier.height(12.dp))
+        OutlinedButton(
+            onClick = onNavigateToActivityHistory,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("إدارة سجل النشاط والمشاهدة")
+        }
     }
 }
 
@@ -171,12 +181,21 @@ fun IslamicSettings(uiState: SettingsUiState, viewModel: SettingsViewModel) {
 }
 
 @Composable
-fun StorageSettings(uiState: SettingsUiState, viewModel: SettingsViewModel, onLogout: () -> Unit) {
+fun StorageSettings(
+    uiState: SettingsUiState,
+    viewModel: SettingsViewModel,
+    onLogout: () -> Unit,
+    onNavigateToActivityHistory: () -> Unit = {}
+) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.padding(16.dp)) {
         Button(onClick = { /* TODO */ }, modifier = Modifier.fillMaxWidth()) {
             Text("مسح الذاكرة المؤقتة (Cache)")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedButton(onClick = onNavigateToActivityHistory, modifier = Modifier.fillMaxWidth()) {
+            Text("سجل التنزيلات والمشاهدة")
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = { /* TODO */ }, modifier = Modifier.fillMaxWidth()) {

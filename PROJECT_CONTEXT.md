@@ -10,6 +10,15 @@
 - Gradle (Kotlin DSL).
 
 ## آخر برومبت منفذ
+042 (سجل النشاط الشخصي - Personal Activity History & Watch Later)
+041 (نظام الإشعارات - Notification Center & FCM)
+BUGFIX (إصلاح تهيئة FirebaseApp عند تشغيل التطبيق)
+040 (مشغل الصوت والتشغيل الخلفي)
+039 (المكتبة الصوتية)
+038 (قسم الأذكار)
+037 (القبلة والتقويم الهجري)
+036 (مواقيت الصلاة)
+035 (قارئ القرآن والتلاوة)
 034 (بناء قسم المحراب)
 033 (مشغل الفيديو - Video Player)
 032 (واجهة تصدير الفيديو والتنزيل والمشاركة - Export Video & Sharing)
@@ -25,7 +34,6 @@
 022 (محرر المشهد)
 021 (إنتاج المشاهد)
 020 (إرسال المحتوى للمراجعة)
-021 (إنتاج المشاهد)
 019 (تكامل القرآن والتفسير)
 018 (طبقة المصادر والتحقق الأولي)
 017 (خطة المحتوى والسيناريو)
@@ -37,7 +45,20 @@
 011 (نموذج بيانات المشاريع)
 
 ## المرحلة الحالية
-- تم الانتهاء من تنفيذ PROMPT 031: محرك تركيب وتصيير الفيديو السحابي (Video Composition Service & Cloud Run/FFmpeg Engine).
+- تم الانتهاء من تنفيذ PROMPT 042: بناء سجل النشاط الشخصي وقائمة المتابعة (Personal Activity History & Watch Later).
+  - إعداد نماذج البيانات `UserActivityItem`, `ActivityEntityType`, `ActivityHistoryPreferences`, `RetentionPolicy`, `ActivityTab` مع دعم كافة وسائط سراج.
+  - التخزين المحلي عبر Room Database (`ActivityHistoryDatabase`, `ActivityHistoryEntity`, `ActivityHistoryPreferencesEntity`) ودعم التقسيم الصفحي والتصفية حسب نوع الوسائط وحالة الاكتمال والتنزيل والمتابعة لاحقاً.
+  - المزامنة السحابية غير المتزامنة مع Cloud Firestore (`users/{userId}/activity_history`) ودعم العمل بدون إنترنت (Offline-First).
+  - تطبيق سياسات الخصوصية والاحتفاظ التلقائي (30 يوماً، 90 يوماً، سنة، أو دائم) ومسح السجل الفردي أو الكامل.
+  - بناء وحدة `ActivityHistoryManager` وربطها بمشغل الصوتيات `AudioController` لحفظ مواضع الاستماع واستئنافها.
+  - بناء واجهة `ActivityHistoryScreen` ومكوناتها (شريط الاستئناف الذكي، تبويبات التصفح، البحث، وحوار الإعدادات والخصوصية).
+- تم الانتهاء من تنفيذ PROMPT 041: بناء نظام الإشعارات المتكامل (Notification Center & FCM System).
+  - إعداد نماذج الإشعارات `SirajNotification`, `NotificationType`, `NotificationPreferences`, `DeviceTokenInfo` مع دعم 11 نوعاً متخصصاً من الإشعارات.
+  - إعداد التخزين المحلي عبر Room Database (`NotificationDatabase`, `NotificationEntity`, `NotificationPreferencesEntity`) ومزامنة مع Cloud Firestore.
+  - بناء خدمة استقبال الإشعارات `SirajFirebaseMessagingService` وتوليد قنوات أندرويد الست المنفصلة `NotificationHelper`.
+  - تطبيق قواعد الخصوصية وحماية المحتوى الديني الحساس في شاشة القفل، وإيقاف إشعارات التسويق افتراضياً ما لم يوافق المستخدم، وتطبيق ساعات الهدوء (Quiet Hours).
+  - بناء واجهة مركز الإشعارات `NotificationCenterScreen` وتصنيف الإشعارات والقراءة الفردية والجماعية والحذف والتوجيه الذكي (Deep Linking).
+  - بناء شاشة إعدادات الإشعارات `NotificationSettingsScreen` وميزة فحص وتجربة إرسال الإشعارات.
   - إنشاء نموذج مخطط التركيب الكامل `VideoCompositionManifest` ومكونات المشاهد والانتقالات والصوت `CompositionSceneItem`, `CompositionAudioTrack`, `CompositionSubtitleItem`, `CompositionBranding`.
   - تطبيق واجهة ومستودع التركيب `VideoCompositionService` و `FirebaseVideoCompositionServiceImpl`:
     1. قراءة بيانات المشروع والمشاهد المعتمدة وترتيبها تصاعدياً حسب `orderIndex`.
