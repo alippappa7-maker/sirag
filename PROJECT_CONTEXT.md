@@ -1,64 +1,56 @@
-# اسم المشروع
-سراج (Siraj) - منصة إسلامية عربية لإنتاج المحتوى
+# سراج (Siraj)
 
-# حالة التنفيذ
-قيد التنفيذ (مرحلة صفحة الخطط والأسعار اكتملت)
+## حالة التنفيذ
+قيد التنفيذ - في صدد إصلاح مشاكل مكتبة mockk المتعلقة بـ ByteBuddyAgent والتي تتسبب بفشل بعض اختبارات الوحدة.
 
-# آخر prompt منفذ
-PROMPT 055 (صفحة الخطط والأسعار)
+## آخر prompt منفذ
+رقم البرومبت: PROMPT 059
+اسم المرحلة: الاختبارات الآلية
 
-# المرحلة الحالية
-في انتظار استلام المرحلة القادمة. تم الانتهاء مؤخراً من:
-- موجز الومضات (Flashes Feed).
-- نشر الومضات (Flash Publishing).
-- التفاعل والسلامة المجتمعية (Interaction & Safety).
-- لوحة إدارة المحتوى (Content Management).
-- حماية مركزية لقواعد بيانات Firestore و Storage (Security Rules).
-- نماذج الاشتراكات والخطط والأرصدة (Subscriptions, Plans, Entitlements).
-- نظام متكامل لإدارة الأرصدة وحجز الاستهلاك للعمليات المكلفة (Credits & Usage Limits).
-- تكامل مع Google Play Billing للشراء من المتجر مع تحقق خادمي (Server-Side Validation).
-- التأسيس لاشتراكات App Store وStoreKit 2 مع توثيق شامل للتحقق الخادمي وإشعارات V2 (App Store Server Notifications).
-- تصميم وبناء صفحة الخطط والأسعار مع مقارنات المميزات، الأرصدة، وعرض شفاف لسياسة الإلغاء والتجديد.
-- التحقق من الصلاحيات و Custom Claims.
+## المرحلة الحالية
+بناء وكتابة الاختبارات للوحدات الأساسية. تم إنشاء `run_tests.sh` كأمر واحد لتشغيل الاختبارات.
+الاختبارات تتعطل حاليًا بسبب نقص دعم ByteBuddy لنسخة JVM الحالية الخاصة بـ mockk. 
 
-# التقنية
-- Kotlin و Jetpack Compose و MVVM Architecture
-- Clean Architecture (Domain, Data, Presentation)
+## التقنية
+- Kotlin
+- Jetpack Compose
 - Firebase (Auth, Firestore, Storage)
-- Navigation Component (Compose)
+- Architecture: MVVM, Clean Architecture
+- Testing: JUnit4, MockK, Kotlinx Coroutines Test, Robolectric
 
-# بنية الوحدات
-- `core`: الأدوات، الثيمات، المكونات المشتركة، التوجيه.
-- `domain`: النماذج، المستودعات، حالات الاستخدام.
-- `data`: التنفيذ الفعلي (Firebase/Local Repositories).
-- `features`: واجهات المستخدم مقسمة حسب الوظيفة (admin, community, moderation, flashes, etc).
+## بنية الوحدات
+- `app/src/main/java/com/siraj/app/`
+  - `core`: الأدوات المساعدة، السمات، التنقل، الإشعارات.
+  - `data`: التنفيذ الفعلي للمستودعات باستخدام Firebase.
+  - `domain`: النماذج، الاستخدامات (Use Cases)، واجهات المستودعات (Repository Interfaces).
+  - `features`: واجهات المستخدم مقسمة إلى:
+    - `auth`: المصادقة
+    - `community`: استكشاف المحتوى
+    - `project`: إنشاء المشاريع والمشاهد وتوليد الصور والنصوص
+    - `review`: المراجعة الشرعية للمشاريع
+    - `settings`: الإعدادات ومساحات العمل
+    - `studio`: إدارة المشاريع، تحليلات الأداء، الفواتير
+    - `subscription`: الاشتراك والأرصدة
+    - `mihrab`: القرآن، الأذكار، القبلة، الصلاة
 
-# الخدمات المربوطة
-- Firebase Authentication & Firestore (Mocked in MVP)
-- ExoPlayer (Media3) للمقاطع.
+## الخدمات المربوطة
+- Firebase Auth (Email/Password)
+- Firebase Firestore
+- Firebase Storage
+- Google Play Billing (مكتبة)
+- Gemini API (من خلال Backend/Mock حالياً)
 
-# البيئة الحالية
-- Development (Mock/Local memory for MVP to ensure rapid building without backend dependency).
+## البيئة الحالية
+- Development (يتم محاكاة Production محلياً عبر Mocks للاختبارات)
 
-# المخاطر المعروفة
-- تشغيل ExoPlayer في قوائم التمرير قد يستهلك الذاكرة.
+## المخاطر المعروفة
+- لا يزال الاتصال الحقيقي بـ Google Play و Gemini API يحتاج إلى تكوين فعلي خارج التطبيق (Backend).
+- مشكلة Mockk + ByteBuddy Agent تحتاج إما لترقية/تغيير نسخة mockk أو تشغيل JVM ببرامترات مختلفة.
 
-# القرارات التقنية
-- تطبيق فصل كامل بين التفاعلات (`InteractionRepository`) والسلامة المجتمعية (`SafetyRepository`).
-- بناء شاشة Moderation Screen مخصصة للمراجعين والمديرين (Reviewers/Admins) لعرض وحل البلاغات بناءً على صلاحياتهم.
-- بناء لوحة إدارة المحتوى (Content Management Dashboard) مع سجل تدقيق (Audit Log) وحالات محتوى (Approved, Suspended, Archived, Pending).
-- دعم أرشفة واستعادة المحتوى بدلاً من الحذف النهائي بناءً على سياسات التطبيق.
-- تطبيق الحماية على جميع مستندات Firestore بوضع مقفل (Locked Down) بناءً على Custom Claims و OwnerId.
-- فصل الخطة (Plan) عن الاشتراك (Subscription) وعن الامتيازات (Entitlement).
-- تأكيد مبدأ التحقق الخادمي (Server-side validation) لعمليات الشراء، وعدم الاحتفاظ بالـ PurchaseToken الخام.
-- تأسيس دوال الحجز الذري (Reservation) وتأكيد الاستهلاك (Confirmation) والإرجاع (Refund) لعمليات الذكاء الاصطناعي مع دعم Idempotency.
-- الاعتماد على الخادم فقط لمنح الامتيازات بعد التحقق من `purchaseToken` عبر Google Play Developer API لضمان الأمان.
-- تطبيق نفس مبدأ التحقق الخادمي (Server-Side) لمشتريات iOS عبر JWS وإشعارات أبل لتأمين الـ Entitlement ومعالجة الـ originalTransactionId.
-- عرض السعر كما يأتي من المتجر، والتوضيح الصريح للمستخدمين حول سياسة التجديد التلقائي للامتثال للمعايير الأخلاقية والمتاجر.
-- التأسيس لاستقبال إشعارات المطورين (RTDN) عبر Pub/Sub لتحديث الحالات دون الاعتماد على العميل.
-- تطبيق قواعد أمان تمنع إرسال الأرصدة من العميل.
-- كتابة قواعد Cloud Storage لحماية ملفات المستخدمين وتأمين الملفات العامة.
-- كتابة اختبارات Firebase Rules باستخدام `rules-unit-testing` للتحقق من عدم تجاوز الصلاحيات.
+## القرارات التقنية
+- استخدام `mockk` لعزل المستودعات والخدمات وإجراء اختبارات الوحدة (Unit Tests).
+- الاختبارات تركز على التحقق من صحة مسارات العمل: التحقق من الرصيد، الحفظ التلقائي عبر `debounce`، الاعتماد والرفض في المراجعة الشرعية، وقيود الصلاحيات داخل مساحة العمل.
+- توفير `run_tests.sh` لتسهيل إطلاق الاختبارات من خلال الطرفية بضغطة زر.
 
-# الخطوة التالية
-انتظار توجيه المستخدم للمرحلة التالية.
+## الخطوة التالية
+انتظار PROMPT 060 لمتابعة المشروع حسب خطة الإطلاق وتجاوز أو حل مشكلة البيئة لاختبارات الوحدة.

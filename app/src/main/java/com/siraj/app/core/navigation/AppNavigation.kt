@@ -178,6 +178,20 @@ fun AppNavigation(
                     ) 
                 }
             }
+            
+            composable(Screen.CreatorAnalytics.route) {
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val authRepository = remember { com.siraj.app.data.repository.FirebaseAuthRepositoryImpl() }
+                    val analyticsRepository = remember { com.siraj.app.data.repository.analytics.FirebaseCreatorAnalyticsRepositoryImpl() }
+                    val viewModel = remember { com.siraj.app.features.studio.presentation.analytics.CreatorAnalyticsViewModel(analyticsRepository, authRepository) }
+                    com.siraj.app.features.studio.presentation.analytics.CreatorAnalyticsScreen(
+                        viewModel = viewModel,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+            }
+
             composable(Screen.Studio.route) {
                 if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
                 else { 
@@ -190,6 +204,9 @@ fun AppNavigation(
                         },
                         onNavigateToFlashPublishing = {
                             navController.navigate(Screen.FlashPublishing.route)
+                        },
+                        onNavigateToAnalytics = {
+                            navController.navigate(Screen.CreatorAnalytics.route)
                         }
                     ) 
                 }

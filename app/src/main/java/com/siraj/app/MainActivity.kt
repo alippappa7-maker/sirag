@@ -13,7 +13,9 @@ import com.siraj.app.core.audio.AudioController
 import com.siraj.app.core.navigation.AppNavigation
 import com.siraj.app.ui.theme.MyApplicationTheme
 import com.siraj.app.data.repository.FirebaseAuthRepositoryImpl
+import com.siraj.app.core.analytics.AnalyticsManager
 import com.siraj.app.domain.models.ThemeMode
+import com.siraj.app.domain.models.analytics.AnalyticsEvent
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,13 +35,16 @@ class MainActivity : ComponentActivity() {
             
             var isDarkTheme by remember { mutableStateOf(systemTheme) }
             
-            LaunchedEffect(currentUser?.preferences?.themeMode) {
-                currentUser?.preferences?.themeMode?.let { mode ->
-                    isDarkTheme = when(mode) {
+            LaunchedEffect(currentUser?.preferences) {
+                val prefs = currentUser?.preferences
+                if (prefs != null) {
+                    isDarkTheme = when(prefs.themeMode) {
                         ThemeMode.DARK -> true
                         ThemeMode.LIGHT -> false
                         ThemeMode.SYSTEM -> systemTheme
                     }
+                    AnalyticsManager.setAnalyticsEnabled(prefs.analyticsOptIn)
+                    AnalyticsManager.logEvent(AnalyticsEvent.APP_OPENED)
                 }
             }
             

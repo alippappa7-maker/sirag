@@ -1,5 +1,6 @@
 package com.siraj.app.features.settings.presentation
 
+import com.siraj.app.core.analytics.AnalyticsManager
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -136,6 +137,8 @@ fun LibrarySettings(uiState: SettingsUiState, viewModel: SettingsViewModel) {
     }
 }
 
+
+
 @Composable
 fun PrivacySettings(
     uiState: SettingsUiState,
@@ -154,7 +157,20 @@ fun PrivacySettings(
         Spacer(modifier = Modifier.height(24.dp))
         HorizontalDivider()
         Spacer(modifier = Modifier.height(16.dp))
-
+        
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+            Text("مشاركة بيانات الاستخدام")
+            Switch(checked = prefs.analyticsOptIn, onCheckedChange = { 
+                viewModel.updatePreferences { p -> p.copy(analyticsOptIn = it) } 
+                AnalyticsManager.setAnalyticsEnabled(it)
+            })
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text("نجمع بيانات استخدام مجهولة (بدون IP أو نصوص شخصية) لتحسين جودة التطبيق فقط.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        
+        Spacer(modifier = Modifier.height(24.dp))
+        HorizontalDivider()
+        Spacer(modifier = Modifier.height(16.dp))
         Text("سجل النشاط والخصوصية", style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(8.dp))
         Text("التحكم في حفظ مواضع المشاهدة والاستماع وسياسة الاحتفاظ بالبيانات.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

@@ -21,7 +21,8 @@ data class UserPreferences(
     val videoQuality: VideoQuality = VideoQuality.HIGH,
     val downloadWifiOnly: Boolean = true,
     val appLockEnabled: Boolean = false,
-    val activeWorkspaceId: String? = null
+    val activeWorkspaceId: String? = null,
+    val analyticsOptIn: Boolean = false
 )
 
 data class UserProfile(

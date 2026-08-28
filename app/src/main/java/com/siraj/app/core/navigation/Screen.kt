@@ -91,6 +91,7 @@ sealed class Screen(val route: String) {
             else "ai_image_generator/$projectId"
     }
     object Studio : Screen("studio")
+    object CreatorAnalytics : Screen("creator_analytics")
     object Flashes : Screen("flashes")
     object FlashPublishing : Screen("flash_publishing")
     object Mihrab : Screen("mihrab")
