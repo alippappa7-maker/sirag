@@ -171,6 +171,9 @@ fun AppNavigation(
                         },
                         onNavigateToSearch = {
                             navController.navigate(Screen.Search.route)
+                        },
+                        onNavigateToShariaReview = {
+                            navController.navigate(Screen.ShariaReviewQueue.route)
                         }
                     ) 
                 }
@@ -299,6 +302,72 @@ fun AppNavigation(
                             onRetry = { navController.popBackStack() }
                         )
                     }
+                }
+            }
+
+            composable(Screen.ShariaReviewQueue.route) {
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val reviewViewModel: com.siraj.app.features.review.presentation.ShariaReviewViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+                        factory = com.siraj.app.features.review.presentation.ShariaReviewViewModelFactory(
+                            com.siraj.app.data.repository.review.FirebaseShariaReviewRepositoryImpl()
+                        )
+                    )
+                    val user = (authState as? Resource.Success)?.data
+                    com.siraj.app.features.review.presentation.ShariaReviewQueueScreen(
+                        viewModel = reviewViewModel,
+                        currentUserRole = user?.role?.name ?: "REVIEWER",
+                        currentUserId = user?.id ?: "user_reviewer",
+                        onNavigateToItemDetail = { itemId ->
+                            navController.navigate(Screen.ShariaReviewDetail.createRoute(itemId))
+                        },
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+            }
+
+            composable(Screen.ReviewList.route) {
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val reviewViewModel: com.siraj.app.features.review.presentation.ShariaReviewViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+                        factory = com.siraj.app.features.review.presentation.ShariaReviewViewModelFactory(
+                            com.siraj.app.data.repository.review.FirebaseShariaReviewRepositoryImpl()
+                        )
+                    )
+                    val user = (authState as? Resource.Success)?.data
+                    com.siraj.app.features.review.presentation.ShariaReviewQueueScreen(
+                        viewModel = reviewViewModel,
+                        currentUserRole = user?.role?.name ?: "REVIEWER",
+                        currentUserId = user?.id ?: "user_reviewer",
+                        onNavigateToItemDetail = { itemId ->
+                            navController.navigate(Screen.ShariaReviewDetail.createRoute(itemId))
+                        },
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+            }
+
+            composable(
+                route = Screen.ShariaReviewDetail.route,
+                arguments = listOf(navArgument("itemId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
+                    val reviewViewModel: com.siraj.app.features.review.presentation.ShariaReviewViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+                        factory = com.siraj.app.features.review.presentation.ShariaReviewViewModelFactory(
+                            com.siraj.app.data.repository.review.FirebaseShariaReviewRepositoryImpl()
+                        )
+                    )
+                    val user = (authState as? Resource.Success)?.data
+                    com.siraj.app.features.review.presentation.ShariaReviewDetailScreen(
+                        itemId = itemId,
+                        viewModel = reviewViewModel,
+                        currentUserRole = user?.role?.name ?: "REVIEWER",
+                        currentUserId = user?.id ?: "user_reviewer",
+                        currentUserName = user?.name ?: "المراجع الشرعي",
+                        onNavigateBack = { navController.popBackStack() }
+                    )
                 }
             }
 

@@ -594,8 +594,15 @@ class UnifiedSearchRepositoryImpl(
         // Suggestions based on Surahs
         val surahsRes = quranRepository.getSurahs()
         if (surahsRes is Resource.Success) {
-            surahsRes.data
-                .filter { ArabicSearchUtils.matches(it.nameArabic, trimmed) || it.nameTranslated.contains(trimmed, ignoreCase = true) }
+            val surahQuery = if (trimmed.startsWith("سورة")) trimmed.removePrefix("سورة").trim() else trimmed
+            val surahMatches = if (surahQuery.isBlank()) {
+                surahsRes.data
+            } else {
+                surahsRes.data.filter {
+                    ArabicSearchUtils.matches(it.nameArabic, surahQuery) || it.nameTranslated.contains(surahQuery, ignoreCase = true)
+                }
+            }
+            surahMatches
                 .take(3)
                 .forEach {
                     suggestions.add(SearchSuggestion("سورة ${it.nameArabic}", SearchCategory.QURAN))

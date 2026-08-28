@@ -112,4 +112,8 @@ sealed class Screen(val route: String) {
     object NotificationSettings : Screen("notification_settings")
     object ActivityHistory : Screen("activity_history")
     object Search : Screen("search")
+    object ShariaReviewQueue : Screen("sharia_review_queue")
+    object ShariaReviewDetail : Screen("sharia_review_detail/{itemId}") {
+        fun createRoute(itemId: String) = "sharia_review_detail/$itemId"
+    }
 }

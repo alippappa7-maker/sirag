@@ -175,17 +175,18 @@ private class FakeQuranRepository : QuranRepository {
     override suspend fun getSurahs(): Resource<List<Surah>> {
         return Resource.Success(
             listOf(
-                Surah(chapterNumber = 1, nameArabic = "الفاتحة", nameComplex = "Al-Fatihah", nameEnglish = "The Opening", nameTranslated = "The Opening", revelationPlace = "مكية", versesCount = 7),
-                Surah(chapterNumber = 2, nameArabic = "البقرة", nameComplex = "Al-Baqarah", nameEnglish = "The Cow", nameTranslated = "The Cow", revelationPlace = "مدنية", versesCount = 286),
-                Surah(chapterNumber = 36, nameArabic = "يس", nameComplex = "Ya-Sin", nameEnglish = "Ya-Sin", nameTranslated = "Ya-Sin", revelationPlace = "مكية", versesCount = 83),
-                Surah(chapterNumber = 112, nameArabic = "الإخلاص", nameComplex = "Al-Ikhlas", nameEnglish = "The Sincerity", nameTranslated = "The Sincerity", revelationPlace = "مكية", versesCount = 4)
+                Surah(chapterNumber = 1, nameArabic = "الفاتحة", nameTranslated = "The Opening", revelationPlace = "مكية", versesCount = 7),
+                Surah(chapterNumber = 2, nameArabic = "البقرة", nameTranslated = "The Cow", revelationPlace = "مدنية", versesCount = 286),
+                Surah(chapterNumber = 36, nameArabic = "يس", nameTranslated = "Ya-Sin", revelationPlace = "مكية", versesCount = 83),
+                Surah(chapterNumber = 112, nameArabic = "الإخلاص", nameTranslated = "The Sincerity", revelationPlace = "مكية", versesCount = 4)
             )
         )
     }
 
-    override suspend fun getAyahs(surahNumber: Int): Resource<List<Ayah>> = Resource.Success(emptyList())
-    override suspend fun getAyah(surahNumber: Int, ayahNumber: Int): Resource<Ayah> = Resource.Error("Not implemented")
-    override suspend fun searchAyahs(query: String): Resource<List<Ayah>> = Resource.Success(emptyList())
+    override suspend fun getAyahs(surahId: Int): Resource<List<Ayah>> = Resource.Success(emptyList())
+    override suspend fun toggleBookmark(verseKey: String, surahId: Int, verseNumber: Int, isBookmarked: Boolean) {}
+    override suspend fun saveNote(verseKey: String, surahId: Int, verseNumber: Int, note: String) {}
+    override fun getBookmarkedVerseKeys(): Flow<List<String>> = flowOf(emptyList())
 }
 
 private class FakeAudioRepository : AudioRepository {
@@ -215,11 +216,9 @@ private class FakeAudioRepository : AudioRepository {
         return Resource.Success(all)
     }
 
-    override suspend fun getTrackById(id: String): Resource<AudioTrack> = Resource.Error("Not implemented")
-    override suspend fun getCategories(): Resource<List<AudioCategory>> = Resource.Success(emptyList())
-    override suspend fun toggleFavorite(trackId: String, userId: String): Resource<Boolean> = Resource.Success(true)
-    override suspend fun getFavorites(userId: String): Resource<List<AudioTrack>> = Resource.Success(emptyList())
-    override suspend fun searchTracks(query: String): Resource<List<AudioTrack>> = Resource.Success(emptyList())
+    override suspend fun toggleFavorite(trackId: String): Resource<Boolean> = Resource.Success(true)
+    override suspend fun updateProgress(trackId: String, progressSeconds: Int): Resource<Boolean> = Resource.Success(true)
+    override suspend fun reportTrack(trackId: String, reason: String): Resource<Boolean> = Resource.Success(true)
 }
 
 private class FakeTemplateRepository : TemplateRepository {
@@ -240,22 +239,25 @@ private class FakeTemplateRepository : TemplateRepository {
         )
     }
 
-    override fun getAllTemplates(): Flow<Resource<List<ContentTemplate>>> = getActiveTemplates()
-    override suspend fun getTemplateById(id: String): Resource<ContentTemplate> = Resource.Error("Not implemented")
+    override fun getFavoriteTemplates(userId: String): Flow<Resource<List<String>>> = flowOf(Resource.Success(emptyList()))
+    override suspend fun toggleFavorite(userId: String, templateId: String, isFavorite: Boolean): Resource<Unit> = Resource.Success(Unit)
+    override suspend fun seedDefaultTemplates(): Resource<Unit> = Resource.Success(Unit)
     override suspend fun createTemplate(template: ContentTemplate): Resource<String> = Resource.Success(template.id)
+    override suspend fun updateTemplateStatus(templateId: String, status: TemplateStatus): Resource<Unit> = Resource.Success(Unit)
     override suspend fun updateTemplate(template: ContentTemplate): Resource<Unit> = Resource.Success(Unit)
-    override suspend fun deleteTemplate(id: String): Resource<Unit> = Resource.Success(Unit)
-    override suspend fun deactivateTemplate(id: String): Resource<Unit> = Resource.Success(Unit)
 }
 
 private class FakeProjectRepository : ProjectRepository {
-    override suspend fun getProjects(workspaceId: String, limit: Int, offset: Int, query: String?): Resource<List<Project>> {
+    override fun getRecentProjects(workspaceId: String, limit: Int): Flow<Resource<List<Project>>> = flowOf(Resource.Success(emptyList()))
+    override fun getAllProjects(workspaceId: String): Flow<Resource<List<Project>>> = flowOf(Resource.Success(emptyList()))
+
+    override suspend fun getProjects(workspaceId: String, limit: Int, offset: Int, query: String, sortBy: String): Resource<List<Project>> {
         return Resource.Success(
             listOf(
                 Project(
                     id = "proj_101",
                     workspaceId = workspaceId,
-                    userId = "user_123",
+                    ownerId = "user_123",
                     title = "مشروع سراج الأول",
                     description = "فيديو تعريفي بالمنصة والمحراب",
                     scenes = emptyList()
@@ -268,6 +270,13 @@ private class FakeProjectRepository : ProjectRepository {
     override suspend fun createProject(project: Project): Resource<String> = Resource.Success(project.id)
     override suspend fun updateProject(project: Project): Resource<Unit> = Resource.Success(Unit)
     override suspend fun deleteProject(projectId: String): Resource<Unit> = Resource.Success(Unit)
+    override suspend fun restoreProject(projectId: String): Resource<Unit> = Resource.Success(Unit)
+    override suspend fun archiveProject(projectId: String): Resource<Unit> = Resource.Success(Unit)
+    override suspend fun copyProject(projectId: String, newOwnerId: String): Resource<String> = Resource.Success("new_proj")
+    override suspend fun logActivity(activity: ProjectActivity): Resource<Unit> = Resource.Success(Unit)
+    override suspend fun getProjectActivities(projectId: String): Resource<List<ProjectActivity>> = Resource.Success(emptyList())
+    override suspend fun createVersion(version: ProjectVersion): Resource<String> = Resource.Success("v1")
+    override suspend fun getProjectVersions(projectId: String): Resource<List<ProjectVersion>> = Resource.Success(emptyList())
 }
 
 private class FakeSearchHistoryDao : SearchHistoryDao {

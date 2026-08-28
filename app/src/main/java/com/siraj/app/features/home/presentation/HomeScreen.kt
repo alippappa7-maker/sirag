@@ -36,6 +36,7 @@ fun HomeScreen(
     onNavigateToNotifications: () -> Unit = {},
     onNavigateToHistory: () -> Unit = {},
     onNavigateToSearch: () -> Unit = {},
+    onNavigateToShariaReview: () -> Unit = {},
     viewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory()),
     notificationViewModel: NotificationViewModel = viewModel(
         factory = NotificationViewModelFactory(LocalContext.current.applicationContext as Application)
@@ -231,9 +232,33 @@ fun HomeScreen(
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()) {
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
                 ShortcutCard("المحراب", Modifier.weight(1f))
-                ShortcutCard("ومضات مقترحة", Modifier.weight(1f))
+                ShortcutCard("ومضات", Modifier.weight(1f))
+                Card(
+                    modifier = Modifier
+                        .weight(1.2f)
+                        .height(100.dp)
+                        .clickable { onNavigateToShariaReview() }
+                        .testTag("shortcut_sharia_review"),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                ) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = "المراجعة الشرعية",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Text(
+                                text = "تدقيق وتوثيق",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                            )
+                        }
+                    }
+                }
             }
         }
     }
