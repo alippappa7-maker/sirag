@@ -22,17 +22,26 @@ import com.siraj.app.domain.models.ProjectStatus
 fun StudioScreen(
     onNavigateToProject: (String) -> Unit = {},
     onNavigateToIdeation: () -> Unit = {},
+    onNavigateToFlashPublishing: () -> Unit = {},
     viewModel: StudioViewModel = viewModel(factory = StudioViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = onNavigateToIdeation,
-                icon = { Icon(Icons.Default.Add, contentDescription = "فكرة جديدة") },
-                text = { Text("فكرة جديدة") }
-            )
+            Column(horizontalAlignment = Alignment.End) {
+                ExtendedFloatingActionButton(
+                    onClick = onNavigateToFlashPublishing,
+                    icon = { Icon(Icons.Default.Add, contentDescription = "نشر ومضة") },
+                    text = { Text("نشر ومضة") }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                ExtendedFloatingActionButton(
+                    onClick = onNavigateToIdeation,
+                    icon = { Icon(Icons.Default.Add, contentDescription = "فكرة جديدة") },
+                    text = { Text("فكرة جديدة") }
+                )
+            }
         }
     ) { paddingValues ->
         Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {

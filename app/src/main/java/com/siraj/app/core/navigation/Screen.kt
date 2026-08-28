@@ -19,6 +19,13 @@ sealed class Screen(val route: String) {
     object Library : Screen("library")
     object ContentModeration : Screen("content_moderation")
     object ReviewList : Screen("review_list")
+    object ShareRouter : Screen("share_router/{linkId}?token={token}") {
+        const val DEEP_LINK_URI_HTTPS = "https://siraj.app/share"
+        const val DEEP_LINK_URI_APP = "siraj://share"
+        fun createRoute(linkId: String, token: String? = null): String {
+            return if (token != null) "share_router/$linkId?token=$token" else "share_router/$linkId"
+        }
+    }
     object Details : Screen("details/{id}") {
         const val DEEP_LINK_URI = "siraj://details"
         fun createRoute(id: String) = "details/$id"
@@ -85,6 +92,7 @@ sealed class Screen(val route: String) {
     }
     object Studio : Screen("studio")
     object Flashes : Screen("flashes")
+    object FlashPublishing : Screen("flash_publishing")
     object Mihrab : Screen("mihrab")
     object PrayerTimes : Screen("prayer_times")
     object Qibla : Screen("qibla")

@@ -19,7 +19,7 @@ class SirajApplication : Application() {
                 if (FirebaseApp.getApps(context).isEmpty()) {
                     val options = FirebaseOptions.Builder()
                         .setApplicationId(context.packageName.ifEmpty { "com.aistudio.siraj" })
-                        .setApiKey("AIzaSySirajDevClientDefaultKey123456789")
+                        .setApiKey(BuildConfig.FIREBASE_API_KEY)
                         .setProjectId("siraj-applet-dev")
                         .setStorageBucket("siraj-applet-dev.appspot.com")
                         .build()

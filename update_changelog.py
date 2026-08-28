@@ -1,19 +1,15 @@
 import sys
+import datetime
 
-new_entry = """## [PROMPT 035] - 2026-08-27 (قارئ القرآن والتلاوة)
+if len(sys.argv) < 3:
+    print("Usage: python3 update_changelog.py '[PROMPT XXX] - Name' 'Description'")
+    sys.exit(1)
 
-### أُضيف (Added)
-- **قارئ القرآن والتلاوة (`QuranScreens.kt` & `QuranViewModels.kt`):**
-  - تم بناء قارئ قرآني كامل متصل بواجهة `Quran Foundation` لضمان صحة النص وموثوقية المصادر.
-  - دعم عرض قائمة السور مع البحث المباشر.
-  - دعم إعدادات القراءة الشاملة (تغيير حجم الخط، تبديل الوضع الليلي، تغيير القارئ).
-  - مشغل صوتي (`Media3 ExoPlayer`) متكامل يدعم تلاوة الآيات، تكرار الآية، وتغيير سرعة التشغيل (0.5x إلى 2.0x).
-  - تبويبات مرنة لكل آية تشمل النص القرآني، الترجمة، والتفسير (مع ذكر واضح للمصدر/المفسر).
-  - وظائف حفظ العلامة المرجعية، إضافة الملاحظات، مشاركة النص، وتنزيل التلاوة.
-- **تحديث التنقل (`AppNavigation.kt` & `MihrabScreen.kt`):**
-  - ربط قسم "القرآن الكريم" في شاشة المحراب بالانتقال إلى قائمة السور والقارئ، مع ضمان التوافق التام مع شريط التنقل السفلي.
+prompt_title = sys.argv[1]
+description = sys.argv[2]
+date_str = datetime.datetime.now().strftime("%Y-%m-%d")
 
-"""
+new_entry = f"## {prompt_title} - {date_str}\n### أُضيف (Added)\n- {description}\n\n"
 
 with open("CHANGELOG.md", "r") as f:
     old_content = f.read()

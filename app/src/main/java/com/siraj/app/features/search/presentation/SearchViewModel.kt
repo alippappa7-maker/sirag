@@ -230,7 +230,9 @@ class SearchViewModelFactory(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SearchViewModel::class.java)) {
-            val quranRepo = com.siraj.app.data.repository.QuranRepositoryImpl(application)
+            val quranApi = com.siraj.app.data.api.RetrofitClient.quranApi
+            val quranDao = com.siraj.app.data.local.QuranDatabase.getDatabase(application).quranDao()
+            val quranRepo = com.siraj.app.data.repository.QuranRepositoryImpl(quranApi, quranDao)
             val audioRepo = com.siraj.app.data.repository.audio.AudioRepositoryImpl()
             val templateRepo = com.siraj.app.data.repository.FirebaseTemplateRepositoryImpl()
             val projectRepo = com.siraj.app.data.repository.FirebaseProjectRepositoryImpl()

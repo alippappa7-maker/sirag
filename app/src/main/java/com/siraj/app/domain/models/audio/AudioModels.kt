@@ -32,6 +32,22 @@ data class AudioFilter(
     val sortOption: AudioSortOption = AudioSortOption.NEWEST
 )
 
+fun AudioTrack.getCategoryArabic(): String {
+    return when (category) {
+        "recitation" -> "تلاوة"
+        "lesson" -> "درس"
+        "lecture" -> "محاضرة"
+        "podcast" -> "بودكاست"
+        else -> category
+    }
+}
+
+fun AudioTrack.getFormattedDuration(): String {
+    val minutes = durationSeconds / 60
+    val seconds = durationSeconds % 60
+    return String.format("%02d:%02d", minutes, seconds)
+}
+
 enum class AudioSortOption {
     NEWEST, MOST_LISTENED, ALPHABETICAL
 }

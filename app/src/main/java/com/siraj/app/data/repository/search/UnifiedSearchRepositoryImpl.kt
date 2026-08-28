@@ -447,7 +447,15 @@ class UnifiedSearchRepositoryImpl(
                     SearchResultItem(
                         id = "audio_${track.id}",
                         title = track.title,
-                        snippet = "تسجيل صوتي (${track.getCategoryArabic()}) للمتحدث: ${track.speaker}. المصدر: ${track.source}.",
+                        snippet = "تسجيل صوتي (${
+                            when (track.category) {
+                                "recitation" -> "تلاوة"
+                                "lesson" -> "درس"
+                                "lecture" -> "محاضرة"
+                                "podcast" -> "بودكاست"
+                                else -> track.category
+                            }
+                        }) للمتحدث: ${track.speaker}. المصدر: ${track.source}.",
                         category = SearchCategory.AUDIO,
                         sourceName = track.source,
                         authorOrReciter = track.speaker,
@@ -456,7 +464,7 @@ class UnifiedSearchRepositoryImpl(
                         isVerified = true,
                         language = "العربية",
                         targetRoute = Screen.AudioPlayer.route,
-                        durationText = track.getFormattedDuration(),
+                        durationText = String.format("%02d:%02d", track.durationSeconds / 60, track.durationSeconds % 60),
                         extraMetadata = mapOf(
                             "trackId" to track.id,
                             "category" to track.category,

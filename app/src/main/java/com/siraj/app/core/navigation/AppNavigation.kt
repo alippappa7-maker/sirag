@@ -34,6 +34,10 @@ import com.siraj.app.features.auth.presentation.LoginScreen
 import com.siraj.app.features.auth.presentation.RegisterScreen
 import com.siraj.app.features.details.presentation.DetailsScreen
 import com.siraj.app.features.flashes.presentation.FlashesScreen
+import com.siraj.app.features.flashes.presentation.FlashPublishingScreen
+import com.siraj.app.features.flashes.presentation.FlashPublishingViewModel
+import com.siraj.app.features.flashes.presentation.FlashPublishingViewModelFactory
+import com.siraj.app.data.repository.flash.FirebaseFlashPublishingRepositoryImpl
 import com.siraj.app.features.home.presentation.HomeScreen
 import com.siraj.app.features.audio.presentation.AudioScreen
 import com.siraj.app.features.audio.presentation.AudioPlayerScreen
@@ -180,6 +184,9 @@ fun AppNavigation(
                         },
                         onNavigateToIdeation = {
                             navController.navigate(Screen.Ideation.route)
+                        },
+                        onNavigateToFlashPublishing = {
+                            navController.navigate(Screen.FlashPublishing.route)
                         }
                     ) 
                 }
@@ -200,9 +207,64 @@ fun AppNavigation(
                 if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
                 else { AudioLibraryScreen() }
             }
+            composable(Screen.ContentModeration.route) {
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val moderationViewModel: com.siraj.app.features.moderation.presentation.ModerationViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+                        factory = com.siraj.app.features.moderation.presentation.ModerationViewModelFactory(
+                            com.siraj.app.data.repository.community.FirebaseSafetyRepositoryImpl()
+                        )
+                    )
+                    com.siraj.app.features.moderation.presentation.ContentModerationScreen(
+                        viewModel = moderationViewModel,
+                        currentUserRole = (authState as? com.siraj.app.core.utils.Resource.Success)?.data?.role?.name ?: "REVIEWER",
+                        currentUserId = (authState as? com.siraj.app.core.utils.Resource.Success)?.data?.id ?: "user123",
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+            }
             composable(Screen.Flashes.route) {
                 if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else { FlashesScreen() }
+                else {
+                    val flashesViewModel: com.siraj.app.features.flashes.presentation.FlashesViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+                        factory = com.siraj.app.features.flashes.presentation.FlashesViewModelFactory(
+                            com.siraj.app.data.repository.flash.FirebaseFlashRepositoryImpl()
+                        )
+                    )
+                    val interactionViewModel: com.siraj.app.features.community.presentation.InteractionViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+                        factory = com.siraj.app.features.community.presentation.InteractionViewModelFactory(
+                            com.siraj.app.data.repository.community.FirebaseInteractionRepositoryImpl()
+                        )
+                    )
+                    val safetyViewModel: com.siraj.app.features.community.presentation.SafetyViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+                        factory = com.siraj.app.features.community.presentation.SafetyViewModelFactory(
+                            com.siraj.app.data.repository.community.FirebaseSafetyRepositoryImpl()
+                        )
+                    )
+                    com.siraj.app.features.flashes.presentation.FlashesScreen(
+                        viewModel = flashesViewModel,
+                        interactionViewModel = interactionViewModel,
+                        safetyViewModel = safetyViewModel,
+                        currentUserId = (authState as? com.siraj.app.core.utils.Resource.Success)?.data?.id ?: "user123",
+                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateToDetails = { id -> navController.navigate(Screen.Details.createRoute(id)) }
+                    )
+                }
+            }
+            
+            composable(Screen.FlashPublishing.route) {
+                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
+                else {
+                    val publishingViewModel: FlashPublishingViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+                        factory = FlashPublishingViewModelFactory(FirebaseFlashPublishingRepositoryImpl())
+                    )
+                    FlashPublishingScreen(
+                        viewModel = publishingViewModel,
+                        currentUserId = (authState as? com.siraj.app.core.utils.Resource.Success)?.data?.id ?: "user123",
+                        currentUserName = (authState as? com.siraj.app.core.utils.Resource.Success)?.data?.name ?: "User",
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
             }
                         composable(Screen.WorkspaceSettings.route) {
                 if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
@@ -637,12 +699,58 @@ fun AppNavigation(
                 DetailsScreen(id = id)
             }
 
+            composable(
+                route = Screen.ShareRouter.route,
+                arguments = listOf(
+                    navArgument("linkId") { type = NavType.StringType },
+                    navArgument("token") { 
+                        type = NavType.StringType 
+                        nullable = true
+                    }
+                ),
+                deepLinks = listOf(
+                    navDeepLink { uriPattern = "${Screen.ShareRouter.DEEP_LINK_URI_HTTPS}/{linkId}?token={token}" },
+                    navDeepLink { uriPattern = "${Screen.ShareRouter.DEEP_LINK_URI_HTTPS}/{linkId}" },
+                    navDeepLink { uriPattern = "${Screen.ShareRouter.DEEP_LINK_URI_APP}/{linkId}?token={token}" },
+                    navDeepLink { uriPattern = "${Screen.ShareRouter.DEEP_LINK_URI_APP}/{linkId}" }
+                )
+            ) { backStackEntry ->
+                val linkId = backStackEntry.arguments?.getString("linkId") ?: ""
+                val token = backStackEntry.arguments?.getString("token")
+                
+                val shareViewModel: com.siraj.app.features.share.presentation.SharedContentViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+                    factory = com.siraj.app.features.share.presentation.SharedContentViewModelFactory(
+                        com.siraj.app.data.repository.share.FirebaseShareRepositoryImpl()
+                    )
+                )
+
+                com.siraj.app.features.share.presentation.SharedContentRouterScreen(
+                    linkId = linkId,
+                    token = token,
+                    viewModel = shareViewModel,
+                    onNavigateToProject = { projectId ->
+                        navController.navigate(Screen.ProjectEditor.createRoute(projectId)) {
+                            popUpTo(Screen.Home.route)
+                        }
+                    },
+                    onNavigateToAudio = { audioId ->
+                        navController.navigate(Screen.AudioPlayer.route)
+                    },
+                    onNavigateToQuran = {
+                        navController.navigate(Screen.Quran.route)
+                    },
+                    onNavigateHome = {
+                        navController.navigate(Screen.Home.route) { popUpTo(0) }
+                    }
+                )
+            }
+
             composable(Screen.Search.route) {
                 val context = LocalContext.current
                 val searchViewModel: SearchViewModel = viewModel(
                     factory = SearchViewModelFactory(
                         application = context.applicationContext as Application,
-                        currentUserId = (authState as? Resource.Success)?.data?.uid ?: "user_default"
+                        currentUserId = (authState as? Resource.Success)?.data?.id ?: "user_default"
                     )
                 )
 
