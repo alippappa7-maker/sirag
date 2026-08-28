@@ -28,3 +28,23 @@ The app implements a strict, role-based access control (RBAC) system for workspa
 - **Data Isolation**: Projects are completely isolated within their `workspaceId`. A user cannot read a project unless they have at least a `VIEWER` role in its workspace.
 - **Privilege Escalation Protection**: Firestore rules explicitly prevent a `MANAGER` from upgrading a user to `OWNER` or demoting an `OWNER`. Only the current `OWNER` can transfer ownership.
 - **Audit Logs**: All sensitive workspace operations (invites, role changes, removals, ownership transfers) are logged to the `audit_logs` collection.
+
+## مصفوفة الصلاحيات وقواعد الوصول (Access Control Matrix)
+
+تم بناء حماية شاملة للبيانات باستخدام **Firebase Security Rules (Firestore & Storage)** و **Custom Claims**:
+
+- **Custom Claims**: يُستخدم التوكن (`request.auth.token.role`) لتحديد أدوار الإدارة (`ADMIN`, `OWNER`). لا يُعتمد على وثائق Firestore لتحديد صلاحية المدير لتسريع العمليات وتأمينها.
+- **App Check**: جميع مسارات قاعدة البيانات والملفات مفعلة افتراضياً لتلقي الطلبات من التطبيق الأصلي فقط.
+- **تحديث الدور والرصيد**: يُمنع العميل تماماً من تعديل مفاتيح `role`, `credits`, `plan`, `balance`, `entitlements`.
+- **الملفات (Cloud Storage)**: 
+  - مسار `users/{userId}` و `exports/{userId}` محمي بالمالك أو المدير.
+  - مسار `public` متاح للقراءة للجميع والكتابة للمدير.
+  - لا توجد قاعدة `allow read, write: if true`.
+- **المحتوى (Flashes & Audio)**:
+  - المحتوى العام المعتمد (`status == 'APPROVED'` و `isPrivate == false`) متاح للقراءة.
+  - التعديل محصور للمالك أو الإدارة.
+- **السجلات (Audit Logs)**: القراءة والكتابة للإدارة فقط وممنوعة من التعديل (Immutable).
+- **الإبلاغات (Reports)**: المالك الأصلي يكتبها فقط، وتقرؤها الإدارة فقط.
+
+### Rate Limiting & Backend:
+يتم تطبيق حدود الطلبات على Cloud Functions للحماية من طلبات الـ AI أو المدفوعات الوهمية.

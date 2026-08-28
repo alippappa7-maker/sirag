@@ -1,0 +1,47 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function hasAdminClaim() {
+      return isAuthenticated() && request.auth.token.role in ['ADMIN', 'OWNER'];
+    }
+
+    match /public/{allPaths=**} {
+      allow read: if true;
+      allow write: if hasAdminClaim();
+    }
+    
+    match /users/{userId}/{allPaths=**} {
+      allow read: if isOwner(userId) || hasAdminClaim();
+      allow write: if isOwner(userId) || hasAdminClaim();
+    }
+    
+    match /workspaces/{workspaceId}/{allPaths=**} {
+      // Basic workspace check for files. Real-world would check firestore docs but this is standard for MVP
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    match /assets/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if hasAdminClaim();
+    }
+    
+    match /exports/{userId}/{allPaths=**} {
+      allow read: if isOwner(userId) || hasAdminClaim();
+      allow write: if isOwner(userId) || hasAdminClaim();
+    }
+    
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

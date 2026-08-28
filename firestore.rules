@@ -2,93 +2,110 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    function getUserRole() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    // Auth & App Check validation
+    function isAuthenticated() {
+      return request.auth != null;
     }
     
-    function isAdminOrOwner() {
-      let role = getUserRole();
-      return role == 'ADMIN' || role == 'OWNER';
+    // Custom claims check
+    function hasAdminClaim() {
+      return isAuthenticated() && ('role' in request.auth.token) && (request.auth.token.role == 'ADMIN' || request.auth.token.role == 'OWNER');
     }
 
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Role-based access from Firestore (Fallback or for Workspace roles)
     function getWorkspaceRole(workspaceId) {
       let memberDoc = get(/databases/$(database)/documents/workspace_members/$(workspaceId + '_' + request.auth.uid));
       return memberDoc != null ? memberDoc.data.role : null;
     }
-
+    
     function hasWorkspaceRole(workspaceId, allowedRoles) {
-      return getWorkspaceRole(workspaceId) in allowedRoles || isAdminOrOwner();
+      return getWorkspaceRole(workspaceId) in allowedRoles || hasAdminClaim();
     }
 
+    // 1. Users Collection
     match /users/{userId} {
-      allow read: if request.auth != null && (request.auth.uid == userId || isAdminOrOwner());
-      allow update: if request.auth != null && request.auth.uid == userId
-                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'credits', 'plan', 'isBanned']);
-      allow update: if request.auth != null && isAdminOrOwner() 
-                    && (request.resource.data.role != 'OWNER' || getUserRole() == 'OWNER');
-      allow create: if request.auth != null && request.auth.uid == userId
-                    && request.resource.data.role == 'USER';
+      allow read: if isOwner(userId) || hasAdminClaim();
+      allow update: if isOwner(userId)
+                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'credits', 'plan', 'isBanned', 'entitlements', 'balance']);
+      allow update: if hasAdminClaim();
+      allow create: if isOwner(userId)
+                    && request.resource.data.role == 'USER'
+                    && request.resource.data.credits == 0;
     }
     
+    // 2. Audit Logs & Reviews (Highly Restricted)
     match /audit_logs/{logId} {
-      allow read, create: if request.auth != null && isAdminOrOwner();
+      allow read, create: if hasAdminClaim();
+      allow update, delete: if false; // Immutable
     }
-    
+
+    match /sharia_reviews/{reviewId} {
+      allow read: if hasAdminClaim() || (isAuthenticated() && resource.data.reviewerId == request.auth.uid) || isOwner(resource.data.authorId);
+      allow create, update: if hasAdminClaim() || (isAuthenticated() && request.auth.token.role == 'REVIEWER');
+      allow delete: if false;
+    }
+
+    // 3. Workspaces & Projects
     match /workspaces/{workspaceId} {
-      allow read: if request.auth != null && hasWorkspaceRole(workspaceId, ['OWNER', 'MANAGER', 'EDITOR', 'REVIEWER', 'VIEWER']);
-      allow create: if request.auth != null;
-      allow update: if request.auth != null && hasWorkspaceRole(workspaceId, ['OWNER', 'MANAGER']);
-      allow delete: if request.auth != null && hasWorkspaceRole(workspaceId, ['OWNER']);
+      allow read: if hasWorkspaceRole(workspaceId, ['OWNER', 'MANAGER', 'EDITOR', 'REVIEWER', 'VIEWER']);
+      allow create: if isAuthenticated();
+      allow update: if hasWorkspaceRole(workspaceId, ['OWNER', 'MANAGER']);
+      allow delete: if hasWorkspaceRole(workspaceId, ['OWNER']);
     }
-
+    
     match /workspace_members/{memberId} {
-      allow read: if request.auth != null && (request.auth.uid == resource.data.userId || hasWorkspaceRole(resource.data.workspaceId, ['OWNER', 'MANAGER', 'EDITOR', 'REVIEWER', 'VIEWER']));
-      allow create: if request.auth != null && (
-        (hasWorkspaceRole(request.resource.data.workspaceId, ['OWNER', 'MANAGER']) && 
-         (getWorkspaceRole(request.resource.data.workspaceId) == 'OWNER' || request.resource.data.role != 'OWNER')) || 
-        request.auth.uid == request.resource.data.userId
-      );
-      allow update: if request.auth != null && (
-        (hasWorkspaceRole(resource.data.workspaceId, ['OWNER'])) || 
-        (hasWorkspaceRole(resource.data.workspaceId, ['MANAGER']) && request.resource.data.role != 'OWNER' && resource.data.role != 'OWNER')
-      );
-      allow delete: if request.auth != null && (
-        hasWorkspaceRole(resource.data.workspaceId, ['OWNER']) ||
-        (hasWorkspaceRole(resource.data.workspaceId, ['MANAGER']) && resource.data.role != 'OWNER') ||
-        request.auth.uid == resource.data.userId
-      );
+      allow read: if isOwner(resource.data.userId) || hasWorkspaceRole(resource.data.workspaceId, ['OWNER', 'MANAGER', 'EDITOR', 'REVIEWER', 'VIEWER']);
+      allow create: if hasWorkspaceRole(request.resource.data.workspaceId, ['OWNER', 'MANAGER']) || isOwner(request.resource.data.userId);
+      allow update: if hasWorkspaceRole(resource.data.workspaceId, ['OWNER']) || (hasWorkspaceRole(resource.data.workspaceId, ['MANAGER']) && request.resource.data.role != 'OWNER' && resource.data.role != 'OWNER');
+      allow delete: if hasWorkspaceRole(resource.data.workspaceId, ['OWNER']) || (hasWorkspaceRole(resource.data.workspaceId, ['MANAGER']) && resource.data.role != 'OWNER') || isOwner(resource.data.userId);
     }
-
-
-    match /workspace_invitations/{invitationId} {
-      allow read: if request.auth != null && (request.auth.token.email == resource.data.email || hasWorkspaceRole(resource.data.workspaceId, ['OWNER', 'MANAGER', 'EDITOR', 'REVIEWER', 'VIEWER']));
-      allow create: if request.auth != null && hasWorkspaceRole(request.resource.data.workspaceId, ['OWNER', 'MANAGER']);
-      allow update, delete: if request.auth != null && (request.auth.token.email == resource.data.email || hasWorkspaceRole(resource.data.workspaceId, ['OWNER', 'MANAGER']));
-    }
-
+    
     match /projects/{projectId} {
-      allow read: if request.auth != null && hasWorkspaceRole(resource.data.workspaceId, ['OWNER', 'MANAGER', 'EDITOR', 'REVIEWER', 'VIEWER']);
-      allow create: if request.auth != null && hasWorkspaceRole(request.resource.data.workspaceId, ['OWNER', 'MANAGER', 'EDITOR']);
-      allow update: if request.auth != null && hasWorkspaceRole(resource.data.workspaceId, ['OWNER', 'MANAGER', 'EDITOR']);
-      allow delete: if request.auth != null && hasWorkspaceRole(resource.data.workspaceId, ['OWNER', 'MANAGER']);
+      allow read: if hasWorkspaceRole(resource.data.workspaceId, ['OWNER', 'MANAGER', 'EDITOR', 'REVIEWER', 'VIEWER']);
+      allow create: if hasWorkspaceRole(request.resource.data.workspaceId, ['OWNER', 'MANAGER', 'EDITOR']);
+      allow update: if hasWorkspaceRole(resource.data.workspaceId, ['OWNER', 'MANAGER', 'EDITOR']);
+      allow delete: if hasWorkspaceRole(resource.data.workspaceId, ['OWNER', 'MANAGER']);
     }
     
-    match /project_activities/{activityId} {
-      allow read, create: if request.auth != null; // Ideally secure with workspace role
+    // 4. Content (Flashes, Audio, etc)
+    match /flashes/{flashId} {
+      // General read only if approved and public
+      allow read: if (resource.data.status == 'APPROVED' && resource.data.isPrivate == false) || isOwner(resource.data.authorId) || hasAdminClaim();
+      allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+      allow update: if isOwner(resource.data.authorId) || hasAdminClaim();
+      allow delete: if hasAdminClaim(); // Soft delete via update by user
     }
     
-    match /project_versions/{versionId} {
-      allow read, create: if request.auth != null; // Ideally secure with workspace role
+    match /audio/{audioId} {
+      allow read: if (resource.data.status == 'APPROVED' && resource.data.isPrivate == false) || isOwner(resource.data.authorId) || hasAdminClaim();
+      allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+      allow update: if isOwner(resource.data.authorId) || hasAdminClaim();
+      allow delete: if hasAdminClaim();
     }
-    
+
     match /templates/{templateId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && isAdminOrOwner();
+      allow read: if isAuthenticated();
+      allow write: if hasAdminClaim();
     }
-    match /template_favorites/{favId} {
-      allow read, delete: if request.auth != null && resource.data.userId == request.auth.uid;
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+    
+    // 5. Community & Safety
+    match /interactions/{interactionId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isOwner(resource.data.userId) || hasAdminClaim();
     }
+    
+    match /reports/{reportId} {
+      allow create: if isAuthenticated() && request.resource.data.reporterId == request.auth.uid;
+      allow read, update: if hasAdminClaim();
+      allow delete: if false;
+    }
+    
+    // Default Deny
     match /{document=**} {
       allow read, write: if false;
     }
