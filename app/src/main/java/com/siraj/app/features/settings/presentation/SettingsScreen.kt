@@ -21,6 +21,7 @@ enum class SettingsPage(val title: String) {
     MAIN("الإعدادات"),
     ACCOUNT("الحساب"),
     WORKSPACE("مساحة العمل"),
+    BILLING("الاستخدام والفوترة"),
     APPEARANCE("المظهر"),
     LANGUAGE("اللغة والمنطقة"),
     NOTIFICATIONS("الإشعارات"),
@@ -39,6 +40,7 @@ enum class SettingsPage(val title: String) {
 fun SettingsScreen(
     onNavigateToWorkspaceSettings: () -> Unit = {},
     onNavigateToActivityHistory: () -> Unit = {},
+    onNavigateToBilling: () -> Unit = {},
     onNavigateBack: () -> Unit,
     onLogout: () -> Unit,
     viewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory())
@@ -84,7 +86,8 @@ fun SettingsScreen(
             when (currentPage) {
                 SettingsPage.MAIN -> MainSettingsList(
                     onPageSelect = { currentPage = it },
-                    onLogout = { viewModel.logout(onLogout) }
+                    onLogout = { viewModel.logout(onLogout) },
+                    onNavigateToBilling = onNavigateToBilling
                 )
                 SettingsPage.ACCOUNT -> AccountSettings(uiState, viewModel, onLogout)
                 SettingsPage.WORKSPACE -> onNavigateToWorkspaceSettings()
@@ -99,6 +102,7 @@ fun SettingsScreen(
                 SettingsPage.STORAGE -> StorageSettings(uiState, viewModel, onLogout, onNavigateToActivityHistory)
                 SettingsPage.SUPPORT -> SupportSettings()
                 SettingsPage.ABOUT -> AboutSettings()
+                SettingsPage.BILLING -> onNavigateToBilling()
             }
             
             if (uiState.isLoading) {
@@ -109,9 +113,10 @@ fun SettingsScreen(
 }
 
 @Composable
-fun MainSettingsList(onPageSelect: (SettingsPage) -> Unit, onLogout: () -> Unit) {
+fun MainSettingsList(onPageSelect: (SettingsPage) -> Unit, onLogout: () -> Unit, onNavigateToBilling: () -> Unit) {
     val items = listOf(
         SettingsItemData("الحساب", Icons.Default.Person, SettingsPage.ACCOUNT),
+        SettingsItemData("الاستخدام والفوترة", Icons.Default.CreditCard, SettingsPage.BILLING),
         SettingsItemData("مساحة العمل", Icons.Default.Build, SettingsPage.WORKSPACE),
         SettingsItemData("المظهر", Icons.Default.Palette, SettingsPage.APPEARANCE),
         SettingsItemData("اللغة والمنطقة", Icons.Default.Language, SettingsPage.LANGUAGE),
@@ -131,7 +136,13 @@ fun MainSettingsList(onPageSelect: (SettingsPage) -> Unit, onLogout: () -> Unit)
             SettingsListItem(
                 title = item.title,
                 icon = item.icon,
-                onClick = { onPageSelect(item.page) }
+                onClick = {
+                    if (item.page == SettingsPage.BILLING) {
+                        onNavigateToBilling()
+                    } else {
+                        onPageSelect(item.page)
+                    }
+                }
             )
         }
         item {

@@ -281,6 +281,7 @@ fun AppNavigation(
                     com.siraj.app.features.settings.presentation.SettingsScreen(
                         onNavigateToWorkspaceSettings = { navController.navigate(Screen.WorkspaceSettings.route) },
                         onNavigateToActivityHistory = { navController.navigate(Screen.ActivityHistory.route) },
+                        onNavigateToBilling = { navController.navigate(Screen.UsageAndBilling.route) },
                         onNavigateBack = { navController.popBackStack() },
                         onLogout = {
                             navController.navigate(Screen.Login.route) {

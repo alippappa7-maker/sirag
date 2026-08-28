@@ -116,4 +116,6 @@ sealed class Screen(val route: String) {
     object ShariaReviewDetail : Screen("sharia_review_detail/{itemId}") {
         fun createRoute(itemId: String) = "sharia_review_detail/$itemId"
     }
+    object SubscriptionPlans : Screen("subscription_plans")
+    object UsageAndBilling : Screen("usage_and_billing")
 }

@@ -24,6 +24,7 @@ data class SubscriptionState(
     val entitlement: Entitlement? = null,
     val balance: CreditBalance? = null,
     val availablePlans: List<Plan> = emptyList(),
+    val transactions: List<com.siraj.app.domain.models.subscription.CreditTransaction> = emptyList(),
     val storeProducts: List<ProductDetails> = emptyList(),
     val isBillingConnected: Boolean = false,
     val error: String? = null
@@ -66,6 +67,11 @@ class SubscriptionViewModel(
                     _state.update { it.copy(availablePlans = plans) }
                 }
             }
+            launch {
+                repository.getCreditTransactions(userId, null, 50).collectLatest { txs ->
+                    _state.update { it.copy(transactions = txs) }
+                }
+            }
         }
     }
 
@@ -98,7 +104,7 @@ class SubscriptionViewModel(
 
     private fun fetchStoreProducts() {
         viewModelScope.launch {
-            val productIds = listOf("siraj_pro_monthly", "siraj_pro_yearly")
+            val productIds = listOf("siraj_pro_monthly", "siraj_pro_yearly", "siraj_enterprise_monthly")
             val products = billingManager.queryProductDetails(productIds)
             _state.update { it.copy(storeProducts = products) }
         }
