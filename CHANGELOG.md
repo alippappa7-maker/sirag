@@ -1,6 +1,9 @@
 # سجل التغييرات (Changelog)
 
 ## [Unreleased] - Privacy & User Rights Management (PROMPT 064)
+### Fixed
+- تم إصلاح الخطأ المسبّب لنهو التطبيق المفاجئ (`IllegalStateException: The Crashlytics build ID is missing`) بتفعيل إضافة `com.google.firebase.crashlytics` في ملفات `gradle/libs.versions.toml` و `build.gradle.kts` و `app/build.gradle.kts` لإنشاء معرفات البناء المطلوبة تلقائياً عند التهيئة.
+
 ### Added
 - إضافة **مركز الخصوصية وحقوق البيانات (Privacy Center)** المتكامل في إعدادات التطبيق متوافقاً مع متطلبات GDPR وCCPA.
 - إضافة `PrivacyManager` المخصص لتطهير البيانات الحساسة (`sanitizeDataMap`) وتوليد حزم التصدير وصياغة ملفات JSON/Txt وتوليد بصمة التشفير `SHA-256 Checksum`.
