@@ -124,6 +124,31 @@ service cloud.firestore {
       allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || hasAdminClaim());
       allow write: if hasAdminClaim();
     }
+
+    // 7. Beta Tester Distribution, Journeys & Surveys
+    match /beta_feedback/{feedbackId} {
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || hasAdminClaim());
+      allow update, delete: if hasAdminClaim();
+    }
+
+    match /beta_testers/{testerId} {
+      allow read, create, update: if isAuthenticated() && (request.auth.uid == testerId || hasAdminClaim());
+      allow delete: if hasAdminClaim();
+    }
+
+    match /beta_experience_surveys/{surveyId} {
+      allow create: if isAuthenticated() && request.resource.data.testerId == request.auth.uid;
+      allow read: if isAuthenticated() && (resource.data.testerId == request.auth.uid || hasAdminClaim());
+      allow update, delete: if hasAdminClaim();
+    }
+
+    // 8. Beta Defect Triage & Defect Records
+    match /beta_defects/{defectId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if hasAdminClaim();
+    }
     
     // Default Deny
     match /{document=**} {

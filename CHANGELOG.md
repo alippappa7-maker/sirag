@@ -1,23 +1,50 @@
 # سجل التغييرات (Changelog)
 
-## [Unreleased] - Privacy & User Rights Management (PROMPT 064)
-### Fixed
-- تم إصلاح الخطأ المسبّب لنهو التطبيق المفاجئ (`IllegalStateException: The Crashlytics build ID is missing`) بتفعيل إضافة `com.google.firebase.crashlytics` في ملفات `gradle/libs.versions.toml` و `build.gradle.kts` و `app/build.gradle.kts` لإنشاء معرفات البناء المطلوبة تلقائياً عند التهيئة.
-
-### Fixed
-- إصلاح خطأ `IllegalStateException` وانهيار التطبيق عند الفتح عبر تصحيح ثيم `MainActivity` ليتوافق مع `AppCompatActivity` (`Theme.AppCompat.Light.NoActionBar`).
-
+## [Unreleased] - Beta Feedback Triage & Defect Management (PROMPT 073)
 ### Added
-- إضافة **مركز الخصوصية وحقوق البيانات (Privacy Center)** المتكامل في إعدادات التطبيق متوافقاً مع متطلبات GDPR وCCPA.
-- إضافة `PrivacyManager` المخصص لتطهير البيانات الحساسة (`sanitizeDataMap`) وتوليد حزم التصدير وصياغة ملفات JSON/Txt وتوليد بصمة التشفير `SHA-256 Checksum`.
-- دعم **تصدير واستخراج البيانات الشاملة (Data Portability)** بجميع تفاصيل الحساب، والمشاريع، وسجل المشاهدة والتفاعل، والتفضيلات، والملخص المالي المجهول مع خيار الحفظ والمشاركة عبر `FileProvider`.
-- دعم **طلب حذف الحساب النهائي (Account Deletion Request)** مع تحديد السبب وفترة السماح الأمان (14 يوماً) وزر إلغاء الطلب واستعادة الحساب قبل المسح النهائي.
-- التحكم الكامل في **تفريغ سجل المشاهدة والتفاعلات، وتفريغ التنزيلات والوسائط محلياً، ومسح الذاكرة المؤقتة (Cache)**.
-- إتاحة **تقديم طلب تصحيح البيانات الشخصية (Data Correction Request)** لكتّاب المحتوى والمراجعين الشرعيين.
-- عرض **شفافية سياسات الاحتفاظ بالبيانات (Data Retention Policies)** لكل فئة بيانات بشكل تفصيلي ومبسط.
-- تحديث **قواعد Firestore الألمانية (`firestore.rules`)** لحماية مسارات حذف الحسابات وتصحيح البيانات وسجلات النشاط والفواتير.
-- إضافة `FileProvider` و `file_paths.xml` في `AndroidManifest.xml` لمشاركة ملفات البيانات الآمنة.
-- إضافة اختبارات شاملة `PrivacyManagerTest` و `PrivacyCenterViewModelTest` للتحقق من التطهير وبصمة التشفير وإدارة خيارات الحذف والتصدير بنجاح.
+- إنشاء نماذج إدارة العيوب والفرز `DefectManagementModels.kt` مع التصنيفات الثمانية: `blocker`, `critical`, `major`, `minor`, `enhancement`, `duplicate`, `not_reproducible`, و `expected_behavior`، والأولويات P0 إلى P3، ومجالات الاختصاص (المحتوى الشرعي، ستوديو المونتاج، التشغيل الصوتي، دون اتصال، إمكانية الوصول، والأداء).
+- بناء وتكامل مستودع الفرز وإدارة العيوب `BetaDefectManagementRepository` عبر `FirebaseBetaDefectManagementRepositoryImpl` مع ربطه بمجموعة `beta_defects` في Cloud Firestore.
+- تطبيق الضوابط الصارمة لفرز العيوب:
+  - أي خطأ في مصدر أو نص ديني يصنف تلقائياً كـ `critical` أو `blocker` ولا يجوز خفضه لتصنيف منخفض.
+  - إلزامية كتابة سبب الإغلاق أو التأجيل `closureReason` عند نقل أي عيب لحالة الإغلاق.
+  - إلزامية توثيق تفاصيل الحل الفني `resolutionNote` ومرجع الاختبار للأعطال الحرجة والمانعة للإطلاق.
+  - منع تفعيل أو تنفيذ تذاكر التحسينات (`enhancement`) قبل إغلاق الأعطال الحرجة.
+  - توفير سجلات تشخيص آمنة تخلو تماماً من البيانات الشخصية والمعلومات الحساسة (PII).
+- تطوير شاشة الفرز التفاعلية `DefectTriageScreen` و `DefectTriageViewModel` مع بطاقات مؤشرات القياس، شريط البحث، فلاتر التصنيفات الثمانية، فلاتر النطاقات، بطاقات تفاصيل العيوب، وحوارات الفرز وتحديث دورة حياة العيب.
+- ربط مسار `Screen.DefectTriage` بنظام التنقل الرئيسي ومركز خدمات المختبرين `TesterHubScreen`.
+- تحديث قواعد الحماية `firestore.rules` لتأمين مجموعة `beta_defects`.
+- إنشاء الوثيقة التوثيقية الشاملة `BETA_FEEDBACK.md`.
+- كتابة وتمرير الاختبارات الوحدوية الشاملة `DefectManagementUnitTest`.
+
+## [Unreleased] - Tester Distribution & Experience Hub (PROMPT 072)
+### Added
+- إنشاء نماذج إدارة وتوزيع المختبرين `TesterDistributionModels.kt` التي تغطي مجموعات المختبرين (`TesterGroup`), حالات النشاط (`TesterStatus`), المسارات الحرجة (`CriticalJourney`), واستبيانات التجربة (`TesterExperienceSurvey`).
+- تنفيذ مستودع توزيع المختبرين `BetaTesterDistributionRepository` عبر `FirebaseBetaTesterDistributionRepositoryImpl` لتسجيل الجلسات، حفظ التقدم في المسارات، وتجميع الاستبيانات.
+- بناء شاشة مركز المختبرين `TesterHubScreen` مع دعم تتبع المسارات الأساسية، أدلة تثبيت وتحديث التطبيق لأجهزة Android و iOS، نموذج استبيان الرضا الشامل، وملاحظات الإصدار.
+- ربط المسار `Screen.TesterHub` في نظام التنقل الرئيسي `AppNavigation` وتوفير الوصول إليه عبر شريط البيتا `BetaBadgeBanner` وفي شاشة الإعدادات `SettingsScreen`.
+- تحديث `firestore.rules` لتأمين مجموعات `/beta_testers` و `/beta_experience_surveys` وتطبيق مبدأ أقل صلاحية.
+- كتابة وثيقة سياسات وإجراءات التوزيع `BETA_DISTRIBUTION.md`.
+- كتابة وتمرير الاختبارات الوحدوية `TesterDistributionUnitTest`.
+
+## [Unreleased] - Beta Version Setup & Feedback Mechanism (PROMPT 071)
+### Added
+- تكوين إعدادات إصدار النسخة التجريبية `سراج (Beta)` مع معرّف الحزمة المستقل `com.siraj.app.beta` ورقم الإصدار `1.0.0-beta.1`.
+- تحديث `EnvironmentConfig.kt` لدعم معرّفات الإصدار والبناء (`versionName`, `versionCode`, `isBeta`, `allowMockData`).
+- إنشاء نموذج ومستودع ملاحظات البيتا `BetaFeedback` و `FirebaseBetaFeedbackRepositoryImpl` لحفظ تقارير المختبرين وربطها سحابياً في Firestore `/beta_feedback`.
+- تصميم مكونات التمييز البصري للنسخة التجريبية: `BetaBadgeBanner` للشاشات، `BetaFloatingFeedbackButton` للوصول السريع، و `BetaFeedbackDialog` المتكامل.
+- تجميع التشخيصات الفنية التلقائية (موديل الجهاز، إصدار أندرويد، المسار الحالي، النسخة) بأمان عند إرسال الملاحظة.
+- ربط آلية تقديم الملاحظات داخل `HomeScreen` وفي شاشتي الدعم وحول التطبيق في `SettingsPages`.
+- إضافة قواعد الأمان الصارمة لمجموعة `beta_feedback` في `firestore.rules`.
+- إنشاء الوثيقة المرجعية الشاملة لإطلاق البيتا `BETA_RELEASE.md`.
+- كتابة وتمرير الاختبارات الوحدوية `BetaFeedbackViewModelTest`.
+
+## [Unreleased] - MVP Readiness Decision & Scope Definition (PROMPT 070)
+### Added
+- إصدار وثيقة وقرار نطاق الإصدار الأول `MVP_SCOPE.md` واعتماد قرار الجاهزية **GO**.
+- وضع تصنيف شامل لكافة الميزات وتحديد النطاق الأساسي وتأجيل الميزات غير المستقرة (Text-to-Video, Live Audio).
+- إنشاء قائمة التحقق للنشر `RELEASE_CHECKLIST.md` لضبط إجراءات البناء وإعدادات المتاجر والخوادم.
+- إنشاء وثيقة الحدود والقيود المعروفة `KNOWN_LIMITATIONS.md`.
+- تحديد خطة الإطلاق التجريبي (Internal Alpha -> Closed Beta -> Staged Production Rollout) ومعايير إيقاف الإصدار التلقائية.
 
 ## [Unreleased] - Security Audit & Hardening (PROMPT 069)
 ### Added
@@ -34,20 +61,6 @@
 - تحديد مسارات الاختبار الأساسية (Authentication, Studio, Review, Mihrab, Flash).
 - تحديد سيناريوهات اختبار الشروط الاستثنائية والوصول الشامل (Offline, Weak Network, Screen Reader, Scaled Fonts, Deep Links).
 - وضع هيكلية لتسجيل العيوب والأخطاء وتصنيفها لمنع تسرب الأعطال الحرجة (Blockers/Criticals) إلى بيئة الإنتاج.
-
-## [Unreleased] - Security Audit & Hardening (PROMPT 069)
-### Added
-- إنشاء تقرير المراجعة الأمنية الشامل `SECURITY_REVIEW.md`.
-- تفعيل `Firebase App Check` باستخدام `PlayIntegrity` في تطبيق الأندرويد لزيادة الأمان.
-
-### Fixed
-- تصحيح ثغرة في `firestore.rules` تمنع إضافة أعضاء لمساحة العمل بطريقة غير مصرحة.
-- تصحيح ثغرة في `storage.rules` لمنع الرفع العشوائي للملفات في مساحات العمل بدون استخدام واجهات الخادم الموثوقة.
-
-## [Unreleased] - Pre-release Testing Plan (PROMPT 068)
-### Added
-- إنشاء وثيقة `TEST_PLAN.md` الشاملة لاختبارات القبول (UAT).
-- تحديد مسارات الاختبار الأساسية (Authentication, Studio, Review, Mihrab, Flash).
 - تحديد سيناريوهات اختبار الشروط الاستثنائية والوصول الشامل (Offline, Weak Network, Screen Reader, Scaled Fonts, Deep Links).
 - وضع هيكلية لتسجيل العيوب والأخطاء وتصنيفها لمنع تسرب الأعطال الحرجة (Blockers/Criticals) إلى بيئة الإنتاج.
 

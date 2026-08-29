@@ -37,6 +37,7 @@ fun HomeScreen(
     onNavigateToHistory: () -> Unit = {},
     onNavigateToSearch: () -> Unit = {},
     onNavigateToShariaReview: () -> Unit = {},
+    onNavigateToTesterHub: () -> Unit = {},
     viewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory()),
     notificationViewModel: NotificationViewModel = viewModel(
         factory = NotificationViewModelFactory(LocalContext.current.applicationContext as Application)
@@ -143,6 +144,14 @@ fun HomeScreen(
                     }
                 }
             }
+        }
+
+        // Beta Watermark & Feedback Banner
+        item {
+            com.siraj.app.core.ui.components.BetaBadgeBanner(
+                currentRoute = "home",
+                onOpenTesterHub = onNavigateToTesterHub
+            )
         }
 
         // Global Search Card Banner

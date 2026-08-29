@@ -30,6 +30,9 @@ android {
         buildConfigField("String", "APP_STORE_ISSUER_ID", "\"dummy\"")
         buildConfigField("String", "APP_STORE_KEY_ID", "\"dummy\"")
         buildConfigField("String", "APP_STORE_PRIVATE_KEY", "\"dummy\"")
+        buildConfigField("String", "ENVIRONMENT", "\"development\"")
+        buildConfigField("Boolean", "IS_BETA", "true")
+        buildConfigField("Boolean", "ALLOW_MOCK_DATA", "true")
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -53,18 +56,24 @@ android {
             versionNameSuffix = "-dev"
             resValue("string", "app_name", "Siraj (Dev)")
             buildConfigField("String", "ENVIRONMENT", "\"development\"")
+            buildConfigField("Boolean", "IS_BETA", "true")
+            buildConfigField("Boolean", "ALLOW_MOCK_DATA", "true")
         }
         create("staging") {
             dimension = "environment"
-            applicationIdSuffix = ".staging"
-            versionNameSuffix = "-staging"
-            resValue("string", "app_name", "Siraj (Staging)")
+            applicationIdSuffix = ".beta"
+            versionNameSuffix = "-beta.1"
+            resValue("string", "app_name", "سراج (Beta)")
             buildConfigField("String", "ENVIRONMENT", "\"staging\"")
+            buildConfigField("Boolean", "IS_BETA", "true")
+            buildConfigField("Boolean", "ALLOW_MOCK_DATA", "true")
         }
         create("prod") {
             dimension = "environment"
             resValue("string", "app_name", "سراج")
             buildConfigField("String", "ENVIRONMENT", "\"production\"")
+            buildConfigField("Boolean", "IS_BETA", "false")
+            buildConfigField("Boolean", "ALLOW_MOCK_DATA", "false")
         }
     }
 

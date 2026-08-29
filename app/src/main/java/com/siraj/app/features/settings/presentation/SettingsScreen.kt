@@ -43,6 +43,7 @@ fun SettingsScreen(
     onNavigateToWorkspaceSettings: () -> Unit = {},
     onNavigateToActivityHistory: () -> Unit = {},
     onNavigateToBilling: () -> Unit = {},
+    onNavigateToTesterHub: () -> Unit = {},
     onNavigateBack: () -> Unit,
     onLogout: () -> Unit,
     viewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory())
@@ -89,7 +90,8 @@ fun SettingsScreen(
                 SettingsPage.MAIN -> MainSettingsList(
                     onPageSelect = { currentPage = it },
                     onLogout = { viewModel.logout(onLogout) },
-                    onNavigateToBilling = onNavigateToBilling
+                    onNavigateToBilling = onNavigateToBilling,
+                    onNavigateToTesterHub = onNavigateToTesterHub
                 )
                 SettingsPage.ACCOUNT -> AccountSettings(uiState, viewModel, onLogout)
                 SettingsPage.WORKSPACE -> onNavigateToWorkspaceSettings()
@@ -125,7 +127,12 @@ fun SettingsScreen(
 }
 
 @Composable
-fun MainSettingsList(onPageSelect: (SettingsPage) -> Unit, onLogout: () -> Unit, onNavigateToBilling: () -> Unit) {
+fun MainSettingsList(
+    onPageSelect: (SettingsPage) -> Unit,
+    onLogout: () -> Unit,
+    onNavigateToBilling: () -> Unit,
+    onNavigateToTesterHub: () -> Unit = {}
+) {
     val items = listOf(
         SettingsItemData("الحساب", Icons.Default.Person, SettingsPage.ACCOUNT),
         SettingsItemData("الاستخدام والفوترة", Icons.Default.CreditCard, SettingsPage.BILLING),
@@ -145,6 +152,50 @@ fun MainSettingsList(onPageSelect: (SettingsPage) -> Unit, onLogout: () -> Unit,
     )
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
+        if (com.siraj.app.core.config.EnvironmentConfig.isBeta) {
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .clickable { onNavigateToTesterHub() },
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Science,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "مركز المختبرين (Tester Hub)",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                            )
+                            Text(
+                                text = "متابعة المسارات الأساسية، تقييم التجربة، ودليل التثبيت",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.8f)
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                    }
+                }
+            }
+        }
+
         items(items) { item ->
             SettingsListItem(
                 title = item.title,

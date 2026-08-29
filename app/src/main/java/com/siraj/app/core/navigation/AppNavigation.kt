@@ -32,6 +32,8 @@ import com.siraj.app.features.auth.presentation.AuthViewModel
 import com.siraj.app.features.auth.presentation.AuthViewModelFactory
 import com.siraj.app.features.auth.presentation.LoginScreen
 import com.siraj.app.features.auth.presentation.RegisterScreen
+import com.siraj.app.features.beta.presentation.DefectTriageScreen
+import com.siraj.app.features.beta.presentation.TesterHubScreen
 import com.siraj.app.features.details.presentation.DetailsScreen
 import com.siraj.app.features.flashes.presentation.FlashesScreen
 import com.siraj.app.features.flashes.presentation.FlashPublishingScreen
@@ -180,6 +182,9 @@ fun AppNavigation(
                         },
                         onNavigateToShariaReview = {
                             navController.navigate(Screen.ShariaReviewQueue.route)
+                        },
+                        onNavigateToTesterHub = {
+                            navController.navigate(Screen.TesterHub.route)
                         }
                     ) 
                 }
@@ -305,6 +310,7 @@ fun AppNavigation(
                         onNavigateToWorkspaceSettings = { navController.navigate(Screen.WorkspaceSettings.route) },
                         onNavigateToActivityHistory = { navController.navigate(Screen.ActivityHistory.route) },
                         onNavigateToBilling = { navController.navigate(Screen.UsageAndBilling.route) },
+                        onNavigateToTesterHub = { navController.navigate(Screen.TesterHub.route) },
                         onNavigateBack = { navController.popBackStack() },
                         onLogout = {
                             navController.navigate(Screen.Login.route) {
@@ -884,6 +890,19 @@ fun AppNavigation(
                             }
                         }
                     }
+                )
+            }
+            composable(Screen.TesterHub.route) {
+                TesterHubScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToRoute = { targetRoute ->
+                        navController.navigate(targetRoute)
+                    }
+                )
+            }
+            composable(Screen.DefectTriage.route) {
+                DefectTriageScreen(
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
         }

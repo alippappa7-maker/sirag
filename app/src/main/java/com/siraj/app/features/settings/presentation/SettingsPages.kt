@@ -3,6 +3,7 @@ package com.siraj.app.features.settings.presentation
 import com.siraj.app.core.analytics.AnalyticsManager
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.siraj.app.domain.models.*
 
@@ -301,9 +303,22 @@ fun SupportSettings(
     onMessage: (String) -> Unit = {}
 ) {
     var showCrashDialog by remember { mutableStateOf(false) }
+    var showBetaFeedbackDialog by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text("الدعم الفني والشكاوى", style = MaterialTheme.typography.titleMedium)
+        Spacer(modifier = Modifier.height(12.dp))
+        
+        Button(
+            onClick = { showBetaFeedbackDialog = true },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
+        ) {
+            Icon(androidx.compose.material.icons.Icons.Default.Feedback, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("إرسال تقرير ملاحظات النسخة التجريبية (Beta Feedback)")
+        }
+        
         Spacer(modifier = Modifier.height(12.dp))
         Button(onClick = { onMessage("تم تسجيل طلب الدعم الفني") }, modifier = Modifier.fillMaxWidth()) {
             Text("الإبلاغ عن مشكلة تقنية")
@@ -325,9 +340,9 @@ fun SupportSettings(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
-                Text("البيئة: ${com.siraj.app.core.config.EnvironmentConfig.currentEnvironment.name}", style = MaterialTheme.typography.bodySmall)
+                Text("البيئة: ${com.siraj.app.core.config.EnvironmentConfig.currentEnvironment.displayName}", style = MaterialTheme.typography.bodySmall)
                 Text("حالة المراقبة: ${if (com.siraj.app.core.monitoring.CrashMonitoringManager.isCollectionEnabled()) "مفعلة (Active)" else "معطلة (Disabled)"}", style = MaterialTheme.typography.bodySmall)
-                Text("نسخة التطبيق: 1.0 (Build 1)", style = MaterialTheme.typography.bodySmall)
+                Text("نسخة التطبيق: ${com.siraj.app.core.config.EnvironmentConfig.buildIdentifier}", style = MaterialTheme.typography.bodySmall)
             }
         }
 
@@ -374,6 +389,13 @@ fun SupportSettings(
                         Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
                     }
                 }
+            )
+        }
+
+        if (showBetaFeedbackDialog) {
+            com.siraj.app.core.ui.components.BetaFeedbackDialog(
+                currentRoute = "settings_support",
+                onDismissRequest = { showBetaFeedbackDialog = false }
             )
         }
     }
@@ -604,15 +626,77 @@ fun AccessibilitySettings(uiState: SettingsUiState, viewModel: SettingsViewModel
 
 @Composable
 fun AboutSettings() {
+    var showBetaDialog by remember { mutableStateOf(false) }
+
     Column(modifier = Modifier.padding(16.dp)) {
-        Text("تطبيق سراج", style = MaterialTheme.typography.headlineMedium)
-        Text("الإصدار: 1.0.0", style = MaterialTheme.typography.bodyMedium)
-        Spacer(modifier = Modifier.height(32.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(com.siraj.app.core.config.EnvironmentConfig.releaseLabel, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+            if (com.siraj.app.core.config.EnvironmentConfig.isBeta) {
+                Spacer(modifier = Modifier.width(8.dp))
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.tertiaryContainer
+                ) {
+                    Text(
+                        text = "نسخة تجريبية",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = "منصة إسلامية عربية متكاملة لإنتاج ومراجعة المحتوى الهادف",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Card(
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(14.dp)) {
+                Text("معلومات الإصدار والبناء", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(6.dp))
+                Text("رقم الإصدار: ${com.siraj.app.core.config.EnvironmentConfig.versionName}", style = MaterialTheme.typography.bodySmall)
+                Text("رقم البناء (Build Code): ${com.siraj.app.core.config.EnvironmentConfig.versionCode}", style = MaterialTheme.typography.bodySmall)
+                Text("البيئة التشغيلية: ${com.siraj.app.core.config.EnvironmentConfig.currentEnvironment.displayName}", style = MaterialTheme.typography.bodySmall)
+                Text("المعرف الشامل: ${com.siraj.app.core.config.EnvironmentConfig.buildIdentifier}", style = MaterialTheme.typography.bodySmall)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (com.siraj.app.core.config.EnvironmentConfig.isBeta) {
+            Button(
+                onClick = { showBetaDialog = true },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
+            ) {
+                Icon(androidx.compose.material.icons.Icons.Default.Feedback, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("إرسال تقرير ملاحظات للمطورين")
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+
         TextButton(onClick = { /* TODO */ }, modifier = Modifier.fillMaxWidth()) {
-            Text("سياسة الخصوصية")
+            Text("سياسة الخصوصية وحماية البيانات")
         }
         TextButton(onClick = { /* TODO */ }, modifier = Modifier.fillMaxWidth()) {
-            Text("شروط الاستخدام")
+            Text("شروط الاستخدام والضوابط الشرعية")
         }
+    }
+
+    if (showBetaDialog) {
+        com.siraj.app.core.ui.components.BetaFeedbackDialog(
+            currentRoute = "settings_about",
+            onDismissRequest = { showBetaDialog = false }
+        )
     }
 }

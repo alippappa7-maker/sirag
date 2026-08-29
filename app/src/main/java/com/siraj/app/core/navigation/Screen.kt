@@ -119,4 +119,6 @@ sealed class Screen(val route: String) {
     }
     object SubscriptionPlans : Screen("subscription_plans")
     object UsageAndBilling : Screen("usage_and_billing")
+    object TesterHub : Screen("tester_hub")
+    object DefectTriage : Screen("defect_triage")
 }
