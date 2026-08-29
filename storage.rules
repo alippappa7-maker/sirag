@@ -25,9 +25,9 @@ service firebase.storage {
     }
     
     match /workspaces/{workspaceId}/{allPaths=**} {
-      // Basic workspace check for files. Real-world would check firestore docs but this is standard for MVP
+      // Relying on backend signed URLs for writes to workspace to enforce limits
       allow read: if isAuthenticated();
-      allow write: if isAuthenticated();
+      allow write: if false;
     }
 
     match /assets/{allPaths=**} {

@@ -1,7 +1,8 @@
 package com.siraj.app
 
+// Activity entry point
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 
@@ -21,7 +22,7 @@ import com.siraj.app.core.monitoring.CrashMonitoringManager
 import com.siraj.app.domain.models.ThemeMode
 import com.siraj.app.domain.models.analytics.AnalyticsEvent
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         

@@ -8,6 +8,8 @@ import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import com.google.firebase.FirebaseApp
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
@@ -65,6 +67,14 @@ class SirajApplication : Application(), ImageLoaderFactory {
                         .build()
                     FirebaseApp.initializeApp(context.applicationContext, options)
                     Log.d("SirajApplication", "Firebase initialized with fallback configuration.")
+
+                // Initialize App Check for Production Integrity
+                val firebaseAppCheck = FirebaseAppCheck.getInstance()
+                firebaseAppCheck.installAppCheckProviderFactory(
+                    PlayIntegrityAppCheckProviderFactory.getInstance()
+                )
+                Log.d("SirajApplication", "Firebase App Check initialized with PlayIntegrity.")
+
                 }
                 
                 // Configure Firestore Settings for Offline Support and Cache Limit

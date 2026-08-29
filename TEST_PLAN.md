@@ -79,5 +79,5 @@
 
 | رقم الخطأ | الميزة / الشاشة | الوصف | التصنيف | الحالة |
 |-----------|------------------|-------|---------|--------|
-| - | - | - | - | - |
+| 1 | التثبيت والفتح / MainActivity | انهيار التطبيق (IllegalStateException) بسبب تعارض الثيم (DeviceDefault.NoActionBar) مع AppCompatActivity. | Blocker | تم الحل (Fixed) |
 

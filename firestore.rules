@@ -59,7 +59,7 @@ service cloud.firestore {
     
     match /workspace_members/{memberId} {
       allow read: if isOwner(resource.data.userId) || hasWorkspaceRole(resource.data.workspaceId, ['OWNER', 'MANAGER', 'EDITOR', 'REVIEWER', 'VIEWER']);
-      allow create: if hasWorkspaceRole(request.resource.data.workspaceId, ['OWNER', 'MANAGER']) || isOwner(request.resource.data.userId);
+      allow create: if hasWorkspaceRole(request.resource.data.workspaceId, ['OWNER', 'MANAGER']);
       allow update: if hasWorkspaceRole(resource.data.workspaceId, ['OWNER']) || (hasWorkspaceRole(resource.data.workspaceId, ['MANAGER']) && request.resource.data.role != 'OWNER' && resource.data.role != 'OWNER');
       allow delete: if hasWorkspaceRole(resource.data.workspaceId, ['OWNER']) || (hasWorkspaceRole(resource.data.workspaceId, ['MANAGER']) && resource.data.role != 'OWNER') || isOwner(resource.data.userId);
     }

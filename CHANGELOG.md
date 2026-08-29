@@ -4,6 +4,9 @@
 ### Fixed
 - تم إصلاح الخطأ المسبّب لنهو التطبيق المفاجئ (`IllegalStateException: The Crashlytics build ID is missing`) بتفعيل إضافة `com.google.firebase.crashlytics` في ملفات `gradle/libs.versions.toml` و `build.gradle.kts` و `app/build.gradle.kts` لإنشاء معرفات البناء المطلوبة تلقائياً عند التهيئة.
 
+### Fixed
+- إصلاح خطأ `IllegalStateException` وانهيار التطبيق عند الفتح عبر تصحيح ثيم `MainActivity` ليتوافق مع `AppCompatActivity` (`Theme.AppCompat.Light.NoActionBar`).
+
 ### Added
 - إضافة **مركز الخصوصية وحقوق البيانات (Privacy Center)** المتكامل في إعدادات التطبيق متوافقاً مع متطلبات GDPR وCCPA.
 - إضافة `PrivacyManager` المخصص لتطهير البيانات الحساسة (`sanitizeDataMap`) وتوليد حزم التصدير وصياغة ملفات JSON/Txt وتوليد بصمة التشفير `SHA-256 Checksum`.
@@ -16,12 +19,30 @@
 - إضافة `FileProvider` و `file_paths.xml` في `AndroidManifest.xml` لمشاركة ملفات البيانات الآمنة.
 - إضافة اختبارات شاملة `PrivacyManagerTest` و `PrivacyCenterViewModelTest` للتحقق من التطهير وبصمة التشفير وإدارة خيارات الحذف والتصدير بنجاح.
 
+## [Unreleased] - Security Audit & Hardening (PROMPT 069)
+### Added
+- إنشاء تقرير المراجعة الأمنية الشامل `SECURITY_REVIEW.md`.
+- تفعيل `Firebase App Check` باستخدام `PlayIntegrity` في تطبيق الأندرويد لزيادة الأمان.
+
+### Fixed
+- تصحيح ثغرة في `firestore.rules` تمنع إضافة أعضاء لمساحة العمل بطريقة غير مصرحة.
+- تصحيح ثغرة في `storage.rules` لمنع الرفع العشوائي للملفات في مساحات العمل بدون استخدام واجهات الخادم الموثوقة.
+
 ## [Unreleased] - Pre-release Testing Plan (PROMPT 068)
 ### Added
 - إنشاء وثيقة `TEST_PLAN.md` الشاملة لاختبارات القبول (UAT).
 - تحديد مسارات الاختبار الأساسية (Authentication, Studio, Review, Mihrab, Flash).
 - تحديد سيناريوهات اختبار الشروط الاستثنائية والوصول الشامل (Offline, Weak Network, Screen Reader, Scaled Fonts, Deep Links).
 - وضع هيكلية لتسجيل العيوب والأخطاء وتصنيفها لمنع تسرب الأعطال الحرجة (Blockers/Criticals) إلى بيئة الإنتاج.
+
+## [Unreleased] - Security Audit & Hardening (PROMPT 069)
+### Added
+- إنشاء تقرير المراجعة الأمنية الشامل `SECURITY_REVIEW.md`.
+- تفعيل `Firebase App Check` باستخدام `PlayIntegrity` في تطبيق الأندرويد لزيادة الأمان.
+
+### Fixed
+- تصحيح ثغرة في `firestore.rules` تمنع إضافة أعضاء لمساحة العمل بطريقة غير مصرحة.
+- تصحيح ثغرة في `storage.rules` لمنع الرفع العشوائي للملفات في مساحات العمل بدون استخدام واجهات الخادم الموثوقة.
 
 ## [Unreleased] - Pre-release Testing Plan (PROMPT 068)
 ### Added
