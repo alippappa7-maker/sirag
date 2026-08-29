@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>
+    <entry>
+        <key>feature_ai_generation</key>
+        <value>true</value>
+    </entry>
+    <entry>
+        <key>feature_video_export</key>
+        <value>true</value>
+    </entry>
+    <entry>
+        <key>feature_audio_synthesis</key>
+        <value>true</value>
+    </entry>
+</defaultsMap>

@@ -29,8 +29,8 @@ class SirajApplication : Application(), ImageLoaderFactory {
                 appVersion = BuildConfig.VERSION_NAME,
                 buildNumber = BuildConfig.VERSION_CODE.toString()
             )
-            // By default enable in Staging/Production, configurable in Dev
-            val shouldEnableCrashlytics = !EnvironmentConfig.isDebugEnabled || true
+            // Enable Crashlytics collection only in Production or when explicitly configured
+            val shouldEnableCrashlytics = EnvironmentConfig.currentEnvironment == com.siraj.app.core.config.EnvironmentType.PRODUCTION
             CrashMonitoringManager.setCrashlyticsCollectionEnabled(shouldEnableCrashlytics)
         } catch (e: Exception) {
             Log.e("SirajApplication", "Could not initialize CrashMonitoringManager", e)
@@ -76,6 +76,9 @@ class SirajApplication : Application(), ImageLoaderFactory {
                 Log.d("SirajApplication", "Firebase App Check initialized with PlayIntegrity.")
 
                 }
+                
+                // Initialize Remote Config Feature Flags
+                com.siraj.app.core.config.FeatureFlagManager.initialize()
                 
                 // Configure Firestore Settings for Offline Support and Cache Limit
                 val firestoreSettings = FirebaseFirestoreSettings.Builder()

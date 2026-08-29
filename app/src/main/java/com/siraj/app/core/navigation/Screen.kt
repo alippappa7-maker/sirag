@@ -121,4 +121,18 @@ sealed class Screen(val route: String) {
     object UsageAndBilling : Screen("usage_and_billing")
     object TesterHub : Screen("tester_hub")
     object DefectTriage : Screen("defect_triage")
+    object HelpCenter : Screen("help_center")
+    object HelpArticleDetail : Screen("help_article_detail/{articleId}") {
+        fun createRoute(articleId: String) = "help_article_detail/$articleId"
+    }
+    object CreateTicket : Screen("create_ticket?category={category}") {
+        fun createRoute(category: String? = null) =
+            if (category != null) "create_ticket?category=$category" else "create_ticket"
+    }
+    object TicketList : Screen("ticket_list")
+    object TicketDetail : Screen("ticket_detail/{ticketId}") {
+        fun createRoute(ticketId: String) = "ticket_detail/$ticketId"
+    }
+    object ServiceStatus : Screen("service_status")
+    object ContentPolicy : Screen("content_policy")
 }

@@ -1,6 +1,81 @@
 # سجل التغييرات (Changelog)
 
+## [Unreleased] - Bugfix: Firebase Crashlytics Development Settings (PROMPT 077)
+
+### Added
+- نظام متكامل لإدارة الحقوق والتراخيص للأصول (Rights Management) مع سجل قرارات.
+- تحديث `Asset` model لدعم معلومات الترخيص، وحالات الحقوق (Unknown, Commercial, Expired...).
+- سياسة إدارة الحقوق `RIGHTS_POLICY.md` لضمان توافق جميع المحتويات.
+
+
+### Added
+- إعداد وثائق الإصدار النهائي (Production Readiness):
+  - `RELEASE_NOTES.md`: ملاحظات الإصدار 1.0.0.
+  - `PRODUCTION_CHECKLIST.md`: قائمة المراجعة للإنتاج (الكود، البنية التحتية، المتاجر، السياسات).
+  - `LAUNCH_DAY_RUNBOOK.md`: خطة مراقبة يوم الإطلاق (أول 72 ساعة).
+  - `ROLLBACK_PLAN.md`: خطة التراجع على مستوى المتجر والـ Backend.
+  - `KNOWN_LIMITATIONS.md`: القيود الفنية في الإصدار الأول.
+  - `SUPPORT_ESCALATION.md`: خطة تصعيد الدعم الفني.
+
+
+### Added
+- صياغة خطة الإطلاق التدريجي (Phased Rollout Plan) في ملف `ROLLOUT_PLAN.md` لضمان إطلاق آمن ومستقر.
+- تحديد مقاييس المراقبة الأساسية (Crashes, ANR, AI Costs, Billing Drops) وشروط الإيقاف (Kill-switches) لكل مرحلة.
+
+
+### Added
+- صياغة سياسة المحتوى والاستخدام `CONTENT_POLICY.md` متضمنة مصفوفة العقوبات وقواعد المراجعين وقواعد التعامل مع الذكاء الاصطناعي.
+- صياغة سياسة الاعتراضات والتصحيح `APPEALS_POLICY.md`.
+- بناء واجهة المستخدم `ContentPolicyScreen` لعرض ملخص السياسات داخل التطبيق.
+- إضافة فئات الدعم الفني الجديدة `APPEAL_AND_POLICY` و `SOURCE_CORRECTION` في تذاكر الدعم لتمكين الاعتراضات وتصحيح المصادر.
+- ربط صفحة السياسات مع إعدادات المحتوى الشرعي في `SettingsScreen`.
+
+
+### Added
+- تصميم وبناء واجهات مركز الدعم الفني، المقالات، وتذاكر المساعدة (`HelpCenterScreen`, `HelpArticleDetailScreen`, `CreateTicketScreen`, `TicketListScreen`, `TicketDetailScreen`, `ServiceStatusScreen`).
+- دمج مركز الدعم الفني وتوجيه المستخدمين ضمن شاشة إعدادات التطبيق `SettingsScreen` وربط جميع مسارات التنقل الجديدة في `AppNavigation`.
+- حل مشكلة توافق `combine` في `SupportViewModel` بدمج المجموعات بدلاً من استخدام دوال زائدة.
+
+### Fixed
+- تصحيح إعدادات جمع بيانات Firebase Crashlytics في بيئة التطوير (`Development`) لمنع طلب الإعدادات الشبكية التلقائية ببيانات وهمية (`dummy credentials`) التي كانت تسبب خطأ `FileNotFoundException` في خوادم Crashlytics.
+- إضافة `firebase_crashlytics_collection_enabled = false` كبيانات وصفية (meta-data) في `AndroidManifest.xml` لتعطيل الجمع التلقائي عند الإقلاع وتفعيله فقط للإنتاج عبر `SirajApplication.kt`.
+
 ## [Unreleased] - Incident Response Plan & Emergency Action Hub (PROMPT 076)
+
+### Added
+- نظام متكامل لإدارة الحقوق والتراخيص للأصول (Rights Management) مع سجل قرارات.
+- تحديث `Asset` model لدعم معلومات الترخيص، وحالات الحقوق (Unknown, Commercial, Expired...).
+- سياسة إدارة الحقوق `RIGHTS_POLICY.md` لضمان توافق جميع المحتويات.
+
+
+### Added
+- إعداد وثائق الإصدار النهائي (Production Readiness):
+  - `RELEASE_NOTES.md`: ملاحظات الإصدار 1.0.0.
+  - `PRODUCTION_CHECKLIST.md`: قائمة المراجعة للإنتاج (الكود، البنية التحتية، المتاجر، السياسات).
+  - `LAUNCH_DAY_RUNBOOK.md`: خطة مراقبة يوم الإطلاق (أول 72 ساعة).
+  - `ROLLBACK_PLAN.md`: خطة التراجع على مستوى المتجر والـ Backend.
+  - `KNOWN_LIMITATIONS.md`: القيود الفنية في الإصدار الأول.
+  - `SUPPORT_ESCALATION.md`: خطة تصعيد الدعم الفني.
+
+
+### Added
+- صياغة خطة الإطلاق التدريجي (Phased Rollout Plan) في ملف `ROLLOUT_PLAN.md` لضمان إطلاق آمن ومستقر.
+- تحديد مقاييس المراقبة الأساسية (Crashes, ANR, AI Costs, Billing Drops) وشروط الإيقاف (Kill-switches) لكل مرحلة.
+
+
+### Added
+- صياغة سياسة المحتوى والاستخدام `CONTENT_POLICY.md` متضمنة مصفوفة العقوبات وقواعد المراجعين وقواعد التعامل مع الذكاء الاصطناعي.
+- صياغة سياسة الاعتراضات والتصحيح `APPEALS_POLICY.md`.
+- بناء واجهة المستخدم `ContentPolicyScreen` لعرض ملخص السياسات داخل التطبيق.
+- إضافة فئات الدعم الفني الجديدة `APPEAL_AND_POLICY` و `SOURCE_CORRECTION` في تذاكر الدعم لتمكين الاعتراضات وتصحيح المصادر.
+- ربط صفحة السياسات مع إعدادات المحتوى الشرعي في `SettingsScreen`.
+
+
+### Added
+- تصميم وبناء واجهات مركز الدعم الفني، المقالات، وتذاكر المساعدة (`HelpCenterScreen`, `HelpArticleDetailScreen`, `CreateTicketScreen`, `TicketListScreen`, `TicketDetailScreen`, `ServiceStatusScreen`).
+- دمج مركز الدعم الفني وتوجيه المستخدمين ضمن شاشة إعدادات التطبيق `SettingsScreen` وربط جميع مسارات التنقل الجديدة في `AppNavigation`.
+- حل مشكلة توافق `combine` في `SupportViewModel` بدمج المجموعات بدلاً من استخدام دوال زائدة.
+
 ### Added
 - إنشاء نماذج الاستجابة للحوادث `IncidentResponseModels.kt` (الأنواع الـ 10، المراحل الـ 8، الأدوار المسؤولة، مستويات الخطورة P0 إلى P3، تقارير ما بعد الحادث Post-Mortems، والتصحيح الشرعي المزدوج).
 - إنشاء محرك الاستجابة للطوارئ `IncidentResponseEngine.kt`:
@@ -19,6 +94,41 @@
 - كتابة وتمرير الاختبارات الشاملة `IncidentResponseTest.kt`.
 
 ## [Unreleased] - Platform Services Health Monitoring (PROMPT 075)
+
+### Added
+- نظام متكامل لإدارة الحقوق والتراخيص للأصول (Rights Management) مع سجل قرارات.
+- تحديث `Asset` model لدعم معلومات الترخيص، وحالات الحقوق (Unknown, Commercial, Expired...).
+- سياسة إدارة الحقوق `RIGHTS_POLICY.md` لضمان توافق جميع المحتويات.
+
+
+### Added
+- إعداد وثائق الإصدار النهائي (Production Readiness):
+  - `RELEASE_NOTES.md`: ملاحظات الإصدار 1.0.0.
+  - `PRODUCTION_CHECKLIST.md`: قائمة المراجعة للإنتاج (الكود، البنية التحتية، المتاجر، السياسات).
+  - `LAUNCH_DAY_RUNBOOK.md`: خطة مراقبة يوم الإطلاق (أول 72 ساعة).
+  - `ROLLBACK_PLAN.md`: خطة التراجع على مستوى المتجر والـ Backend.
+  - `KNOWN_LIMITATIONS.md`: القيود الفنية في الإصدار الأول.
+  - `SUPPORT_ESCALATION.md`: خطة تصعيد الدعم الفني.
+
+
+### Added
+- صياغة خطة الإطلاق التدريجي (Phased Rollout Plan) في ملف `ROLLOUT_PLAN.md` لضمان إطلاق آمن ومستقر.
+- تحديد مقاييس المراقبة الأساسية (Crashes, ANR, AI Costs, Billing Drops) وشروط الإيقاف (Kill-switches) لكل مرحلة.
+
+
+### Added
+- صياغة سياسة المحتوى والاستخدام `CONTENT_POLICY.md` متضمنة مصفوفة العقوبات وقواعد المراجعين وقواعد التعامل مع الذكاء الاصطناعي.
+- صياغة سياسة الاعتراضات والتصحيح `APPEALS_POLICY.md`.
+- بناء واجهة المستخدم `ContentPolicyScreen` لعرض ملخص السياسات داخل التطبيق.
+- إضافة فئات الدعم الفني الجديدة `APPEAL_AND_POLICY` و `SOURCE_CORRECTION` في تذاكر الدعم لتمكين الاعتراضات وتصحيح المصادر.
+- ربط صفحة السياسات مع إعدادات المحتوى الشرعي في `SettingsScreen`.
+
+
+### Added
+- تصميم وبناء واجهات مركز الدعم الفني، المقالات، وتذاكر المساعدة (`HelpCenterScreen`, `HelpArticleDetailScreen`, `CreateTicketScreen`, `TicketListScreen`, `TicketDetailScreen`, `ServiceStatusScreen`).
+- دمج مركز الدعم الفني وتوجيه المستخدمين ضمن شاشة إعدادات التطبيق `SettingsScreen` وربط جميع مسارات التنقل الجديدة في `AppNavigation`.
+- حل مشكلة توافق `combine` في `SupportViewModel` بدمج المجموعات بدلاً من استخدام دوال زائدة.
+
 ### Added
 - إنشاء نماذج المراقبة الشاملة `MonitoringModels.kt` (13 خدمة ومزوداً تشغيلياً، حالات الصحة، مستويات الخطورة P0 إلى P3، بلاغات الأعطال، والتنبيهات).
 - إنشاء محرك فحص الصحة ومطابقة الأخطاء `HealthMonitoringEngine.kt` الذي يتضمن:
@@ -39,6 +149,41 @@
 - كتابة وتمرير الاختبارات الشاملة `ServiceHealthMonitoringTest.kt`.
 
 ## [Unreleased] - Backup & Disaster Recovery Policy (PROMPT 074)
+
+### Added
+- نظام متكامل لإدارة الحقوق والتراخيص للأصول (Rights Management) مع سجل قرارات.
+- تحديث `Asset` model لدعم معلومات الترخيص، وحالات الحقوق (Unknown, Commercial, Expired...).
+- سياسة إدارة الحقوق `RIGHTS_POLICY.md` لضمان توافق جميع المحتويات.
+
+
+### Added
+- إعداد وثائق الإصدار النهائي (Production Readiness):
+  - `RELEASE_NOTES.md`: ملاحظات الإصدار 1.0.0.
+  - `PRODUCTION_CHECKLIST.md`: قائمة المراجعة للإنتاج (الكود، البنية التحتية، المتاجر، السياسات).
+  - `LAUNCH_DAY_RUNBOOK.md`: خطة مراقبة يوم الإطلاق (أول 72 ساعة).
+  - `ROLLBACK_PLAN.md`: خطة التراجع على مستوى المتجر والـ Backend.
+  - `KNOWN_LIMITATIONS.md`: القيود الفنية في الإصدار الأول.
+  - `SUPPORT_ESCALATION.md`: خطة تصعيد الدعم الفني.
+
+
+### Added
+- صياغة خطة الإطلاق التدريجي (Phased Rollout Plan) في ملف `ROLLOUT_PLAN.md` لضمان إطلاق آمن ومستقر.
+- تحديد مقاييس المراقبة الأساسية (Crashes, ANR, AI Costs, Billing Drops) وشروط الإيقاف (Kill-switches) لكل مرحلة.
+
+
+### Added
+- صياغة سياسة المحتوى والاستخدام `CONTENT_POLICY.md` متضمنة مصفوفة العقوبات وقواعد المراجعين وقواعد التعامل مع الذكاء الاصطناعي.
+- صياغة سياسة الاعتراضات والتصحيح `APPEALS_POLICY.md`.
+- بناء واجهة المستخدم `ContentPolicyScreen` لعرض ملخص السياسات داخل التطبيق.
+- إضافة فئات الدعم الفني الجديدة `APPEAL_AND_POLICY` و `SOURCE_CORRECTION` في تذاكر الدعم لتمكين الاعتراضات وتصحيح المصادر.
+- ربط صفحة السياسات مع إعدادات المحتوى الشرعي في `SettingsScreen`.
+
+
+### Added
+- تصميم وبناء واجهات مركز الدعم الفني، المقالات، وتذاكر المساعدة (`HelpCenterScreen`, `HelpArticleDetailScreen`, `CreateTicketScreen`, `TicketListScreen`, `TicketDetailScreen`, `ServiceStatusScreen`).
+- دمج مركز الدعم الفني وتوجيه المستخدمين ضمن شاشة إعدادات التطبيق `SettingsScreen` وربط جميع مسارات التنقل الجديدة في `AppNavigation`.
+- حل مشكلة توافق `combine` في `SupportViewModel` بدمج المجموعات بدلاً من استخدام دوال زائدة.
+
 ### Added
 - إنشاء نماذج واستراتيجية النسخ الاحتياطي والتعافي من الكوارث `BackupModels.kt` (الأنواع: Full, Incremental, Metadata-only, Disaster Recovery، الحالات، السياسات، وأدوار الصلاحيات).
 - إنشاء معالج إدارة وفحص النسخ `BackupDisasterRecoveryManager.kt` للتحقق من تواقيع SHA-256، وتجريد الأسرار من البيانات الوصفية، وتطهير واستبعاد بيانات الحسابات المحذوفة (Tombstones).
@@ -50,6 +195,41 @@
 - كتابة وتمرير الاختبارات الشاملة `BackupRecoveryTest.kt`.
 
 ## [Unreleased] - Beta Feedback Triage & Defect Management (PROMPT 073)
+
+### Added
+- نظام متكامل لإدارة الحقوق والتراخيص للأصول (Rights Management) مع سجل قرارات.
+- تحديث `Asset` model لدعم معلومات الترخيص، وحالات الحقوق (Unknown, Commercial, Expired...).
+- سياسة إدارة الحقوق `RIGHTS_POLICY.md` لضمان توافق جميع المحتويات.
+
+
+### Added
+- إعداد وثائق الإصدار النهائي (Production Readiness):
+  - `RELEASE_NOTES.md`: ملاحظات الإصدار 1.0.0.
+  - `PRODUCTION_CHECKLIST.md`: قائمة المراجعة للإنتاج (الكود، البنية التحتية، المتاجر، السياسات).
+  - `LAUNCH_DAY_RUNBOOK.md`: خطة مراقبة يوم الإطلاق (أول 72 ساعة).
+  - `ROLLBACK_PLAN.md`: خطة التراجع على مستوى المتجر والـ Backend.
+  - `KNOWN_LIMITATIONS.md`: القيود الفنية في الإصدار الأول.
+  - `SUPPORT_ESCALATION.md`: خطة تصعيد الدعم الفني.
+
+
+### Added
+- صياغة خطة الإطلاق التدريجي (Phased Rollout Plan) في ملف `ROLLOUT_PLAN.md` لضمان إطلاق آمن ومستقر.
+- تحديد مقاييس المراقبة الأساسية (Crashes, ANR, AI Costs, Billing Drops) وشروط الإيقاف (Kill-switches) لكل مرحلة.
+
+
+### Added
+- صياغة سياسة المحتوى والاستخدام `CONTENT_POLICY.md` متضمنة مصفوفة العقوبات وقواعد المراجعين وقواعد التعامل مع الذكاء الاصطناعي.
+- صياغة سياسة الاعتراضات والتصحيح `APPEALS_POLICY.md`.
+- بناء واجهة المستخدم `ContentPolicyScreen` لعرض ملخص السياسات داخل التطبيق.
+- إضافة فئات الدعم الفني الجديدة `APPEAL_AND_POLICY` و `SOURCE_CORRECTION` في تذاكر الدعم لتمكين الاعتراضات وتصحيح المصادر.
+- ربط صفحة السياسات مع إعدادات المحتوى الشرعي في `SettingsScreen`.
+
+
+### Added
+- تصميم وبناء واجهات مركز الدعم الفني، المقالات، وتذاكر المساعدة (`HelpCenterScreen`, `HelpArticleDetailScreen`, `CreateTicketScreen`, `TicketListScreen`, `TicketDetailScreen`, `ServiceStatusScreen`).
+- دمج مركز الدعم الفني وتوجيه المستخدمين ضمن شاشة إعدادات التطبيق `SettingsScreen` وربط جميع مسارات التنقل الجديدة في `AppNavigation`.
+- حل مشكلة توافق `combine` في `SupportViewModel` بدمج المجموعات بدلاً من استخدام دوال زائدة.
+
 ### Added
 - إنشاء نماذج إدارة العيوب والفرز `DefectManagementModels.kt` مع التصنيفات الثمانية: `blocker`, `critical`, `major`, `minor`, `enhancement`, `duplicate`, `not_reproducible`, و `expected_behavior`، والأولويات P0 إلى P3، ومجالات الاختصاص (المحتوى الشرعي، ستوديو المونتاج، التشغيل الصوتي، دون اتصال، إمكانية الوصول، والأداء).
 - بناء وتكامل مستودع الفرز وإدارة العيوب `BetaDefectManagementRepository` عبر `FirebaseBetaDefectManagementRepositoryImpl` مع ربطه بمجموعة `beta_defects` في Cloud Firestore.
@@ -66,6 +246,41 @@
 - كتابة وتمرير الاختبارات الوحدوية الشاملة `DefectManagementUnitTest`.
 
 ## [Unreleased] - Tester Distribution & Experience Hub (PROMPT 072)
+
+### Added
+- نظام متكامل لإدارة الحقوق والتراخيص للأصول (Rights Management) مع سجل قرارات.
+- تحديث `Asset` model لدعم معلومات الترخيص، وحالات الحقوق (Unknown, Commercial, Expired...).
+- سياسة إدارة الحقوق `RIGHTS_POLICY.md` لضمان توافق جميع المحتويات.
+
+
+### Added
+- إعداد وثائق الإصدار النهائي (Production Readiness):
+  - `RELEASE_NOTES.md`: ملاحظات الإصدار 1.0.0.
+  - `PRODUCTION_CHECKLIST.md`: قائمة المراجعة للإنتاج (الكود، البنية التحتية، المتاجر، السياسات).
+  - `LAUNCH_DAY_RUNBOOK.md`: خطة مراقبة يوم الإطلاق (أول 72 ساعة).
+  - `ROLLBACK_PLAN.md`: خطة التراجع على مستوى المتجر والـ Backend.
+  - `KNOWN_LIMITATIONS.md`: القيود الفنية في الإصدار الأول.
+  - `SUPPORT_ESCALATION.md`: خطة تصعيد الدعم الفني.
+
+
+### Added
+- صياغة خطة الإطلاق التدريجي (Phased Rollout Plan) في ملف `ROLLOUT_PLAN.md` لضمان إطلاق آمن ومستقر.
+- تحديد مقاييس المراقبة الأساسية (Crashes, ANR, AI Costs, Billing Drops) وشروط الإيقاف (Kill-switches) لكل مرحلة.
+
+
+### Added
+- صياغة سياسة المحتوى والاستخدام `CONTENT_POLICY.md` متضمنة مصفوفة العقوبات وقواعد المراجعين وقواعد التعامل مع الذكاء الاصطناعي.
+- صياغة سياسة الاعتراضات والتصحيح `APPEALS_POLICY.md`.
+- بناء واجهة المستخدم `ContentPolicyScreen` لعرض ملخص السياسات داخل التطبيق.
+- إضافة فئات الدعم الفني الجديدة `APPEAL_AND_POLICY` و `SOURCE_CORRECTION` في تذاكر الدعم لتمكين الاعتراضات وتصحيح المصادر.
+- ربط صفحة السياسات مع إعدادات المحتوى الشرعي في `SettingsScreen`.
+
+
+### Added
+- تصميم وبناء واجهات مركز الدعم الفني، المقالات، وتذاكر المساعدة (`HelpCenterScreen`, `HelpArticleDetailScreen`, `CreateTicketScreen`, `TicketListScreen`, `TicketDetailScreen`, `ServiceStatusScreen`).
+- دمج مركز الدعم الفني وتوجيه المستخدمين ضمن شاشة إعدادات التطبيق `SettingsScreen` وربط جميع مسارات التنقل الجديدة في `AppNavigation`.
+- حل مشكلة توافق `combine` في `SupportViewModel` بدمج المجموعات بدلاً من استخدام دوال زائدة.
+
 ### Added
 - إنشاء نماذج إدارة وتوزيع المختبرين `TesterDistributionModels.kt` التي تغطي مجموعات المختبرين (`TesterGroup`), حالات النشاط (`TesterStatus`), المسارات الحرجة (`CriticalJourney`), واستبيانات التجربة (`TesterExperienceSurvey`).
 - تنفيذ مستودع توزيع المختبرين `BetaTesterDistributionRepository` عبر `FirebaseBetaTesterDistributionRepositoryImpl` لتسجيل الجلسات، حفظ التقدم في المسارات، وتجميع الاستبيانات.
@@ -76,6 +291,41 @@
 - كتابة وتمرير الاختبارات الوحدوية `TesterDistributionUnitTest`.
 
 ## [Unreleased] - Beta Version Setup & Feedback Mechanism (PROMPT 071)
+
+### Added
+- نظام متكامل لإدارة الحقوق والتراخيص للأصول (Rights Management) مع سجل قرارات.
+- تحديث `Asset` model لدعم معلومات الترخيص، وحالات الحقوق (Unknown, Commercial, Expired...).
+- سياسة إدارة الحقوق `RIGHTS_POLICY.md` لضمان توافق جميع المحتويات.
+
+
+### Added
+- إعداد وثائق الإصدار النهائي (Production Readiness):
+  - `RELEASE_NOTES.md`: ملاحظات الإصدار 1.0.0.
+  - `PRODUCTION_CHECKLIST.md`: قائمة المراجعة للإنتاج (الكود، البنية التحتية، المتاجر، السياسات).
+  - `LAUNCH_DAY_RUNBOOK.md`: خطة مراقبة يوم الإطلاق (أول 72 ساعة).
+  - `ROLLBACK_PLAN.md`: خطة التراجع على مستوى المتجر والـ Backend.
+  - `KNOWN_LIMITATIONS.md`: القيود الفنية في الإصدار الأول.
+  - `SUPPORT_ESCALATION.md`: خطة تصعيد الدعم الفني.
+
+
+### Added
+- صياغة خطة الإطلاق التدريجي (Phased Rollout Plan) في ملف `ROLLOUT_PLAN.md` لضمان إطلاق آمن ومستقر.
+- تحديد مقاييس المراقبة الأساسية (Crashes, ANR, AI Costs, Billing Drops) وشروط الإيقاف (Kill-switches) لكل مرحلة.
+
+
+### Added
+- صياغة سياسة المحتوى والاستخدام `CONTENT_POLICY.md` متضمنة مصفوفة العقوبات وقواعد المراجعين وقواعد التعامل مع الذكاء الاصطناعي.
+- صياغة سياسة الاعتراضات والتصحيح `APPEALS_POLICY.md`.
+- بناء واجهة المستخدم `ContentPolicyScreen` لعرض ملخص السياسات داخل التطبيق.
+- إضافة فئات الدعم الفني الجديدة `APPEAL_AND_POLICY` و `SOURCE_CORRECTION` في تذاكر الدعم لتمكين الاعتراضات وتصحيح المصادر.
+- ربط صفحة السياسات مع إعدادات المحتوى الشرعي في `SettingsScreen`.
+
+
+### Added
+- تصميم وبناء واجهات مركز الدعم الفني، المقالات، وتذاكر المساعدة (`HelpCenterScreen`, `HelpArticleDetailScreen`, `CreateTicketScreen`, `TicketListScreen`, `TicketDetailScreen`, `ServiceStatusScreen`).
+- دمج مركز الدعم الفني وتوجيه المستخدمين ضمن شاشة إعدادات التطبيق `SettingsScreen` وربط جميع مسارات التنقل الجديدة في `AppNavigation`.
+- حل مشكلة توافق `combine` في `SupportViewModel` بدمج المجموعات بدلاً من استخدام دوال زائدة.
+
 ### Added
 - تكوين إعدادات إصدار النسخة التجريبية `سراج (Beta)` مع معرّف الحزمة المستقل `com.siraj.app.beta` ورقم الإصدار `1.0.0-beta.1`.
 - تحديث `EnvironmentConfig.kt` لدعم معرّفات الإصدار والبناء (`versionName`, `versionCode`, `isBeta`, `allowMockData`).
@@ -88,6 +338,41 @@
 - كتابة وتمرير الاختبارات الوحدوية `BetaFeedbackViewModelTest`.
 
 ## [Unreleased] - MVP Readiness Decision & Scope Definition (PROMPT 070)
+
+### Added
+- نظام متكامل لإدارة الحقوق والتراخيص للأصول (Rights Management) مع سجل قرارات.
+- تحديث `Asset` model لدعم معلومات الترخيص، وحالات الحقوق (Unknown, Commercial, Expired...).
+- سياسة إدارة الحقوق `RIGHTS_POLICY.md` لضمان توافق جميع المحتويات.
+
+
+### Added
+- إعداد وثائق الإصدار النهائي (Production Readiness):
+  - `RELEASE_NOTES.md`: ملاحظات الإصدار 1.0.0.
+  - `PRODUCTION_CHECKLIST.md`: قائمة المراجعة للإنتاج (الكود، البنية التحتية، المتاجر، السياسات).
+  - `LAUNCH_DAY_RUNBOOK.md`: خطة مراقبة يوم الإطلاق (أول 72 ساعة).
+  - `ROLLBACK_PLAN.md`: خطة التراجع على مستوى المتجر والـ Backend.
+  - `KNOWN_LIMITATIONS.md`: القيود الفنية في الإصدار الأول.
+  - `SUPPORT_ESCALATION.md`: خطة تصعيد الدعم الفني.
+
+
+### Added
+- صياغة خطة الإطلاق التدريجي (Phased Rollout Plan) في ملف `ROLLOUT_PLAN.md` لضمان إطلاق آمن ومستقر.
+- تحديد مقاييس المراقبة الأساسية (Crashes, ANR, AI Costs, Billing Drops) وشروط الإيقاف (Kill-switches) لكل مرحلة.
+
+
+### Added
+- صياغة سياسة المحتوى والاستخدام `CONTENT_POLICY.md` متضمنة مصفوفة العقوبات وقواعد المراجعين وقواعد التعامل مع الذكاء الاصطناعي.
+- صياغة سياسة الاعتراضات والتصحيح `APPEALS_POLICY.md`.
+- بناء واجهة المستخدم `ContentPolicyScreen` لعرض ملخص السياسات داخل التطبيق.
+- إضافة فئات الدعم الفني الجديدة `APPEAL_AND_POLICY` و `SOURCE_CORRECTION` في تذاكر الدعم لتمكين الاعتراضات وتصحيح المصادر.
+- ربط صفحة السياسات مع إعدادات المحتوى الشرعي في `SettingsScreen`.
+
+
+### Added
+- تصميم وبناء واجهات مركز الدعم الفني، المقالات، وتذاكر المساعدة (`HelpCenterScreen`, `HelpArticleDetailScreen`, `CreateTicketScreen`, `TicketListScreen`, `TicketDetailScreen`, `ServiceStatusScreen`).
+- دمج مركز الدعم الفني وتوجيه المستخدمين ضمن شاشة إعدادات التطبيق `SettingsScreen` وربط جميع مسارات التنقل الجديدة في `AppNavigation`.
+- حل مشكلة توافق `combine` في `SupportViewModel` بدمج المجموعات بدلاً من استخدام دوال زائدة.
+
 ### Added
 - إصدار وثيقة وقرار نطاق الإصدار الأول `MVP_SCOPE.md` واعتماد قرار الجاهزية **GO**.
 - وضع تصنيف شامل لكافة الميزات وتحديد النطاق الأساسي وتأجيل الميزات غير المستقرة (Text-to-Video, Live Audio).
@@ -96,6 +381,41 @@
 - تحديد خطة الإطلاق التجريبي (Internal Alpha -> Closed Beta -> Staged Production Rollout) ومعايير إيقاف الإصدار التلقائية.
 
 ## [Unreleased] - Security Audit & Hardening (PROMPT 069)
+
+### Added
+- نظام متكامل لإدارة الحقوق والتراخيص للأصول (Rights Management) مع سجل قرارات.
+- تحديث `Asset` model لدعم معلومات الترخيص، وحالات الحقوق (Unknown, Commercial, Expired...).
+- سياسة إدارة الحقوق `RIGHTS_POLICY.md` لضمان توافق جميع المحتويات.
+
+
+### Added
+- إعداد وثائق الإصدار النهائي (Production Readiness):
+  - `RELEASE_NOTES.md`: ملاحظات الإصدار 1.0.0.
+  - `PRODUCTION_CHECKLIST.md`: قائمة المراجعة للإنتاج (الكود، البنية التحتية، المتاجر، السياسات).
+  - `LAUNCH_DAY_RUNBOOK.md`: خطة مراقبة يوم الإطلاق (أول 72 ساعة).
+  - `ROLLBACK_PLAN.md`: خطة التراجع على مستوى المتجر والـ Backend.
+  - `KNOWN_LIMITATIONS.md`: القيود الفنية في الإصدار الأول.
+  - `SUPPORT_ESCALATION.md`: خطة تصعيد الدعم الفني.
+
+
+### Added
+- صياغة خطة الإطلاق التدريجي (Phased Rollout Plan) في ملف `ROLLOUT_PLAN.md` لضمان إطلاق آمن ومستقر.
+- تحديد مقاييس المراقبة الأساسية (Crashes, ANR, AI Costs, Billing Drops) وشروط الإيقاف (Kill-switches) لكل مرحلة.
+
+
+### Added
+- صياغة سياسة المحتوى والاستخدام `CONTENT_POLICY.md` متضمنة مصفوفة العقوبات وقواعد المراجعين وقواعد التعامل مع الذكاء الاصطناعي.
+- صياغة سياسة الاعتراضات والتصحيح `APPEALS_POLICY.md`.
+- بناء واجهة المستخدم `ContentPolicyScreen` لعرض ملخص السياسات داخل التطبيق.
+- إضافة فئات الدعم الفني الجديدة `APPEAL_AND_POLICY` و `SOURCE_CORRECTION` في تذاكر الدعم لتمكين الاعتراضات وتصحيح المصادر.
+- ربط صفحة السياسات مع إعدادات المحتوى الشرعي في `SettingsScreen`.
+
+
+### Added
+- تصميم وبناء واجهات مركز الدعم الفني، المقالات، وتذاكر المساعدة (`HelpCenterScreen`, `HelpArticleDetailScreen`, `CreateTicketScreen`, `TicketListScreen`, `TicketDetailScreen`, `ServiceStatusScreen`).
+- دمج مركز الدعم الفني وتوجيه المستخدمين ضمن شاشة إعدادات التطبيق `SettingsScreen` وربط جميع مسارات التنقل الجديدة في `AppNavigation`.
+- حل مشكلة توافق `combine` في `SupportViewModel` بدمج المجموعات بدلاً من استخدام دوال زائدة.
+
 ### Added
 - إنشاء تقرير المراجعة الأمنية الشامل `SECURITY_REVIEW.md`.
 - تفعيل `Firebase App Check` باستخدام `PlayIntegrity` في تطبيق الأندرويد لزيادة الأمان.
@@ -105,6 +425,41 @@
 - تصحيح ثغرة في `storage.rules` لمنع الرفع العشوائي للملفات في مساحات العمل بدون استخدام واجهات الخادم الموثوقة.
 
 ## [Unreleased] - Pre-release Testing Plan (PROMPT 068)
+
+### Added
+- نظام متكامل لإدارة الحقوق والتراخيص للأصول (Rights Management) مع سجل قرارات.
+- تحديث `Asset` model لدعم معلومات الترخيص، وحالات الحقوق (Unknown, Commercial, Expired...).
+- سياسة إدارة الحقوق `RIGHTS_POLICY.md` لضمان توافق جميع المحتويات.
+
+
+### Added
+- إعداد وثائق الإصدار النهائي (Production Readiness):
+  - `RELEASE_NOTES.md`: ملاحظات الإصدار 1.0.0.
+  - `PRODUCTION_CHECKLIST.md`: قائمة المراجعة للإنتاج (الكود، البنية التحتية، المتاجر، السياسات).
+  - `LAUNCH_DAY_RUNBOOK.md`: خطة مراقبة يوم الإطلاق (أول 72 ساعة).
+  - `ROLLBACK_PLAN.md`: خطة التراجع على مستوى المتجر والـ Backend.
+  - `KNOWN_LIMITATIONS.md`: القيود الفنية في الإصدار الأول.
+  - `SUPPORT_ESCALATION.md`: خطة تصعيد الدعم الفني.
+
+
+### Added
+- صياغة خطة الإطلاق التدريجي (Phased Rollout Plan) في ملف `ROLLOUT_PLAN.md` لضمان إطلاق آمن ومستقر.
+- تحديد مقاييس المراقبة الأساسية (Crashes, ANR, AI Costs, Billing Drops) وشروط الإيقاف (Kill-switches) لكل مرحلة.
+
+
+### Added
+- صياغة سياسة المحتوى والاستخدام `CONTENT_POLICY.md` متضمنة مصفوفة العقوبات وقواعد المراجعين وقواعد التعامل مع الذكاء الاصطناعي.
+- صياغة سياسة الاعتراضات والتصحيح `APPEALS_POLICY.md`.
+- بناء واجهة المستخدم `ContentPolicyScreen` لعرض ملخص السياسات داخل التطبيق.
+- إضافة فئات الدعم الفني الجديدة `APPEAL_AND_POLICY` و `SOURCE_CORRECTION` في تذاكر الدعم لتمكين الاعتراضات وتصحيح المصادر.
+- ربط صفحة السياسات مع إعدادات المحتوى الشرعي في `SettingsScreen`.
+
+
+### Added
+- تصميم وبناء واجهات مركز الدعم الفني، المقالات، وتذاكر المساعدة (`HelpCenterScreen`, `HelpArticleDetailScreen`, `CreateTicketScreen`, `TicketListScreen`, `TicketDetailScreen`, `ServiceStatusScreen`).
+- دمج مركز الدعم الفني وتوجيه المستخدمين ضمن شاشة إعدادات التطبيق `SettingsScreen` وربط جميع مسارات التنقل الجديدة في `AppNavigation`.
+- حل مشكلة توافق `combine` في `SupportViewModel` بدمج المجموعات بدلاً من استخدام دوال زائدة.
+
 ### Added
 - إنشاء وثيقة `TEST_PLAN.md` الشاملة لاختبارات القبول (UAT).
 - تحديد مسارات الاختبار الأساسية (Authentication, Studio, Review, Mihrab, Flash).
@@ -114,6 +469,41 @@
 - وضع هيكلية لتسجيل العيوب والأخطاء وتصنيفها لمنع تسرب الأعطال الحرجة (Blockers/Criticals) إلى بيئة الإنتاج.
 
 ## [Unreleased] - Build Environments Configuration (PROMPT 067)
+
+### Added
+- نظام متكامل لإدارة الحقوق والتراخيص للأصول (Rights Management) مع سجل قرارات.
+- تحديث `Asset` model لدعم معلومات الترخيص، وحالات الحقوق (Unknown, Commercial, Expired...).
+- سياسة إدارة الحقوق `RIGHTS_POLICY.md` لضمان توافق جميع المحتويات.
+
+
+### Added
+- إعداد وثائق الإصدار النهائي (Production Readiness):
+  - `RELEASE_NOTES.md`: ملاحظات الإصدار 1.0.0.
+  - `PRODUCTION_CHECKLIST.md`: قائمة المراجعة للإنتاج (الكود، البنية التحتية، المتاجر، السياسات).
+  - `LAUNCH_DAY_RUNBOOK.md`: خطة مراقبة يوم الإطلاق (أول 72 ساعة).
+  - `ROLLBACK_PLAN.md`: خطة التراجع على مستوى المتجر والـ Backend.
+  - `KNOWN_LIMITATIONS.md`: القيود الفنية في الإصدار الأول.
+  - `SUPPORT_ESCALATION.md`: خطة تصعيد الدعم الفني.
+
+
+### Added
+- صياغة خطة الإطلاق التدريجي (Phased Rollout Plan) في ملف `ROLLOUT_PLAN.md` لضمان إطلاق آمن ومستقر.
+- تحديد مقاييس المراقبة الأساسية (Crashes, ANR, AI Costs, Billing Drops) وشروط الإيقاف (Kill-switches) لكل مرحلة.
+
+
+### Added
+- صياغة سياسة المحتوى والاستخدام `CONTENT_POLICY.md` متضمنة مصفوفة العقوبات وقواعد المراجعين وقواعد التعامل مع الذكاء الاصطناعي.
+- صياغة سياسة الاعتراضات والتصحيح `APPEALS_POLICY.md`.
+- بناء واجهة المستخدم `ContentPolicyScreen` لعرض ملخص السياسات داخل التطبيق.
+- إضافة فئات الدعم الفني الجديدة `APPEAL_AND_POLICY` و `SOURCE_CORRECTION` في تذاكر الدعم لتمكين الاعتراضات وتصحيح المصادر.
+- ربط صفحة السياسات مع إعدادات المحتوى الشرعي في `SettingsScreen`.
+
+
+### Added
+- تصميم وبناء واجهات مركز الدعم الفني، المقالات، وتذاكر المساعدة (`HelpCenterScreen`, `HelpArticleDetailScreen`, `CreateTicketScreen`, `TicketListScreen`, `TicketDetailScreen`, `ServiceStatusScreen`).
+- دمج مركز الدعم الفني وتوجيه المستخدمين ضمن شاشة إعدادات التطبيق `SettingsScreen` وربط جميع مسارات التنقل الجديدة في `AppNavigation`.
+- حل مشكلة توافق `combine` في `SupportViewModel` بدمج المجموعات بدلاً من استخدام دوال زائدة.
+
 ### Added
 - تكوين `productFlavors` لبيئات `dev`, `staging`, و `prod` في `build.gradle.kts`.
 - تخصيص لواحق معرّف الحزمة (`applicationIdSuffix`) واسم التطبيق (`app_name`) لكل بيئة لتسهيل التمييز والفصل.
@@ -122,6 +512,41 @@
 - ضمان عدم حفظ أي أسرار، أو ملفات التوقيع (Keystores)، أو مفاتيح إنتاج حقيقية داخل المستودع.
 
 ## [Unreleased] - Store Listing Preparation (PROMPT 066)
+
+### Added
+- نظام متكامل لإدارة الحقوق والتراخيص للأصول (Rights Management) مع سجل قرارات.
+- تحديث `Asset` model لدعم معلومات الترخيص، وحالات الحقوق (Unknown, Commercial, Expired...).
+- سياسة إدارة الحقوق `RIGHTS_POLICY.md` لضمان توافق جميع المحتويات.
+
+
+### Added
+- إعداد وثائق الإصدار النهائي (Production Readiness):
+  - `RELEASE_NOTES.md`: ملاحظات الإصدار 1.0.0.
+  - `PRODUCTION_CHECKLIST.md`: قائمة المراجعة للإنتاج (الكود، البنية التحتية، المتاجر، السياسات).
+  - `LAUNCH_DAY_RUNBOOK.md`: خطة مراقبة يوم الإطلاق (أول 72 ساعة).
+  - `ROLLBACK_PLAN.md`: خطة التراجع على مستوى المتجر والـ Backend.
+  - `KNOWN_LIMITATIONS.md`: القيود الفنية في الإصدار الأول.
+  - `SUPPORT_ESCALATION.md`: خطة تصعيد الدعم الفني.
+
+
+### Added
+- صياغة خطة الإطلاق التدريجي (Phased Rollout Plan) في ملف `ROLLOUT_PLAN.md` لضمان إطلاق آمن ومستقر.
+- تحديد مقاييس المراقبة الأساسية (Crashes, ANR, AI Costs, Billing Drops) وشروط الإيقاف (Kill-switches) لكل مرحلة.
+
+
+### Added
+- صياغة سياسة المحتوى والاستخدام `CONTENT_POLICY.md` متضمنة مصفوفة العقوبات وقواعد المراجعين وقواعد التعامل مع الذكاء الاصطناعي.
+- صياغة سياسة الاعتراضات والتصحيح `APPEALS_POLICY.md`.
+- بناء واجهة المستخدم `ContentPolicyScreen` لعرض ملخص السياسات داخل التطبيق.
+- إضافة فئات الدعم الفني الجديدة `APPEAL_AND_POLICY` و `SOURCE_CORRECTION` في تذاكر الدعم لتمكين الاعتراضات وتصحيح المصادر.
+- ربط صفحة السياسات مع إعدادات المحتوى الشرعي في `SettingsScreen`.
+
+
+### Added
+- تصميم وبناء واجهات مركز الدعم الفني، المقالات، وتذاكر المساعدة (`HelpCenterScreen`, `HelpArticleDetailScreen`, `CreateTicketScreen`, `TicketListScreen`, `TicketDetailScreen`, `ServiceStatusScreen`).
+- دمج مركز الدعم الفني وتوجيه المستخدمين ضمن شاشة إعدادات التطبيق `SettingsScreen` وربط جميع مسارات التنقل الجديدة في `AppNavigation`.
+- حل مشكلة توافق `combine` في `SupportViewModel` بدمج المجموعات بدلاً من استخدام دوال زائدة.
+
 ### Added
 - إنشاء وثيقة `STORE_LISTING.md` تحتوي على وصف التطبيق الكامل والقصير للمتاجر باللغتين العربية والإنجليزية.
 - إعداد نصوص ومقترحات لقطات الشاشة والفيديو الترويجي بطريقة تعكس وظائف التطبيق الفعلية.
@@ -129,6 +554,41 @@
 - تجهيز فقرات ملاحظات المراجعين (Reviewer Notes) وتوضيح كيفية عمل التطبيق والإشعارات والصلاحيات لتسهيل مراجعته من قبل Google Play و App Store.
 
 ## [Unreleased] - Localization & Internationalization (PROMPT 065)
+
+### Added
+- نظام متكامل لإدارة الحقوق والتراخيص للأصول (Rights Management) مع سجل قرارات.
+- تحديث `Asset` model لدعم معلومات الترخيص، وحالات الحقوق (Unknown, Commercial, Expired...).
+- سياسة إدارة الحقوق `RIGHTS_POLICY.md` لضمان توافق جميع المحتويات.
+
+
+### Added
+- إعداد وثائق الإصدار النهائي (Production Readiness):
+  - `RELEASE_NOTES.md`: ملاحظات الإصدار 1.0.0.
+  - `PRODUCTION_CHECKLIST.md`: قائمة المراجعة للإنتاج (الكود، البنية التحتية، المتاجر، السياسات).
+  - `LAUNCH_DAY_RUNBOOK.md`: خطة مراقبة يوم الإطلاق (أول 72 ساعة).
+  - `ROLLBACK_PLAN.md`: خطة التراجع على مستوى المتجر والـ Backend.
+  - `KNOWN_LIMITATIONS.md`: القيود الفنية في الإصدار الأول.
+  - `SUPPORT_ESCALATION.md`: خطة تصعيد الدعم الفني.
+
+
+### Added
+- صياغة خطة الإطلاق التدريجي (Phased Rollout Plan) في ملف `ROLLOUT_PLAN.md` لضمان إطلاق آمن ومستقر.
+- تحديد مقاييس المراقبة الأساسية (Crashes, ANR, AI Costs, Billing Drops) وشروط الإيقاف (Kill-switches) لكل مرحلة.
+
+
+### Added
+- صياغة سياسة المحتوى والاستخدام `CONTENT_POLICY.md` متضمنة مصفوفة العقوبات وقواعد المراجعين وقواعد التعامل مع الذكاء الاصطناعي.
+- صياغة سياسة الاعتراضات والتصحيح `APPEALS_POLICY.md`.
+- بناء واجهة المستخدم `ContentPolicyScreen` لعرض ملخص السياسات داخل التطبيق.
+- إضافة فئات الدعم الفني الجديدة `APPEAL_AND_POLICY` و `SOURCE_CORRECTION` في تذاكر الدعم لتمكين الاعتراضات وتصحيح المصادر.
+- ربط صفحة السياسات مع إعدادات المحتوى الشرعي في `SettingsScreen`.
+
+
+### Added
+- تصميم وبناء واجهات مركز الدعم الفني، المقالات، وتذاكر المساعدة (`HelpCenterScreen`, `HelpArticleDetailScreen`, `CreateTicketScreen`, `TicketListScreen`, `TicketDetailScreen`, `ServiceStatusScreen`).
+- دمج مركز الدعم الفني وتوجيه المستخدمين ضمن شاشة إعدادات التطبيق `SettingsScreen` وربط جميع مسارات التنقل الجديدة في `AppNavigation`.
+- حل مشكلة توافق `combine` في `SupportViewModel` بدمج المجموعات بدلاً من استخدام دوال زائدة.
+
 ### Added
 - تم تفعيل التدويل الأساسي وإنشاء ملفات `strings.xml` للغتين العربية (افتراضية) والإنجليزية كبنية أولية.
 - استبدال النصوص الصلبة المتكررة بكثرة (أزرار وإجراءات عامة) بنصوص من `strings.xml` للبدء بخطة التدويل وتفادي كسر الـ RTL.
@@ -138,6 +598,41 @@
 - إضافة إعداد `android:localeConfig` في `AndroidManifest.xml` لدعم Android 13+.
 
 ## [Unreleased] - Universal Accessibility (PROMPT 063)
+
+### Added
+- نظام متكامل لإدارة الحقوق والتراخيص للأصول (Rights Management) مع سجل قرارات.
+- تحديث `Asset` model لدعم معلومات الترخيص، وحالات الحقوق (Unknown, Commercial, Expired...).
+- سياسة إدارة الحقوق `RIGHTS_POLICY.md` لضمان توافق جميع المحتويات.
+
+
+### Added
+- إعداد وثائق الإصدار النهائي (Production Readiness):
+  - `RELEASE_NOTES.md`: ملاحظات الإصدار 1.0.0.
+  - `PRODUCTION_CHECKLIST.md`: قائمة المراجعة للإنتاج (الكود، البنية التحتية، المتاجر، السياسات).
+  - `LAUNCH_DAY_RUNBOOK.md`: خطة مراقبة يوم الإطلاق (أول 72 ساعة).
+  - `ROLLBACK_PLAN.md`: خطة التراجع على مستوى المتجر والـ Backend.
+  - `KNOWN_LIMITATIONS.md`: القيود الفنية في الإصدار الأول.
+  - `SUPPORT_ESCALATION.md`: خطة تصعيد الدعم الفني.
+
+
+### Added
+- صياغة خطة الإطلاق التدريجي (Phased Rollout Plan) في ملف `ROLLOUT_PLAN.md` لضمان إطلاق آمن ومستقر.
+- تحديد مقاييس المراقبة الأساسية (Crashes, ANR, AI Costs, Billing Drops) وشروط الإيقاف (Kill-switches) لكل مرحلة.
+
+
+### Added
+- صياغة سياسة المحتوى والاستخدام `CONTENT_POLICY.md` متضمنة مصفوفة العقوبات وقواعد المراجعين وقواعد التعامل مع الذكاء الاصطناعي.
+- صياغة سياسة الاعتراضات والتصحيح `APPEALS_POLICY.md`.
+- بناء واجهة المستخدم `ContentPolicyScreen` لعرض ملخص السياسات داخل التطبيق.
+- إضافة فئات الدعم الفني الجديدة `APPEAL_AND_POLICY` و `SOURCE_CORRECTION` في تذاكر الدعم لتمكين الاعتراضات وتصحيح المصادر.
+- ربط صفحة السياسات مع إعدادات المحتوى الشرعي في `SettingsScreen`.
+
+
+### Added
+- تصميم وبناء واجهات مركز الدعم الفني، المقالات، وتذاكر المساعدة (`HelpCenterScreen`, `HelpArticleDetailScreen`, `CreateTicketScreen`, `TicketListScreen`, `TicketDetailScreen`, `ServiceStatusScreen`).
+- دمج مركز الدعم الفني وتوجيه المستخدمين ضمن شاشة إعدادات التطبيق `SettingsScreen` وربط جميع مسارات التنقل الجديدة في `AppNavigation`.
+- حل مشكلة توافق `combine` في `SupportViewModel` بدمج المجموعات بدلاً من استخدام دوال زائدة.
+
 ### Added
 - إضافة منظومة الوصول الشامل (Universal Accessibility) المتوافقة مع معايير WCAG 2.1 AA و AAA.
 - إضافة `ColorContrastHelper` لحساب نسب التباين ومعادلات التوافق مع نصوص WCAG العادية والكبيرة.
@@ -151,6 +646,41 @@
 - إضافة اختبارات شاملة `AccessibilityTest` للتحقق من نسب التباين وتكبير الخطوط والإعدادات التلقائية والمخصصة.
 
 ## [Unreleased] - Crash Monitoring and Firebase Crashlytics (PROMPT 062)
+
+### Added
+- نظام متكامل لإدارة الحقوق والتراخيص للأصول (Rights Management) مع سجل قرارات.
+- تحديث `Asset` model لدعم معلومات الترخيص، وحالات الحقوق (Unknown, Commercial, Expired...).
+- سياسة إدارة الحقوق `RIGHTS_POLICY.md` لضمان توافق جميع المحتويات.
+
+
+### Added
+- إعداد وثائق الإصدار النهائي (Production Readiness):
+  - `RELEASE_NOTES.md`: ملاحظات الإصدار 1.0.0.
+  - `PRODUCTION_CHECKLIST.md`: قائمة المراجعة للإنتاج (الكود، البنية التحتية، المتاجر، السياسات).
+  - `LAUNCH_DAY_RUNBOOK.md`: خطة مراقبة يوم الإطلاق (أول 72 ساعة).
+  - `ROLLBACK_PLAN.md`: خطة التراجع على مستوى المتجر والـ Backend.
+  - `KNOWN_LIMITATIONS.md`: القيود الفنية في الإصدار الأول.
+  - `SUPPORT_ESCALATION.md`: خطة تصعيد الدعم الفني.
+
+
+### Added
+- صياغة خطة الإطلاق التدريجي (Phased Rollout Plan) في ملف `ROLLOUT_PLAN.md` لضمان إطلاق آمن ومستقر.
+- تحديد مقاييس المراقبة الأساسية (Crashes, ANR, AI Costs, Billing Drops) وشروط الإيقاف (Kill-switches) لكل مرحلة.
+
+
+### Added
+- صياغة سياسة المحتوى والاستخدام `CONTENT_POLICY.md` متضمنة مصفوفة العقوبات وقواعد المراجعين وقواعد التعامل مع الذكاء الاصطناعي.
+- صياغة سياسة الاعتراضات والتصحيح `APPEALS_POLICY.md`.
+- بناء واجهة المستخدم `ContentPolicyScreen` لعرض ملخص السياسات داخل التطبيق.
+- إضافة فئات الدعم الفني الجديدة `APPEAL_AND_POLICY` و `SOURCE_CORRECTION` في تذاكر الدعم لتمكين الاعتراضات وتصحيح المصادر.
+- ربط صفحة السياسات مع إعدادات المحتوى الشرعي في `SettingsScreen`.
+
+
+### Added
+- تصميم وبناء واجهات مركز الدعم الفني، المقالات، وتذاكر المساعدة (`HelpCenterScreen`, `HelpArticleDetailScreen`, `CreateTicketScreen`, `TicketListScreen`, `TicketDetailScreen`, `ServiceStatusScreen`).
+- دمج مركز الدعم الفني وتوجيه المستخدمين ضمن شاشة إعدادات التطبيق `SettingsScreen` وربط جميع مسارات التنقل الجديدة في `AppNavigation`.
+- حل مشكلة توافق `combine` في `SupportViewModel` بدمج المجموعات بدلاً من استخدام دوال زائدة.
+
 ### Added
 - دمج `Firebase Crashlytics` لتسجيل الاستثناءات والأعطال البرمجية بأمان وتصنيف منظم.
 - إنشاء `CrashlyticsSanitizer` للتطهير الكامل وحجب أي مفاتيح حساسة (API keys, Tokens, Passwords, Purchase Tokens)، تشفير معرّفات المستخدمين (`SHA-256`) ومنع وصول أي نصوص قرآنية أو أحاديث أو محتوى خاص للمستخدم إلى السجلات.
@@ -177,6 +707,41 @@
 - تصحيح إعدادات MockK و JVM و Robolectric لتشغيل كافة الاختبارات بنجاح تام (100% Passed).
 
 ## [Unreleased] - Performance Improvements (PROMPT 060)
+
+### Added
+- نظام متكامل لإدارة الحقوق والتراخيص للأصول (Rights Management) مع سجل قرارات.
+- تحديث `Asset` model لدعم معلومات الترخيص، وحالات الحقوق (Unknown, Commercial, Expired...).
+- سياسة إدارة الحقوق `RIGHTS_POLICY.md` لضمان توافق جميع المحتويات.
+
+
+### Added
+- إعداد وثائق الإصدار النهائي (Production Readiness):
+  - `RELEASE_NOTES.md`: ملاحظات الإصدار 1.0.0.
+  - `PRODUCTION_CHECKLIST.md`: قائمة المراجعة للإنتاج (الكود، البنية التحتية، المتاجر، السياسات).
+  - `LAUNCH_DAY_RUNBOOK.md`: خطة مراقبة يوم الإطلاق (أول 72 ساعة).
+  - `ROLLBACK_PLAN.md`: خطة التراجع على مستوى المتجر والـ Backend.
+  - `KNOWN_LIMITATIONS.md`: القيود الفنية في الإصدار الأول.
+  - `SUPPORT_ESCALATION.md`: خطة تصعيد الدعم الفني.
+
+
+### Added
+- صياغة خطة الإطلاق التدريجي (Phased Rollout Plan) في ملف `ROLLOUT_PLAN.md` لضمان إطلاق آمن ومستقر.
+- تحديد مقاييس المراقبة الأساسية (Crashes, ANR, AI Costs, Billing Drops) وشروط الإيقاف (Kill-switches) لكل مرحلة.
+
+
+### Added
+- صياغة سياسة المحتوى والاستخدام `CONTENT_POLICY.md` متضمنة مصفوفة العقوبات وقواعد المراجعين وقواعد التعامل مع الذكاء الاصطناعي.
+- صياغة سياسة الاعتراضات والتصحيح `APPEALS_POLICY.md`.
+- بناء واجهة المستخدم `ContentPolicyScreen` لعرض ملخص السياسات داخل التطبيق.
+- إضافة فئات الدعم الفني الجديدة `APPEAL_AND_POLICY` و `SOURCE_CORRECTION` في تذاكر الدعم لتمكين الاعتراضات وتصحيح المصادر.
+- ربط صفحة السياسات مع إعدادات المحتوى الشرعي في `SettingsScreen`.
+
+
+### Added
+- تصميم وبناء واجهات مركز الدعم الفني، المقالات، وتذاكر المساعدة (`HelpCenterScreen`, `HelpArticleDetailScreen`, `CreateTicketScreen`, `TicketListScreen`, `TicketDetailScreen`, `ServiceStatusScreen`).
+- دمج مركز الدعم الفني وتوجيه المستخدمين ضمن شاشة إعدادات التطبيق `SettingsScreen` وربط جميع مسارات التنقل الجديدة في `AppNavigation`.
+- حل مشكلة توافق `combine` في `SupportViewModel` بدمج المجموعات بدلاً من استخدام دوال زائدة.
+
 ### Added
 - Image Cache configuration using Coil with memory limits (15%) and disk limits (2%).
 - Offline persistence cache limit (50MB) for Firebase Firestore.
@@ -189,6 +754,41 @@
 - Reduced HTTP logging level to BASIC in OkHttp to improve performance and prevent sensitive data leakage.
 
 ## [Unreleased] - Error Handling and Recovery System (PROMPT 061)
+
+### Added
+- نظام متكامل لإدارة الحقوق والتراخيص للأصول (Rights Management) مع سجل قرارات.
+- تحديث `Asset` model لدعم معلومات الترخيص، وحالات الحقوق (Unknown, Commercial, Expired...).
+- سياسة إدارة الحقوق `RIGHTS_POLICY.md` لضمان توافق جميع المحتويات.
+
+
+### Added
+- إعداد وثائق الإصدار النهائي (Production Readiness):
+  - `RELEASE_NOTES.md`: ملاحظات الإصدار 1.0.0.
+  - `PRODUCTION_CHECKLIST.md`: قائمة المراجعة للإنتاج (الكود، البنية التحتية، المتاجر، السياسات).
+  - `LAUNCH_DAY_RUNBOOK.md`: خطة مراقبة يوم الإطلاق (أول 72 ساعة).
+  - `ROLLBACK_PLAN.md`: خطة التراجع على مستوى المتجر والـ Backend.
+  - `KNOWN_LIMITATIONS.md`: القيود الفنية في الإصدار الأول.
+  - `SUPPORT_ESCALATION.md`: خطة تصعيد الدعم الفني.
+
+
+### Added
+- صياغة خطة الإطلاق التدريجي (Phased Rollout Plan) في ملف `ROLLOUT_PLAN.md` لضمان إطلاق آمن ومستقر.
+- تحديد مقاييس المراقبة الأساسية (Crashes, ANR, AI Costs, Billing Drops) وشروط الإيقاف (Kill-switches) لكل مرحلة.
+
+
+### Added
+- صياغة سياسة المحتوى والاستخدام `CONTENT_POLICY.md` متضمنة مصفوفة العقوبات وقواعد المراجعين وقواعد التعامل مع الذكاء الاصطناعي.
+- صياغة سياسة الاعتراضات والتصحيح `APPEALS_POLICY.md`.
+- بناء واجهة المستخدم `ContentPolicyScreen` لعرض ملخص السياسات داخل التطبيق.
+- إضافة فئات الدعم الفني الجديدة `APPEAL_AND_POLICY` و `SOURCE_CORRECTION` في تذاكر الدعم لتمكين الاعتراضات وتصحيح المصادر.
+- ربط صفحة السياسات مع إعدادات المحتوى الشرعي في `SettingsScreen`.
+
+
+### Added
+- تصميم وبناء واجهات مركز الدعم الفني، المقالات، وتذاكر المساعدة (`HelpCenterScreen`, `HelpArticleDetailScreen`, `CreateTicketScreen`, `TicketListScreen`, `TicketDetailScreen`, `ServiceStatusScreen`).
+- دمج مركز الدعم الفني وتوجيه المستخدمين ضمن شاشة إعدادات التطبيق `SettingsScreen` وربط جميع مسارات التنقل الجديدة في `AppNavigation`.
+- حل مشكلة توافق `combine` في `SupportViewModel` بدمج المجموعات بدلاً من استخدام دوال زائدة.
+
 ### Added
 - Unified `AppError` sealed class for consistent error mapping (Network, Auth, Database, Storage, Payment, etc.).
 - `ErrorHandler` utility to sanitize technical messages and prevent exposure of sensitive data (tokens, keys) to the UI.

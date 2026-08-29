@@ -211,13 +211,23 @@ fun PrivacySettings(
 }
 
 @Composable
-fun IslamicSettings(uiState: SettingsUiState, viewModel: SettingsViewModel) {
+fun IslamicSettings(
+    uiState: SettingsUiState, 
+    viewModel: SettingsViewModel,
+    onNavigateToContentPolicy: () -> Unit = {}
+) {
     Column(modifier = Modifier.padding(16.dp)) {
-        Text("سياسة المحتوى الشرعي", style = MaterialTheme.typography.titleMedium)
-        Text("تطبيق سراج يعتمد على مراجعة بشرية للقرارات الحساسة.", style = MaterialTheme.typography.bodyMedium)
+        Text("سياسة المحتوى والاستخدام", style = MaterialTheme.typography.titleMedium)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text("تطبيق سراج يعتمد على مراجعة بشرية للقرارات الحساسة ويطبق سياسة استخدام واضحة لضمان سلامة وموثوقية المحتوى.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { /* TODO */ }) {
-            Text("قراءة المنهجية الكاملة")
+        Button(
+            onClick = onNavigateToContentPolicy,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(Icons.Default.MenuBook, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("قراءة المنهجية الكاملة للمحتوى")
         }
     }
 }
@@ -300,6 +310,9 @@ fun StorageSettings(
 
 @Composable
 fun SupportSettings(
+    onNavigateToHelpCenter: () -> Unit = {},
+    onNavigateToCreateTicket: (com.siraj.app.domain.models.support.TicketCategory?) -> Unit = {},
+    onNavigateToServiceStatus: () -> Unit = {},
     onMessage: (String) -> Unit = {}
 ) {
     var showCrashDialog by remember { mutableStateOf(false) }
@@ -308,6 +321,18 @@ fun SupportSettings(
     Column(modifier = Modifier.padding(16.dp)) {
         Text("الدعم الفني والشكاوى", style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(12.dp))
+
+        Button(
+            onClick = onNavigateToHelpCenter,
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+        ) {
+            Icon(Icons.Default.HelpCenter, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("فتح مركز المساعدة والأسئلة الشائعة")
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
         
         Button(
             onClick = { showBetaFeedbackDialog = true },
@@ -319,13 +344,34 @@ fun SupportSettings(
             Text("إرسال تقرير ملاحظات النسخة التجريبية (Beta Feedback)")
         }
         
-        Spacer(modifier = Modifier.height(12.dp))
-        Button(onClick = { onMessage("تم تسجيل طلب الدعم الفني") }, modifier = Modifier.fillMaxWidth()) {
-            Text("الإبلاغ عن مشكلة تقنية")
+        Spacer(modifier = Modifier.height(10.dp))
+        OutlinedButton(
+            onClick = { onNavigateToCreateTicket(com.siraj.app.domain.models.support.TicketCategory.TECHNICAL_BUG) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(Icons.Default.BugReport, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("فتح تذكرة مشكلة تقنية أو عطل")
         }
-        Spacer(modifier = Modifier.height(12.dp))
-        Button(onClick = { onMessage("تم فتح مسار مراجعة المحتوى الشرعي") }, modifier = Modifier.fillMaxWidth()) {
-            Text("الإبلاغ عن خطأ شرعي")
+        Spacer(modifier = Modifier.height(10.dp))
+        OutlinedButton(
+            onClick = { onNavigateToCreateTicket(com.siraj.app.domain.models.support.TicketCategory.SHARIA_CONTENT_ERROR) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
+        ) {
+            Icon(Icons.Default.AutoStories, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("الإبلاغ عن خطأ في نص شرعي")
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+        OutlinedButton(
+            onClick = onNavigateToServiceStatus,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(Icons.Default.CloudSync, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("فحص حالة الخوادم والخدمات")
         }
 
         Spacer(modifier = Modifier.height(24.dp))

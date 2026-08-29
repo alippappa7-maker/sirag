@@ -311,6 +311,10 @@ fun AppNavigation(
                         onNavigateToActivityHistory = { navController.navigate(Screen.ActivityHistory.route) },
                         onNavigateToBilling = { navController.navigate(Screen.UsageAndBilling.route) },
                         onNavigateToTesterHub = { navController.navigate(Screen.TesterHub.route) },
+                        onNavigateToHelpCenter = { navController.navigate(Screen.HelpCenter.route) },
+                        onNavigateToCreateTicket = { category -> navController.navigate(Screen.CreateTicket.createRoute(category?.name)) },
+                        onNavigateToServiceStatus = { navController.navigate(Screen.ServiceStatus.route) },
+                        onNavigateToContentPolicy = { navController.navigate(Screen.ContentPolicy.route) },
                         onNavigateBack = { navController.popBackStack() },
                         onLogout = {
                             navController.navigate(Screen.Login.route) {
@@ -903,6 +907,119 @@ fun AppNavigation(
             composable(Screen.DefectTriage.route) {
                 DefectTriageScreen(
                     onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            composable(Screen.HelpCenter.route) {
+                val supportViewModel: com.siraj.app.features.support.presentation.SupportViewModel = viewModel(
+                    factory = com.siraj.app.features.support.presentation.SupportViewModelFactory()
+                )
+                com.siraj.app.features.support.presentation.HelpCenterScreen(
+                    viewModel = supportViewModel,
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToArticle = { articleId ->
+                        navController.navigate(Screen.HelpArticleDetail.createRoute(articleId))
+                    },
+                    onNavigateToCreateTicket = { category ->
+                        navController.navigate(Screen.CreateTicket.createRoute(category?.name))
+                    },
+                    onNavigateToTicketList = {
+                        navController.navigate(Screen.TicketList.route)
+                    },
+                    onNavigateToTicketDetail = { ticketId ->
+                        navController.navigate(Screen.TicketDetail.createRoute(ticketId))
+                    },
+                    onNavigateToServiceStatus = {
+                        navController.navigate(Screen.ServiceStatus.route)
+                    },
+                    onNavigateToPrivacyCenter = {
+                        navController.navigate(Screen.Settings.route)
+                    }
+                )
+            }
+            composable(
+                route = Screen.HelpArticleDetail.route,
+                arguments = listOf(navArgument("articleId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val articleId = backStackEntry.arguments?.getString("articleId") ?: ""
+                val supportViewModel: com.siraj.app.features.support.presentation.SupportViewModel = viewModel(
+                    factory = com.siraj.app.features.support.presentation.SupportViewModelFactory()
+                )
+                com.siraj.app.features.support.presentation.HelpArticleDetailScreen(
+                    articleId = articleId,
+                    viewModel = supportViewModel,
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToCreateTicket = { category ->
+                        navController.navigate(Screen.CreateTicket.createRoute(category?.name))
+                    }
+                )
+            }
+            composable(
+                route = Screen.CreateTicket.route,
+                arguments = listOf(navArgument("category") { 
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                })
+            ) { backStackEntry ->
+                val catString = backStackEntry.arguments?.getString("category")
+                val category = catString?.let { runCatching { com.siraj.app.domain.models.support.TicketCategory.valueOf(it) }.getOrNull() }
+                val supportViewModel: com.siraj.app.features.support.presentation.SupportViewModel = viewModel(
+                    factory = com.siraj.app.features.support.presentation.SupportViewModelFactory()
+                )
+                com.siraj.app.features.support.presentation.CreateTicketScreen(
+                    initialCategory = category,
+                    viewModel = supportViewModel,
+                    onNavigateBack = { navController.popBackStack() },
+                    onTicketCreated = { ticketId ->
+                        navController.navigate(Screen.TicketDetail.createRoute(ticketId)) {
+                            popUpTo(Screen.HelpCenter.route)
+                        }
+                    }
+                )
+            }
+            composable(Screen.TicketList.route) {
+                val supportViewModel: com.siraj.app.features.support.presentation.SupportViewModel = viewModel(
+                    factory = com.siraj.app.features.support.presentation.SupportViewModelFactory()
+                )
+                com.siraj.app.features.support.presentation.TicketListScreen(
+                    viewModel = supportViewModel,
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToCreateTicket = {
+                        navController.navigate(Screen.CreateTicket.createRoute(null))
+                    },
+                    onNavigateToTicketDetail = { ticketId ->
+                        navController.navigate(Screen.TicketDetail.createRoute(ticketId))
+                    }
+                )
+            }
+            composable(
+                route = Screen.TicketDetail.route,
+                arguments = listOf(navArgument("ticketId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val ticketId = backStackEntry.arguments?.getString("ticketId") ?: ""
+                val supportViewModel: com.siraj.app.features.support.presentation.SupportViewModel = viewModel(
+                    factory = com.siraj.app.features.support.presentation.SupportViewModelFactory()
+                )
+                com.siraj.app.features.support.presentation.TicketDetailScreen(
+                    ticketId = ticketId,
+                    viewModel = supportViewModel,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            composable(Screen.ServiceStatus.route) {
+                com.siraj.app.features.support.presentation.ServiceStatusScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            composable(Screen.ContentPolicy.route) {
+                com.siraj.app.features.support.presentation.ContentPolicyScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToAppeal = {
+                        navController.navigate(Screen.CreateTicket.createRoute(com.siraj.app.domain.models.support.TicketCategory.APPEAL_AND_POLICY.name))
+                    },
+                    onNavigateToSourceCorrection = {
+                        navController.navigate(Screen.CreateTicket.createRoute(com.siraj.app.domain.models.support.TicketCategory.SOURCE_CORRECTION.name))
+                    }
                 )
             }
         }

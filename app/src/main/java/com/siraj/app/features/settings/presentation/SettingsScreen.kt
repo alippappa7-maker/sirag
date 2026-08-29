@@ -44,6 +44,10 @@ fun SettingsScreen(
     onNavigateToActivityHistory: () -> Unit = {},
     onNavigateToBilling: () -> Unit = {},
     onNavigateToTesterHub: () -> Unit = {},
+    onNavigateToHelpCenter: () -> Unit = {},
+    onNavigateToCreateTicket: (com.siraj.app.domain.models.support.TicketCategory?) -> Unit = {},
+    onNavigateToServiceStatus: () -> Unit = {},
+    onNavigateToContentPolicy: () -> Unit = {},
     onNavigateBack: () -> Unit,
     onLogout: () -> Unit,
     viewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory())
@@ -112,9 +116,14 @@ fun SettingsScreen(
                     onNavigateBack = { currentPage = SettingsPage.MAIN },
                     onAccountDeleted = { viewModel.logout(onLogout) }
                 )
-                SettingsPage.ISLAMIC -> IslamicSettings(uiState, viewModel)
+                SettingsPage.ISLAMIC -> IslamicSettings(uiState, viewModel, onNavigateToContentPolicy)
                 SettingsPage.STORAGE -> StorageSettings(uiState, viewModel, onLogout, onNavigateToActivityHistory, onNavigateToPrivacyCenter = { currentPage = SettingsPage.PRIVACY })
-                SettingsPage.SUPPORT -> SupportSettings(onMessage = { viewModel.showMessage(it) })
+                SettingsPage.SUPPORT -> SupportSettings(
+                    onNavigateToHelpCenter = onNavigateToHelpCenter,
+                    onNavigateToCreateTicket = onNavigateToCreateTicket,
+                    onNavigateToServiceStatus = onNavigateToServiceStatus,
+                    onMessage = { viewModel.showMessage(it) }
+                )
                 SettingsPage.ABOUT -> AboutSettings()
                 SettingsPage.BILLING -> onNavigateToBilling()
             }

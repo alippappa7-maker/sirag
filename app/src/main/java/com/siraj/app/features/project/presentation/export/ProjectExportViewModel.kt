@@ -220,6 +220,11 @@ class ProjectExportViewModel(
     }
 
     fun requestExport() {
+        if (!com.siraj.app.core.config.FeatureFlagManager.isFeatureEnabled(com.siraj.app.core.config.FeatureFlagManager.FEATURE_VIDEO_EXPORT)) {
+            _userMessage.value = "عذراً، ميزة التصدير معطلة حالياً من قبل الإدارة للصيانة."
+            return
+        }
+
         val report = _validationReport.value
         if (!report.isExportAllowed) {
             _userMessage.value = "لا يمكن التصدير لوجود موانع حرجة في المشروع."
