@@ -2,6 +2,7 @@ package com.siraj.app.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.siraj.app.core.utils.Resource
+import com.siraj.app.core.error.ErrorHandler
 import com.siraj.app.domain.models.ContentTemplate
 import com.siraj.app.domain.models.TemplateFavorite
 import com.siraj.app.domain.models.TemplateStatus
@@ -63,7 +64,8 @@ class FirebaseTemplateRepositoryImpl(
             }
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "Failed to toggle favorite")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -89,7 +91,8 @@ class FirebaseTemplateRepositoryImpl(
             }.await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "Failed to seed templates")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -100,7 +103,8 @@ class FirebaseTemplateRepositoryImpl(
             templatesCol.document(id).set(newTemplate).await()
             Resource.Success(id)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "Failed to create template")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -112,7 +116,8 @@ class FirebaseTemplateRepositoryImpl(
             ).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "Failed to update template status")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -121,7 +126,8 @@ class FirebaseTemplateRepositoryImpl(
             templatesCol.document(template.id).set(template).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "Failed to update template")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 }

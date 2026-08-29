@@ -3,6 +3,7 @@ package com.siraj.app.data.repository.search
 import com.siraj.app.core.navigation.Screen
 import com.siraj.app.core.utils.ArabicSearchUtils
 import com.siraj.app.core.utils.Resource
+import com.siraj.app.core.error.ErrorHandler
 import com.siraj.app.data.local.SearchHistoryDao
 import com.siraj.app.data.local.SearchHistoryEntity
 import com.siraj.app.domain.models.ContentTemplate
@@ -333,7 +334,8 @@ class UnifiedSearchRepositoryImpl(
                 )
             )
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "حدث خطأ أثناء تنفيذ البحث")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 

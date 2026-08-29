@@ -93,7 +93,8 @@ fun FlashesScreen(
         } else {
             VerticalPager(
                 state = pagerState,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                key = { state.flashes[it].id }
             ) { page ->
                 val flash = state.flashes[page]
                 val isVisible = pagerState.currentPage == page

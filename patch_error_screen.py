@@ -1,28 +1,17 @@
-package com.siraj.app.core.ui.components
+import re
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+with open("app/src/main/java/com/siraj/app/core/ui/components/StateScreens.kt", "r") as f:
+    content = f.read()
+
+new_imports = """
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.text.style.TextAlign
 import com.siraj.app.core.error.AppError
+"""
 
-@Composable
-fun LoadingScreen(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator()
-    }
-}
+content = content.replace("import androidx.compose.ui.unit.dp", "import androidx.compose.ui.unit.dp\n" + new_imports.strip())
 
+new_error_screen = """
 @Composable
 fun ErrorScreen(message: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
@@ -52,21 +41,9 @@ fun AppErrorScreen(error: AppError, onRetry: (() -> Unit)? = null, modifier: Mod
         }
     }
 }
+"""
 
-@Composable
-fun EmptyScreen(message: String, modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = message, style = MaterialTheme.typography.bodyLarge)
-    }
-}
+content = re.sub(r"@Composable\nfun ErrorScreen.*?\n}\n}", new_error_screen.strip(), content, flags=re.DOTALL)
 
-@Composable
-fun OfflineScreen(onRetry: () -> Unit, modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "لا يوجد اتصال بالإنترنت", style = MaterialTheme.typography.titleLarge)
-            Spacer(modifier = Modifier.height(16.dp))
-            SirajButton(text = "تحديث", onClick = onRetry)
-        }
-    }
-}
+with open("app/src/main/java/com/siraj/app/core/ui/components/StateScreens.kt", "w") as f:
+    f.write(content)

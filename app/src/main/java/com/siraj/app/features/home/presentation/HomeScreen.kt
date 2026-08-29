@@ -216,7 +216,7 @@ fun HomeScreen(
                         }
                     } else {
                         LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                            items(projectsRes.data) { project ->
+                            items(projectsRes.data, key = { it.id }) { project ->
                                 ProjectCard(project = project, onClick = { onNavigateToProject(project.id) })
                             }
                         }

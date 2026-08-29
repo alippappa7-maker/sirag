@@ -3,6 +3,7 @@ package com.siraj.app.data.repository
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.siraj.app.core.utils.Resource
+import com.siraj.app.core.error.ErrorHandler
 import com.siraj.app.domain.models.*
 import com.siraj.app.domain.repository.WorkspaceRepository
 import kotlinx.coroutines.channels.awaitClose
@@ -119,7 +120,8 @@ class FirebaseWorkspaceRepositoryImpl(
             
             Resource.Success(workspaceId)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل إنشاء مساحة العمل")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -137,7 +139,8 @@ class FirebaseWorkspaceRepositoryImpl(
             logAudit(workspaceId, inviterId, "INVITE_MEMBER", "Invited $email as $role")
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل إرسال الدعوة")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -171,7 +174,8 @@ class FirebaseWorkspaceRepositoryImpl(
             }
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل الرد على الدعوة")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -182,7 +186,8 @@ class FirebaseWorkspaceRepositoryImpl(
             logAudit(workspaceId, "ADMIN", "UPDATE_ROLE", "Updated user $userId to $newRole")
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل تحديث الصلاحية")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -196,7 +201,8 @@ class FirebaseWorkspaceRepositoryImpl(
             logAudit(workspaceId, "ADMIN", "REMOVE_MEMBER", "Removed user $userId")
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل إزالة العضو")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -218,7 +224,8 @@ class FirebaseWorkspaceRepositoryImpl(
             logAudit(workspaceId, currentOwnerId, "TRANSFER_OWNERSHIP", "Transferred to $newOwnerId")
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل نقل الملكية")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -228,7 +235,8 @@ class FirebaseWorkspaceRepositoryImpl(
             logAudit(workspaceId, "ADMIN", "ARCHIVE_WORKSPACE", "Archived workspace")
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل أرشفة مساحة العمل")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
     

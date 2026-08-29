@@ -1,6 +1,7 @@
 package com.siraj.app.data.repository
 
 import com.siraj.app.core.utils.Resource
+import com.siraj.app.core.error.ErrorHandler
 import com.siraj.app.data.api.QuranApi
 import com.siraj.app.data.local.QuranBookmarkEntity
 import com.siraj.app.data.local.QuranDao
@@ -37,7 +38,8 @@ class QuranRepositoryImpl(
             cachedSurahs = surahs
             Resource.Success(surahs)
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "Failed to load Surahs")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 

@@ -1,6 +1,7 @@
 package com.siraj.app.data.repository.prayer
 
 import com.siraj.app.core.utils.Resource
+import com.siraj.app.core.error.ErrorHandler
 import com.siraj.app.domain.models.prayer.PrayerMeta
 import com.siraj.app.domain.models.prayer.PrayerSettings
 import com.siraj.app.domain.models.prayer.PrayerTimes
@@ -55,7 +56,8 @@ class PrayerRepositoryImpl : PrayerRepository {
             
             Resource.Success(times)
         } catch (e: Exception) {
-            Resource.Error("Failed to fetch prayer times: ${e.message}")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 

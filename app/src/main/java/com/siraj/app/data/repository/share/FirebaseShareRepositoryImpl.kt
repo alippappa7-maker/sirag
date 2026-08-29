@@ -1,6 +1,7 @@
 package com.siraj.app.data.repository.share
 
 import com.siraj.app.core.utils.Resource
+import com.siraj.app.core.error.ErrorHandler
 import com.siraj.app.domain.models.share.ShareLink
 import com.siraj.app.domain.models.share.ShareStatus
 import com.siraj.app.domain.models.share.ShareType
@@ -38,7 +39,8 @@ class FirebaseShareRepositoryImpl : ShareRepository {
             shareLinks[linkId] = shareLink
             Resource.Success(shareLink)
         } catch (e: Exception) {
-            Resource.Error("فشل إنشاء رابط المشاركة: ${e.message}")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -69,7 +71,8 @@ class FirebaseShareRepositoryImpl : ShareRepository {
 
             Resource.Success(link)
         } catch (e: Exception) {
-            Resource.Error("حدث خطأ أثناء التحقق من الرابط: ${e.message}")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -86,7 +89,8 @@ class FirebaseShareRepositoryImpl : ShareRepository {
             shareLinks[linkId] = link.copy(status = ShareStatus.REVOKED)
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error("فشل إبطال الرابط: ${e.message}")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 

@@ -1,6 +1,7 @@
 package com.siraj.app.data.repository.review
 
 import com.siraj.app.core.utils.Resource
+import com.siraj.app.core.error.ErrorHandler
 import com.siraj.app.domain.models.review.*
 import com.siraj.app.domain.repository.review.ShariaReviewRepository
 import kotlinx.coroutines.flow.Flow
@@ -57,8 +58,9 @@ class FirebaseShariaReviewRepositoryImpl : ShariaReviewRepository {
 
                 Resource.Success(filtered)
             } catch (e: Exception) {
-                Resource.Error(e.localizedMessage ?: "حدث خطأ أثناء تحميل قائمة المراجعة الشرعية")
-            }
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
+        }
         }
     }
 

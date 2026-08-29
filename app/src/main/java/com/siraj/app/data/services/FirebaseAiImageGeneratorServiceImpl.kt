@@ -1,4 +1,4 @@
-package com.siraj.app.data.services
+package com.siraj.app.getData().services
 
 import com.google.firebase.functions.FirebaseFunctions
 import com.siraj.app.core.utils.Resource
@@ -6,8 +6,8 @@ import com.siraj.app.domain.models.*
 import com.siraj.app.domain.repository.AssetRepository
 import com.siraj.app.domain.repository.ProjectRepository
 import com.siraj.app.domain.services.AiImageGeneratorService
-import com.siraj.app.data.repository.FirebaseAssetRepositoryImpl
-import com.siraj.app.data.repository.FirebaseProjectRepositoryImpl
+import com.siraj.app.getData().repository.FirebaseAssetRepositoryImpl
+import com.siraj.app.getData().repository.FirebaseProjectRepositoryImpl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
@@ -51,7 +51,7 @@ class FirebaseAiImageGeneratorServiceImpl(
                 .call(payload)
                 .await()
 
-            val rawData = result.data as? Map<String, Any> ?: emptyMap()
+            val rawData = result.getData() as? Map<String, Any> ?: emptyMap()
             val rawImages = rawData["images"] as? List<Map<String, Any>> ?: emptyList()
 
             val items = rawImages.map { map ->
@@ -121,7 +121,7 @@ class FirebaseAiImageGeneratorServiceImpl(
             return Resource.Error("تعذر العثور على المشروع")
         }
 
-        val project = projRes.data
+        val project = projRes.getData()
         val targetScene = project.scenes.find { it.id == sceneId }
             ?: return Resource.Error("تعذر العثور على المشهد المطلوب")
 

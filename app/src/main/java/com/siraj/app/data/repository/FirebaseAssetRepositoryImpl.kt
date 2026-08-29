@@ -3,6 +3,7 @@ package com.siraj.app.data.repository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.siraj.app.core.utils.Resource
+import com.siraj.app.core.error.ErrorHandler
 import com.siraj.app.domain.models.Asset
 import com.siraj.app.domain.models.AssetStatus
 import com.siraj.app.domain.repository.AssetRepository
@@ -44,7 +45,8 @@ class FirebaseAssetRepositoryImpl(
             val asset = doc.toObject(Asset::class.java)
             if (asset != null) Resource.Success(asset) else Resource.Error("Asset not found")
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unknown error")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -53,7 +55,8 @@ class FirebaseAssetRepositoryImpl(
             assetsCollection.document(asset.id).set(asset).await()
             Resource.Success(asset.id)
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "Failed to add asset")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -62,7 +65,8 @@ class FirebaseAssetRepositoryImpl(
             assetsCollection.document(asset.id).set(asset).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "Failed to update asset")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -77,7 +81,8 @@ class FirebaseAssetRepositoryImpl(
             assetsCollection.document(asset.id).update("status", AssetStatus.DELETED.name).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "Failed to delete asset")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 

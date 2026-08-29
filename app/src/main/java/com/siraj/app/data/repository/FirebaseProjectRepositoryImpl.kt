@@ -4,6 +4,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.siraj.app.core.utils.Resource
+import com.siraj.app.core.error.ErrorHandler
 import com.siraj.app.domain.models.*
 import com.siraj.app.domain.repository.ProjectRepository
 import kotlinx.coroutines.channels.awaitClose
@@ -94,7 +95,8 @@ class FirebaseProjectRepositoryImpl(
             }
             Resource.Success(projects)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل جلب المشاريع")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -108,7 +110,8 @@ class FirebaseProjectRepositoryImpl(
                 Resource.Error("المشروع غير موجود")
             }
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل جلب المشروع")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -131,7 +134,8 @@ class FirebaseProjectRepositoryImpl(
             
             Resource.Success(id)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل إنشاء المشروع")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -144,7 +148,8 @@ class FirebaseProjectRepositoryImpl(
             projectsCollection.document(project.id).set(updatedProject).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل تحديث المشروع")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -153,7 +158,8 @@ class FirebaseProjectRepositoryImpl(
             projectsCollection.document(projectId).update("status", ProjectStatus.DELETED.name).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل حذف المشروع")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -162,7 +168,8 @@ class FirebaseProjectRepositoryImpl(
             projectsCollection.document(projectId).update("status", ProjectStatus.DRAFT.name).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل استعادة المشروع")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -176,7 +183,8 @@ class FirebaseProjectRepositoryImpl(
             ).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل أرشفة المشروع")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -208,7 +216,8 @@ class FirebaseProjectRepositoryImpl(
             
             Resource.Success(newId)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل نسخ المشروع")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -219,7 +228,8 @@ class FirebaseProjectRepositoryImpl(
             activitiesCollection.document(id).set(act).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل تسجيل النشاط")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -232,7 +242,8 @@ class FirebaseProjectRepositoryImpl(
             val activities = snapshot.documents.mapNotNull { it.toObject(ProjectActivity::class.java) }
             Resource.Success(activities)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل جلب الأنشطة")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -254,7 +265,8 @@ class FirebaseProjectRepositoryImpl(
             
             Resource.Success(id)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل إنشاء نسخة")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -267,7 +279,8 @@ class FirebaseProjectRepositoryImpl(
             val versions = snapshot.documents.mapNotNull { it.toObject(ProjectVersion::class.java) }
             Resource.Success(versions)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل جلب النسخ")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 }

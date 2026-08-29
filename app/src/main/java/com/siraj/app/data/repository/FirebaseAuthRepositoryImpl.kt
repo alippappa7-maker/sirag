@@ -4,6 +4,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.siraj.app.core.utils.Resource
+import com.siraj.app.core.error.ErrorHandler
+import com.siraj.app.core.error.AppError
 import com.siraj.app.domain.models.UserProfile
 import com.siraj.app.domain.models.UserRole
 import com.siraj.app.domain.models.UserPreferences
@@ -86,7 +88,8 @@ class FirebaseAuthRepositoryImpl(
         } catch (e: FirebaseAuthException) {
             Resource.Error(mapFirebaseAuthError(e.errorCode))
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "حدث خطأ غير معروف")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -108,7 +111,8 @@ class FirebaseAuthRepositoryImpl(
         } catch (e: FirebaseAuthException) {
             Resource.Error(mapFirebaseAuthError(e.errorCode))
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "حدث خطأ غير معروف")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -117,7 +121,8 @@ class FirebaseAuthRepositoryImpl(
             auth.signOut()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error("فشل تسجيل الخروج")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -128,7 +133,8 @@ class FirebaseAuthRepositoryImpl(
         } catch (e: FirebaseAuthException) {
             Resource.Error(mapFirebaseAuthError(e.errorCode))
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "حدث خطأ غير معروف")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -137,7 +143,8 @@ class FirebaseAuthRepositoryImpl(
             auth.currentUser?.sendEmailVerification()?.await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error("فشل إرسال رمز التحقق")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -147,7 +154,8 @@ class FirebaseAuthRepositoryImpl(
             user?.delete()?.await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error("يرجى تسجيل الدخول مجدداً لحذف الحساب.")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -160,7 +168,8 @@ class FirebaseAuthRepositoryImpl(
             firestore.collection("users").document(user.uid).update(updates).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل تحديث الملف الشخصي")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
@@ -184,7 +193,8 @@ class FirebaseAuthRepositoryImpl(
             firestore.collection("users").document(user.uid).update("preferences", prefMap).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل تحديث الإعدادات")
+            val error = ErrorHandler.handle(e)
+            Resource.Error(error.userMessage, error)
         }
     }
 
