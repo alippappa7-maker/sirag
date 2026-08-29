@@ -47,36 +47,6 @@ android {
         }
     }
 
-
-    flavorDimensions += "environment"
-    productFlavors {
-        create("dev") {
-            dimension = "environment"
-            applicationIdSuffix = ".dev"
-            versionNameSuffix = "-dev"
-            resValue("string", "app_name", "Siraj (Dev)")
-            buildConfigField("String", "ENVIRONMENT", "\"development\"")
-            buildConfigField("Boolean", "IS_BETA", "true")
-            buildConfigField("Boolean", "ALLOW_MOCK_DATA", "true")
-        }
-        create("staging") {
-            dimension = "environment"
-            applicationIdSuffix = ".beta"
-            versionNameSuffix = "-beta.1"
-            resValue("string", "app_name", "سراج (Beta)")
-            buildConfigField("String", "ENVIRONMENT", "\"staging\"")
-            buildConfigField("Boolean", "IS_BETA", "true")
-            buildConfigField("Boolean", "ALLOW_MOCK_DATA", "true")
-        }
-        create("prod") {
-            dimension = "environment"
-            resValue("string", "app_name", "سراج")
-            buildConfigField("String", "ENVIRONMENT", "\"production\"")
-            buildConfigField("Boolean", "IS_BETA", "false")
-            buildConfigField("Boolean", "ALLOW_MOCK_DATA", "false")
-        }
-    }
-
     buildTypes {
         debug {
             signingConfig = signingConfigs.getByName("debugConfig")

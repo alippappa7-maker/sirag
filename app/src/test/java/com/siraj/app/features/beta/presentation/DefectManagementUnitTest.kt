@@ -162,7 +162,7 @@ class DefectManagementUnitTest {
     }
 
     @Test
-    fun `prioritized fix list places blockers and criticals ahead of minor enhancements and closed items`() = runTest {
+    fun `prioritized fix list places blockers and criticals ahead of minor enhancements and excludes closed items`() = runTest {
         val prioritized = repository.getPrioritizedFixList().first()
         assertTrue(prioritized.isNotEmpty())
 
@@ -171,9 +171,9 @@ class DefectManagementUnitTest {
         assertTrue("First item should be P0 or P1", firstItem.priority == DefectPriority.P0_IMMEDIATE || firstItem.priority == DefectPriority.P1_HIGH)
         assertTrue("First item should not be closed or deferred", firstItem.status != DefectStatus.CLOSED && firstItem.status != DefectStatus.DEFERRED)
 
-        // Closed items should be at the tail end
-        val lastItems = prioritized.takeLast(3)
-        assertTrue("Tail items should include closed items", lastItems.any { it.status == DefectStatus.CLOSED })
+        // Closed and deferred items must not be present in the active fix list
+        assertTrue("Active fix list must not contain closed items", prioritized.none { it.status == DefectStatus.CLOSED })
+        assertTrue("Active fix list must not contain deferred items", prioritized.none { it.status == DefectStatus.DEFERRED })
     }
 
     @Test

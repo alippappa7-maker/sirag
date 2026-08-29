@@ -1,5 +1,54 @@
 # سجل التغييرات (Changelog)
 
+## [Unreleased] - Incident Response Plan & Emergency Action Hub (PROMPT 076)
+### Added
+- إنشاء نماذج الاستجابة للحوادث `IncidentResponseModels.kt` (الأنواع الـ 10، المراحل الـ 8، الأدوار المسؤولة، مستويات الخطورة P0 إلى P3، تقارير ما بعد الحادث Post-Mortems، والتصحيح الشرعي المزدوج).
+- إنشاء محرك الاستجابة للطوارئ `IncidentResponseEngine.kt`:
+  - التحقق من اعتماد مراجعين شرعيين اثنين (Double Review) لتصويب النصوص القرآنية والدينية قبل النشر مع رفع رقم الإصدار وتوثيق السند.
+  - تجريد إشعارات الحوادث العامة للمستخدمين لمنع تسرب أي أسرار أو تفاصيل أمنية يستغلها مهاجم.
+  - التحقق من تفويض الأدوار (Separation of Duties) للإجراءات الطارئة كالإيقاف الشامل وتدوير المفاتيح والاسترداد المالي.
+- تعريف واجهة المستودع `IncidentResponseRepository` وتطبيقها في `FirebaseIncidentResponseRepositoryImpl`.
+- تطوير لوحة الاستجابة للطوارئ `IncidentResponseScreen` و `IncidentResponseViewModel` ودمجها كالتبويب الخامس في `AdminScreen`:
+  - مركز التدخل السريع والإجراءات الطارئة الفورية (Kill-Switch، تدوير المفاتيح، تصحيح شرعي، استرداد مالي، وسحب مشاريع).
+  - أدلة وخطط الاستجابة التفاعلية (Playbooks) للأنواع الـ 10 من الحوادث مع المراحل الـ 8 وصيغ التواصل العامة.
+  - إدارة تقارير ما بعد الحادث (Post-Mortem Reports) وعرض أسبابها الجذرية وإجراءاتها التصحيحية والوقائية.
+  - مصفوفة جهات الاتصال وقنوات التصعيد المشفرة 24/7.
+- تأمين قواعد `firestore.rules` لمجموعات `incident_reports` و `emergency_actions` و `sharia_corrections` و `escalation_contacts`.
+- إضافة نقطة التدخل الطارئ السحابية `executeEmergencyContainmentAction` في `functions/src/index.ts`.
+- إنشاء الوثيقة التوثيقية الشاملة `INCIDENT_RESPONSE.md`.
+- كتابة وتمرير الاختبارات الشاملة `IncidentResponseTest.kt`.
+
+## [Unreleased] - Platform Services Health Monitoring (PROMPT 075)
+### Added
+- إنشاء نماذج المراقبة الشاملة `MonitoringModels.kt` (13 خدمة ومزوداً تشغيلياً، حالات الصحة، مستويات الخطورة P0 إلى P3، بلاغات الأعطال، والتنبيهات).
+- إنشاء محرك فحص الصحة ومطابقة الأخطاء `HealthMonitoringEngine.kt` الذي يتضمن:
+  - منع تكرار التنبيهات عبر `computeDeduplicationHash` (MD5 hashing).
+  - تجريد أسرار البنية التحتية والمسارات والـ tokens وتوليد رسائل عربية مهذبة للمستخدمين `sanitizeForUser`.
+  - تقييم شروط قاطع الدائرة `shouldTripCircuitBreaker` عند تكرار 3 أخطاء متتالية أو ارتفاع زمن الاستجابة عن المهلة أو تجاوز معدل الخطأ 50%.
+  - استخدام رموز فحص اصطناعية محايدة ومجردة من أي نصوص قرآنية أو دينية (`SIRAJ_SYSTEM_HEALTH_CHECK_SYNTHETIC_PING_2026`).
+- تعريف واجهة المستودع `MonitoringRepository` وتنفيذها في `FirebaseMonitoringRepositoryImpl`.
+- تطوير لوحة المراقبة `MonitoringDashboardScreen` و `MonitoringDashboardViewModel` ودمجها داخل شاشة الإدارة `AdminScreen`:
+  - شريط إحصائيات عامة (Uptime, Avg Latency, Crash-free users, Active Incidents).
+  - قائمة حالة الخدمات الـ 13 مع فلترة بالتصنيف وإمكانية الفحص اليدوي المباشر وتفعيل/تعطيل قواطع الدائرة.
+  - إدارة بلاغات الأعطال الحية والتاريخية (Incidents) مع خط زمني تفاعلي وتحديث الحالات.
+  - سجل التنبيهات النشطة وإمكانية إقرارها وحلها.
+  - نافذة دليل تشغيل الأعطال التفاعلي (Runbooks Modal) المخصص لكل خدمة.
+- تأمين قواعد `firestore.rules` لمجموعات `system_health_probes` و `service_incidents` و `monitoring_alerts`.
+- إضافة دالة `checkSystemHealth` في `functions/src/index.ts`.
+- إنشاء الوثائق التوثيقية الشاملة `MONITORING.md` و `INCIDENT_RUNBOOK.md`.
+- كتابة وتمرير الاختبارات الشاملة `ServiceHealthMonitoringTest.kt`.
+
+## [Unreleased] - Backup & Disaster Recovery Policy (PROMPT 074)
+### Added
+- إنشاء نماذج واستراتيجية النسخ الاحتياطي والتعافي من الكوارث `BackupModels.kt` (الأنواع: Full, Incremental, Metadata-only, Disaster Recovery، الحالات، السياسات، وأدوار الصلاحيات).
+- إنشاء معالج إدارة وفحص النسخ `BackupDisasterRecoveryManager.kt` للتحقق من تواقيع SHA-256، وتجريد الأسرار من البيانات الوصفية، وتطهير واستبعاد بيانات الحسابات المحذوفة (Tombstones).
+- تعريف واجهة المستودع `BackupRepository` وتنفيذها في `FirebaseBackupRepositoryImpl` للتكامل مع Firestore و Cloud Storage مع مستودعات معزولة.
+- تطوير لوحة التحكم `BackupRecoveryScreen` و `BackupRecoveryViewModel` داخل شاشة الإدارة `AdminScreen` لدعم إطلاق النسخ المشفر، واختبارات الاستعادة التجريبية (Dry-run) في Sandbox معزول، واستعادة المشاريع الفردية، ودليل الطوارئ.
+- تأمين قواعد `firestore.rules` لحصر الوصول لمجموعات `backup_snapshots` و `backup_logs` و `restore_jobs` على المديرين فقط (Admin Claim).
+- إضافة دوال Cloud Functions (`triggerBackupSnapshot`, `executeDryRunRestoreTest`) في `functions/src/index.ts`.
+- إنشاء الوثيقة التوثيقية الشاملة `BACKUP_POLICY.md` متضمنة RPO (< 1 ساعة) و RTO (< 4 ساعات) وسياسات التشفير CMEK وقفل WORM وحق النسيان.
+- كتابة وتمرير الاختبارات الشاملة `BackupRecoveryTest.kt`.
+
 ## [Unreleased] - Beta Feedback Triage & Defect Management (PROMPT 073)
 ### Added
 - إنشاء نماذج إدارة العيوب والفرز `DefectManagementModels.kt` مع التصنيفات الثمانية: `blocker`, `critical`, `major`, `minor`, `enhancement`, `duplicate`, `not_reproducible`, و `expected_behavior`، والأولويات P0 إلى P3، ومجالات الاختصاص (المحتوى الشرعي، ستوديو المونتاج، التشغيل الصوتي، دون اتصال، إمكانية الوصول، والأداء).

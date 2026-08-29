@@ -149,6 +149,54 @@ service cloud.firestore {
       allow create, update: if isAuthenticated();
       allow delete: if hasAdminClaim();
     }
+
+    // 9. Backup Snapshots, Disaster Recovery Logs & Restore Jobs (Highly Restricted)
+    match /backup_snapshots/{snapshotId} {
+      allow read, write: if hasAdminClaim();
+    }
+
+    match /backup_logs/{logId} {
+      allow read, create: if hasAdminClaim();
+      allow update, delete: if false; // Immutable audit trail
+    }
+
+    match /restore_jobs/{jobId} {
+      allow read, write: if hasAdminClaim();
+    }
+
+    // 10. System Health Monitoring, Probes & Incidents
+    match /system_health_probes/{probeId} {
+      allow read, write: if hasAdminClaim();
+    }
+
+    match /service_incidents/{incidentId} {
+      allow read: if isAuthenticated();
+      allow write: if hasAdminClaim();
+    }
+
+    match /monitoring_alerts/{alertId} {
+      allow read, write: if hasAdminClaim();
+    }
+
+    // 11. Incident Response, Post-Mortems & Emergency Actions
+    match /incident_reports/{reportId} {
+      allow read: if isAuthenticated();
+      allow write: if hasAdminClaim();
+    }
+
+    match /emergency_actions/{actionId} {
+      allow read, create: if hasAdminClaim();
+      allow update, delete: if false; // Immutable emergency audit trail
+    }
+
+    match /sharia_corrections/{correctionId} {
+      allow read: if isAuthenticated();
+      allow write: if hasAdminClaim();
+    }
+
+    match /escalation_contacts/{contactId} {
+      allow read, write: if hasAdminClaim();
+    }
     
     // Default Deny
     match /{document=**} {

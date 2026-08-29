@@ -1,4 +1,5 @@
 <resources>
+    <string name="app_name">سراج</string>
     <string name="language">اللغة</string>
     <string name="language_arabic">العربية</string>
     <string name="language_english">الإنجليزية</string>
