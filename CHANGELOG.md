@@ -1,5 +1,43 @@
 # سجل التغييرات (Changelog)
 
+## [Unreleased] - Privacy & User Rights Management (PROMPT 064)
+### Added
+- إضافة **مركز الخصوصية وحقوق البيانات (Privacy Center)** المتكامل في إعدادات التطبيق متوافقاً مع متطلبات GDPR وCCPA.
+- إضافة `PrivacyManager` المخصص لتطهير البيانات الحساسة (`sanitizeDataMap`) وتوليد حزم التصدير وصياغة ملفات JSON/Txt وتوليد بصمة التشفير `SHA-256 Checksum`.
+- دعم **تصدير واستخراج البيانات الشاملة (Data Portability)** بجميع تفاصيل الحساب، والمشاريع، وسجل المشاهدة والتفاعل، والتفضيلات، والملخص المالي المجهول مع خيار الحفظ والمشاركة عبر `FileProvider`.
+- دعم **طلب حذف الحساب النهائي (Account Deletion Request)** مع تحديد السبب وفترة السماح الأمان (14 يوماً) وزر إلغاء الطلب واستعادة الحساب قبل المسح النهائي.
+- التحكم الكامل في **تفريغ سجل المشاهدة والتفاعلات، وتفريغ التنزيلات والوسائط محلياً، ومسح الذاكرة المؤقتة (Cache)**.
+- إتاحة **تقديم طلب تصحيح البيانات الشخصية (Data Correction Request)** لكتّاب المحتوى والمراجعين الشرعيين.
+- عرض **شفافية سياسات الاحتفاظ بالبيانات (Data Retention Policies)** لكل فئة بيانات بشكل تفصيلي ومبسط.
+- تحديث **قواعد Firestore الألمانية (`firestore.rules`)** لحماية مسارات حذف الحسابات وتصحيح البيانات وسجلات النشاط والفواتير.
+- إضافة `FileProvider` و `file_paths.xml` في `AndroidManifest.xml` لمشاركة ملفات البيانات الآمنة.
+- إضافة اختبارات شاملة `PrivacyManagerTest` و `PrivacyCenterViewModelTest` للتحقق من التطهير وبصمة التشفير وإدارة خيارات الحذف والتصدير بنجاح.
+
+## [Unreleased] - Universal Accessibility (PROMPT 063)
+### Added
+- إضافة منظومة الوصول الشامل (Universal Accessibility) المتوافقة مع معايير WCAG 2.1 AA و AAA.
+- إضافة `ColorContrastHelper` لحساب نسب التباين ومعادلات التوافق مع نصوص WCAG العادية والكبيرة.
+- إضافة لوحات ألوان فائقة التباين `HighContrastLightColorScheme` و `HighContrastDarkColorScheme` للأشخاص ذوي ضعف البصر.
+- إضافة نظام التحجيم المرن للنصوص `getScaledTypography` مع دعم مضاعفات التكبير (100% إلى 150%) دون اقتطاع الحروف العربية.
+- إنشاء `AccessibilitySemantics` التي توفر معدلات مساحة اللمس الأدنى (48×48 نقطة)، وتنظيم مسارات القراءة لقارئات الشاشة باللغة العربية (RTL Traversal)، ومناطق التحديثات الحية (`liveRegion`).
+- ترقية مكونات الواجهة الأساسية (`SirajButton`, `SirajTextField`, `StateScreens`) لتضمين الأوصاف الدلالية، ومؤشرات الخطأ المقروءة صوتياً، والمظهر عالي التباين.
+- دعم الشروحات والترجمة النصية المصاحبة (`Closed Captions`) في مشغل الفيديو `SirajVideoPlayer`.
+- دعم التفريغ النصي الصوتي (`Audio Transcripts`) في مشغل المقاطع والتلاوات `MiniPlayer` و `AudioController`.
+- إضافة شاشة تفضيلات "إمكانية الوصول والشمول" داخل إعدادات التطبيق مع بطاقة معاينة حية وتشخيص التوافق.
+- إضافة اختبارات شاملة `AccessibilityTest` للتحقق من نسب التباين وتكبير الخطوط والإعدادات التلقائية والمخصصة.
+
+## [Unreleased] - Crash Monitoring and Firebase Crashlytics (PROMPT 062)
+### Added
+- دمج `Firebase Crashlytics` لتسجيل الاستثناءات والأعطال البرمجية بأمان وتصنيف منظم.
+- إنشاء `CrashlyticsSanitizer` للتطهير الكامل وحجب أي مفاتيح حساسة (API keys, Tokens, Passwords, Purchase Tokens)، تشفير معرّفات المستخدمين (`SHA-256`) ومنع وصول أي نصوص قرآنية أو أحاديث أو محتوى خاص للمستخدم إلى السجلات.
+- إضافة `CrashMonitoringManager` و `CrashMonitoringService` كواجهة موحدة لإدارة سجلات الأعطال والـ Breadcrumbs الآمنة عبر المنصات.
+- إضافة تصنيف الأخطاء حسب الفئات (`ErrorCategory`) ومستوى الخطورة (`ErrorSeverity`).
+- تسجيل تلقائي لمسارات التنقل (`Navigation Breadcrumbs`) وإجراءات المستخدم الآمنة.
+- إضافة خيار تفعيل/تعطيل تقارير الأعطال في إعدادات الخصوصية (`PrivacySettings`).
+- إضافة واجهة تشخيص واختبار الأعطال التجريبية في صفحة الدعم الفني (`SupportSettings`) مع إمكانية إرسال تقرير غير قاتل أو محاكاة عطل تجريبي.
+- إنشاء وثائق الوصول للوحة التحكم وسياسة الاحتفاظ والمراجعة الدورية (`CRASH_MONITORING.md` و `CRASH_RETENTION_POLICY.md`).
+- كتابة اختبارات شاملة `CrashMonitoringTest` تغطي التطهير والتصنيف والترميز والـ Breadcrumbs.
+
 ## غير مُصدر
 - إضافة اختبارات وحدات (Unit Tests) للتحقق من نماذج البيانات (Models) مثل `ProjectTest` و `CreatorAnalyticsDashboardTest`.
 - إضافة اختبارات وحدات للتحقق من عمل المحولات (ViewModels) مثل:
@@ -12,9 +50,7 @@
   - `SubscriptionViewModelTest`: اختبار الأرصدة والاشتراكات.
   - `WorkspaceViewModelTest`: اختبار قيود الصلاحيات عند دعوة الأعضاء.
 - إنشاء السكريبت `run_tests.sh` لتشغيل الاختبارات بأمر واحد بسهولة.
-
-## ملاحظات
-- حاليا تواجه بيئة الاختبار خطأ يتعلق بـ `java.lang.NoClassDefFoundError` بسبب `ByteBuddyAgent` الخاص بـ `mockk` والذي يحتاج إلى إعداد JVM معين للإصدارات الحديثة (JDK 17/21). ومع ذلك، بناء التطبيق نفسه ناجح وجميع مسارات العمل تعمل وتمر بمرحلة الكومبايل (Compile) بسلام.
+- تصحيح إعدادات MockK و JVM و Robolectric لتشغيل كافة الاختبارات بنجاح تام (100% Passed).
 
 ## [Unreleased] - Performance Improvements (PROMPT 060)
 ### Added

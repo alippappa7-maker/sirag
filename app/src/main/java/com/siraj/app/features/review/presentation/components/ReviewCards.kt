@@ -77,14 +77,14 @@ fun RiskBadge(riskLevel: RiskLevel, modifier: Modifier = Modifier) {
 
 @Composable
 fun StatusBadge(status: ShariaReviewStatus, modifier: Modifier = Modifier) {
-    val (bgColor, textColor) = when (status) {
-        ShariaReviewStatus.PENDING -> Pair(Color(0xFFECEFF1), Color(0xFF455A64))
-        ShariaReviewStatus.IN_REVIEW -> Pair(Color(0xFFE3F2FD), Color(0xFF1565C0))
-        ShariaReviewStatus.CHANGES_REQUESTED -> Pair(Color(0xFFFFF3E0), Color(0xFFE65100))
-        ShariaReviewStatus.ESCALATED_SECOND_REVIEW -> Pair(Color(0xFFF3E5F5), Color(0xFF7B1FA2))
-        ShariaReviewStatus.DUAL_APPROVAL_PENDING -> Pair(Color(0xFFEDE7F6), Color(0xFF512DA8))
-        ShariaReviewStatus.APPROVED -> Pair(Color(0xFFE8F5E9), Color(0xFF2E7D32))
-        ShariaReviewStatus.REJECTED -> Pair(Color(0xFFFFEBEE), Color(0xFFC62828))
+    val (bgColor, textColor, icon) = when (status) {
+        ShariaReviewStatus.PENDING -> Triple(Color(0xFFECEFF1), Color(0xFF455A64), Icons.Default.HourglassEmpty)
+        ShariaReviewStatus.IN_REVIEW -> Triple(Color(0xFFE3F2FD), Color(0xFF1565C0), Icons.Default.RateReview)
+        ShariaReviewStatus.CHANGES_REQUESTED -> Triple(Color(0xFFFFF3E0), Color(0xFFE65100), Icons.Default.EditNote)
+        ShariaReviewStatus.ESCALATED_SECOND_REVIEW -> Triple(Color(0xFFF3E5F5), Color(0xFF7B1FA2), Icons.Default.SupervisorAccount)
+        ShariaReviewStatus.DUAL_APPROVAL_PENDING -> Triple(Color(0xFFEDE7F6), Color(0xFF512DA8), Icons.Default.HowToReg)
+        ShariaReviewStatus.APPROVED -> Triple(Color(0xFFE8F5E9), Color(0xFF2E7D32), Icons.Default.CheckCircle)
+        ShariaReviewStatus.REJECTED -> Triple(Color(0xFFFFEBEE), Color(0xFFC62828), Icons.Default.Cancel)
     }
 
     Surface(
@@ -92,13 +92,24 @@ fun StatusBadge(status: ShariaReviewStatus, modifier: Modifier = Modifier) {
         shape = RoundedCornerShape(8.dp),
         modifier = modifier
     ) {
-        Text(
-            text = status.arabicTitle,
-            color = textColor,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.SemiBold,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-        )
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = textColor,
+                modifier = Modifier.size(14.dp)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = status.arabicTitle,
+                color = textColor,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     }
 }
 

@@ -96,7 +96,7 @@ class FirebaseAudioRepositoryImpl(
 
             // Call Cloud Function
             val result = functions.getHttpsCallable("generateVoiceover").call(data).await()
-            val resData = result.data as? Map<*, *> ?: emptyMap<String, Any>()
+            val resData = result.getData() as? Map<*, *> ?: emptyMap<String, Any>()
 
             val audioData = (resData["audio"] as? Map<*, *>) ?: emptyMap<String, Any>()
 

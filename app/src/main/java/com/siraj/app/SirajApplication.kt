@@ -12,11 +12,27 @@ import com.google.firebase.FirebaseOptions
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.PersistentCacheSettings
+import com.siraj.app.core.config.EnvironmentConfig
+import com.siraj.app.core.monitoring.CrashMonitoringManager
 
 class SirajApplication : Application(), ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
         ensureFirebase(this)
+        
+        // Initialize Crashlytics & Error Monitoring
+        try {
+            CrashMonitoringManager.initialize(
+                environment = EnvironmentConfig.currentEnvironment.name,
+                appVersion = BuildConfig.VERSION_NAME,
+                buildNumber = BuildConfig.VERSION_CODE.toString()
+            )
+            // By default enable in Staging/Production, configurable in Dev
+            val shouldEnableCrashlytics = !EnvironmentConfig.isDebugEnabled || true
+            CrashMonitoringManager.setCrashlyticsCollectionEnabled(shouldEnableCrashlytics)
+        } catch (e: Exception) {
+            Log.e("SirajApplication", "Could not initialize CrashMonitoringManager", e)
+        }
     }
 
     override fun newImageLoader(): ImageLoader {

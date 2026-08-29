@@ -32,7 +32,7 @@ class FirebaseIdeaGeneratorServiceImpl(
                 .call(data)
                 .await()
 
-            val rawList = result.data as? List<Map<String, Any>> ?: emptyList()
+            val rawList = result.getData() as? List<Map<String, Any>> ?: emptyList()
             val ideas = rawList.map { map ->
                 GeneratedIdea(
                     id = map["id"] as? String ?: "",

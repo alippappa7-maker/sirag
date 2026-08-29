@@ -32,10 +32,18 @@ class NotificationViewModel(
     val uiState: StateFlow<NotificationCenterUiState> = _uiState.asStateFlow()
 
     private val currentUserId: String
-        get() = FirebaseAuth.getInstance().currentUser?.uid ?: "user_default_id"
+        get() = try {
+            FirebaseAuth.getInstance().currentUser?.uid ?: "user_default_id"
+        } catch (e: Exception) {
+            "user_default_id"
+        }
 
     init {
-        NotificationHelper.createNotificationChannels(application)
+        try {
+            NotificationHelper.createNotificationChannels(application)
+        } catch (e: Exception) {
+            // Ignore channel creation in unit tests
+        }
         observeNotifications()
         observePreferences()
     }

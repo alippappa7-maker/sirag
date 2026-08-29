@@ -104,6 +104,26 @@ service cloud.firestore {
       allow read, update: if hasAdminClaim();
       allow delete: if false;
     }
+
+    // 6. Privacy & User Rights
+    match /account_deletion_requests/{userId} {
+      allow read, create, update, delete: if isOwner(userId) || hasAdminClaim();
+    }
+
+    match /data_correction_requests/{requestId} {
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || hasAdminClaim());
+      allow update, delete: if hasAdminClaim();
+    }
+
+    match /activity_history/{historyId} {
+      allow read, create, update, delete: if isAuthenticated() && (resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid || hasAdminClaim());
+    }
+
+    match /invoices/{invoiceId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || hasAdminClaim());
+      allow write: if hasAdminClaim();
+    }
     
     // Default Deny
     match /{document=**} {

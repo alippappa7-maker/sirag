@@ -6,6 +6,8 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+val byteBuddyAgent by configurations.creating
+
 android {
     namespace = "com.siraj.app"
     compileSdk = 36
@@ -50,8 +52,13 @@ android {
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
-            all {
-                it.jvmArgs("-XX:+EnableDynamicAgentLoading")
+            all { testTask ->
+                val agentJar = byteBuddyAgent.asPath
+                testTask.jvmArgs(
+                    "-javaagent:$agentJar",
+                    "-XX:+EnableDynamicAgentLoading",
+                    "-Xshare:off"
+                )
             }
         }
     }
@@ -72,6 +79,7 @@ dependencies {
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
@@ -100,8 +108,7 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation("io.mockk:mockk:1.13.13")
-    testImplementation("io.mockk:mockk-agent:1.13.13")
-    testImplementation("io.mockk:mockk-android:1.13.13")
+    byteBuddyAgent("net.bytebuddy:byte-buddy-agent:1.14.17")
     testImplementation("app.cash.turbine:turbine:1.0.0")
     testImplementation("org.robolectric:robolectric:4.11.1")
     testImplementation("androidx.test:core-ktx:1.5.0")

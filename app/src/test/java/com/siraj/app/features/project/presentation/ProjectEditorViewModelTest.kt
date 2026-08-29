@@ -40,6 +40,7 @@ class ProjectEditorViewModelTest {
         authRepository = mockk(relaxed = true)
         
         coEvery { projectRepository.getProject(any()) } returns Resource.Success(Project(id = "test_project", title = "Original Title"))
+        coEvery { projectRepository.updateProject(any()) } returns Resource.Success(Unit)
         coEvery { templateRepository.getActiveTemplates() } returns flowOf(Resource.Success(emptyList()))
         
         viewModel = ProjectEditorViewModel("test_project", projectRepository, templateRepository, authRepository)

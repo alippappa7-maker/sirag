@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.siraj.app.domain.models.*
+import com.siraj.app.features.settings.presentation.privacy.PrivacyCenterScreen
 
 enum class SettingsPage(val title: String) {
     MAIN("الإعدادات"),
@@ -23,12 +24,13 @@ enum class SettingsPage(val title: String) {
     WORKSPACE("مساحة العمل"),
     BILLING("الاستخدام والفوترة"),
     APPEARANCE("المظهر"),
+    ACCESSIBILITY("إمكانية الوصول والشمول"),
     LANGUAGE("اللغة والمنطقة"),
     NOTIFICATIONS("الإشعارات"),
     MIHRAB("إعدادات المحراب"),
     VIDEO("إعدادات الفيديو"),
     LIBRARY("إعدادات المكتبة"),
-    PRIVACY("الخصوصية والأمان"),
+    PRIVACY("مركز الخصوصية وبيانات المستخدم"),
     ISLAMIC("المحتوى الشرعي"),
     STORAGE("التخزين والبيانات"),
     SUPPORT("الدعم"),
@@ -92,15 +94,25 @@ fun SettingsScreen(
                 SettingsPage.ACCOUNT -> AccountSettings(uiState, viewModel, onLogout)
                 SettingsPage.WORKSPACE -> onNavigateToWorkspaceSettings()
                 SettingsPage.APPEARANCE -> AppearanceSettings(uiState, viewModel)
+                SettingsPage.ACCESSIBILITY -> AccessibilitySettings(uiState, viewModel)
                 SettingsPage.LANGUAGE -> LanguageSettings(uiState, viewModel)
                 SettingsPage.NOTIFICATIONS -> NotificationSettings(uiState, viewModel)
                 SettingsPage.MIHRAB -> MihrabSettings(uiState, viewModel)
                 SettingsPage.VIDEO -> VideoSettings(uiState, viewModel)
                 SettingsPage.LIBRARY -> LibrarySettings(uiState, viewModel)
-                SettingsPage.PRIVACY -> PrivacySettings(uiState, viewModel, onNavigateToActivityHistory)
+                SettingsPage.PRIVACY -> PrivacyCenterScreen(
+                    userProfile = uiState.profile,
+                    onUpdatePreferences = { updateFunc ->
+                        viewModel.updatePreferences(updateFunc)
+                    },
+                    onNavigateToNotifications = { currentPage = SettingsPage.NOTIFICATIONS },
+                    onNavigateToActivityHistory = onNavigateToActivityHistory,
+                    onNavigateBack = { currentPage = SettingsPage.MAIN },
+                    onAccountDeleted = { viewModel.logout(onLogout) }
+                )
                 SettingsPage.ISLAMIC -> IslamicSettings(uiState, viewModel)
-                SettingsPage.STORAGE -> StorageSettings(uiState, viewModel, onLogout, onNavigateToActivityHistory)
-                SettingsPage.SUPPORT -> SupportSettings()
+                SettingsPage.STORAGE -> StorageSettings(uiState, viewModel, onLogout, onNavigateToActivityHistory, onNavigateToPrivacyCenter = { currentPage = SettingsPage.PRIVACY })
+                SettingsPage.SUPPORT -> SupportSettings(onMessage = { viewModel.showMessage(it) })
                 SettingsPage.ABOUT -> AboutSettings()
                 SettingsPage.BILLING -> onNavigateToBilling()
             }
@@ -119,6 +131,7 @@ fun MainSettingsList(onPageSelect: (SettingsPage) -> Unit, onLogout: () -> Unit,
         SettingsItemData("الاستخدام والفوترة", Icons.Default.CreditCard, SettingsPage.BILLING),
         SettingsItemData("مساحة العمل", Icons.Default.Build, SettingsPage.WORKSPACE),
         SettingsItemData("المظهر", Icons.Default.Palette, SettingsPage.APPEARANCE),
+        SettingsItemData("إمكانية الوصول والشمول", Icons.Default.AccessibilityNew, SettingsPage.ACCESSIBILITY),
         SettingsItemData("اللغة والمنطقة", Icons.Default.Language, SettingsPage.LANGUAGE),
         SettingsItemData("الإشعارات", Icons.Default.Notifications, SettingsPage.NOTIFICATIONS),
         SettingsItemData("إعدادات المحراب", Icons.Default.Star, SettingsPage.MIHRAB),

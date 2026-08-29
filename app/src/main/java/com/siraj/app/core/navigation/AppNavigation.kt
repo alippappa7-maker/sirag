@@ -90,6 +90,12 @@ fun AppNavigation(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    LaunchedEffect(currentRoute) {
+        currentRoute?.let { route ->
+            com.siraj.app.core.monitoring.CrashMonitoringManager.logNavigation(route)
+        }
+    }
+
     val mainRoutes = listOf(
         Screen.Home.route,
         Screen.Studio.route,

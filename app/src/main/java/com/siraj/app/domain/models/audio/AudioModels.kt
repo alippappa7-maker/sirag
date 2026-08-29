@@ -10,6 +10,12 @@ data class AudioRights(
     val commercialUseAllowed: Boolean = false
 )
 
+data class AudioTranscriptSegment(
+    val startMs: Long,
+    val endMs: Long,
+    val text: String
+)
+
 data class AudioTrack(
     val id: String,
     val title: String,
@@ -23,7 +29,9 @@ data class AudioTrack(
     val listenProgressSeconds: Int = 0,
     val playCount: Int = 0,
     val isFavorite: Boolean = false,
-    val isDownloaded: Boolean = false
+    val isDownloaded: Boolean = false,
+    val transcript: String? = null,
+    val transcriptSegments: List<AudioTranscriptSegment> = emptyList()
 )
 
 data class AudioFilter(

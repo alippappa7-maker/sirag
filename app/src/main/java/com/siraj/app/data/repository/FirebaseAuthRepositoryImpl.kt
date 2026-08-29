@@ -48,7 +48,13 @@ class FirebaseAuthRepositoryImpl(
                             val preferences = if (prefMap != null) {
                                 UserPreferences(
                                     themeMode = ThemeMode.valueOf(prefMap["themeMode"] as? String ?: "SYSTEM"),
+                                    highContrastMode = prefMap["highContrastMode"] as? Boolean ?: false,
+                                    fontScaleMultiplier = (prefMap["fontScaleMultiplier"] as? Number)?.toFloat() ?: 1.0f,
                                     reduceMotion = prefMap["reduceMotion"] as? Boolean ?: false,
+                                    showCaptions = prefMap["showCaptions"] as? Boolean ?: true,
+                                    showTranscripts = prefMap["showTranscripts"] as? Boolean ?: true,
+                                    screenReaderOptimized = prefMap["screenReaderOptimized"] as? Boolean ?: false,
+                                    soundAlertsWithHaptic = prefMap["soundAlertsWithHaptic"] as? Boolean ?: true,
                                     language = prefMap["language"] as? String ?: "ar",
                                     city = prefMap["city"] as? String ?: "",
                                     prayerNotifications = prefMap["prayerNotifications"] as? Boolean ?: true,
@@ -58,7 +64,14 @@ class FirebaseAuthRepositoryImpl(
                                     videoQuality = VideoQuality.valueOf(prefMap["videoQuality"] as? String ?: "HIGH"),
                                     downloadWifiOnly = prefMap["downloadWifiOnly"] as? Boolean ?: true,
                                     appLockEnabled = prefMap["appLockEnabled"] as? Boolean ?: false,
-                                    activeWorkspaceId = prefMap["activeWorkspaceId"] as? String
+                                    activeWorkspaceId = prefMap["activeWorkspaceId"] as? String,
+                                    analyticsOptIn = prefMap["analyticsOptIn"] as? Boolean ?: false,
+                                    crashReportsOptIn = prefMap["crashReportsOptIn"] as? Boolean ?: true,
+                                    personalizationOptIn = prefMap["personalizationOptIn"] as? Boolean ?: false,
+                                    locationOptIn = prefMap["locationOptIn"] as? Boolean ?: true,
+                                    preciseLocationOptIn = prefMap["preciseLocationOptIn"] as? Boolean ?: false,
+                                    accountDeletionStatus = prefMap["accountDeletionStatus"] as? String ?: "NONE",
+                                    accountDeletionScheduledAt = (prefMap["accountDeletionScheduledAt"] as? Number)?.toLong()
                                 )
                             } else {
                                 UserPreferences()
@@ -178,7 +191,13 @@ class FirebaseAuthRepositoryImpl(
             val user = auth.currentUser ?: return Resource.Error("غير مسجل الدخول")
             val prefMap = mapOf(
                 "themeMode" to preferences.themeMode.name,
+                "highContrastMode" to preferences.highContrastMode,
+                "fontScaleMultiplier" to preferences.fontScaleMultiplier,
                 "reduceMotion" to preferences.reduceMotion,
+                "showCaptions" to preferences.showCaptions,
+                "showTranscripts" to preferences.showTranscripts,
+                "screenReaderOptimized" to preferences.screenReaderOptimized,
+                "soundAlertsWithHaptic" to preferences.soundAlertsWithHaptic,
                 "language" to preferences.language,
                 "city" to preferences.city,
                 "prayerNotifications" to preferences.prayerNotifications,
@@ -188,7 +207,14 @@ class FirebaseAuthRepositoryImpl(
                 "videoQuality" to preferences.videoQuality.name,
                 "downloadWifiOnly" to preferences.downloadWifiOnly,
                 "appLockEnabled" to preferences.appLockEnabled,
-                "activeWorkspaceId" to preferences.activeWorkspaceId
+                "activeWorkspaceId" to preferences.activeWorkspaceId,
+                "analyticsOptIn" to preferences.analyticsOptIn,
+                "crashReportsOptIn" to preferences.crashReportsOptIn,
+                "personalizationOptIn" to preferences.personalizationOptIn,
+                "locationOptIn" to preferences.locationOptIn,
+                "preciseLocationOptIn" to preferences.preciseLocationOptIn,
+                "accountDeletionStatus" to preferences.accountDeletionStatus,
+                "accountDeletionScheduledAt" to preferences.accountDeletionScheduledAt
             )
             firestore.collection("users").document(user.uid).update("preferences", prefMap).await()
             Resource.Success(Unit)

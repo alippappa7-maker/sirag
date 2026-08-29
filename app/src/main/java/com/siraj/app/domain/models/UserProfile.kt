@@ -11,7 +11,13 @@ enum class VideoQuality { HIGH, MEDIUM, LOW }
 
 data class UserPreferences(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
+    val highContrastMode: Boolean = false,
+    val fontScaleMultiplier: Float = 1.0f,
     val reduceMotion: Boolean = false,
+    val showCaptions: Boolean = true,
+    val showTranscripts: Boolean = true,
+    val screenReaderOptimized: Boolean = false,
+    val soundAlertsWithHaptic: Boolean = true,
     val language: String = "ar",
     val city: String = "",
     val prayerNotifications: Boolean = true,
@@ -22,7 +28,13 @@ data class UserPreferences(
     val downloadWifiOnly: Boolean = true,
     val appLockEnabled: Boolean = false,
     val activeWorkspaceId: String? = null,
-    val analyticsOptIn: Boolean = false
+    val analyticsOptIn: Boolean = false,
+    val crashReportsOptIn: Boolean = true,
+    val personalizationOptIn: Boolean = false,
+    val locationOptIn: Boolean = true,
+    val preciseLocationOptIn: Boolean = false,
+    val accountDeletionStatus: String = "NONE",
+    val accountDeletionScheduledAt: Long? = null
 )
 
 data class UserProfile(

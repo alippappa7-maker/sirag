@@ -65,13 +65,24 @@ fun ClaimReviewCard(
                     color = if (claim.isVerified) Color(0xFFE8F5E9) else Color(0xFFFFF3E0),
                     shape = RoundedCornerShape(6.dp)
                 ) {
-                    Text(
-                        text = if (claim.isVerified) "تم التخريج والتوثيق" else "بحاجة لتخريج",
-                        color = if (claim.isVerified) Color(0xFF2E7D32) else Color(0xFFE65100),
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (claim.isVerified) Icons.Default.CheckCircle else Icons.Default.HelpOutline,
+                            contentDescription = null,
+                            tint = if (claim.isVerified) Color(0xFF2E7D32) else Color(0xFFE65100),
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = if (claim.isVerified) "تم التخريج والتوثيق" else "بحاجة لتخريج",
+                            color = if (claim.isVerified) Color(0xFF2E7D32) else Color(0xFFE65100),
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
 

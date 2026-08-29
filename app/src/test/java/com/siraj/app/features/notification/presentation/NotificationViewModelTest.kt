@@ -1,6 +1,7 @@
 package com.siraj.app.features.notification.presentation
 
 import android.app.Application
+import com.siraj.app.domain.models.notification.NotificationPreferences
 import com.siraj.app.domain.models.notification.NotificationType
 import com.siraj.app.domain.models.notification.SirajNotification
 import com.siraj.app.domain.models.notification.NotificationFilter
@@ -48,6 +49,8 @@ class NotificationViewModelTest {
         )
         
         coEvery { repository.getNotificationsFlow(any()) } returns flowOf(mockNotifications)
+        coEvery { repository.getUnreadCountFlow(any()) } returns flowOf(1)
+        coEvery { repository.getPreferencesFlow(any()) } returns flowOf(NotificationPreferences())
     }
 
     @After

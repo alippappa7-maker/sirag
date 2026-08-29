@@ -1,4 +1,4 @@
-package com.siraj.app.getData().services
+package com.siraj.app.data.services
 
 import com.google.firebase.functions.FirebaseFunctions
 import com.siraj.app.core.utils.Resource
@@ -6,9 +6,10 @@ import com.siraj.app.domain.models.*
 import com.siraj.app.domain.repository.AssetRepository
 import com.siraj.app.domain.repository.ProjectRepository
 import com.siraj.app.domain.services.AiImageGeneratorService
-import com.siraj.app.getData().repository.FirebaseAssetRepositoryImpl
-import com.siraj.app.getData().repository.FirebaseProjectRepositoryImpl
+import com.siraj.app.data.repository.FirebaseAssetRepositoryImpl
+import com.siraj.app.data.repository.FirebaseProjectRepositoryImpl
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.TimeUnit
@@ -86,9 +87,7 @@ class FirebaseAiImageGeneratorServiceImpl(
         } catch (e: Exception) {
             // In case Firebase Function is not yet deployed, fallback to Mock service
             val fallback = MockAiImageGeneratorServiceImpl(projectRepository, assetRepository)
-            fallback.generateImage(request).collect { fallbackRes ->
-                emit(fallbackRes)
-            }
+            emitAll(fallback.generateImage(request))
         }
     }
 
@@ -121,7 +120,7 @@ class FirebaseAiImageGeneratorServiceImpl(
             return Resource.Error("تعذر العثور على المشروع")
         }
 
-        val project = projRes.getData()
+        val project = projRes.data
         val targetScene = project.scenes.find { it.id == sceneId }
             ?: return Resource.Error("تعذر العثور على المشهد المطلوب")
 

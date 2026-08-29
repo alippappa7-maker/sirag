@@ -54,6 +54,10 @@ class SettingsViewModel(
         }
     }
 
+    fun showMessage(message: String) {
+        _uiState.update { it.copy(saveMessage = message) }
+    }
+
     fun clearMessage() {
         _uiState.update { it.copy(saveMessage = null, error = null) }
     }
