@@ -75,7 +75,7 @@ fun AudioScreen() {
                 trailingIcon = {
                     if (state.searchQuery.isNotEmpty()) {
                         IconButton(onClick = { viewModel.onSearchQueryChanged("") }) {
-                            Icon(Icons.Default.Clear, contentDescription = "مسح")
+                            Icon(Icons.Default.Clear, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.clear))
                         }
                     }
                 },
@@ -173,7 +173,7 @@ fun AudioTrackCard(
                 ) {
                     Icon(
                         imageVector = if (isActive) Icons.Default.Pause else Icons.Default.PlayArrow,
-                        contentDescription = "تشغيل",
+                        contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.play),
                         tint = if (isActive) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
                     )
                 }
@@ -224,7 +224,7 @@ fun AudioTrackCard(
                         leadingIcon = { Icon(Icons.Default.PlaylistAdd, null) }
                     )
                     DropdownMenuItem(
-                        text = { Text("مشاركة") },
+                        text = { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.share)) },
                         onClick = { showMenu = false },
                         leadingIcon = { Icon(Icons.Default.Share, null) }
                     )

@@ -51,7 +51,7 @@ fun ScenesScreen(
             TopAppBar(
                 title = { Text("إنتاج المشاهد") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "عودة") }
+                    IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back)) }
                 },
                 actions = {
                     IconButton(onClick = onNavigateToPreview) {
@@ -59,7 +59,7 @@ fun ScenesScreen(
                     }
                     if (canUndo) {
                         IconButton(onClick = { viewModel.undoLastChange() }) {
-                            Icon(Icons.Default.Undo, contentDescription = "تراجع")
+                            Icon(Icons.Default.Undo, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.undo))
                         }
                     }
                     val currentProj = (projectState as? Resource.Success)?.data
@@ -189,7 +189,7 @@ fun SceneCard(
                 }
                 Row {
                     IconButton(onClick = onDuplicate) { Icon(Icons.Default.AddCircle, contentDescription = "نسخ") }
-                    IconButton(onClick = onDelete) { Icon(Icons.Default.Delete, contentDescription = "حذف", tint = MaterialTheme.colorScheme.error) }
+                    IconButton(onClick = onDelete) { Icon(Icons.Default.Delete, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.delete), tint = MaterialTheme.colorScheme.error) }
                 }
             }
             

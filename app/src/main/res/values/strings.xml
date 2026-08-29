@@ -1,3 +1,28 @@
 <resources>
-    <string name="app_name">Siraj</string>
+    <string name="language">اللغة</string>
+    <string name="language_arabic">العربية</string>
+    <string name="language_english">الإنجليزية</string>
+    <string name="settings">الإعدادات</string>
+    <string name="cancel">إلغاء</string>
+    <string name="back">رجوع</string>
+    <string name="delete">حذف</string>
+    <string name="close">إغلاق</string>
+    <string name="search">بحث</string>
+    <string name="share">مشاركة</string>
+    <string name="edit">تعديل</string>
+    <string name="all">الكل</string>
+    <string name="yes">نعم</string>
+    <string name="no">لا</string>
+    <string name="save">حفظ</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="options">خيارات</string>
+    <string name="image">صورة</string>
+    <string name="video">فيديو</string>
+    <string name="clear">مسح</string>
+    <string name="active">نشط</string>
+    <string name="rejected">مرفوض</string>
+    <string name="play">تشغيل</string>
+    <string name="logout">تسجيل الخروج</string>
+    <string name="undo">تراجع</string>
+    <string name="general">عام</string>
 </resources>

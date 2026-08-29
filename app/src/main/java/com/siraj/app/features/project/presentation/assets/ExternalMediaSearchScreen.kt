@@ -97,7 +97,7 @@ fun ExternalMediaSearchScreen(
                 FilterChip(
                     selected = filter.type == MediaType.VIDEO,
                     onClick = { viewModel.updateFilter(filter.copy(type = MediaType.VIDEO)) },
-                    label = { Text("فيديو") }
+                    label = { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.video)) }
                 )
                 FilterChip(
                     selected = filter.orientation != MediaOrientation.ALL,
@@ -257,7 +257,7 @@ fun AssetDetailsDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("إلغاء") }
+            TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel)) }
         }
     )
 }

@@ -150,14 +150,14 @@ fun StudioProjectCard(
             }
             Box {
                 IconButton(onClick = { showMenu = true }) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "خيارات")
+                    Icon(Icons.Default.MoreVert, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.options))
                 }
                 DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
                     DropdownMenuItem(text = { Text("فتح") }, onClick = { showMenu = false; onClick() })
                     DropdownMenuItem(text = { Text("نسخ") }, onClick = { showMenu = false; onCopy() })
                     if (project.status != ProjectStatus.ARCHIVED && project.status != ProjectStatus.DELETED) {
                         DropdownMenuItem(text = { Text("أرشفة") }, onClick = { showMenu = false; onArchive() })
-                        DropdownMenuItem(text = { Text("حذف") }, onClick = { showMenu = false; onDelete() })
+                        DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.delete)) }, onClick = { showMenu = false; onDelete() })
                     } else if (project.status == ProjectStatus.ARCHIVED || project.status == ProjectStatus.DELETED) {
                         DropdownMenuItem(text = { Text("استعادة") }, onClick = { showMenu = false; onRestore() })
                     }

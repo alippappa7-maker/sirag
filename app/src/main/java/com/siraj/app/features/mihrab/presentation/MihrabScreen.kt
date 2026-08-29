@@ -134,7 +134,7 @@ fun MihrabContent(
                 onValueChange = onSearchQueryChanged,
                 placeholder = { Text("ابحث في السور، التفاسير، الأذكار...") },
                 leadingIcon = {
-                    Icon(Icons.Default.Search, contentDescription = "بحث")
+                    Icon(Icons.Default.Search, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.search))
                 },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
@@ -403,7 +403,7 @@ fun ErrorState(
             textAlign = TextAlign.Center
         )
         Button(onClick = onRetry) {
-            Text("إعادة المحاولة")
+            Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.retry))
         }
     }
 }

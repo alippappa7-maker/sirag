@@ -104,7 +104,7 @@ fun ApproveDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("إلغاء")
+                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
             }
         }
     )
@@ -163,7 +163,7 @@ fun RejectDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("إلغاء")
+                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
             }
         }
     )
@@ -222,7 +222,7 @@ fun RequestChangesDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("إلغاء")
+                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
             }
         }
     )
@@ -316,7 +316,7 @@ fun EscalateDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("إلغاء")
+                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
             }
         }
     )
@@ -406,7 +406,7 @@ fun DualApprovalDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("إلغاء")
+                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
             }
         }
     )
@@ -465,7 +465,7 @@ fun AddInternalNoteDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("إلغاء")
+                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
             }
         }
     )
@@ -545,7 +545,7 @@ fun AddClaimCommentDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("إلغاء")
+                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
             }
         }
     )
@@ -618,7 +618,7 @@ fun ScheduleReReviewDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("إلغاء")
+                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
             }
         }
     )

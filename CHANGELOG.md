@@ -16,6 +16,44 @@
 - إضافة `FileProvider` و `file_paths.xml` في `AndroidManifest.xml` لمشاركة ملفات البيانات الآمنة.
 - إضافة اختبارات شاملة `PrivacyManagerTest` و `PrivacyCenterViewModelTest` للتحقق من التطهير وبصمة التشفير وإدارة خيارات الحذف والتصدير بنجاح.
 
+## [Unreleased] - Pre-release Testing Plan (PROMPT 068)
+### Added
+- إنشاء وثيقة `TEST_PLAN.md` الشاملة لاختبارات القبول (UAT).
+- تحديد مسارات الاختبار الأساسية (Authentication, Studio, Review, Mihrab, Flash).
+- تحديد سيناريوهات اختبار الشروط الاستثنائية والوصول الشامل (Offline, Weak Network, Screen Reader, Scaled Fonts, Deep Links).
+- وضع هيكلية لتسجيل العيوب والأخطاء وتصنيفها لمنع تسرب الأعطال الحرجة (Blockers/Criticals) إلى بيئة الإنتاج.
+
+## [Unreleased] - Pre-release Testing Plan (PROMPT 068)
+### Added
+- إنشاء وثيقة `TEST_PLAN.md` الشاملة لاختبارات القبول (UAT).
+- تحديد مسارات الاختبار الأساسية (Authentication, Studio, Review, Mihrab, Flash).
+- تحديد سيناريوهات اختبار الشروط الاستثنائية والوصول الشامل (Offline, Weak Network, Screen Reader, Scaled Fonts, Deep Links).
+- وضع هيكلية لتسجيل العيوب والأخطاء وتصنيفها لمنع تسرب الأعطال الحرجة (Blockers/Criticals) إلى بيئة الإنتاج.
+
+## [Unreleased] - Build Environments Configuration (PROMPT 067)
+### Added
+- تكوين `productFlavors` لبيئات `dev`, `staging`, و `prod` في `build.gradle.kts`.
+- تخصيص لواحق معرّف الحزمة (`applicationIdSuffix`) واسم التطبيق (`app_name`) لكل بيئة لتسهيل التمييز والفصل.
+- تهيئة البنية التحتية لملفات `google-services.json` منفصلة لكل بيئة لتفادي تداخل مشاريع Firebase.
+- دمج `BuildConfig` لتوفير متغير `ENVIRONMENT` يتم استخدامه لتوجيه الطلبات والتحكم باللوجز محلياً.
+- ضمان عدم حفظ أي أسرار، أو ملفات التوقيع (Keystores)، أو مفاتيح إنتاج حقيقية داخل المستودع.
+
+## [Unreleased] - Store Listing Preparation (PROMPT 066)
+### Added
+- إنشاء وثيقة `STORE_LISTING.md` تحتوي على وصف التطبيق الكامل والقصير للمتاجر باللغتين العربية والإنجليزية.
+- إعداد نصوص ومقترحات لقطات الشاشة والفيديو الترويجي بطريقة تعكس وظائف التطبيق الفعلية.
+- صياغة سياسات المحتوى الشرعي، مبادئ الإبلاغ عن المحتوى، والتأكيد بوضوح على أن الذكاء الاصطناعي لا يمثل جهة إفتاء.
+- تجهيز فقرات ملاحظات المراجعين (Reviewer Notes) وتوضيح كيفية عمل التطبيق والإشعارات والصلاحيات لتسهيل مراجعته من قبل Google Play و App Store.
+
+## [Unreleased] - Localization & Internationalization (PROMPT 065)
+### Added
+- تم تفعيل التدويل الأساسي وإنشاء ملفات `strings.xml` للغتين العربية (افتراضية) والإنجليزية كبنية أولية.
+- استبدال النصوص الصلبة المتكررة بكثرة (أزرار وإجراءات عامة) بنصوص من `strings.xml` للبدء بخطة التدويل وتفادي كسر الـ RTL.
+- تمكين تغيير اللغة ديناميكياً من شاشة الإعدادات باستخدام `AppCompatDelegate` و `LocaleManager`.
+- إنشاء `LocalizationUtils` لتنسيق التواريخ، والأرقام، والعملات حسب لغة النظام بشكل آمن ودون اللجوء للترجمة الصلبة.
+- تعديل `MainActivity` لوراثة `AppCompatActivity` بدلاً من `ComponentActivity` لدعم الـ LocaleManager وتحديث `LayoutDirection` ديناميكياً لضمان سلامة تخطيط الـ RTL و LTR.
+- إضافة إعداد `android:localeConfig` في `AndroidManifest.xml` لدعم Android 13+.
+
 ## [Unreleased] - Universal Accessibility (PROMPT 063)
 ### Added
 - إضافة منظومة الوصول الشامل (Universal Accessibility) المتوافقة مع معايير WCAG 2.1 AA و AAA.

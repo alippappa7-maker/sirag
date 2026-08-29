@@ -76,7 +76,7 @@ fun ActivityHistoryScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "عودة")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
                     }
                 },
                 actions = {
@@ -314,7 +314,7 @@ fun ActivityHistoryScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showClearAllConfirmDialog = false }) {
-                    Text("إلغاء")
+                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
                 }
             }
         )
@@ -334,12 +334,12 @@ fun ActivityHistoryScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text("حذف")
+                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { itemToDelete = null }) {
-                    Text("إلغاء")
+                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
                 }
             }
         )
@@ -553,7 +553,7 @@ fun ActivityHistoryItemCard(
                 // Actions Menu Box
                 Box {
                     IconButton(onClick = { showMenu = true }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = "خيارات")
+                        Icon(Icons.Default.MoreVert, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.options))
                     }
 
                     DropdownMenu(

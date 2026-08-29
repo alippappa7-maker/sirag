@@ -73,7 +73,7 @@ fun ShariaReviewQueueScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack, modifier = Modifier.testTag("btn_back_review_queue")) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
                     }
                 },
                 actions = {
@@ -118,7 +118,7 @@ fun ShariaReviewQueueScreen(
                             searchQuery = ""
                             viewModel.updateFilter(state.activeFilter.copy(searchQuery = ""))
                         }) {
-                            Icon(Icons.Default.Clear, contentDescription = "مسح")
+                            Icon(Icons.Default.Clear, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.clear))
                         }
                     }
                 },
@@ -152,7 +152,7 @@ fun ShariaReviewQueueScreen(
                         selectedRisk = null
                         viewModel.updateFilter(state.activeFilter.copy(riskLevel = null))
                     },
-                    label = { Text("الكل") }
+                    label = { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.all)) }
                 )
 
                 RiskLevel.values().forEach { risk ->
@@ -226,7 +226,7 @@ fun ShariaReviewQueueScreen(
                         selectedStatus = null
                         viewModel.updateFilter(state.activeFilter.copy(status = null))
                     },
-                    label = { Text("الكل") }
+                    label = { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.all)) }
                 )
 
                 ShariaReviewStatus.values().forEach { st ->

@@ -50,7 +50,7 @@ fun AnalyticsDashboardScreen(
                 title = { Text("لوحة تحليلات الاستخدام (مجمعة)") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
                     }
                 }
             )

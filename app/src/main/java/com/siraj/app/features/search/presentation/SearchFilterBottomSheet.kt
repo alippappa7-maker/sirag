@@ -62,7 +62,7 @@ fun SearchFilterBottomSheet(
                     )
                 }
                 IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, contentDescription = "إغلاق")
+                    Icon(Icons.Default.Close, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.close))
                 }
             }
 

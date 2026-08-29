@@ -51,7 +51,7 @@ fun QiblaScreen(
             TopAppBar(
                 title = { Text("القبلة") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع") }
+                    IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back)) }
                 }
             )
         }
@@ -205,7 +205,7 @@ fun QiblaScreen(
                     }) { Text("موافق (تجريبي)") }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showPermissionRationale = false }) { Text("إلغاء") }
+                    TextButton(onClick = { showPermissionRationale = false }) { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel)) }
                 }
             )
         }

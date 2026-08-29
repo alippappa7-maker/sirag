@@ -428,7 +428,7 @@ fun FlashFeedItem(
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Text("خيارات", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.options), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                         
                         TextButton(onClick = { showOptions = false; onFollow() }, modifier = Modifier.fillMaxWidth()) {
                             Text("متابعة @${flash.creatorName}")

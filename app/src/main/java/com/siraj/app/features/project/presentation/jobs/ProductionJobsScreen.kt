@@ -77,7 +77,7 @@ fun ProductionJobsScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "عودة")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
                     }
                 }
             )
@@ -262,7 +262,7 @@ fun ProductionJobsScreen(
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.closeCreateJobDialog() }) {
-                    Text("إلغاء")
+                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
                 }
             }
         )
@@ -492,7 +492,7 @@ private fun ProductionJobCard(
                     ) {
                         Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("إلغاء", fontSize = 12.sp)
+                        Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel), fontSize = 12.sp)
                     }
                 }
 
@@ -501,7 +501,7 @@ private fun ProductionJobCard(
                     Button(onClick = onRetry) {
                         Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("إعادة المحاولة", fontSize = 12.sp)
+                        Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.retry), fontSize = 12.sp)
                     }
                 }
             }

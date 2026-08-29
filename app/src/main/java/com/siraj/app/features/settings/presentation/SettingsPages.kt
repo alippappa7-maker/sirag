@@ -7,6 +7,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -25,7 +27,7 @@ fun AccountSettings(uiState: SettingsUiState, viewModel: SettingsViewModel, onLo
             Spacer(modifier = Modifier.height(24.dp))
             
             Button(onClick = onLogout, modifier = Modifier.fillMaxWidth()) {
-                Text("تسجيل الخروج")
+                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.logout))
             }
         } else {
             Text("غير مسجل الدخول")
@@ -60,13 +62,19 @@ fun AppearanceSettings(uiState: SettingsUiState, viewModel: SettingsViewModel) {
 fun LanguageSettings(uiState: SettingsUiState, viewModel: SettingsViewModel) {
     val prefs = uiState.profile?.preferences ?: return
     Column(modifier = Modifier.padding(16.dp)) {
-        Text("اللغة", style = MaterialTheme.typography.titleMedium)
+        Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.language), style = MaterialTheme.typography.titleMedium)
         Row(verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(selected = prefs.language == "ar", onClick = { viewModel.updatePreferences { it.copy(language = "ar") } })
-            Text("العربية")
+            RadioButton(selected = prefs.language == "ar", onClick = { 
+                viewModel.updatePreferences { it.copy(language = "ar") }
+                AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags("ar"))
+            })
+            Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.language_arabic))
             Spacer(modifier = Modifier.width(16.dp))
-            RadioButton(selected = prefs.language == "en", onClick = { viewModel.updatePreferences { it.copy(language = "en") } })
-            Text("English (Coming soon)")
+            RadioButton(selected = prefs.language == "en", onClick = { 
+                viewModel.updatePreferences { it.copy(language = "en") }
+                AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags("en"))
+            })
+            Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.language_english))
         }
         Spacer(modifier = Modifier.height(24.dp))
         OutlinedTextField(
@@ -280,7 +288,7 @@ fun StorageSettings(
                 },
                 dismissButton = {
                     TextButton(onClick = { showCacheDialog = false }) {
-                        Text("إلغاء")
+                        Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
                     }
                 }
             )
@@ -363,7 +371,7 @@ fun SupportSettings(
                 },
                 dismissButton = {
                     TextButton(onClick = { showCrashDialog = false }) {
-                        Text("إلغاء")
+                        Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
                     }
                 }
             )

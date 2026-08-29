@@ -73,7 +73,7 @@ fun HomeScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showCreateDialog = false }) {
-                    Text("إلغاء")
+                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
                 }
             }
         )
@@ -163,7 +163,7 @@ fun HomeScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Search,
-                        contentDescription = "بحث",
+                        contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.search),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(22.dp)
                     )

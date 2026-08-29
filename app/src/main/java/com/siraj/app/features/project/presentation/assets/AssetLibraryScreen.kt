@@ -173,8 +173,8 @@ fun UploadAssetDialog(
                 
                 // Type selection (Simple row of chips for brevity)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(selected = type == AssetType.IMAGE, onClick = { type = AssetType.IMAGE }, label = { Text("صورة") })
-                    FilterChip(selected = type == AssetType.VIDEO, onClick = { type = AssetType.VIDEO }, label = { Text("فيديو") })
+                    FilterChip(selected = type == AssetType.IMAGE, onClick = { type = AssetType.IMAGE }, label = { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.image)) })
+                    FilterChip(selected = type == AssetType.VIDEO, onClick = { type = AssetType.VIDEO }, label = { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.video)) })
                     FilterChip(selected = type == AssetType.AUDIO, onClick = { type = AssetType.AUDIO }, label = { Text("صوت") })
                 }
                 
@@ -191,7 +191,7 @@ fun UploadAssetDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("إلغاء") }
+            TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel)) }
         }
     )
 }

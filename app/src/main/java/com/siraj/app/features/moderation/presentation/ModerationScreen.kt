@@ -46,7 +46,7 @@ fun ContentModerationScreen(
                 title = { Text("إدارة المحتوى والبلاغات") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "رجوع")
+                        Icon(Icons.Default.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
                     }
                 }
             )
@@ -145,7 +145,7 @@ fun ReportCard(
             },
             dismissButton = {
                 TextButton(onClick = { showDialog = false }) {
-                    Text("إلغاء")
+                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
                 }
             }
         )

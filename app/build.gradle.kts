@@ -21,12 +21,57 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "FIREBASE_API_KEY", "\"dummy\"")
+        buildConfigField("String", "GOOGLE_PLAY_PACKAGE_NAME", "\"dummy\"")
+        buildConfigField("String", "GOOGLE_PLAY_PUBSUB_TOPIC_NAME", "\"dummy\"")
+        buildConfigField("String", "GOOGLE_PLAY_SERVICE_ACCOUNT_JSON", "\"dummy\"")
+        buildConfigField("String", "APP_STORE_BUNDLE_ID", "\"dummy\"")
+        buildConfigField("String", "APP_STORE_ENVIRONMENT", "\"dummy\"")
+        buildConfigField("String", "APP_STORE_ISSUER_ID", "\"dummy\"")
+        buildConfigField("String", "APP_STORE_KEY_ID", "\"dummy\"")
+        buildConfigField("String", "APP_STORE_PRIVATE_KEY", "\"dummy\"")
         vectorDrawables {
             useSupportLibrary = true
         }
     }
 
+    signingConfigs {
+        create("debugConfig") {
+            storeFile = file("${rootDir}/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
+
+    flavorDimensions += "environment"
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+            resValue("string", "app_name", "Siraj (Dev)")
+            buildConfigField("String", "ENVIRONMENT", "\"development\"")
+        }
+        create("staging") {
+            dimension = "environment"
+            applicationIdSuffix = ".staging"
+            versionNameSuffix = "-staging"
+            resValue("string", "app_name", "Siraj (Staging)")
+            buildConfigField("String", "ENVIRONMENT", "\"staging\"")
+        }
+        create("prod") {
+            dimension = "environment"
+            resValue("string", "app_name", "سراج")
+            buildConfigField("String", "ENVIRONMENT", "\"production\"")
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debugConfig")
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -43,6 +88,7 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        resValues = true
     }
     packaging {
         resources {
@@ -67,6 +113,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
+    implementation("androidx.appcompat:appcompat:1.6.1")
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))

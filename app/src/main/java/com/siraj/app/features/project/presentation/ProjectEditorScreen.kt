@@ -56,7 +56,7 @@ fun ProjectEditorScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "عودة")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
                     }
                 },
                 actions = {
@@ -101,11 +101,11 @@ fun ProjectEditorScreen(
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                     ) {
-                        Text("حذف")
+                        Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.delete))
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showDeleteDialog = false }) { Text("إلغاء") }
+                    TextButton(onClick = { showDeleteDialog = false }) { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel)) }
                 }
             )
         }
@@ -373,7 +373,7 @@ fun TemplateBrowserDialog(
                 TopAppBar(
                     title = { Text("مكتبة القوالب") },
                     navigationIcon = {
-                        IconButton(onClick = onDismiss) { Icon(Icons.Default.Close, contentDescription = "إغلاق") }
+                        IconButton(onClick = onDismiss) { Icon(Icons.Default.Close, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.close)) }
                     }
                 )
                 

@@ -80,7 +80,7 @@ fun SoundtrackLibraryScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
                     }
                 }
             )
@@ -104,7 +104,7 @@ fun SoundtrackLibraryScreen(
                 trailingIcon = {
                     if (searchQuery.isNotEmpty()) {
                         IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
-                            Icon(Icons.Default.Close, contentDescription = "مسح")
+                            Icon(Icons.Default.Close, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.clear))
                         }
                     }
                 },
@@ -156,7 +156,7 @@ fun SoundtrackLibraryScreen(
                     FilterChip(
                         selected = selectedCategory == null,
                         onClick = { viewModel.onCategorySelect(null) },
-                        label = { Text("الكل") }
+                        label = { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.all)) }
                     )
                 }
                 items(SoundtrackCategory.values()) { cat ->
@@ -370,7 +370,7 @@ fun SoundtrackLibraryScreen(
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.closeConfigureDialog() }) {
-                    Text("إلغاء")
+                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
                 }
             }
         )

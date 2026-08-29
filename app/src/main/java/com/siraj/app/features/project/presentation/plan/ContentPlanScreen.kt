@@ -63,7 +63,7 @@ fun ContentPlanScreen(
             TopAppBar(
                 title = { Text("الخطة والسيناريو") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع") }
+                    IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back)) }
                 },
                 actions = {
                     when(saveState) {
@@ -232,7 +232,7 @@ fun PlanEditor(
                     
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                        TextButton(onClick = { showSubmitDialog = false }) { Text("إلغاء") }
+                        TextButton(onClick = { showSubmitDialog = false }) { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel)) }
                         Button(onClick = { 
                             onSubmitForReview()
                             showSubmitDialog = false
@@ -281,7 +281,7 @@ fun PlanEditor(
                             Text("اعتماد")
                         }
                     }
-                    TextButton(onClick = { showReviewerDialog = false }, modifier = Modifier.fillMaxWidth()) { Text("إلغاء") }
+                    TextButton(onClick = { showReviewerDialog = false }, modifier = Modifier.fillMaxWidth()) { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel)) }
                 }
             }
         }
@@ -436,7 +436,7 @@ fun SourceEditorDialog(
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    TextButton(onClick = onDismiss) { Text("إلغاء") }
+                    TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel)) }
                     Button(onClick = {
                         onSave(initialSource.copy(
                             title = title,

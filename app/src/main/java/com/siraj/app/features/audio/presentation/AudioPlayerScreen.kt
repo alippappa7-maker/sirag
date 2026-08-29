@@ -38,7 +38,7 @@ fun AudioPlayerScreen(
                 title = { Text(track?.speaker ?: "المشغل") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "عودة")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
                     }
                 },
                 actions = {

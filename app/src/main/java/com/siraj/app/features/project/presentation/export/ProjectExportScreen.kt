@@ -87,7 +87,7 @@ fun ProjectExportScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -456,7 +456,7 @@ fun ProjectExportScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirmJobId = null }) {
-                    Text("إلغاء")
+                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
                 }
             }
         )
@@ -669,7 +669,7 @@ private fun ActiveJobCard(
                     ) {
                         Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("إعادة المحاولة")
+                        Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.retry))
                     }
                 } else if (job.status == ProductionJobStatus.COMPLETED && !job.outputVideoUrl.isNullOrBlank()) {
                     val url = job.outputVideoUrl
@@ -689,7 +689,7 @@ private fun ActiveJobCard(
                     ) {
                         Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("مشاركة")
+                        Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.share))
                     }
 
                     IconButton(onClick = { onCopyUrl(url) }) {
@@ -753,7 +753,7 @@ private fun HistoricalJobRow(
                         Icon(Icons.Default.Download, contentDescription = "تنزيل", modifier = Modifier.size(20.dp))
                     }
                     IconButton(onClick = onDelete) {
-                        Icon(Icons.Default.Delete, contentDescription = "حذف", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.Delete, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.delete), tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
                     }
                 }
             }

@@ -77,7 +77,7 @@ fun SettingsScreen(
                             currentPage = SettingsPage.MAIN
                         }
                     }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "عودة")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
                     }
                 }
             )
@@ -165,7 +165,7 @@ fun MainSettingsList(onPageSelect: (SettingsPage) -> Unit, onLogout: () -> Unit,
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
             ) {
-                Text("تسجيل الخروج")
+                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.logout))
             }
             Spacer(modifier = Modifier.height(24.dp))
         }

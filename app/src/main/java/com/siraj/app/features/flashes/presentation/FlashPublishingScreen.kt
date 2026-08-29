@@ -62,7 +62,7 @@ fun FlashPublishingScreen(
                 title = { Text("نشر ومضة") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "رجوع")
+                        Icon(Icons.Default.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

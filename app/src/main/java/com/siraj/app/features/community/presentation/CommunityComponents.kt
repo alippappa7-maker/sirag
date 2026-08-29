@@ -89,7 +89,7 @@ fun ReportDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("إلغاء")
+                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
             }
         }
     )

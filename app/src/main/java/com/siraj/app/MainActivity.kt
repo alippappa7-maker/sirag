@@ -1,7 +1,10 @@
 package com.siraj.app
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
+
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -18,7 +21,7 @@ import com.siraj.app.core.monitoring.CrashMonitoringManager
 import com.siraj.app.domain.models.ThemeMode
 import com.siraj.app.domain.models.analytics.AnalyticsEvent
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
@@ -37,6 +40,7 @@ class MainActivity : ComponentActivity() {
             var isDarkTheme by remember { mutableStateOf(systemTheme) }
             var isHighContrast by remember { mutableStateOf(false) }
             var fontScaleMultiplier by remember { mutableStateOf(1.0f) }
+            var language by remember { mutableStateOf("ar") }
             var accessibilityConfig by remember { mutableStateOf(com.siraj.app.core.accessibility.AccessibilityConfig()) }
             
             LaunchedEffect(currentUser) {
@@ -55,6 +59,8 @@ class MainActivity : ComponentActivity() {
                     isHighContrast = prefs.highContrastMode
                     fontScaleMultiplier = prefs.fontScaleMultiplier
                     accessibilityConfig = com.siraj.app.core.accessibility.AccessibilityConfig.fromPreferences(prefs)
+                    language = prefs.language
+                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(prefs.language))
 
                     AnalyticsManager.setAnalyticsEnabled(prefs.analyticsOptIn)
                     CrashMonitoringManager.setCrashlyticsCollectionEnabled(prefs.crashReportsOptIn)
@@ -73,7 +79,8 @@ class MainActivity : ComponentActivity() {
                 fontScaleMultiplier = fontScaleMultiplier
             ) {
                 com.siraj.app.core.accessibility.ProvideAccessibilityConfig(accessibilityConfig) {
-                    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                    val currentLayoutDirection = if (language == "ar") LayoutDirection.Rtl else LayoutDirection.Ltr
+                    CompositionLocalProvider(LocalLayoutDirection provides currentLayoutDirection) {
                         AppNavigation(
                             navController = navController,
                             toggleTheme = { isDarkTheme = !isDarkTheme }

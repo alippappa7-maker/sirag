@@ -77,7 +77,7 @@ fun NotificationSettingsScreen(
                 title = { Text("إعدادات الإشعارات", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "عودة")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
                     }
                 }
             )
@@ -293,7 +293,7 @@ fun NotificationSettingsScreen(
                                 leadingContent = { Icon(Icons.Default.AccessTime, contentDescription = null) },
                                 trailingContent = {
                                     TextButton(onClick = { showQuietHoursDialog = true }) {
-                                        Text("تعديل")
+                                        Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.edit))
                                     }
                                 }
                             )
@@ -397,12 +397,12 @@ fun NotificationSettingsScreen(
                     )
                     showQuietHoursDialog = false
                 }) {
-                    Text("حفظ")
+                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.save))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showQuietHoursDialog = false }) {
-                    Text("إلغاء")
+                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
                 }
             }
         )

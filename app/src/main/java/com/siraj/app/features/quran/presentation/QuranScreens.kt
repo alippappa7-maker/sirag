@@ -55,7 +55,7 @@ fun QuranScreen(
             TopAppBar(
                 title = { Text("سور القرآن الكريم") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع") }
+                    IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back)) }
                 }
             )
         }
@@ -66,7 +66,7 @@ fun QuranScreen(
                 onValueChange = viewModel::updateSearchQuery,
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 placeholder = { Text("بحث عن سورة...") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "بحث") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.search)) },
                 singleLine = true,
                 shape = RoundedCornerShape(12.dp)
             )
@@ -176,7 +176,7 @@ fun SurahScreen(
                     IconButton(onClick = {
                         exoPlayer?.stop()
                         onNavigateBack()
-                    }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع") }
+                    }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back)) }
                 },
                 actions = {
                     IconButton(onClick = { showSettingsDialog = true }) {
@@ -302,7 +302,7 @@ fun AyahCard(
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     IconButton(onClick = onShare) {
-                        Icon(Icons.Default.Share, contentDescription = "مشاركة", tint = textColor)
+                        Icon(Icons.Default.Share, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.share), tint = textColor)
                     }
                     if (ayah.audio != null) {
                         IconButton(onClick = onDownload) {
@@ -429,12 +429,12 @@ fun AyahCard(
                         minLines = 3
                     )
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-                        TextButton(onClick = { showNoteDialog = false }) { Text("إلغاء") }
+                        TextButton(onClick = { showNoteDialog = false }) { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel)) }
                         Button(onClick = {
                             onSaveNote(noteText)
                             showNoteDialog = false
                         }) {
-                            Text("حفظ")
+                            Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.save))
                         }
                     }
                 }
@@ -487,7 +487,7 @@ fun QuranSettingsDialog(
                 }
 
                 Button(onClick = onDismiss, modifier = Modifier.align(Alignment.End)) {
-                    Text("إغلاق")
+                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.close))
                 }
             }
         }

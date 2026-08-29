@@ -36,7 +36,7 @@ fun WorkspaceSettingsScreen(
                 title = { Text("مساحات العمل") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
                     }
                 },
                 actions = {
@@ -263,7 +263,7 @@ fun MemberCard(
             if (canManageRoles || (currentUserRole == WorkspaceRole.OWNER && !isSelf)) {
                 Box {
                     IconButton(onClick = { expanded = true }) {
-                        Icon(Icons.Filled.MoreVert, contentDescription = "خيارات")
+                        Icon(Icons.Filled.MoreVert, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.options))
                     }
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                         if (canManageRoles) {
@@ -354,7 +354,7 @@ fun CreateWorkspaceDialog(onDismiss: () -> Unit, onCreate: (String, WorkspaceTyp
             ) { Text("إنشاء") }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("إلغاء") }
+            TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel)) }
         }
     )
 }

@@ -81,7 +81,7 @@ fun AiImageGeneratorScreen(
                 title = { Text("توليد الصور بالذكاء الاصطناعي") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "عودة")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
                     }
                 },
                 actions = {
@@ -445,7 +445,7 @@ fun AiImageGeneratorScreen(
                 },
                 dismissButton = {
                     TextButton(onClick = { selectedImageForAction = null }) {
-                        Text("إغلاق")
+                        Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.close))
                     }
                 }
             )

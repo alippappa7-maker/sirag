@@ -51,7 +51,7 @@ fun AdhkarReaderScreen(
             TopAppBar(
                 title = { Text(categoryName) },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع") }
+                    IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back)) }
                 },
                 actions = {
                     IconButton(onClick = { viewModel.toggleQuietMode() }) {

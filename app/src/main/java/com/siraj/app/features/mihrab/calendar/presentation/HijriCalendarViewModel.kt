@@ -46,7 +46,7 @@ class HijriCalendarViewModel : ViewModel() {
     private fun updateDates() {
         val today = LocalDate.now().plusDays(_state.value.dayAdjustment.toLong())
         
-        val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale("ar"))
+        val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", java.util.Locale.getDefault())
         val gregStr = today.format(formatter)
         
         val hijriDate = HijrahDate.from(today)

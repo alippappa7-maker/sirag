@@ -79,7 +79,7 @@ fun SearchScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "رجوع"
+                            contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back)
                         )
                     }
 
@@ -101,7 +101,7 @@ fun SearchScreen(
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Search,
-                                contentDescription = "بحث",
+                                contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.search),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         },
@@ -440,7 +440,7 @@ fun SearchIdleView(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
-                                contentDescription = "حذف",
+                                contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.delete),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(16.dp)
                             )
@@ -680,7 +680,7 @@ fun SearchErrorView(
         )
         Spacer(Modifier.height(20.dp))
         Button(onClick = onRetry) {
-            Text("إعادة المحاولة")
+            Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.retry))
         }
     }
 }

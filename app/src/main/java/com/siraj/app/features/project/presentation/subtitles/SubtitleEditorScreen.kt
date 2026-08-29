@@ -85,7 +85,7 @@ fun SubtitleEditorScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "عودة")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
                     }
                 },
                 actions = {
@@ -452,7 +452,7 @@ fun SubtitleEditorScreen(
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.onDismissEdit() }) {
-                    Text("إلغاء")
+                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
                 }
             }
         )
@@ -504,7 +504,7 @@ fun SubtitleEditorScreen(
                         }
                     }
                     TextButton(onClick = { viewModel.closeExportDialog() }) {
-                        Text("إغلاق")
+                        Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.close))
                     }
                 }
             }
@@ -581,12 +581,12 @@ fun SubtitleLineCard(
                 Spacer(modifier = Modifier.weight(1f))
 
                 IconButton(onClick = onEdit, modifier = Modifier.size(30.dp)) {
-                    Icon(Icons.Default.Edit, contentDescription = "تعديل", modifier = Modifier.size(16.dp))
+                    Icon(Icons.Default.Edit, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.edit), modifier = Modifier.size(16.dp))
                 }
 
                 if (!item.locked) {
                     IconButton(onClick = onDelete, modifier = Modifier.size(30.dp)) {
-                        Icon(Icons.Default.Delete, contentDescription = "حذف", modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.error)
+                        Icon(Icons.Default.Delete, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.delete), modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.error)
                     }
                 }
             }

@@ -49,7 +49,7 @@ fun PrayerTimesScreen(
             TopAppBar(
                 title = { Text("مواقيت الصلاة") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع") }
+                    IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back)) }
                 },
                 actions = {
                     IconButton(onClick = onNavigateToSettings) {
@@ -70,7 +70,7 @@ fun PrayerTimesScreen(
                     ) {
                         Text(state.message, color = MaterialTheme.colorScheme.error)
                         Button(onClick = { viewModel.updateSettings(viewModel.settings.value) }) {
-                            Text("إعادة المحاولة")
+                            Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.retry))
                         }
                     }
                 }
@@ -196,7 +196,7 @@ fun PrayerTimesScreen(
                     }) { Text("موافق") }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showLocationRationale = false }) { Text("إلغاء") }
+                    TextButton(onClick = { showLocationRationale = false }) { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel)) }
                 }
             )
         }

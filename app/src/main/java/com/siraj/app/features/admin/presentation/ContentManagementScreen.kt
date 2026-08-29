@@ -77,7 +77,7 @@ fun ContentManagementScreen(
                         selectedStatus = null
                         viewModel.updateFilter(status = null)
                     },
-                    label = { Text("الكل") }
+                    label = { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.all)) }
                 )
                 FilterChip(
                     selected = selectedStatus == AdminContentStatus.PENDING_REVIEW,
@@ -150,7 +150,7 @@ fun ContentManagementScreen(
             },
             confirmButton = {
                 TextButton(onClick = { selectedItemForLogs = null }) {
-                    Text("إغلاق")
+                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.close))
                 }
             }
         )

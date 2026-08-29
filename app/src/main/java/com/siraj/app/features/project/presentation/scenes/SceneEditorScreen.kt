@@ -63,14 +63,14 @@ fun SceneEditorScreen(
             TopAppBar(
                 title = { Text("محرر المشهد") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "عودة") }
+                    IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back)) }
                 },
                 actions = {
                     IconButton(onClick = { onNavigateToAiGenerator(projectId, sceneId) }) {
                         Icon(Icons.Default.Add, contentDescription = "توليد صورة بالذكاء الاصطناعي")
                     }
                     IconButton(onClick = { viewModel.undo() }, enabled = canUndo) {
-                        Icon(Icons.AutoMirrored.Filled.Undo, contentDescription = "تراجع")
+                        Icon(Icons.AutoMirrored.Filled.Undo, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.undo))
                     }
                     IconButton(onClick = { viewModel.redo() }, enabled = canRedo) {
                         Icon(Icons.AutoMirrored.Filled.Redo, contentDescription = "إعادة")

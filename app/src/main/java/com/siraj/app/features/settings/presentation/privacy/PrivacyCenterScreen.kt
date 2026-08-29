@@ -78,7 +78,7 @@ fun PrivacyCenterScreen(
                 title = { Text("مركز الخصوصية وبيانات المستخدم") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "عودة")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
                     }
                 }
             )
@@ -699,7 +699,7 @@ fun StoredDataOverviewDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("إغلاق")
+                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.close))
             }
         }
     )
@@ -787,7 +787,7 @@ fun ConfirmationActionDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("إلغاء")
+                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
             }
         }
     )
@@ -854,7 +854,7 @@ fun DataCorrectionDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("إلغاء")
+                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
             }
         }
     )
@@ -911,7 +911,7 @@ fun AccountDeletionWarningDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("إلغاء")
+                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
             }
         }
     )
@@ -967,7 +967,7 @@ fun AccountDeletionConfirmDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("تراجع")
+                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.undo))
             }
         }
     )
@@ -1009,7 +1009,7 @@ fun RetentionPolicyDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("إغلاق")
+                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.close))
             }
         }
     )
