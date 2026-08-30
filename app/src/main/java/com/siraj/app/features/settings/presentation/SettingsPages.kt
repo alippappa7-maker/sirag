@@ -671,7 +671,10 @@ fun AccessibilitySettings(uiState: SettingsUiState, viewModel: SettingsViewModel
 }
 
 @Composable
-fun AboutSettings() {
+fun AboutSettings(
+    onNavigateToAiPolicy: () -> Unit,
+    onNavigateToCommunityGuidelines: () -> Unit = {}
+) {
     var showBetaDialog by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -731,11 +734,11 @@ fun AboutSettings() {
             Spacer(modifier = Modifier.height(12.dp))
         }
 
-        TextButton(onClick = { /* TODO */ }, modifier = Modifier.fillMaxWidth()) {
-            Text("سياسة الخصوصية وحماية البيانات")
+        TextButton(onClick = onNavigateToAiPolicy, modifier = Modifier.fillMaxWidth()) {
+            Text("سياسة الذكاء الاصطناعي والإفصاح")
         }
-        TextButton(onClick = { /* TODO */ }, modifier = Modifier.fillMaxWidth()) {
-            Text("شروط الاستخدام والضوابط الشرعية")
+        TextButton(onClick = onNavigateToCommunityGuidelines, modifier = Modifier.fillMaxWidth()) {
+            Text("قواعد المجتمع وشروط الاستخدام (UGC Guidelines)")
         }
     }
 

@@ -315,6 +315,8 @@ fun AppNavigation(
                         onNavigateToCreateTicket = { category -> navController.navigate(Screen.CreateTicket.createRoute(category?.name)) },
                         onNavigateToServiceStatus = { navController.navigate(Screen.ServiceStatus.route) },
                         onNavigateToContentPolicy = { navController.navigate(Screen.ContentPolicy.route) },
+                        onNavigateToAiPolicy = { navController.navigate(Screen.AiPolicy.route) },
+                        onNavigateToCommunityGuidelines = { navController.navigate(Screen.CommunityGuidelines.route) },
                         onNavigateBack = { navController.popBackStack() },
                         onLogout = {
                             navController.navigate(Screen.Login.route) {
@@ -1011,6 +1013,11 @@ fun AppNavigation(
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
+            composable(Screen.AiPolicy.route) {
+                com.siraj.app.features.ai.presentation.AiPolicyScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
             composable(Screen.ContentPolicy.route) {
                 com.siraj.app.features.support.presentation.ContentPolicyScreen(
                     onNavigateBack = { navController.popBackStack() },
@@ -1019,6 +1026,14 @@ fun AppNavigation(
                     },
                     onNavigateToSourceCorrection = {
                         navController.navigate(Screen.CreateTicket.createRoute(com.siraj.app.domain.models.support.TicketCategory.SOURCE_CORRECTION.name))
+                    }
+                )
+            }
+            composable(Screen.CommunityGuidelines.route) {
+                com.siraj.app.features.moderation.presentation.CommunityGuidelinesScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onContactSafety = {
+                        navController.navigate(Screen.CreateTicket.createRoute(com.siraj.app.domain.models.support.TicketCategory.APPEAL_AND_POLICY.name))
                     }
                 )
             }

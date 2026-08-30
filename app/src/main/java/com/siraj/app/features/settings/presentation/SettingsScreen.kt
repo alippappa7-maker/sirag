@@ -48,6 +48,8 @@ fun SettingsScreen(
     onNavigateToCreateTicket: (com.siraj.app.domain.models.support.TicketCategory?) -> Unit = {},
     onNavigateToServiceStatus: () -> Unit = {},
     onNavigateToContentPolicy: () -> Unit = {},
+    onNavigateToAiPolicy: () -> Unit = {},
+    onNavigateToCommunityGuidelines: () -> Unit = {},
     onNavigateBack: () -> Unit,
     onLogout: () -> Unit,
     viewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory())
@@ -124,7 +126,10 @@ fun SettingsScreen(
                     onNavigateToServiceStatus = onNavigateToServiceStatus,
                     onMessage = { viewModel.showMessage(it) }
                 )
-                SettingsPage.ABOUT -> AboutSettings()
+                SettingsPage.ABOUT -> AboutSettings(
+                    onNavigateToAiPolicy = onNavigateToAiPolicy,
+                    onNavigateToCommunityGuidelines = onNavigateToCommunityGuidelines
+                )
                 SettingsPage.BILLING -> onNavigateToBilling()
             }
             

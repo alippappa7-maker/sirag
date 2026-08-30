@@ -196,19 +196,43 @@ fun FlashPublishingScreen(
                     )
                 }
 
+                // Terms of Service Acceptance for UGC
+                var tosAccepted by remember { mutableStateOf(false) }
+                
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Checkbox(
+                                checked = tosAccepted,
+                                onCheckedChange = { tosAccepted = it }
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "أوافق على شروط الاستخدام وقواعد المجتمع، وأقر بأن المحتوى يراعي الضوابط الشرعية وحقوق الملكية الفكرية وخالٍ من الـ Spam.",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
+                }
+
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
 
                 // Actions based on state
                 when (flash.publishingState) {
                     FlashPublishingState.DRAFT, FlashPublishingState.REJECTED -> {
                         SirajButton(
-                            text = "إرسال للمراجعة (فحص تلقائي)",
+                            text = "إرسال للفحص الآلي والمراجعة",
+                            enabled = tosAccepted,
                             onClick = { viewModel.submitForReview(flash.id, currentUserId) },
-                            
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
-                    FlashPublishingState.PENDING_REVIEW -> {
+                    FlashPublishingState.PENDING_REVIEW, FlashPublishingState.SCANNING -> {
                         // Mock Admin Approval for testing
                         OutlinedButton(
                             onClick = { viewModel.mockApprove(flash.id, "admin_user") },
@@ -219,9 +243,8 @@ fun FlashPublishingScreen(
                     }
                     FlashPublishingState.APPROVED -> {
                         SirajButton(
-                            text = "نشر الآن",
+                            text = "نشر الآن في الموجز العام",
                             onClick = { viewModel.publish(flash.id, currentUserId) },
-                            
                             modifier = Modifier.fillMaxWidth()
                         )
                     }

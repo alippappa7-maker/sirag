@@ -46,6 +46,7 @@ data class Asset(
     val expiresAt: Long? = null,
     val rightsStatus: RightsStatus = RightsStatus.UNKNOWN,
     val usageRestrictions: String = "",
+    val aiMetadata: AiMetadata? = null,
 
     val status: AssetStatus = AssetStatus.READY,
     val createdAt: Long = System.currentTimeMillis()

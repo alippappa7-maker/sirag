@@ -10,12 +10,18 @@ enum class FlashVisibility(val titleArabic: String) {
 
 enum class FlashPublishingState(val titleArabic: String) {
     DRAFT("مسودة"),
+    UPLOADED("تم الرفع"),
+    SCANNING("قيد الفحص الآلي"),
     PENDING_REVIEW("قيد المراجعة"),
     APPROVED("معتمد"),
+    LIMITED("محدود الظهور"),
     SCHEDULED("مجدول"),
     PUBLISHED("منشور"),
     REJECTED("مرفوض"),
     SUSPENDED("موقوف"),
+    REMOVED("محذوف"),
+    APPEALED("قيد الاستئناف"),
+    RESTORED("مستعاد"),
     CORRECTED("مصحح"),
     ARCHIVED("مؤرشف")
 }

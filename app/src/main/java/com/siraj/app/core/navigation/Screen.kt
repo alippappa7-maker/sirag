@@ -134,5 +134,7 @@ sealed class Screen(val route: String) {
         fun createRoute(ticketId: String) = "ticket_detail/$ticketId"
     }
     object ServiceStatus : Screen("service_status")
+    object AiPolicy : Screen("ai_policy")
     object ContentPolicy : Screen("content_policy")
+    object CommunityGuidelines : Screen("community_guidelines")
 }

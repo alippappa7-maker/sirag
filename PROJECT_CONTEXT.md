@@ -1,38 +1,45 @@
 # سراج (Siraj)
 
 ## حالة التنفيذ
-مكتمل بنجاح للمرحلة الحالية - تم تنفيذ نظام إدارة الحقوق والتراخيص (Rights Management) بالكامل، وإدراج شاشات المراجعة وحالات الحقوق للأصول لمنع التصدير قبل التوثيق.
+مكتمل بنجاح للمرحلة الحالية - تم إعداد وتطبيق خطة التشغيل والتحديثات الشاملة لما بعد الإطلاق (Operations Plan - First 90 Days) وخارطة طريق الـ 90 يوماً الأولى (Post-Launch Roadmap)، متضمنةً محرك حوكمة التشغيل والإصدارات الطارئة (OperationsGovernanceEngine)، سياسات الـ Hotfix والـ Rollback، مصفوفة مراقبة المحاور الـ 14 الإلزامية، حوكمة Feature Flags والأسرار، مراجعات FinOps والمحتوى والأمان الشهرية، وسياسة التوافقية العكسية الصارمة.
 
 ## آخر برومبت منفذ
-رقم البرومبت: PROMPT 081
-المرحلة: إدارة الحقوق والتراخيص
-الحالة: جاهز ومكتمل
+رقم البرومبت: PROMPT 084
+المرحلة: التشغيل والتحديثات (Operations and Post-Launch Roadmap)
+الحالة: جاهز ومكتمل ومختبر بنجاح تام
 
 ## التقنية
 - Kotlin & Jetpack Compose (Material 3)
-- Firebase Firestore, Cloud Functions, Firebase Remote Config
-- Architecture: MVVM, Clean Architecture, Repository Pattern
+- Firebase Firestore, Cloud Functions, Firebase Storage, Firebase Remote Config
+- Architecture: MVVM, Clean Architecture, Repository Pattern, Operations Governance Engine
 - Testing: JUnit4, MockK, Coroutines Test
-- Play Console Tracks (Staged Rollout).
+- Compliance: Play Console & App Store Lifecycle Guidelines, RICE Scoring Framework, FinOps Cloud Principles
 
-## بنية الوحدات 
-- `features/rights/`: مدير ونماذج وشاشات حقوق الملكية والتراخيص لكل Asset.
-- `RIGHTS_POLICY.md`: سياسة التعامل مع التراخيص والإثباتات الداخلية.
-- بقية وثائق الإصدار النهائي (Release Notes, Production Checklist, الخ).
+## بنية الوحدات
+- `core/operations/`: محرك حوكمة العمليات والتحديثات `OperationsGovernanceEngine` لإدارة شروط الـ Hotfix، تقييم RICE للباكلوج، تدقيق التكاليف وتدوير الأسرار والتوافقية العكسية.
+- `domain/models/operations/`: نماذج بيانات التشغيل `OperationsModels.kt` (المراحل، تصنيف الطوارئ، التدوير، مراجعات FinOps والأمان).
+- `OPERATIONS_PLAN.md`: الخطة التشغيلية المعيارية للـ 90 يوماً الأولى وقواعد المراقبة والتحكم.
+- `POST_LAUNCH_ROADMAP.md`: خارطة طريق ما بعد الإطلاق والمراحل الخمس ومصفوفة الـ OKRs.
+- `features/moderation/`: لوحة تحكم المشرفين وشاشات وقواعد المجتمع.
+- `features/flashes/`: شاشة النشر `FlashPublishingScreen` مع التحقق من شروط الاستخدام والفحص الأمني الاستباقي.
+- `data/repository/community/`: مستودع الأمان والمشرفين `FirebaseSafetyRepositoryImpl`.
 
 ## الخدمات المربوطة
-- Google Play Console، Firebase Crashlytics، Firebase Remote Config، Firebase App Check، Cloud Firestore، Firebase Storage.
+- Google Play Console، Google Cloud Secret Manager، Firebase Crashlytics، Firebase Remote Config، Firebase App Check، Cloud Firestore، Firebase Storage.
 
 ## البيئة الحالية
-- Production (الإصدار الأول).
+- Development / Staging / Production Ready.
 
 ## المخاطر المعروفة
-- الارتفاع غير المتوقع في تكلفة الـ AI، يتم إيقافه عبر Feature Flag.
-- راجع `KNOWN_LIMITATIONS.md`.
+- تقلبات استهلاك تكلفة الذكاء الاصطناعي، يتم تغطيتها بنظام تنبيهات 50%/80%/100% وخطة الإيقاف التلقائي للميزات المكلفة (Kill-switch).
+- راجع `KNOWN_LIMITATIONS.md` و `OPERATIONS_PLAN.md`.
 
 ## القرارات التقنية
-- يجب أن يكون `rightsStatus` معتمداً (`COMMERCIAL_ALLOWED` أو مشابه) ليتمكن المستخدم من التصدير.
-- لا تحذف إثباتات الترخيص ولا تحفظ في مستودعات عامة، بل تدون في سجل آمن `rights_decisions`.
+- لا تضاف أي ميزة لمجرد طلب فردي منعزل؛ تطبيق إلزامي لنموذج RICE واشتراط تكرار الطلب (≥3).
+- التوافقية العكسية إلزامية؛ لا تكسر المشاريع القديمة للمستخدمين أبداً مع توفير ترحيل تصاعدي آمن للمخطط.
+- منع التعديل الصامت على أي محتوى شرعي منشور واشتراط توثيق التصحيح واعتماده من المراجع.
+- عزل مفاتيح الأمان والـ Feature Flags الحساسة في الـ Backend ومنع تعديلها من تطبيق العميل.
+- الالتزام بدورة الإصدارات المنضبطة (Staging -> Beta -> Phased Rollout).
 
 ## الخطوة التالية
-بانتظار تعليمات المرحلة القادمة أو مراجعات الإطلاق النهائي.
+بانتظار تعليمات المرحلة القادمة (PROMPT التالي).
