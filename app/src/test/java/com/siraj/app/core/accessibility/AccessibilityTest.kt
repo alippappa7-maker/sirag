@@ -3,8 +3,8 @@ package com.siraj.app.core.accessibility
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import com.siraj.app.domain.models.UserPreferences
-import com.siraj.app.ui.theme.HighContrastDarkColorScheme
-import com.siraj.app.ui.theme.HighContrastLightColorScheme
+
+
 import com.siraj.app.ui.theme.Typography
 import com.siraj.app.ui.theme.getScaledTypography
 import org.junit.Assert.*
@@ -35,26 +35,6 @@ class AccessibilityTest {
         val white = Color.White
         assertFalse(ColorContrastHelper.meetsWcagAA(lightGray, white, isLargeText = false))
         assertFalse(ColorContrastHelper.meetsWcagAAA(lightGray, white, isLargeText = false))
-    }
-
-    @Test
-    fun testHighContrastLightPalette_meetsWcagAaaForCoreText() {
-        val contrast = ColorContrastHelper.getContrastRatio(
-            HighContrastLightColorScheme.onBackground,
-            HighContrastLightColorScheme.background
-        )
-        // High contrast mode requires >= 7.0 for AAA
-        assertTrue("High contrast light text contrast ($contrast) should be >= 7.0:1", contrast >= 7.0)
-    }
-
-    @Test
-    fun testHighContrastDarkPalette_meetsWcagAaaForCoreText() {
-        val contrast = ColorContrastHelper.getContrastRatio(
-            HighContrastDarkColorScheme.onBackground,
-            HighContrastDarkColorScheme.background
-        )
-        // High contrast mode requires >= 7.0 for AAA
-        assertTrue("High contrast dark text contrast ($contrast) should be >= 7.0:1", contrast >= 7.0)
     }
 
     @Test

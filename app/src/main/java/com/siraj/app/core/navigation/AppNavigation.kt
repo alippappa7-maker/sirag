@@ -1045,14 +1045,14 @@ fun AppNavigation(
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
-            composable(Screen.SecretsLifecycle.route) {
-                val repository = remember { com.siraj.app.data.repository.secrets.SecretsLifecycleRepositoryImpl() }
-                val secretsViewModel = remember { com.siraj.app.features.secrets.presentation.SecretsLifecycleViewModel(repository) }
-                com.siraj.app.features.secrets.presentation.SecretsLifecycleScreen(
-                    viewModel = secretsViewModel,
-                    onNavigateBack = { navController.popBackStack() }
-                )
-            }
+//            composable(Screen.SecretsLifecycle.route) {
+//                val repository = remember { com.siraj.app.data.repository.secrets.SecretsLifecycleRepositoryImpl() }
+//                val secretsViewModel = remember { com.siraj.app.features.secrets.presentation.SecretsLifecycleViewModel(repository) }
+//                com.siraj.app.features.secrets.presentation.SecretsLifecycleScreen(
+//                    viewModel = secretsViewModel,
+//                    onNavigateBack = { navController.popBackStack() }
+//                )
+//            }
             composable(Screen.CostDashboard.route) {
                 val engine = remember { com.siraj.app.features.cost.domain.CostEngine() }
                 val repository = remember { com.siraj.app.data.repository.cost.CostManagementRepositoryImpl(engine) }
