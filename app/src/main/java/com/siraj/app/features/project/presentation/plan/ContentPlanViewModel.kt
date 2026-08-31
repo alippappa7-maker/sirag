@@ -13,17 +13,21 @@ import kotlinx.coroutines.launch
 
 sealed class SaveState {
     object Idle : SaveState()
+
     object Saving : SaveState()
+
     object Saved : SaveState()
-    data class Error(val message: String) : SaveState()
+
+    data class Error(
+        val message: String,
+    ) : SaveState()
 }
 
 @OptIn(FlowPreview::class)
 class ContentPlanViewModel(
     private val projectId: String,
-    private val projectRepository: ProjectRepository = FirebaseProjectRepositoryImpl()
+    private val projectRepository: ProjectRepository = FirebaseProjectRepositoryImpl(),
 ) : ViewModel() {
-
     private val _projectState = MutableStateFlow<Resource<Project>>(Resource.Loading)
     val projectState: StateFlow<Resource<Project>> = _projectState.asStateFlow()
 
@@ -34,7 +38,7 @@ class ContentPlanViewModel(
 
     init {
         loadProject()
-        
+
         viewModelScope.launch {
             pendingUpdates
                 .debounce(1500L) // Auto-save
@@ -61,64 +65,85 @@ class ContentPlanViewModel(
         val current = _projectState.value
         if (current is Resource.Success) {
             val project = current.data
-            val currentPlan = project.contentPlan ?: ContentPlan(
-                title = project.title,
-                hook = project.brief.idea.take(50),
-                reviewLevel = if (project.brief.hasQuran || project.brief.hasHadith || project.brief.hasFatwa) RiskLevel.HIGH else RiskLevel.LOW
-            )
-            val updatedPlan = update(currentPlan).copy(
-                version = currentPlan.version + 1,
-                lastEditedAt = System.currentTimeMillis()
-            )
+            val currentPlan =
+                project.contentPlan ?: ContentPlan(
+                    title = project.title,
+                    hook = project.brief.idea.take(50),
+                    reviewLevel =
+                        if (project.brief.hasQuran ||
+                            project.brief.hasHadith ||
+                            project.brief.hasFatwa
+                        ) {
+                            RiskLevel.HIGH
+                        } else {
+                            RiskLevel.LOW
+                        },
+                )
+            val updatedPlan =
+                update(currentPlan).copy(
+                    version = currentPlan.version + 1,
+                    lastEditedAt = System.currentTimeMillis(),
+                )
             val updatedProject = project.copy(contentPlan = updatedPlan)
             _projectState.value = Resource.Success(updatedProject)
             viewModelScope.launch { pendingUpdates.emit(updatedProject) }
         }
     }
-    
-    
+
     fun submitForReview() {
         val current = _projectState.value
         if (current is Resource.Success) {
             val project = current.data
             // Auto check
-            val unverifiedCount = project.contentPlan?.claims?.count { it.attachedSource?.reviewStatus != SourceVerificationStatus.VERIFIED } ?: 0
-            val riskLevel = project.contentPlan?.claims?.maxByOrNull { it.riskLevel }?.riskLevel ?: RiskLevel.LOW
-            
-            val log = ReviewLog(
-                projectId = project.id,
-                previousState = project.reviewState,
-                newState = ReviewState.SUBMITTED,
-                comments = "تم إرسال المشروع للمراجعة. عدد الادعاءات غير الموثقة: $unverifiedCount | مستوى الخطورة: ${riskLevel.name}"
-            )
-            
-            val updatedProject = project.copy(
-                reviewState = ReviewState.SUBMITTED,
-                reviewLogs = project.reviewLogs + log
-            )
-            
+            val unverifiedCount =
+                project.contentPlan?.claims?.count { it.attachedSource?.reviewStatus != SourceVerificationStatus.VERIFIED } ?: 0
+            val riskLevel =
+                project.contentPlan
+                    ?.claims
+                    ?.maxByOrNull { it.riskLevel }
+                    ?.riskLevel ?: RiskLevel.LOW
+
+            val log =
+                ReviewLog(
+                    projectId = project.id,
+                    previousState = project.reviewState,
+                    newState = ReviewState.SUBMITTED,
+                    comments = "تم إرسال المشروع للمراجعة. عدد الادعاءات غير الموثقة: $unverifiedCount | مستوى الخطورة: ${riskLevel.name}",
+                )
+
+            val updatedProject =
+                project.copy(
+                    reviewState = ReviewState.SUBMITTED,
+                    reviewLogs = project.reviewLogs + log,
+                )
+
             _projectState.value = Resource.Success(updatedProject)
             viewModelScope.launch { pendingUpdates.emit(updatedProject) }
         }
     }
 
-    fun submitReviewDecision(decision: ReviewState, comments: String) {
+    fun submitReviewDecision(
+        decision: ReviewState,
+        comments: String,
+    ) {
         val current = _projectState.value
         if (current is Resource.Success) {
             val project = current.data
-            
-            val log = ReviewLog(
-                projectId = project.id,
-                previousState = project.reviewState,
-                newState = decision,
-                comments = comments
-            )
-            
-            val updatedProject = project.copy(
-                reviewState = decision,
-                reviewLogs = project.reviewLogs + log
-            )
-            
+
+            val log =
+                ReviewLog(
+                    projectId = project.id,
+                    previousState = project.reviewState,
+                    newState = decision,
+                    comments = comments,
+                )
+
+            val updatedProject =
+                project.copy(
+                    reviewState = decision,
+                    reviewLogs = project.reviewLogs + log,
+                )
+
             _projectState.value = Resource.Success(updatedProject)
             viewModelScope.launch { pendingUpdates.emit(updatedProject) }
         }
@@ -129,7 +154,7 @@ class ContentPlanViewModel(
         val current = _projectState.value
         if (current is Resource.Success) {
             val project = current.data
-            
+
             val mockClaims = mutableListOf<ContentClaim>()
             if (project.brief.hasQuran) {
                 mockClaims.add(ContentClaim(text = "إِنَّ مَعَ الْعُسْرِ يُسْرًا", type = ClaimType.QURAN, riskLevel = RiskLevel.HIGH))
@@ -141,48 +166,64 @@ class ContentPlanViewModel(
                 mockClaims.add(ContentClaim(text = "الاستمرارية سر النجاح", type = ClaimType.GENERAL, riskLevel = RiskLevel.LOW))
             }
 
-            val mockPlan = ContentPlan(
-                title = project.title,
-                hook = "سؤال يطرح نفسه دائماً: " + project.brief.idea.take(30),
-                mainPoints = "1. النقطة الأولى\n2. النقطة الثانية\n3. النقطة الثالثة",
-                conclusion = "في النهاية، الأمر يعتمد على الالتزام.",
-                callToAction = "شارك هذا المقطع مع من تحب.",
-                estimatedDuration = project.brief.duration,
-                claims = mockClaims,
-                reviewLevel = if (mockClaims.any { it.riskLevel == RiskLevel.HIGH }) RiskLevel.HIGH else RiskLevel.LOW,
-                warnings = if (mockClaims.any { it.riskLevel == RiskLevel.HIGH }) listOf("تنبيه: يحتوي السيناريو على نصوص دينية تتطلب المراجعة.") else emptyList()
-            )
-            
+            val mockPlan =
+                ContentPlan(
+                    title = project.title,
+                    hook = "سؤال يطرح نفسه دائماً: " + project.brief.idea.take(30),
+                    mainPoints = "1. النقطة الأولى\n2. النقطة الثانية\n3. النقطة الثالثة",
+                    conclusion = "في النهاية، الأمر يعتمد على الالتزام.",
+                    callToAction = "شارك هذا المقطع مع من تحب.",
+                    estimatedDuration = project.brief.duration,
+                    claims = mockClaims,
+                    reviewLevel = if (mockClaims.any { it.riskLevel == RiskLevel.HIGH }) RiskLevel.HIGH else RiskLevel.LOW,
+                    warnings =
+                        if (mockClaims.any {
+                                it.riskLevel == RiskLevel.HIGH
+                            }
+                        ) {
+                            listOf("تنبيه: يحتوي السيناريو على نصوص دينية تتطلب المراجعة.")
+                        } else {
+                            emptyList()
+                        },
+                )
+
             val updatedProject = project.copy(contentPlan = mockPlan, status = ProjectStatus.READY)
             _projectState.value = Resource.Success(updatedProject)
             viewModelScope.launch { pendingUpdates.emit(updatedProject) }
         }
     }
 
-    
-    fun updateClaimSource(claimId: String, source: Source) {
+    fun updateClaimSource(
+        claimId: String,
+        source: Source,
+    ) {
         val current = _projectState.value
         if (current is Resource.Success) {
             val project = current.data
-            val updatedPlan = project.contentPlan?.copy(
-                claims = project.contentPlan.claims.map { claim ->
-                    if (claim.id == claimId) {
-                        val newSource = if (claim.attachedSource?.reviewStatus == SourceVerificationStatus.VERIFIED) {
-                            // Prevent modifying a verified source directly; create a new version and reset status
-                            source.copy(
-                                version = (claim.attachedSource.version) + 1,
-                                reviewStatus = SourceVerificationStatus.UNVERIFIED,
-                                reviewedBy = null,
-                                reviewedAt = null
-                            )
-                        } else {
-                            source
-                        }
-                        claim.copy(attachedSource = newSource, sourceStatus = SourceStatus.PENDING_VERIFICATION)
-                    } else claim
-                },
-                lastEditedAt = System.currentTimeMillis()
-            )
+            val updatedPlan =
+                project.contentPlan?.copy(
+                    claims =
+                        project.contentPlan.claims.map { claim ->
+                            if (claim.id == claimId) {
+                                val newSource =
+                                    if (claim.attachedSource?.reviewStatus == SourceVerificationStatus.VERIFIED) {
+                                        // Prevent modifying a verified source directly; create a new version and reset status
+                                        source.copy(
+                                            version = (claim.attachedSource.version) + 1,
+                                            reviewStatus = SourceVerificationStatus.UNVERIFIED,
+                                            reviewedBy = null,
+                                            reviewedAt = null,
+                                        )
+                                    } else {
+                                        source
+                                    }
+                                claim.copy(attachedSource = newSource, sourceStatus = SourceStatus.PENDING_VERIFICATION)
+                            } else {
+                                claim
+                            }
+                        },
+                    lastEditedAt = System.currentTimeMillis(),
+                )
             if (updatedPlan != null) {
                 val updatedProject = project.copy(contentPlan = updatedPlan)
                 _projectState.value = Resource.Success(updatedProject)
@@ -190,17 +231,19 @@ class ContentPlanViewModel(
             }
         }
     }
-    
+
     fun removeClaimSource(claimId: String) {
         val current = _projectState.value
         if (current is Resource.Success) {
             val project = current.data
-            val updatedPlan = project.contentPlan?.copy(
-                claims = project.contentPlan.claims.map { claim ->
-                    if (claim.id == claimId) claim.copy(attachedSource = null, sourceStatus = SourceStatus.MISSING) else claim
-                },
-                lastEditedAt = System.currentTimeMillis()
-            )
+            val updatedPlan =
+                project.contentPlan?.copy(
+                    claims =
+                        project.contentPlan.claims.map { claim ->
+                            if (claim.id == claimId) claim.copy(attachedSource = null, sourceStatus = SourceStatus.MISSING) else claim
+                        },
+                    lastEditedAt = System.currentTimeMillis(),
+                )
             if (updatedPlan != null) {
                 val updatedProject = project.copy(contentPlan = updatedPlan)
                 _projectState.value = Resource.Success(updatedProject)
@@ -213,14 +256,18 @@ class ContentPlanViewModel(
         val current = _projectState.value
         if (current is Resource.Success) {
             val project = current.data
-            val updatedPlan = project.contentPlan?.copy(
-                claims = project.contentPlan.claims.map { claim ->
-                    if (claim.id == claimId && claim.attachedSource != null) {
-                        val updatedSource = claim.attachedSource.copy(reviewStatus = SourceVerificationStatus.PENDING_REVIEW)
-                        claim.copy(attachedSource = updatedSource, reviewStatus = ReviewStatus.PENDING_REVIEW)
-                    } else claim
-                }
-            )
+            val updatedPlan =
+                project.contentPlan?.copy(
+                    claims =
+                        project.contentPlan.claims.map { claim ->
+                            if (claim.id == claimId && claim.attachedSource != null) {
+                                val updatedSource = claim.attachedSource.copy(reviewStatus = SourceVerificationStatus.PENDING_REVIEW)
+                                claim.copy(attachedSource = updatedSource, reviewStatus = ReviewStatus.PENDING_REVIEW)
+                            } else {
+                                claim
+                            }
+                        },
+                )
             if (updatedPlan != null) {
                 val updatedProject = project.copy(contentPlan = updatedPlan, status = ProjectStatus.PROCESSING)
                 _projectState.value = Resource.Success(updatedProject)
@@ -233,13 +280,17 @@ class ContentPlanViewModel(
         val current = _projectState.value
         if (current is Resource.Success) {
             val project = current.data
-            val updatedPlan = project.contentPlan?.copy(
-                claims = project.contentPlan.claims.map { 
-                    if (it.riskLevel == RiskLevel.HIGH && it.reviewStatus == ReviewStatus.DRAFT) 
-                        it.copy(reviewStatus = ReviewStatus.PENDING_REVIEW) 
-                    else it 
-                }
-            )
+            val updatedPlan =
+                project.contentPlan?.copy(
+                    claims =
+                        project.contentPlan.claims.map {
+                            if (it.riskLevel == RiskLevel.HIGH && it.reviewStatus == ReviewStatus.DRAFT) {
+                                it.copy(reviewStatus = ReviewStatus.PENDING_REVIEW)
+                            } else {
+                                it
+                            }
+                        },
+                )
             if (updatedPlan != null) {
                 val updatedProject = project.copy(contentPlan = updatedPlan, status = ProjectStatus.PROCESSING)
                 _projectState.value = Resource.Success(updatedProject)
@@ -249,7 +300,9 @@ class ContentPlanViewModel(
     }
 }
 
-class ContentPlanViewModelFactory(private val projectId: String) : ViewModelProvider.Factory {
+class ContentPlanViewModelFactory(
+    private val projectId: String,
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ContentPlanViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

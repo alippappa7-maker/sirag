@@ -20,7 +20,7 @@ fun AudioLibraryScreen() {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             items(MockData.audios) { audio ->
                 SirajAudioCard(audio = audio)

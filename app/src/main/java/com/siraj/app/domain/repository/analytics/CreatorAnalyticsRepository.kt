@@ -5,6 +5,13 @@ import com.siraj.app.domain.models.analytics.CreatorAnalyticsDashboard
 import kotlinx.coroutines.flow.Flow
 
 interface CreatorAnalyticsRepository {
-    fun getCreatorDashboard(userId: String, timeFilter: AnalyticsTimeFilter): Flow<CreatorAnalyticsDashboard>
-    suspend fun generateExportReport(userId: String, timeFilter: AnalyticsTimeFilter): String
+    fun getCreatorDashboard(
+        userId: String,
+        timeFilter: AnalyticsTimeFilter,
+    ): Flow<CreatorAnalyticsDashboard>
+
+    suspend fun generateExportReport(
+        userId: String,
+        timeFilter: AnalyticsTimeFilter,
+    ): String
 }

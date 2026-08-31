@@ -19,7 +19,9 @@ import com.siraj.app.domain.models.*
 import com.siraj.app.features.settings.presentation.privacy.PrivacyCenterScreen
 import com.siraj.app.core.ui.components.SirajTechCard
 
-enum class SettingsPage(val title: String) {
+enum class SettingsPage(
+    val title: String,
+) {
     MAIN("الإعدادات"),
     ACCOUNT("الحساب"),
     WORKSPACE("مساحة العمل"),
@@ -35,7 +37,7 @@ enum class SettingsPage(val title: String) {
     ISLAMIC("المحتوى الشرعي"),
     STORAGE("التخزين والبيانات"),
     SUPPORT("الدعم"),
-    ABOUT("حول التطبيق")
+    ABOUT("حول التطبيق"),
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,7 +55,7 @@ fun SettingsScreen(
     onNavigateToCommunityGuidelines: () -> Unit = {},
     onNavigateBack: () -> Unit,
     onLogout: () -> Unit,
-    viewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory())
+    viewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory()),
 ) {
     var currentPage by remember { mutableStateOf(SettingsPage.MAIN) }
     val uiState by viewModel.uiState.collectAsState()
@@ -65,7 +67,7 @@ fun SettingsScreen(
             viewModel.clearMessage()
         }
     }
-    
+
     LaunchedEffect(uiState.error) {
         uiState.error?.let {
             snackbarHostState.showSnackbar(it)
@@ -85,21 +87,27 @@ fun SettingsScreen(
                             currentPage = SettingsPage.MAIN
                         }
                     }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.back),
+                        )
                     }
-                }
+                },
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
             when (currentPage) {
-                SettingsPage.MAIN -> MainSettingsList(
-                    onPageSelect = { currentPage = it },
-                    onLogout = { viewModel.logout(onLogout) },
-                    onNavigateToBilling = onNavigateToBilling,
-                    onNavigateToTesterHub = onNavigateToTesterHub
-                )
+                SettingsPage.MAIN ->
+                    MainSettingsList(
+                        onPageSelect = { currentPage = it },
+                        onLogout = { viewModel.logout(onLogout) },
+                        onNavigateToBilling = onNavigateToBilling,
+                        onNavigateToTesterHub = onNavigateToTesterHub,
+                    )
                 SettingsPage.ACCOUNT -> AccountSettings(uiState, viewModel, onLogout)
                 SettingsPage.WORKSPACE -> onNavigateToWorkspaceSettings()
                 SettingsPage.APPEARANCE -> AppearanceSettings(uiState, viewModel)
@@ -109,31 +117,38 @@ fun SettingsScreen(
                 SettingsPage.MIHRAB -> MihrabSettings(uiState, viewModel)
                 SettingsPage.VIDEO -> VideoSettings(uiState, viewModel)
                 SettingsPage.LIBRARY -> LibrarySettings(uiState, viewModel)
-                SettingsPage.PRIVACY -> PrivacyCenterScreen(
-                    userProfile = uiState.profile,
-                    onUpdatePreferences = { updateFunc ->
-                        viewModel.updatePreferences(updateFunc)
-                    },
-                    onNavigateToNotifications = { currentPage = SettingsPage.NOTIFICATIONS },
-                    onNavigateToActivityHistory = onNavigateToActivityHistory,
-                    onNavigateBack = { currentPage = SettingsPage.MAIN },
-                    onAccountDeleted = { viewModel.logout(onLogout) }
-                )
+                SettingsPage.PRIVACY ->
+                    PrivacyCenterScreen(
+                        userProfile = uiState.profile,
+                        onUpdatePreferences = { updateFunc ->
+                            viewModel.updatePreferences(updateFunc)
+                        },
+                        onNavigateToNotifications = { currentPage = SettingsPage.NOTIFICATIONS },
+                        onNavigateToActivityHistory = onNavigateToActivityHistory,
+                        onNavigateBack = { currentPage = SettingsPage.MAIN },
+                        onAccountDeleted = { viewModel.logout(onLogout) },
+                    )
                 SettingsPage.ISLAMIC -> IslamicSettings(uiState, viewModel, onNavigateToContentPolicy)
-                SettingsPage.STORAGE -> StorageSettings(uiState, viewModel, onLogout, onNavigateToActivityHistory, onNavigateToPrivacyCenter = { currentPage = SettingsPage.PRIVACY })
-                SettingsPage.SUPPORT -> SupportSettings(
-                    onNavigateToHelpCenter = onNavigateToHelpCenter,
-                    onNavigateToCreateTicket = onNavigateToCreateTicket,
-                    onNavigateToServiceStatus = onNavigateToServiceStatus,
-                    onMessage = { viewModel.showMessage(it) }
-                )
-                SettingsPage.ABOUT -> AboutSettings(
-                    onNavigateToAiPolicy = onNavigateToAiPolicy,
-                    onNavigateToCommunityGuidelines = onNavigateToCommunityGuidelines
-                )
+                SettingsPage.STORAGE ->
+                    StorageSettings(uiState, viewModel, onLogout, onNavigateToActivityHistory, onNavigateToPrivacyCenter = {
+                        currentPage =
+                            SettingsPage.PRIVACY
+                    })
+                SettingsPage.SUPPORT ->
+                    SupportSettings(
+                        onNavigateToHelpCenter = onNavigateToHelpCenter,
+                        onNavigateToCreateTicket = onNavigateToCreateTicket,
+                        onNavigateToServiceStatus = onNavigateToServiceStatus,
+                        onMessage = { viewModel.showMessage(it) },
+                    )
+                SettingsPage.ABOUT ->
+                    AboutSettings(
+                        onNavigateToAiPolicy = onNavigateToAiPolicy,
+                        onNavigateToCommunityGuidelines = onNavigateToCommunityGuidelines,
+                    )
                 SettingsPage.BILLING -> onNavigateToBilling()
             }
-            
+
             if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
@@ -146,25 +161,26 @@ fun MainSettingsList(
     onPageSelect: (SettingsPage) -> Unit,
     onLogout: () -> Unit,
     onNavigateToBilling: () -> Unit,
-    onNavigateToTesterHub: () -> Unit = {}
+    onNavigateToTesterHub: () -> Unit = {},
 ) {
-    val items = listOf(
-        SettingsItemData("الحساب", Icons.Default.Person, SettingsPage.ACCOUNT),
-        SettingsItemData("الاستخدام والفوترة", Icons.Default.CreditCard, SettingsPage.BILLING),
-        SettingsItemData("مساحة العمل", Icons.Default.Build, SettingsPage.WORKSPACE),
-        SettingsItemData("المظهر", Icons.Default.Palette, SettingsPage.APPEARANCE),
-        SettingsItemData("إمكانية الوصول والشمول", Icons.Default.AccessibilityNew, SettingsPage.ACCESSIBILITY),
-        SettingsItemData("اللغة والمنطقة", Icons.Default.Language, SettingsPage.LANGUAGE),
-        SettingsItemData("الإشعارات", Icons.Default.Notifications, SettingsPage.NOTIFICATIONS),
-        SettingsItemData("إعدادات المحراب", Icons.Default.Star, SettingsPage.MIHRAB),
-        SettingsItemData("إعدادات الفيديو", Icons.Default.PlayArrow, SettingsPage.VIDEO),
-        SettingsItemData("إعدادات المكتبة", Icons.Default.List, SettingsPage.LIBRARY),
-        SettingsItemData("الخصوصية والأمان", Icons.Default.Lock, SettingsPage.PRIVACY),
-        SettingsItemData("المحتوى الشرعي", Icons.Default.CheckCircle, SettingsPage.ISLAMIC),
-        SettingsItemData("التخزين والبيانات", Icons.Default.Storage, SettingsPage.STORAGE),
-        SettingsItemData("الدعم", Icons.Default.Info, SettingsPage.SUPPORT),
-        SettingsItemData("حول التطبيق", Icons.Default.Info, SettingsPage.ABOUT)
-    )
+    val items =
+        listOf(
+            SettingsItemData("الحساب", Icons.Default.Person, SettingsPage.ACCOUNT),
+            SettingsItemData("الاستخدام والفوترة", Icons.Default.CreditCard, SettingsPage.BILLING),
+            SettingsItemData("مساحة العمل", Icons.Default.Build, SettingsPage.WORKSPACE),
+            SettingsItemData("المظهر", Icons.Default.Palette, SettingsPage.APPEARANCE),
+            SettingsItemData("إمكانية الوصول والشمول", Icons.Default.AccessibilityNew, SettingsPage.ACCESSIBILITY),
+            SettingsItemData("اللغة والمنطقة", Icons.Default.Language, SettingsPage.LANGUAGE),
+            SettingsItemData("الإشعارات", Icons.Default.Notifications, SettingsPage.NOTIFICATIONS),
+            SettingsItemData("إعدادات المحراب", Icons.Default.Star, SettingsPage.MIHRAB),
+            SettingsItemData("إعدادات الفيديو", Icons.Default.PlayArrow, SettingsPage.VIDEO),
+            SettingsItemData("إعدادات المكتبة", Icons.Default.List, SettingsPage.LIBRARY),
+            SettingsItemData("الخصوصية والأمان", Icons.Default.Lock, SettingsPage.PRIVACY),
+            SettingsItemData("المحتوى الشرعي", Icons.Default.CheckCircle, SettingsPage.ISLAMIC),
+            SettingsItemData("التخزين والبيانات", Icons.Default.Storage, SettingsPage.STORAGE),
+            SettingsItemData("الدعم", Icons.Default.Info, SettingsPage.SUPPORT),
+            SettingsItemData("حول التطبيق", Icons.Default.Info, SettingsPage.ABOUT),
+        )
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         if (com.siraj.app.core.config.EnvironmentConfig.isBeta) {
@@ -172,19 +188,20 @@ fun MainSettingsList(
                 SirajTechCard(
                     isActive = true,
                     onClick = onNavigateToTesterHub,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
                             imageVector = Icons.Default.Science,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.size(28.dp)
+                            modifier = Modifier.size(28.dp),
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
@@ -192,18 +209,18 @@ fun MainSettingsList(
                                 text = "مركز المختبرين (Tester Hub)",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = MaterialTheme.colorScheme.onSurface,
                             )
                             Text(
                                 text = "متابعة المسارات الأساسية، تقييم التجربة، ودليل التثبيت",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -220,7 +237,7 @@ fun MainSettingsList(
                     } else {
                         onPageSelect(item.page)
                     }
-                }
+                },
             )
         }
         item {
@@ -228,25 +245,37 @@ fun MainSettingsList(
             TextButton(
                 onClick = onLogout,
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
             ) {
-                Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.logout))
+                Text(
+                    androidx.compose.ui.res
+                        .stringResource(com.siraj.app.R.string.logout),
+                )
             }
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
 
-data class SettingsItemData(val title: String, val icon: ImageVector, val page: SettingsPage)
+data class SettingsItemData(
+    val title: String,
+    val icon: ImageVector,
+    val page: SettingsPage,
+)
 
 @Composable
-fun SettingsListItem(title: String, icon: ImageVector, onClick: () -> Unit) {
+fun SettingsListItem(
+    title: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.width(16.dp))

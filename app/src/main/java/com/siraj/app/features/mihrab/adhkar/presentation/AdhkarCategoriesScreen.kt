@@ -24,7 +24,7 @@ import com.siraj.app.core.utils.Resource
 @Composable
 fun AdhkarCategoriesScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToCategory: (String, String) -> Unit
+    onNavigateToCategory: (String, String) -> Unit,
 ) {
     val viewModel: AdhkarCategoriesViewModel = viewModel()
     val categoriesState by viewModel.categories.collectAsState()
@@ -34,28 +34,40 @@ fun AdhkarCategoriesScreen(
             TopAppBar(
                 title = { Text("الأذكار المعتمدة") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back)) }
-                }
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.back),
+                        )
+                    }
+                },
             )
-        }
+        },
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
             when (val state = categoriesState) {
                 is Resource.Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                is Resource.Error -> Text(state.message, color = MaterialTheme.colorScheme.error, modifier = Modifier.align(Alignment.Center))
+                is Resource.Error ->
+                    Text(
+                        state.message,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.align(Alignment.Center),
+                    )
                 is Resource.Success -> {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
                         contentPadding = PaddingValues(16.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
                     ) {
                         items(state.data) { category ->
                             CategoryCard(
                                 title = category.name,
                                 icon = getIconForName(category.iconName),
-                                onClick = { onNavigateToCategory(category.id, category.name) }
+                                onClick = { onNavigateToCategory(category.id, category.name) },
                             )
                         }
                     }
@@ -66,24 +78,29 @@ fun AdhkarCategoriesScreen(
 }
 
 @Composable
-fun CategoryCard(title: String, icon: ImageVector, onClick: () -> Unit) {
+fun CategoryCard(
+    title: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(1f)
-            .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
     ) {
         Column(
             modifier = Modifier.fillMaxSize().padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = title,
                 modifier = Modifier.size(48.dp),
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.primary,
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
@@ -91,8 +108,8 @@ fun CategoryCard(title: String, icon: ImageVector, onClick: () -> Unit) {
     }
 }
 
-fun getIconForName(name: String): ImageVector {
-    return when (name) {
+fun getIconForName(name: String): ImageVector =
+    when (name) {
         "wb_sunny" -> Icons.Default.WbSunny
         "nights_stay" -> Icons.Default.NightsStay
         "mosque" -> Icons.Default.Home // Fallback icon
@@ -102,4 +119,3 @@ fun getIconForName(name: String): ImageVector {
         "restaurant" -> Icons.Default.Restaurant
         else -> Icons.Default.List
     }
-}

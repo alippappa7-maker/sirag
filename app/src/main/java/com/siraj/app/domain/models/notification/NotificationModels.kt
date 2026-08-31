@@ -7,74 +7,74 @@ enum class NotificationType(
     val titleAr: String,
     val categoryAr: String,
     val iconName: String,
-    val channelId: String
+    val channelId: String,
 ) {
     VIDEO_GENERATION_COMPLETED(
         titleAr = "اكتمال إنشاء الفيديو",
         categoryAr = "المشاريع والإنتاج",
         iconName = "video_call",
-        channelId = "siraj_projects_channel"
+        channelId = "siraj_projects_channel",
     ),
     EXPORT_FAILED(
         titleAr = "فشل تصدير الفيديو",
         categoryAr = "المشاريع والإنتاج",
         iconName = "error_outline",
-        channelId = "siraj_projects_channel"
+        channelId = "siraj_projects_channel",
     ),
     REVIEW_REQUESTED(
         titleAr = "طلب مراجعة جديد",
         categoryAr = "المراجعة والتدقيق",
         iconName = "rate_review",
-        channelId = "siraj_review_channel"
+        channelId = "siraj_review_channel",
     ),
     REVIEW_RESULT(
         titleAr = "نتيجة المراجعة والاعتماد",
         categoryAr = "المراجعة والتدقيق",
         iconName = "verified",
-        channelId = "siraj_review_channel"
+        channelId = "siraj_review_channel",
     ),
     PROJECT_COMMENT_UPDATE(
         titleAr = "تعليق أو تحديث في المشروع",
         categoryAr = "المشاريع والإنتاج",
         iconName = "comment",
-        channelId = "siraj_projects_channel"
+        channelId = "siraj_projects_channel",
     ),
     NEW_AUDIO_CONTENT(
         titleAr = "محتوى صوتي وتلاوة جديدة",
         categoryAr = "المحتوى الصوتي",
         iconName = "headphones",
-        channelId = "siraj_content_channel"
+        channelId = "siraj_content_channel",
     ),
     NEW_FLASH(
         titleAr = "ومضة دعوية جديدة",
         categoryAr = "الومضات",
         iconName = "bolt",
-        channelId = "siraj_content_channel"
+        channelId = "siraj_content_channel",
     ),
     PRAYER_REMINDER(
         titleAr = "تذكير بموعد الصلاة",
         categoryAr = "المحراب",
         iconName = "access_time",
-        channelId = "siraj_prayers_channel"
+        channelId = "siraj_prayers_channel",
     ),
     MORNING_EVENING_ADHKAR(
         titleAr = "أذكار الصباح والمساء",
         categoryAr = "المحراب",
         iconName = "menu_book",
-        channelId = "siraj_prayers_channel"
+        channelId = "siraj_prayers_channel",
     ),
     SUBSCRIPTION_BILLING(
         titleAr = "الاشتراك والفوترة",
         categoryAr = "الحساب والفوترة",
         iconName = "credit_card",
-        channelId = "siraj_billing_channel"
+        channelId = "siraj_billing_channel",
     ),
     SYSTEM_MESSAGE(
         titleAr = "رسائل وتنبيهات النظام",
         categoryAr = "النظام",
         iconName = "notifications",
-        channelId = "siraj_system_channel"
-    )
+        channelId = "siraj_system_channel",
+    ),
 }
 
 /**
@@ -84,7 +84,7 @@ enum class DeliveryStatus {
     PENDING,
     DELIVERED,
     READ,
-    FAILED
+    FAILED,
 }
 
 /**
@@ -104,7 +104,7 @@ data class SirajNotification(
     val deliveryStatus: DeliveryStatus = DeliveryStatus.DELIVERED,
     val isSensitive: Boolean = false, // If true, hides preview on lock screen if unapproved
     val actionUrl: String? = null,
-    val metadata: Map<String, String> = emptyMap()
+    val metadata: Map<String, String> = emptyMap(),
 ) {
     val isRead: Boolean
         get() = readAt != null
@@ -122,7 +122,7 @@ data class DeviceTokenInfo(
     val platform: String = "ANDROID",
     val lastUpdated: Long = System.currentTimeMillis(),
     val isActive: Boolean = true,
-    val appVersion: String = "1.0"
+    val appVersion: String = "1.0",
 )
 
 /**
@@ -146,7 +146,7 @@ data class NotificationPreferences(
     val quietHoursStartMinute: Int = 0,
     val quietHoursEndHour: Int = 6, // 6:00 AM
     val quietHoursEndMinute: Int = 0,
-    val hideSensitiveOnLockScreen: Boolean = true
+    val hideSensitiveOnLockScreen: Boolean = true,
 ) {
     /**
      * Checks if current local time falls into quiet hours.
@@ -172,8 +172,8 @@ data class NotificationPreferences(
     /**
      * Checks if a notification type is allowed by user settings.
      */
-    fun isTypeEnabled(type: NotificationType): Boolean {
-        return when (type) {
+    fun isTypeEnabled(type: NotificationType): Boolean =
+        when (type) {
             NotificationType.VIDEO_GENERATION_COMPLETED -> videoGeneration
             NotificationType.EXPORT_FAILED -> exportStatus
             NotificationType.REVIEW_REQUESTED -> reviewRequests
@@ -186,18 +186,19 @@ data class NotificationPreferences(
             NotificationType.SUBSCRIPTION_BILLING -> subscriptionBilling
             NotificationType.SYSTEM_MESSAGE -> systemMessages
         }
-    }
 }
 
 /**
  * Filter categories for Notification Center tabs.
  */
-enum class NotificationFilter(val titleAr: String) {
+enum class NotificationFilter(
+    val titleAr: String,
+) {
     ALL("الكل"),
     UNREAD("غير مقروء"),
     PROJECTS("المشاريع والإنتاج"),
     REVIEW("المراجعة والاعتماد"),
     MIHRAB("المحراب والصلاة"),
     CONTENT("المحتوى الصوتي والومضات"),
-    SYSTEM("النظام والفوترة")
+    SYSTEM("النظام والفوترة"),
 }

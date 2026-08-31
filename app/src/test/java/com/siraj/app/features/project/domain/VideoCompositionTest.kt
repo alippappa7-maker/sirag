@@ -5,7 +5,6 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class VideoCompositionTest {
-
     @Test
     fun `scenes are sorted strictly by orderIndex`() {
         val scene3 = CompositionSceneItem(sceneId = "s3", orderIndex = 2, durationMs = 3000L)
@@ -45,21 +44,23 @@ class VideoCompositionTest {
         assertFalse(unverifiedBranding.isIslamicVerified)
         assertNull(unverifiedBranding.sourceCitationText)
 
-        val verifiedBranding = CompositionBranding(
-            isIslamicVerified = true,
-            sourceCitationText = "تفسير ابن كثير - سورة البقرة آية 1"
-        )
+        val verifiedBranding =
+            CompositionBranding(
+                isIslamicVerified = true,
+                sourceCitationText = "تفسير ابن كثير - سورة البقرة آية 1",
+            )
         assertTrue(verifiedBranding.isIslamicVerified)
         assertNotNull(verifiedBranding.sourceCitationText)
     }
 
     @Test
     fun `preview mode restricts duration to first two scenes or 10 seconds`() {
-        val scenes = listOf(
-            CompositionSceneItem(sceneId = "s1", orderIndex = 0, durationMs = 4000L),
-            CompositionSceneItem(sceneId = "s2", orderIndex = 1, durationMs = 4000L),
-            CompositionSceneItem(sceneId = "s3", orderIndex = 2, durationMs = 5000L)
-        )
+        val scenes =
+            listOf(
+                CompositionSceneItem(sceneId = "s1", orderIndex = 0, durationMs = 4000L),
+                CompositionSceneItem(sceneId = "s2", orderIndex = 1, durationMs = 4000L),
+                CompositionSceneItem(sceneId = "s3", orderIndex = 2, durationMs = 5000L),
+            )
 
         val fullDuration = scenes.sumOf { it.durationMs }
         val previewDuration = scenes.take(2).sumOf { it.durationMs }.coerceAtMost(10000L)

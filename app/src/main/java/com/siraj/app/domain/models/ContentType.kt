@@ -14,5 +14,5 @@ enum class ContentType {
     AUDIO,
     VIDEO,
     IMAGE,
-    TEMPLATE
+    TEMPLATE,
 }

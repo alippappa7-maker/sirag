@@ -3,7 +3,6 @@ package com.siraj.app.features.review.presentation.governance
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -12,7 +11,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.FactCheck
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.siraj.app.domain.models.governance.*
@@ -38,7 +35,7 @@ import com.siraj.app.ui.theme.statusColors
 fun ReviewerGovernanceDashboardScreen(
     viewModel: ReviewerGovernanceViewModel,
     onNavigateBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -70,41 +67,42 @@ fun ReviewerGovernanceDashboardScreen(
                     Column {
                         Text(
                             text = "حوكمة المراجعين الشرعيين",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         )
                         Text(
                             text = "لوحة المالك (Owner) لإدارة التوثيق والاختصاصات والتعيين",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 },
                 navigationIcon = {
                     IconButton(
                         onClick = onNavigateBack,
-                        modifier = Modifier.testTag("back_button")
+                        modifier = Modifier.testTag("back_button"),
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "الرجوع"
+                            contentDescription = "الرجوع",
                         )
                     }
                 },
                 actions = {
                     IconButton(
                         onClick = { showConflictDialog = true },
-                        modifier = Modifier.testTag("conflicts_button")
+                        modifier = Modifier.testTag("conflicts_button"),
                     ) {
                         Icon(
                             imageVector = Icons.Default.Gavel,
                             contentDescription = "تعارض المصالح",
-                            tint = MaterialTheme.colorScheme.error
+                            tint = MaterialTheme.colorScheme.error,
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                    ),
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -115,29 +113,31 @@ fun ReviewerGovernanceDashboardScreen(
                 text = { Text("تسجيل مراجع جديد") },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.testTag("add_reviewer_fab")
+                modifier = Modifier.testTag("add_reviewer_fab"),
             )
-        }
+        },
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
         ) {
             // شريط إحصائيات الحوكمة
             GovernanceStatsRow(
                 reviewers = uiState.reviewers,
-                assignments = uiState.assignments
+                assignments = uiState.assignments,
             )
 
             // شريط البحث
             OutlinedTextField(
                 value = uiState.searchQuery,
                 onValueChange = { viewModel.updateSearchQuery(it) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .testTag("search_reviewers_input"),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .testTag("search_reviewers_input"),
                 placeholder = { Text("البحث بالاسم أو المؤسسة أو البريد...") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 trailingIcon = {
@@ -148,14 +148,14 @@ fun ReviewerGovernanceDashboardScreen(
                     }
                 },
                 singleLine = true,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
             )
 
             // تبويبات التصفية
             TabRow(
                 selectedTabIndex = uiState.selectedTab.ordinal,
                 containerColor = MaterialTheme.colorScheme.surface,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 ReviewerTabFilter.values().forEach { tab ->
                     Tab(
@@ -164,36 +164,40 @@ fun ReviewerGovernanceDashboardScreen(
                         text = {
                             Text(
                                 text = tab.arabicTitle,
-                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                             )
-                        }
+                        },
                     )
                 }
             }
 
             // رقائق المجالات الشرعية
             LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 item {
                     FilterChip(
                         selected = uiState.selectedDomainFilter == null,
                         onClick = { viewModel.selectDomainFilter(null) },
-                        label = { Text("كافة المجالات") }
+                        label = { Text("كافة المجالات") },
                     )
                 }
                 items(ReviewerDomain.values()) { domain ->
                     FilterChip(
                         selected = uiState.selectedDomainFilter == domain,
                         onClick = {
-                            if (uiState.selectedDomainFilter == domain) viewModel.selectDomainFilter(null)
-                            else viewModel.selectDomainFilter(domain)
+                            if (uiState.selectedDomainFilter == domain) {
+                                viewModel.selectDomainFilter(null)
+                            } else {
+                                viewModel.selectDomainFilter(domain)
+                            }
                         },
-                        label = { Text(domain.arabicTitle) }
+                        label = { Text(domain.arabicTitle) },
                     )
                 }
             }
@@ -205,24 +209,25 @@ fun ReviewerGovernanceDashboardScreen(
                 }
             } else if (uiState.filteredReviewers.isEmpty()) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(32.dp),
-                    contentAlignment = Alignment.Center
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(32.dp),
+                    contentAlignment = Alignment.Center,
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
                             imageVector = Icons.Default.PersonSearch,
                             contentDescription = null,
                             modifier = Modifier.size(64.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "لا يوجد مراجعون يطابقون معايير التصفية الحالية",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
                         )
                     }
                 }
@@ -230,7 +235,7 @@ fun ReviewerGovernanceDashboardScreen(
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 88.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     items(uiState.filteredReviewers, key = { it.id }) { reviewer ->
                         ReviewerProfileCard(
@@ -240,7 +245,7 @@ fun ReviewerGovernanceDashboardScreen(
                             onReactivateClick = { viewModel.reactivateReviewer(reviewer.id) },
                             onAddQualificationClick = { showAddQualDialog = reviewer },
                             onEditScopeClick = { showEditScopeDialog = reviewer },
-                            modifier = Modifier.testTag("reviewer_card_${reviewer.id}")
+                            modifier = Modifier.testTag("reviewer_card_${reviewer.id}"),
                         )
                     }
                 }
@@ -256,7 +261,7 @@ fun ReviewerGovernanceDashboardScreen(
             onConfirm = { days ->
                 viewModel.verifyReviewer(reviewer.id, days)
                 showVerifyDialog = null
-            }
+            },
         )
     }
 
@@ -267,7 +272,7 @@ fun ReviewerGovernanceDashboardScreen(
             onConfirm = { reason ->
                 viewModel.suspendReviewer(reviewer.id, reason)
                 showSuspendDialog = null
-            }
+            },
         )
     }
 
@@ -278,7 +283,7 @@ fun ReviewerGovernanceDashboardScreen(
             onConfirm = { title, inst, year, isPublic ->
                 viewModel.addQualification(reviewer.id, title, inst, year, isPublic)
                 showAddQualDialog = null
-            }
+            },
         )
     }
 
@@ -289,7 +294,7 @@ fun ReviewerGovernanceDashboardScreen(
             onConfirm = { domains, excluded, maxRisk, canPrimary, canSecond, quota ->
                 viewModel.updateReviewerScope(reviewer.id, domains, excluded, maxRisk, canPrimary, canSecond, quota)
                 showEditScopeDialog = null
-            }
+            },
         )
     }
 
@@ -300,7 +305,7 @@ fun ReviewerGovernanceDashboardScreen(
             onDismiss = { showConflictDialog = false },
             onAddConflict = { rId, cId, pId, type, reason ->
                 viewModel.recordConflict(rId, cId, pId, type, reason)
-            }
+            },
         )
     }
 
@@ -310,7 +315,7 @@ fun ReviewerGovernanceDashboardScreen(
             onConfirm = { name, email, org, domains ->
                 viewModel.createNewReviewer(name, email, org, domains)
                 showAddReviewerDialog = false
-            }
+            },
         )
     }
 }
@@ -318,7 +323,7 @@ fun ReviewerGovernanceDashboardScreen(
 @Composable
 private fun GovernanceStatsRow(
     reviewers: List<ReviewerProfile>,
-    assignments: List<ReviewerAssignment>
+    assignments: List<ReviewerAssignment>,
 ) {
     val activeCount = reviewers.count { it.status == ReviewerStatus.ACTIVE }
     val pendingCount = reviewers.count { it.status == ReviewerStatus.PENDING_VERIFICATION }
@@ -326,19 +331,22 @@ private fun GovernanceStatsRow(
     val totalReviews = reviewers.sumOf { it.totalReviewsCompleted }
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        ),
-        shape = RoundedCornerShape(16.dp)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            ),
+        shape = RoundedCornerShape(16.dp),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceAround
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceAround,
         ) {
             StatItem(label = "المعتمدون", value = "$activeCount", color = MaterialTheme.colorScheme.primary)
             StatItem(label = "قيد التحقق", value = "$pendingCount", color = Color(0xFFD97706))
@@ -349,17 +357,21 @@ private fun GovernanceStatsRow(
 }
 
 @Composable
-private fun StatItem(label: String, value: String, color: Color) {
+private fun StatItem(
+    label: String,
+    value: String,
+    color: Color,
+) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = value,
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            color = color
+            color = color,
         )
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
@@ -373,51 +385,53 @@ private fun ReviewerProfileCard(
     onReactivateClick: () -> Unit,
     onAddQualificationClick: () -> Unit,
     onEditScopeClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val dateFormat = remember { SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()) }
 
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        border = CardDefaults.outlinedCardBorder()
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+            ),
+        border = CardDefaults.outlinedCardBorder(),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             // ترويسة المراجع
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     Box(
-                        modifier = Modifier
-                            .size(44.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primaryContainer),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier
+                                .size(44.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primaryContainer),
+                        contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             imageVector = Icons.Default.School,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         )
                     }
                     Column {
                         Text(
                             text = reviewer.displayName,
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         )
                         Text(
                             text = reviewer.organization,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -432,20 +446,21 @@ private fun ReviewerProfileCard(
             Text(
                 text = "مجالات الاختصاص الشرعي:",
                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(modifier = Modifier.height(4.dp))
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 reviewer.scope.allowedDomains.forEach { domain ->
                     AssistChip(
                         onClick = {},
                         label = { Text(domain.arabicTitle, fontSize = 11.sp) },
-                        colors = AssistChipDefaults.assistChipColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f)
-                        )
+                        colors =
+                            AssistChipDefaults.assistChipColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f),
+                            ),
                     )
                 }
             }
@@ -458,13 +473,13 @@ private fun ReviewerProfileCard(
                         imageVector = Icons.Default.Block,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.size(14.dp)
+                        modifier = Modifier.size(14.dp),
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "مستثنى من: " + reviewer.scope.excludedTopics.joinToString { it.arabicTitle },
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error
+                        color = MaterialTheme.colorScheme.error,
                     )
                 }
             }
@@ -477,24 +492,24 @@ private fun ReviewerProfileCard(
                 Text(
                     text = "المؤهلات الشرعية الموثقة:",
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 reviewer.qualifications.forEach { qual ->
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
                             imageVector = if (qual.isVerified) Icons.Default.CheckCircle else Icons.Default.HourglassEmpty,
                             contentDescription = null,
                             tint = if (qual.isVerified) MaterialTheme.colorScheme.primary else Color(0xFFD97706),
-                            modifier = Modifier.size(14.dp)
+                            modifier = Modifier.size(14.dp),
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "${qual.degreeTitle} - ${qual.institution} (${qual.graduationYear})",
-                            style = MaterialTheme.typography.bodySmall
+                            style = MaterialTheme.typography.bodySmall,
                         )
                     }
                 }
@@ -504,20 +519,20 @@ private fun ReviewerProfileCard(
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 if (reviewer.verificationDate != null) {
                     Text(
                         text = "تم التوثيق: ${dateFormat.format(Date(reviewer.verificationDate))}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
                 if (reviewer.nextReverificationDue != null) {
                     Text(
                         text = "تاريخ التجديد: ${dateFormat.format(Date(reviewer.nextReverificationDue))}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -530,11 +545,11 @@ private fun ReviewerProfileCard(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 OutlinedButton(
                     onClick = onAddQualificationClick,
-                    modifier = Modifier.padding(end = 6.dp)
+                    modifier = Modifier.padding(end = 6.dp),
                 ) {
                     Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
@@ -543,7 +558,7 @@ private fun ReviewerProfileCard(
 
                 OutlinedButton(
                     onClick = onEditScopeClick,
-                    modifier = Modifier.padding(end = 6.dp)
+                    modifier = Modifier.padding(end = 6.dp),
                 ) {
                     Icon(Icons.Default.Tune, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
@@ -554,7 +569,7 @@ private fun ReviewerProfileCard(
                     ReviewerStatus.PENDING_VERIFICATION -> {
                         Button(
                             onClick = onVerifyClick,
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         ) {
                             Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
@@ -564,7 +579,7 @@ private fun ReviewerProfileCard(
                     ReviewerStatus.ACTIVE -> {
                         Button(
                             onClick = onSuspendClick,
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                         ) {
                             Icon(Icons.Default.PauseCircle, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
@@ -574,7 +589,7 @@ private fun ReviewerProfileCard(
                     ReviewerStatus.SUSPENDED -> {
                         Button(
                             onClick = onReactivateClick,
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
                         ) {
                             Icon(Icons.Default.PlayCircle, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
@@ -589,34 +604,39 @@ private fun ReviewerProfileCard(
 
 @Composable
 private fun StatusBadge(status: ReviewerStatus) {
-    val (bgColor, textColor, label) = when (status) {
-        ReviewerStatus.ACTIVE -> Triple(
-            MaterialTheme.colorScheme.primaryContainer,
-            MaterialTheme.colorScheme.onPrimaryContainer,
-            "معتمد نشط"
-        )
-        ReviewerStatus.PENDING_VERIFICATION -> Triple(
-            MaterialTheme.statusColors.warningBg,
-            Color(0xFF92400E),
-            "قيد التحقق"
-        )
-        ReviewerStatus.SUSPENDED -> Triple(
-            MaterialTheme.colorScheme.errorContainer,
-            MaterialTheme.colorScheme.onErrorContainer,
-            "موقوف مؤقتاً"
-        )
-    }
+    val (bgColor, textColor, label) =
+        when (status) {
+            ReviewerStatus.ACTIVE ->
+                Triple(
+                    MaterialTheme.colorScheme.primaryContainer,
+                    MaterialTheme.colorScheme.onPrimaryContainer,
+                    "معتمد نشط",
+                )
+            ReviewerStatus.PENDING_VERIFICATION ->
+                Triple(
+                    MaterialTheme.statusColors.warningBg,
+                    Color(0xFF92400E),
+                    "قيد التحقق",
+                )
+            ReviewerStatus.SUSPENDED ->
+                Triple(
+                    MaterialTheme.colorScheme.errorContainer,
+                    MaterialTheme.colorScheme.onErrorContainer,
+                    "موقوف مؤقتاً",
+                )
+        }
 
     Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(bgColor)
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+        modifier =
+            Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(bgColor)
+                .padding(horizontal = 8.dp, vertical = 4.dp),
     ) {
         Text(
             text = label,
             color = textColor,
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
+            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
         )
     }
 }
@@ -625,7 +645,7 @@ private fun StatusBadge(status: ReviewerStatus) {
 private fun VerifyReviewerDialog(
     reviewer: ReviewerProfile,
     onDismiss: () -> Unit,
-    onConfirm: (days: Long) -> Unit
+    onConfirm: (days: Long) -> Unit,
 ) {
     var selectedDays by remember { mutableStateOf(365L) }
 
@@ -639,24 +659,24 @@ private fun VerifyReviewerDialog(
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = "فترة صلاحية الاعتماد قبل إعادة التحقق الدوري:",
-                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     FilterChip(
                         selected = selectedDays == 180L,
                         onClick = { selectedDays = 180L },
-                        label = { Text("6 أشهر") }
+                        label = { Text("6 أشهر") },
                     )
                     FilterChip(
                         selected = selectedDays == 365L,
                         onClick = { selectedDays = 365L },
-                        label = { Text("سنة كاملة") }
+                        label = { Text("سنة كاملة") },
                     )
                     FilterChip(
                         selected = selectedDays == 730L,
                         onClick = { selectedDays = 730L },
-                        label = { Text("سنتان") }
+                        label = { Text("سنتان") },
                     )
                 }
             }
@@ -670,7 +690,7 @@ private fun VerifyReviewerDialog(
             TextButton(onClick = onDismiss) {
                 Text("إلغاء")
             }
-        }
+        },
     )
 }
 
@@ -678,7 +698,7 @@ private fun VerifyReviewerDialog(
 private fun SuspendReviewerDialog(
     reviewer: ReviewerProfile,
     onDismiss: () -> Unit,
-    onConfirm: (reason: String) -> Unit
+    onConfirm: (reason: String) -> Unit,
 ) {
     var reason by remember { mutableStateOf("") }
 
@@ -688,20 +708,22 @@ private fun SuspendReviewerDialog(
         title = { Text("إيقاف حساب المراجع مؤقتاً") },
         text = {
             Column {
-                Text("سيتم إيقاف المراجع ${reviewer.displayName} عن استلام مراجعات جديدة مع الحفاظ الكامل على كافة قراراته السابقة في السجل الثابت.")
+                Text(
+                    "سيتم إيقاف المراجع ${reviewer.displayName} عن استلام مراجعات جديدة مع الحفاظ الكامل على كافة قراراته السابقة في السجل الثابت.",
+                )
                 Spacer(modifier = Modifier.height(12.dp))
                 OutlinedTextField(
                     value = reason,
                     onValueChange = { reason = it },
                     label = { Text("سبب الإيقاف المؤقت") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         },
         confirmButton = {
             Button(
                 onClick = { onConfirm(reason) },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
             ) {
                 Text("تأكيد الإيقاف")
             }
@@ -710,7 +732,7 @@ private fun SuspendReviewerDialog(
             TextButton(onClick = onDismiss) {
                 Text("إلغاء")
             }
-        }
+        },
     )
 }
 
@@ -718,7 +740,7 @@ private fun SuspendReviewerDialog(
 private fun AddQualificationDialog(
     reviewer: ReviewerProfile,
     onDismiss: () -> Unit,
-    onConfirm: (degree: String, inst: String, year: Int, isPublic: Boolean) -> Unit
+    onConfirm: (degree: String, inst: String, year: Int, isPublic: Boolean) -> Unit,
 ) {
     var degree by remember { mutableStateOf("") }
     var inst by remember { mutableStateOf("") }
@@ -735,20 +757,20 @@ private fun AddQualificationDialog(
                     onValueChange = { degree = it },
                     label = { Text("اسم المؤهل / الإجازة") },
                     placeholder = { Text("مثال: دكتوراه في الفقه وأصوله") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 OutlinedTextField(
                     value = inst,
                     onValueChange = { inst = it },
                     label = { Text("الجهة المانحة / الجامعة") },
                     placeholder = { Text("مثال: الجامعة الإسلامية") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 OutlinedTextField(
                     value = yearStr,
                     onValueChange = { yearStr = it },
                     label = { Text("سنة التخرج") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = isPublic, onCheckedChange = { isPublic = it })
@@ -763,7 +785,7 @@ private fun AddQualificationDialog(
                     if (degree.isNotBlank() && inst.isNotBlank()) {
                         onConfirm(degree, inst, year, isPublic)
                     }
-                }
+                },
             ) {
                 Text("إضافة وتوثيق")
             }
@@ -772,7 +794,7 @@ private fun AddQualificationDialog(
             TextButton(onClick = onDismiss) {
                 Text("إلغاء")
             }
-        }
+        },
     )
 }
 
@@ -787,8 +809,8 @@ private fun EditScopeDialog(
         maxRisk: RiskLevel,
         canPrimary: Boolean,
         canSecond: Boolean,
-        quota: Int
-    ) -> Unit
+        quota: Int,
+    ) -> Unit,
 ) {
     var selectedDomains by remember { mutableStateOf(reviewer.scope.allowedDomains) }
     var selectedExcluded by remember { mutableStateOf(reviewer.scope.excludedTopics) }
@@ -802,13 +824,13 @@ private fun EditScopeDialog(
         text = {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 item {
                     Text("المجالات الشرعية المسموحة:", style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold))
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
                         ReviewerDomain.values().forEach { d ->
                             FilterChip(
@@ -816,7 +838,7 @@ private fun EditScopeDialog(
                                 onClick = {
                                     selectedDomains = if (selectedDomains.contains(d)) selectedDomains - d else selectedDomains + d
                                 },
-                                label = { Text(d.arabicTitle, fontSize = 11.sp) }
+                                label = { Text(d.arabicTitle, fontSize = 11.sp) },
                             )
                         }
                     }
@@ -830,7 +852,7 @@ private fun EditScopeDialog(
                             FilterChip(
                                 selected = maxRisk == r,
                                 onClick = { maxRisk = r },
-                                label = { Text(r.arabicTitle, fontSize = 10.sp) }
+                                label = { Text(r.arabicTitle, fontSize = 10.sp) },
                             )
                         }
                     }
@@ -860,7 +882,7 @@ private fun EditScopeDialog(
             TextButton(onClick = onDismiss) {
                 Text("إلغاء")
             }
-        }
+        },
     )
 }
 
@@ -869,7 +891,7 @@ private fun ConflictsManagementDialog(
     conflicts: List<ReviewerConflict>,
     reviewers: List<ReviewerProfile>,
     onDismiss: () -> Unit,
-    onAddConflict: (reviewerId: String, creatorId: String, projectId: String?, type: ConflictType, reason: String) -> Unit
+    onAddConflict: (reviewerId: String, creatorId: String, projectId: String?, type: ConflictType, reason: String) -> Unit,
 ) {
     var reviewerId by remember { mutableStateOf(reviewers.firstOrNull()?.id ?: "") }
     var creatorId by remember { mutableStateOf("") }
@@ -883,7 +905,7 @@ private fun ConflictsManagementDialog(
         text = {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 item {
                     Text("القيود المسجلة حالياً:", style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold))
@@ -893,10 +915,17 @@ private fun ConflictsManagementDialog(
                         conflicts.forEach { c ->
                             Card(
                                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                                colors =
+                                    CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                    ),
                             ) {
                                 Column(modifier = Modifier.padding(8.dp)) {
-                                    Text(c.conflictType.arabicTitle, style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.error)
+                                    Text(
+                                        c.conflictType.arabicTitle,
+                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                        color = MaterialTheme.colorScheme.error,
+                                    )
                                     Text(c.reason, style = MaterialTheme.typography.bodySmall)
                                 }
                             }
@@ -911,13 +940,13 @@ private fun ConflictsManagementDialog(
                         value = creatorId,
                         onValueChange = { creatorId = it },
                         label = { Text("معرف صانع المحتوى (Creator ID)") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
                     OutlinedTextField(
                         value = reason,
                         onValueChange = { reason = it },
                         label = { Text("سبب تعارض المصالح") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
             }
@@ -930,7 +959,7 @@ private fun ConflictsManagementDialog(
                         creatorId = ""
                         reason = ""
                     }
-                }
+                },
             ) {
                 Text("تسجيل القيد")
             }
@@ -939,7 +968,7 @@ private fun ConflictsManagementDialog(
             TextButton(onClick = onDismiss) {
                 Text("إغلاق")
             }
-        }
+        },
     )
 }
 
@@ -947,7 +976,7 @@ private fun ConflictsManagementDialog(
 @Composable
 private fun AddReviewerDialog(
     onDismiss: () -> Unit,
-    onConfirm: (name: String, email: String, org: String, domains: Set<ReviewerDomain>) -> Unit
+    onConfirm: (name: String, email: String, org: String, domains: Set<ReviewerDomain>) -> Unit,
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -963,19 +992,19 @@ private fun AddReviewerDialog(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("الاسم الكامل للمراجع") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
                     label = { Text("البريد الإلكتروني المهني") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 OutlinedTextField(
                     value = org,
                     onValueChange = { org = it },
                     label = { Text("المؤسسة أو الهيئة العلمية") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 Text("المجال المبدئي:", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -985,7 +1014,7 @@ private fun AddReviewerDialog(
                             onClick = {
                                 selectedDomains = if (selectedDomains.contains(d)) selectedDomains - d else selectedDomains + d
                             },
-                            label = { Text(d.arabicTitle, fontSize = 10.sp) }
+                            label = { Text(d.arabicTitle, fontSize = 10.sp) },
                         )
                     }
                 }
@@ -997,7 +1026,7 @@ private fun AddReviewerDialog(
                     if (name.isNotBlank() && email.isNotBlank()) {
                         onConfirm(name, email, org, selectedDomains)
                     }
-                }
+                },
             ) {
                 Text("تسجيل وإرسال للتحقق")
             }
@@ -1006,6 +1035,6 @@ private fun AddReviewerDialog(
             TextButton(onClick = onDismiss) {
                 Text("إلغاء")
             }
-        }
+        },
     )
 }

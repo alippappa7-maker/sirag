@@ -17,18 +17,20 @@ import com.siraj.app.core.config.EnvironmentConfig
 import com.siraj.app.core.monitoring.CrashMonitoringManager
 import com.siraj.app.core.security.SanitizedLogger
 
-class SirajApplication : Application(), ImageLoaderFactory {
+class SirajApplication :
+    Application(),
+    ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
         instance = this
         ensureFirebase(this)
-        
+
         // Initialize Crashlytics & Error Monitoring
         try {
             CrashMonitoringManager.initialize(
                 environment = EnvironmentConfig.currentEnvironment.name,
                 appVersion = BuildConfig.VERSION_NAME,
-                buildNumber = BuildConfig.VERSION_CODE.toString()
+                buildNumber = BuildConfig.VERSION_CODE.toString(),
             )
             // Enable Crashlytics collection only in Production or when explicitly configured
             val shouldEnableCrashlytics = EnvironmentConfig.currentEnvironment == com.siraj.app.core.config.EnvironmentType.PRODUCTION
@@ -38,23 +40,23 @@ class SirajApplication : Application(), ImageLoaderFactory {
         }
     }
 
-    override fun newImageLoader(): ImageLoader {
-        return ImageLoader.Builder(this)
+    override fun newImageLoader(): ImageLoader =
+        ImageLoader
+            .Builder(this)
             .memoryCache {
-                MemoryCache.Builder(this)
+                MemoryCache
+                    .Builder(this)
                     .maxSizePercent(0.15) // Limit memory to 15%
                     .build()
-            }
-            .diskCache {
-                DiskCache.Builder()
+            }.diskCache {
+                DiskCache
+                    .Builder()
                     .directory(cacheDir.resolve("image_cache"))
                     .maxSizePercent(0.02) // Limit disk to 2%
                     .build()
-            }
-            .crossfade(true)
+            }.crossfade(true)
             .respectCacheHeaders(false) // Optimize for slow networks by enforcing local cache if available
             .build()
-    }
 
     companion object {
         lateinit var instance: SirajApplication
@@ -65,12 +67,14 @@ class SirajApplication : Application(), ImageLoaderFactory {
             if (isFirebaseConfigured) return
             try {
                 if (FirebaseApp.getApps(context).isEmpty()) {
-                    val options = FirebaseOptions.Builder()
-                        .setApplicationId(context.packageName.ifEmpty { "com.aistudio.siraj" })
-                        .setApiKey(BuildConfig.FIREBASE_API_KEY)
-                        .setProjectId("siraj-applet-dev")
-                        .setStorageBucket("siraj-applet-dev.appspot.com")
-                        .build()
+                    val options =
+                        FirebaseOptions
+                            .Builder()
+                            .setApplicationId(context.packageName.ifEmpty { "com.aistudio.siraj" })
+                            .setApiKey(BuildConfig.FIREBASE_API_KEY)
+                            .setProjectId("siraj-applet-dev")
+                            .setStorageBucket("siraj-applet-dev.appspot.com")
+                            .build()
                     FirebaseApp.initializeApp(context.applicationContext, options)
                     SanitizedLogger.d("SirajApplication", "Firebase initialized with fallback configuration.")
 
@@ -78,26 +82,29 @@ class SirajApplication : Application(), ImageLoaderFactory {
                     try {
                         val firebaseAppCheck = FirebaseAppCheck.getInstance()
                         firebaseAppCheck.installAppCheckProviderFactory(
-                            PlayIntegrityAppCheckProviderFactory.getInstance()
+                            PlayIntegrityAppCheckProviderFactory.getInstance(),
                         )
                         SanitizedLogger.d("SirajApplication", "Firebase App Check initialized with PlayIntegrity.")
                     } catch (e: Exception) {
                         SanitizedLogger.d("SirajApplication", "AppCheck initialization bypassed in dev/offline.")
                     }
                 }
-                
+
                 // Initialize Remote Config Feature Flags
-                com.siraj.app.core.config.FeatureFlagManager.initialize()
-                
+                com.siraj.app.core.config.FeatureFlagManager
+                    .initialize()
+
                 // Configure Firestore Settings for Offline Support and Cache Limit
                 try {
-                    val firestoreSettings = FirebaseFirestoreSettings.Builder()
-                        .setLocalCacheSettings(
-                            PersistentCacheSettings.newBuilder()
-                                .setSizeBytes(50L * 1024L * 1024L) // 50 MB Cache
-                                .build()
-                        )
-                        .build()
+                    val firestoreSettings =
+                        FirebaseFirestoreSettings
+                            .Builder()
+                            .setLocalCacheSettings(
+                                PersistentCacheSettings
+                                    .newBuilder()
+                                    .setSizeBytes(50L * 1024L * 1024L) // 50 MB Cache
+                                    .build(),
+                            ).build()
                     FirebaseFirestore.getInstance().firestoreSettings = firestoreSettings
                     SanitizedLogger.d("SirajApplication", "Firestore settings configured for offline persistence (50MB cache).")
                 } catch (e: Exception) {
@@ -111,4 +118,3 @@ class SirajApplication : Application(), ImageLoaderFactory {
         }
     }
 }
-

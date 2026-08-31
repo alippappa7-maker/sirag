@@ -1,7 +1,6 @@
 package com.siraj.app.features.studio.presentation.analytics
 
 import com.siraj.app.domain.models.UserProfile
-import com.siraj.app.domain.models.analytics.AnalyticsTimeFilter
 import com.siraj.app.domain.models.analytics.CreatorAnalyticsDashboard
 import com.siraj.app.domain.repository.AuthRepository
 import com.siraj.app.domain.repository.analytics.CreatorAnalyticsRepository
@@ -24,7 +23,6 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CreatorAnalyticsViewModelTest {
-
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var analyticsRepository: CreatorAnalyticsRepository
     private lateinit var authRepository: AuthRepository
@@ -43,28 +41,30 @@ class CreatorAnalyticsViewModelTest {
     }
 
     @Test
-    fun `loadAnalytics when user is not logged in returns Error state`() = runTest {
-        every { authRepository.currentUser } returns flowOf(null)
-        
-        viewModel = CreatorAnalyticsViewModel(analyticsRepository, authRepository)
-        advanceUntilIdle()
+    fun `loadAnalytics when user is not logged in returns Error state`() =
+        runTest {
+            every { authRepository.currentUser } returns flowOf(null)
 
-        assertTrue(viewModel.uiState.value is CreatorAnalyticsUiState.Error)
-        assertEquals("يجب تسجيل الدخول لعرض التحليلات.", (viewModel.uiState.value as CreatorAnalyticsUiState.Error).message)
-    }
+            viewModel = CreatorAnalyticsViewModel(analyticsRepository, authRepository)
+            advanceUntilIdle()
+
+            assertTrue(viewModel.uiState.value is CreatorAnalyticsUiState.Error)
+            assertEquals("يجب تسجيل الدخول لعرض التحليلات.", (viewModel.uiState.value as CreatorAnalyticsUiState.Error).message)
+        }
 
     @Test
-    fun `loadAnalytics when user is logged in returns Success state`() = runTest {
-        val mockUser = UserProfile(id = "user123", email = "test@test.com", name = "Test")
-        val mockDashboard = CreatorAnalyticsDashboard(totalViews = 1000)
-        
-        every { authRepository.currentUser } returns flowOf(mockUser)
-        coEvery { analyticsRepository.getCreatorDashboard("user123", any()) } returns flowOf(mockDashboard)
-        
-        viewModel = CreatorAnalyticsViewModel(analyticsRepository, authRepository)
-        advanceUntilIdle()
+    fun `loadAnalytics when user is logged in returns Success state`() =
+        runTest {
+            val mockUser = UserProfile(id = "user123", email = "test@test.com", name = "Test")
+            val mockDashboard = CreatorAnalyticsDashboard(totalViews = 1000)
 
-        assertTrue(viewModel.uiState.value is CreatorAnalyticsUiState.Success)
-        assertEquals(1000L, (viewModel.uiState.value as CreatorAnalyticsUiState.Success).dashboard.totalViews)
-    }
+            every { authRepository.currentUser } returns flowOf(mockUser)
+            coEvery { analyticsRepository.getCreatorDashboard("user123", any()) } returns flowOf(mockDashboard)
+
+            viewModel = CreatorAnalyticsViewModel(analyticsRepository, authRepository)
+            advanceUntilIdle()
+
+            assertTrue(viewModel.uiState.value is CreatorAnalyticsUiState.Success)
+            assertEquals(1000L, (viewModel.uiState.value as CreatorAnalyticsUiState.Success).dashboard.totalViews)
+        }
 }

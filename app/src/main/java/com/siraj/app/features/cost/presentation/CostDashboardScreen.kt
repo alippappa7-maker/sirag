@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun CostDashboardScreen(
     viewModel: CostDashboardViewModel,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     val usageState by viewModel.usageState.collectAsState()
     val providerStatuses by viewModel.providerStatuses.collectAsState()
@@ -29,9 +29,9 @@ fun CostDashboardScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
                     }
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         if (usageState == null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -43,18 +43,24 @@ fun CostDashboardScreen(
         val usage = usageState!!
 
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
                 Text("ملخص الاستخدام", style = MaterialTheme.typography.titleLarge)
-                
+
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("الاستخدام الشهري: $${String.format("%.2f", usage.usage.currentMonthlyUsage)} / $${usage.limits.monthlyLimitUsd}")
+                        Text(
+                            "الاستخدام الشهري: $${String.format(
+                                "%.2f",
+                                usage.usage.currentMonthlyUsage,
+                            )} / $${usage.limits.monthlyLimitUsd}",
+                        )
                         LinearProgressIndicator(
                             progress = { (usage.usage.currentMonthlyUsage / usage.limits.monthlyLimitUsd).toFloat().coerceIn(0f, 1f) },
                             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
@@ -69,27 +75,31 @@ fun CostDashboardScreen(
                     }
                 }
             }
-            
+
             item {
                 Text("حالة المزودين (مفاتيح الطوارئ)", style = MaterialTheme.typography.titleLarge)
             }
-            
+
             items(providerStatuses) { status ->
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Column {
                             Text(status.provider.name, style = MaterialTheme.typography.titleMedium)
-                            Text(if (status.isEnabled) "نشط" else "معطل", color = if (status.isEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
+                            Text(
+                                if (status.isEnabled) "نشط" else "معطل",
+                                color = if (status.isEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                            )
                         }
                         Switch(
                             checked = status.isEnabled,
-                            onCheckedChange = { viewModel.toggleProviderStatus(status.provider, it) }
+                            onCheckedChange = { viewModel.toggleProviderStatus(status.provider, it) },
                         )
                     }
                 }

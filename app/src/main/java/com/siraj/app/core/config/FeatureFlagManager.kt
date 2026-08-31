@@ -23,13 +23,14 @@ object FeatureFlagManager {
     const val FEATURE_MAINTENANCE_MODE = "feature_maintenance_mode"
 
     // Local in-memory fallbacks when offline or remote config is unprovisioned
-    private val localDefaults = mapOf(
-        FEATURE_AI_GENERATION to true,
-        FEATURE_VIDEO_EXPORT to true,
-        FEATURE_AUDIO_SYNTHESIS to true,
-        FEATURE_SYSTEM_READ_ONLY_MODE to false,
-        FEATURE_MAINTENANCE_MODE to false
-    )
+    private val localDefaults =
+        mapOf(
+            FEATURE_AI_GENERATION to true,
+            FEATURE_VIDEO_EXPORT to true,
+            FEATURE_AUDIO_SYNTHESIS to true,
+            FEATURE_SYSTEM_READ_ONLY_MODE to false,
+            FEATURE_MAINTENANCE_MODE to false,
+        )
 
     fun initialize() {
         if (_isInitialized.value || isInitializing) {
@@ -45,14 +46,17 @@ object FeatureFlagManager {
                 return
             }
 
-            val remoteConfig = FirebaseRemoteConfig.getInstance().also {
-                remoteConfigInstance = it
-            }
+            val remoteConfig =
+                FirebaseRemoteConfig.getInstance().also {
+                    remoteConfigInstance = it
+                }
 
-            val configSettings = FirebaseRemoteConfigSettings.Builder()
-                .setMinimumFetchIntervalInSeconds(if (EnvironmentConfig.currentEnvironment == EnvironmentType.DEVELOPMENT) 0 else 3600)
-                .setFetchTimeoutInSeconds(5)
-                .build()
+            val configSettings =
+                FirebaseRemoteConfigSettings
+                    .Builder()
+                    .setMinimumFetchIntervalInSeconds(if (EnvironmentConfig.currentEnvironment == EnvironmentType.DEVELOPMENT) 0 else 3600)
+                    .setFetchTimeoutInSeconds(5)
+                    .build()
 
             remoteConfig.setConfigSettingsAsync(configSettings)
             try {
@@ -61,7 +65,8 @@ object FeatureFlagManager {
                 SanitizedLogger.d("FeatureFlagManager", "Using in-memory defaults fallback.")
             }
 
-            remoteConfig.fetchAndActivate()
+            remoteConfig
+                .fetchAndActivate()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         SanitizedLogger.d("FeatureFlagManager", "Remote config updated: ${task.result}")
@@ -78,11 +83,10 @@ object FeatureFlagManager {
         }
     }
 
-    fun isFeatureEnabled(key: String): Boolean {
-        return try {
+    fun isFeatureEnabled(key: String): Boolean =
+        try {
             remoteConfigInstance?.getBoolean(key) ?: localDefaults[key] ?: true
         } catch (e: Exception) {
             localDefaults[key] ?: true
         }
-    }
 }

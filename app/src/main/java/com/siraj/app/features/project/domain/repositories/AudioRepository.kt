@@ -7,9 +7,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface AudioRepository {
     fun getAvailableVoices(): List<VoiceOption>
-    
+
     suspend fun generateVoiceover(request: GenerateAudioRequest): Result<AudioItem>
-    
+
     suspend fun uploadUserAudio(
         projectId: String,
         sceneId: String?,
@@ -19,23 +19,23 @@ interface AudioRepository {
         mimeType: String,
         durationMs: Long,
         reciterOrSpeakerName: String?,
-        isRecitation: Boolean
+        isRecitation: Boolean,
     ): Result<AudioItem>
-    
+
     suspend fun trimAudio(
         audioId: String,
         startTrimMs: Long,
-        endTrimMs: Long
+        endTrimMs: Long,
     ): Result<AudioItem>
-    
+
     suspend fun attachAudioToScene(
         projectId: String,
         sceneId: String,
         audioItem: AudioItem,
-        syncSceneDuration: Boolean
+        syncSceneDuration: Boolean,
     ): Result<Unit>
-    
+
     suspend fun getProjectAudios(projectId: String): Flow<List<AudioItem>>
-    
+
     suspend fun deleteAudio(audioId: String): Result<Unit>
 }

@@ -26,7 +26,6 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WorkspaceViewModelTest {
-
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var authRepository: AuthRepository
     private lateinit var workspaceRepository: WorkspaceRepository
@@ -45,44 +44,59 @@ class WorkspaceViewModelTest {
     }
 
     @Test
-    fun `inviteMember fails if user is not OWNER or MANAGER`() = runTest {
-        val mockUser = UserProfile(id = "user123", email = "test@test.com", name = "Test", preferences = UserPreferences(activeWorkspaceId = "ws1"))
-        val mockWorkspace = Workspace(id = "ws1", name = "Test WS", ownerId = "owner123")
-        val mockMembers = listOf(WorkspaceMember(userId = "user123", role = WorkspaceRole.EDITOR))
-        
-        every { authRepository.currentUser } returns flowOf(mockUser)
-        every { workspaceRepository.getUserWorkspaces("user123") } returns flowOf(Resource.Success(listOf(mockWorkspace)))
-        every { workspaceRepository.getWorkspaceMembers("ws1") } returns flowOf(Resource.Success(mockMembers))
-        every { workspaceRepository.getUserInvitations("test@test.com") } returns flowOf(Resource.Success(emptyList()))
-        
-        viewModel = WorkspaceViewModel(authRepository, workspaceRepository)
-        advanceUntilIdle()
+    fun `inviteMember fails if user is not OWNER or MANAGER`() =
+        runTest {
+            val mockUser =
+                UserProfile(
+                    id = "user123",
+                    email = "test@test.com",
+                    name = "Test",
+                    preferences = UserPreferences(activeWorkspaceId = "ws1"),
+                )
+            val mockWorkspace = Workspace(id = "ws1", name = "Test WS", ownerId = "owner123")
+            val mockMembers = listOf(WorkspaceMember(userId = "user123", role = WorkspaceRole.EDITOR))
 
-        viewModel.inviteMember("new@test.com", WorkspaceRole.EDITOR)
-        advanceUntilIdle()
+            every { authRepository.currentUser } returns flowOf(mockUser)
+            every { workspaceRepository.getUserWorkspaces("user123") } returns flowOf(Resource.Success(listOf(mockWorkspace)))
+            every { workspaceRepository.getWorkspaceMembers("ws1") } returns flowOf(Resource.Success(mockMembers))
+            every { workspaceRepository.getUserInvitations("test@test.com") } returns flowOf(Resource.Success(emptyList()))
 
-        assertEquals("ليس لديك صلاحية لدعوة أعضاء", viewModel.uiState.value.error)
-    }
+            viewModel = WorkspaceViewModel(authRepository, workspaceRepository)
+            advanceUntilIdle()
+
+            viewModel.inviteMember("new@test.com", WorkspaceRole.EDITOR)
+            advanceUntilIdle()
+
+            assertEquals("ليس لديك صلاحية لدعوة أعضاء", viewModel.uiState.value.error)
+        }
 
     @Test
-    fun `inviteMember succeeds if user is OWNER`() = runTest {
-        val mockUser = UserProfile(id = "owner123", email = "test@test.com", name = "Test", preferences = UserPreferences(activeWorkspaceId = "ws1"))
-        val mockWorkspace = Workspace(id = "ws1", name = "Test WS", ownerId = "owner123")
-        val mockMembers = listOf(WorkspaceMember(userId = "owner123", role = WorkspaceRole.OWNER))
-        
-        every { authRepository.currentUser } returns flowOf(mockUser)
-        every { workspaceRepository.getUserWorkspaces("owner123") } returns flowOf(Resource.Success(listOf(mockWorkspace)))
-        every { workspaceRepository.getWorkspaceMembers("ws1") } returns flowOf(Resource.Success(mockMembers))
-        every { workspaceRepository.getUserInvitations("test@test.com") } returns flowOf(Resource.Success(emptyList()))
-        
-        coEvery { workspaceRepository.inviteMember("ws1", "new@test.com", WorkspaceRole.EDITOR, "owner123") } returns Resource.Success(Unit)
-        
-        viewModel = WorkspaceViewModel(authRepository, workspaceRepository)
-        advanceUntilIdle()
+    fun `inviteMember succeeds if user is OWNER`() =
+        runTest {
+            val mockUser =
+                UserProfile(
+                    id = "owner123",
+                    email = "test@test.com",
+                    name = "Test",
+                    preferences = UserPreferences(activeWorkspaceId = "ws1"),
+                )
+            val mockWorkspace = Workspace(id = "ws1", name = "Test WS", ownerId = "owner123")
+            val mockMembers = listOf(WorkspaceMember(userId = "owner123", role = WorkspaceRole.OWNER))
 
-        viewModel.inviteMember("new@test.com", WorkspaceRole.EDITOR)
-        advanceUntilIdle()
+            every { authRepository.currentUser } returns flowOf(mockUser)
+            every { workspaceRepository.getUserWorkspaces("owner123") } returns flowOf(Resource.Success(listOf(mockWorkspace)))
+            every { workspaceRepository.getWorkspaceMembers("ws1") } returns flowOf(Resource.Success(mockMembers))
+            every { workspaceRepository.getUserInvitations("test@test.com") } returns flowOf(Resource.Success(emptyList()))
 
-        assertEquals(null, viewModel.uiState.value.error)
-    }
+            coEvery { workspaceRepository.inviteMember("ws1", "new@test.com", WorkspaceRole.EDITOR, "owner123") } returns
+                Resource.Success(Unit)
+
+            viewModel = WorkspaceViewModel(authRepository, workspaceRepository)
+            advanceUntilIdle()
+
+            viewModel.inviteMember("new@test.com", WorkspaceRole.EDITOR)
+            advanceUntilIdle()
+
+            assertEquals(null, viewModel.uiState.value.error)
+        }
 }

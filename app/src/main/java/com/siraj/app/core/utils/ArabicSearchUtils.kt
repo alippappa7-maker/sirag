@@ -1,7 +1,6 @@
 package com.siraj.app.core.utils
 
 object ArabicSearchUtils {
-
     // Regex for Arabic diacritics / Tashkeel
     private val TASHKEEL_REGEX = "[\\u0617-\\u061A\\u064B-\\u0652\\u0670]".toRegex()
     private val TATWEEL_REGEX = "\\u0640".toRegex()
@@ -29,7 +28,10 @@ object ArabicSearchUtils {
     /**
      * فحص مطابقة الاستعلام للنص بعد التطبيع
      */
-    fun matches(text: String?, query: String): Boolean {
+    fun matches(
+        text: String?,
+        query: String,
+    ): Boolean {
         if (text.isNullOrBlank() || query.isBlank()) return false
         val normalizedText = normalizeArabic(text)
         val normalizedQuery = normalizeArabic(query)
@@ -46,7 +48,11 @@ object ArabicSearchUtils {
     /**
      * حساب درجة الصلة بالاستعلام (Relevance Score) لترتيب النتائج بدقة
      */
-    fun calculateScore(title: String, body: String, query: String): Int {
+    fun calculateScore(
+        title: String,
+        body: String,
+        query: String,
+    ): Int {
         val normQuery = normalizeArabic(query)
         val normTitle = normalizeArabic(title)
         val normBody = normalizeArabic(body)
@@ -81,7 +87,11 @@ object ArabicSearchUtils {
     /**
      * استخراج مقتطف نصي حول موضع التطابق (Snippet with context)
      */
-    fun extractSnippet(fullText: String, query: String, maxLen: Int = 120): String {
+    fun extractSnippet(
+        fullText: String,
+        query: String,
+        maxLen: Int = 120,
+    ): String {
         if (fullText.isBlank()) return ""
         val normText = normalizeArabic(fullText)
         val normQuery = normalizeArabic(query)

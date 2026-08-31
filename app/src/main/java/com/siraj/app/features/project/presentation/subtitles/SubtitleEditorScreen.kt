@@ -1,11 +1,9 @@
 package com.siraj.app.features.project.presentation.subtitles
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -34,9 +32,10 @@ fun SubtitleEditorScreen(
     sceneId: String,
     initialSceneText: String = "",
     onNavigateBack: () -> Unit,
-    viewModel: SubtitleEditorViewModel = viewModel(
-        factory = SubtitleEditorViewModelFactory(projectId, sceneId, initialSceneText)
-    )
+    viewModel: SubtitleEditorViewModel =
+        viewModel(
+            factory = SubtitleEditorViewModelFactory(projectId, sceneId, initialSceneText),
+        ),
 ) {
     val subtitles by viewModel.subtitles.collectAsState()
     val selectedLang by viewModel.selectedLanguage.collectAsState()
@@ -49,14 +48,16 @@ fun SubtitleEditorScreen(
     val sceneDurationMs by viewModel.sceneDurationMs.collectAsState()
     val previewTimeMs by viewModel.previewCurrentTimeMs.collectAsState()
 
-    val filteredSubtitles = remember(subtitles, selectedLang) {
-        subtitles.filter { it.language == selectedLang }
-    }
+    val filteredSubtitles =
+        remember(subtitles, selectedLang) {
+            subtitles.filter { it.language == selectedLang }
+        }
 
     // Active subtitle at preview playhead
-    val activePreviewSub = remember(filteredSubtitles, previewTimeMs) {
-        filteredSubtitles.find { previewTimeMs in it.startMs..it.endMs }
-    }
+    val activePreviewSub =
+        remember(filteredSubtitles, previewTimeMs) {
+            filteredSubtitles.find { previewTimeMs in it.startMs..it.endMs }
+        }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val clipboardManager = LocalClipboardManager.current
@@ -75,17 +76,26 @@ fun SubtitleEditorScreen(
             TopAppBar(
                 title = {
                     Column {
-                        Text("محرر الترجمة والشارات (Subtitles)", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text(
+                            "محرر الترجمة والشارات (Subtitles)",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
                         Text(
                             text = "مزامنة التوقيت • دعم RTL • قفل النصوص الشرعية",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.back),
+                        )
                     }
                 },
                 actions = {
@@ -95,7 +105,7 @@ fun SubtitleEditorScreen(
                     IconButton(onClick = { viewModel.exportSrt() }) {
                         Icon(Icons.Default.Share, contentDescription = "تصدير SRT")
                     }
-                }
+                },
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -103,56 +113,61 @@ fun SubtitleEditorScreen(
             ExtendedFloatingActionButton(
                 onClick = { viewModel.onAddNewSubtitle() },
                 icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                text = { Text("إضافة سطر") }
+                text = { Text("إضافة سطر") },
             )
-        }
+        },
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding),
         ) {
             // Video Subtitle Preview Frame
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .background(Color(0xFF121212))
-                    .padding(12.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .background(Color(0xFF121212))
+                        .padding(12.dp),
             ) {
                 // Mock Video Backdrop
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFF1E1E24)),
-                    contentAlignment = Alignment.Center
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color(0xFF1E1E24)),
+                    contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         text = "معاينة الفيديو • التوقيت: ${(previewTimeMs / 1000f)} ث / ${(sceneDurationMs / 1000f)} ث",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = 0.4f)
+                        color = Color.White.copy(alpha = 0.4f),
                     )
                 }
 
                 // Subtitle Overlay rendered according to style
                 if (activePreviewSub != null) {
                     val sub = activePreviewSub
-                    val alignment = when (currentStyle.position) {
-                        SubtitlePosition.TOP -> Alignment.TopCenter
-                        SubtitlePosition.MIDDLE -> Alignment.Center
-                        SubtitlePosition.BOTTOM -> Alignment.BottomCenter
-                    }
+                    val alignment =
+                        when (currentStyle.position) {
+                            SubtitlePosition.TOP -> Alignment.TopCenter
+                            SubtitlePosition.MIDDLE -> Alignment.Center
+                            SubtitlePosition.BOTTOM -> Alignment.BottomCenter
+                        }
 
                     Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        contentAlignment = alignment
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                        contentAlignment = alignment,
                     ) {
                         Surface(
                             shape = RoundedCornerShape(6.dp),
-                            color = Color(0x99000000)
+                            color = Color(0x99000000),
                         ) {
                             Text(
                                 text = sub.text,
@@ -160,7 +175,7 @@ fun SubtitleEditorScreen(
                                 fontSize = currentStyle.fontSizeSp.sp,
                                 fontWeight = if (currentStyle.isBold) FontWeight.Bold else FontWeight.Normal,
                                 textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                             )
                         }
                     }
@@ -169,13 +184,14 @@ fun SubtitleEditorScreen(
 
             // Preview Playhead Scrubber
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text("0:00", style = MaterialTheme.typography.labelSmall)
                     Text("مسطرة توقيت المشهد (Scrubber)", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
@@ -185,27 +201,28 @@ fun SubtitleEditorScreen(
                     value = previewTimeMs.toFloat(),
                     onValueChange = { viewModel.setPreviewTime(it.toLong()) },
                     valueRange = 0f..sceneDurationMs.toFloat().coerceAtLeast(1000f),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
 
             // Language Switcher & Generator Actions
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 FilterChip(
                     selected = selectedLang == "ar",
                     onClick = { viewModel.onLanguageChange("ar") },
-                    label = { Text("العربية (الأصل)") }
+                    label = { Text("العربية (الأصل)") },
                 )
                 FilterChip(
                     selected = selectedLang == "en",
                     onClick = { viewModel.onLanguageChange("en") },
-                    label = { Text("English (Draft)") }
+                    label = { Text("English (Draft)") },
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -213,7 +230,7 @@ fun SubtitleEditorScreen(
                 FilledTonalButton(
                     onClick = { viewModel.generateSubtitlesFromNarration() },
                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
-                    modifier = Modifier.height(34.dp)
+                    modifier = Modifier.height(34.dp),
                 ) {
                     Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
@@ -224,7 +241,7 @@ fun SubtitleEditorScreen(
                     OutlinedButton(
                         onClick = { viewModel.autoTranslateToArabicOrEnglish() },
                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
-                        modifier = Modifier.height(34.dp)
+                        modifier = Modifier.height(34.dp),
                     ) {
                         Text("ترجمة إلى EN", style = MaterialTheme.typography.labelSmall)
                     }
@@ -240,23 +257,24 @@ fun SubtitleEditorScreen(
                 }
             } else if (filteredSubtitles.isEmpty()) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(32.dp),
-                    contentAlignment = Alignment.Center
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(32.dp),
+                    contentAlignment = Alignment.Center,
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
                             Icons.Default.Info,
                             contentDescription = null,
                             modifier = Modifier.size(48.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
                             text = "لا توجد أسطر ترجمة مضافة لهذه اللغة",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Button(onClick = { viewModel.generateSubtitlesFromNarration() }) {
@@ -266,10 +284,11 @@ fun SubtitleEditorScreen(
                 }
             } else {
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp, vertical = 6.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(filteredSubtitles, key = { it.id }) { item ->
                         SubtitleLineCard(
@@ -277,7 +296,7 @@ fun SubtitleEditorScreen(
                             isActive = previewTimeMs in item.startMs..item.endMs,
                             onEdit = { viewModel.onSelectSubtitleForEdit(item) },
                             onDelete = { viewModel.onDeleteSubtitle(item) },
-                            onJumpTo = { viewModel.setPreviewTime(item.startMs) }
+                            onJumpTo = { viewModel.setPreviewTime(item.startMs) },
                         )
                     }
                     item {
@@ -292,9 +311,10 @@ fun SubtitleEditorScreen(
     if (showStyleSheet) {
         ModalBottomSheet(onDismissRequest = { showStyleSheet = false }) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
             ) {
                 Text("تخصيص نمط الترجمة (Subtitle Style)", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(16.dp))
@@ -303,13 +323,13 @@ fun SubtitleEditorScreen(
                 Text("موضع الترجمة على الشاشة:", style = MaterialTheme.typography.labelMedium)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     SubtitlePosition.values().forEach { pos ->
                         FilterChip(
                             selected = currentStyle.position == pos,
                             onClick = { viewModel.updateStyle(position = pos) },
-                            label = { Text(pos.displayName) }
+                            label = { Text(pos.displayName) },
                         )
                     }
                 }
@@ -320,13 +340,13 @@ fun SubtitleEditorScreen(
                 Text("نوع الخط العربي:", style = MaterialTheme.typography.labelMedium)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     SubtitleFontFamily.values().forEach { font ->
                         FilterChip(
                             selected = currentStyle.fontFamily == font,
                             onClick = { viewModel.updateStyle(fontFamily = font) },
-                            label = { Text(font.displayName) }
+                            label = { Text(font.displayName) },
                         )
                     }
                 }
@@ -339,32 +359,37 @@ fun SubtitleEditorScreen(
                     value = currentStyle.fontSizeSp.toFloat(),
                     onValueChange = { viewModel.updateStyle(fontSizeSp = it.toInt()) },
                     valueRange = 14f..32f,
-                    steps = 9
+                    steps = 9,
                 )
 
                 // Burn-in Toggle
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { viewModel.updateStyle(burnIntoVideo = !currentStyle.burnIntoVideo) }
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { viewModel.updateStyle(burnIntoVideo = !currentStyle.burnIntoVideo) }
+                            .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Checkbox(
                         checked = currentStyle.burnIntoVideo,
-                        onCheckedChange = { viewModel.updateStyle(burnIntoVideo = it) }
+                        onCheckedChange = { viewModel.updateStyle(burnIntoVideo = it) },
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
                         Text("حرق الترجمة داخل الفيديو (Hardsub)", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
-                        Text("تثبيت الترجمة مدمجة في الإطارات المرئية عند التصدير", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            "تثبيت الترجمة مدمجة في الإطارات المرئية عند التصدير",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = { showStyleSheet = false },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text("حفظ وتطبيق")
                 }
@@ -398,12 +423,12 @@ fun SubtitleEditorScreen(
                         Surface(
                             shape = RoundedCornerShape(8.dp),
                             color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
                         ) {
                             Text(
                                 text = "🔒 هذا النص موثق ومقفل شرعياً كآية قرآنية أو حديث شريف، يُسمح بضبط توقيت الظهور فقط.",
                                 style = MaterialTheme.typography.labelSmall,
-                                modifier = Modifier.padding(8.dp)
+                                modifier = Modifier.padding(8.dp),
                             )
                         }
                     }
@@ -413,28 +438,28 @@ fun SubtitleEditorScreen(
                         onValueChange = { textValue = it },
                         label = { Text("نص الترجمة") },
                         enabled = !sub.locked,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         OutlinedTextField(
                             value = startSec,
                             onValueChange = { startSec = it },
                             label = { Text("البداية (ثانية)") },
                             modifier = Modifier.weight(1f),
-                            singleLine = true
+                            singleLine = true,
                         )
                         OutlinedTextField(
                             value = endSec,
                             onValueChange = { endSec = it },
                             label = { Text("النهاية (ثانية)") },
                             modifier = Modifier.weight(1f),
-                            singleLine = true
+                            singleLine = true,
                         )
                     }
                 }
@@ -445,16 +470,19 @@ fun SubtitleEditorScreen(
                         val sMs = ((startSec.toFloatOrNull() ?: 0f) * 1000).toLong()
                         val eMs = ((endSec.toFloatOrNull() ?: 3f) * 1000).toLong()
                         viewModel.onUpdateSubtitle(textValue, sMs, eMs)
-                    }
+                    },
                 ) {
                     Text("حفظ التعديل")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.onDismissEdit() }) {
-                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
+                    Text(
+                        androidx.compose.ui.res
+                            .stringResource(com.siraj.app.R.string.cancel),
+                    )
                 }
-            }
+            },
         )
     }
 
@@ -473,15 +501,16 @@ fun SubtitleEditorScreen(
                     Surface(
                         shape = RoundedCornerShape(8.dp),
                         color = MaterialTheme.colorScheme.surfaceVariant,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(180.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(180.dp),
                     ) {
                         Text(
                             text = content,
                             style = MaterialTheme.typography.labelSmall,
                             fontFamily = FontFamily.Monospace,
-                            modifier = Modifier.padding(8.dp)
+                            modifier = Modifier.padding(8.dp),
                         )
                     }
                 }
@@ -491,7 +520,7 @@ fun SubtitleEditorScreen(
                     onClick = {
                         clipboardManager.setText(AnnotatedString(content))
                         viewModel.closeExportDialog()
-                    }
+                    },
                 ) {
                     Text("نسخ إلى الحافظة")
                 }
@@ -504,10 +533,13 @@ fun SubtitleEditorScreen(
                         }
                     }
                     TextButton(onClick = { viewModel.closeExportDialog() }) {
-                        Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.close))
+                        Text(
+                            androidx.compose.ui.res
+                                .stringResource(com.siraj.app.R.string.close),
+                        )
                     }
                 }
-            }
+            },
         )
     }
 }
@@ -518,34 +550,40 @@ fun SubtitleLineCard(
     isActive: Boolean,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
-    onJumpTo: () -> Unit
+    onJumpTo: () -> Unit,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onJumpTo() },
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable { onJumpTo() },
         shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isActive) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f)
-            else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-        )
+        colors =
+            CardDefaults.cardColors(
+                containerColor =
+                    if (isActive) {
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f)
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                    },
+            ),
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 // Time tag
                 Surface(
                     shape = RoundedCornerShape(4.dp),
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
                 ) {
                     Text(
                         text = "${(item.startMs / 1000f)}s ➔ ${(item.endMs / 1000f)}s",
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                     )
                 }
 
@@ -555,25 +593,25 @@ fun SubtitleLineCard(
                 if (item.locked) {
                     Surface(
                         shape = RoundedCornerShape(4.dp),
-                        color = MaterialTheme.colorScheme.tertiaryContainer
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
                     ) {
                         Text(
                             text = "🔒 نص موثق مقفل",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                         )
                     }
                 } else if (item.reviewStatus == SubtitleReviewStatus.PENDING_REVIEW) {
                     Surface(
                         shape = RoundedCornerShape(4.dp),
-                        color = MaterialTheme.colorScheme.errorContainer
+                        color = MaterialTheme.colorScheme.errorContainer,
                     ) {
                         Text(
                             text = "بانتظار المراجعة",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onErrorContainer,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                         )
                     }
                 }
@@ -581,12 +619,25 @@ fun SubtitleLineCard(
                 Spacer(modifier = Modifier.weight(1f))
 
                 IconButton(onClick = onEdit, modifier = Modifier.size(30.dp)) {
-                    Icon(Icons.Default.Edit, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.edit), modifier = Modifier.size(16.dp))
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription =
+                            androidx.compose.ui.res
+                                .stringResource(com.siraj.app.R.string.edit),
+                        modifier = Modifier.size(16.dp),
+                    )
                 }
 
                 if (!item.locked) {
                     IconButton(onClick = onDelete, modifier = Modifier.size(30.dp)) {
-                        Icon(Icons.Default.Delete, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.delete), modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.error)
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.delete),
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.error,
+                        )
                     }
                 }
             }
@@ -596,7 +647,7 @@ fun SubtitleLineCard(
             Text(
                 text = item.text,
                 style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
             )
         }
     }

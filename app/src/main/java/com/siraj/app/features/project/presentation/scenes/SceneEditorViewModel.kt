@@ -21,7 +21,7 @@ class SceneEditorViewModel(
 
     private val _sceneState = MutableStateFlow<Scene?>(null)
     val sceneState: StateFlow<Scene?> = _sceneState.asStateFlow()
-    
+
     // Default text formatting properties mapping to a new SceneText object since we just need it for UI
     private val _sceneTextState = MutableStateFlow(SceneText(sceneId = sceneId))
     val sceneTextState: StateFlow<SceneText> = _sceneTextState.asStateFlow()
@@ -55,13 +55,13 @@ class SceneEditorViewModel(
     fun updateSceneAndText(updatedScene: Scene, updatedText: SceneText) {
         val currentScene = _sceneState.value ?: return
         val currentText = _sceneTextState.value
-        
+
         _undoStack.value = _undoStack.value + Pair(currentScene, currentText)
-        _redoStack.value = emptyList() 
-        
+        _redoStack.value = emptyList()
+
         _sceneState.value = updatedScene
         _sceneTextState.value = updatedText
-        
+
         saveToProject(updatedScene)
     }
 
@@ -110,7 +110,7 @@ class SceneEditorViewModel(
                 createdAt = System.currentTimeMillis(),
                 updatedAt = System.currentTimeMillis()
             )
-            
+
             // Adjust order index of subsequent scenes
             val updatedScenes = project.scenes.map {
                 if (it.orderIndex > currentScene.orderIndex) {
@@ -118,10 +118,10 @@ class SceneEditorViewModel(
                 } else it
             }.toMutableList()
             updatedScenes.add(newScene)
-            
+
             val totalMs = updatedScenes.sumOf { it.durationMs }
             val updatedProject = project.copy(scenes = updatedScenes, durationMs = totalMs)
-            
+
             viewModelScope.launch {
                 projectRepository.updateProject(updatedProject)
                 _uiMessage.emit("تم نسخ المشهد بنجاح.")
@@ -134,7 +134,7 @@ class SceneEditorViewModel(
         val currentProjResource = _projectState.value
         if (currentProjResource is Resource.Success) {
             val project = currentProjResource.data
-            
+
             val oldScene = project.scenes.find { it.id == sceneToSave.id }
             var finalStatus = sceneToSave.status
             var finalReviewState = project.reviewState
@@ -159,15 +159,15 @@ class SceneEditorViewModel(
 
             val finalScene = sceneToSave.copy(status = finalStatus, updatedAt = System.currentTimeMillis())
             val updatedScenes = project.scenes.map { if (it.id == finalScene.id) finalScene else it }
-            
+
             val totalMs = updatedScenes.sumOf { it.durationMs }
             val updatedProject = project.copy(
-                scenes = updatedScenes, 
+                scenes = updatedScenes,
                 durationMs = totalMs,
                 reviewState = finalReviewState,
                 reviewLogs = logs
             )
-            
+
             viewModelScope.launch {
                 projectRepository.updateProject(updatedProject)
             }

@@ -20,13 +20,12 @@ data class ContentManagementState(
     val filter: ContentManagementFilter = ContentManagementFilter(),
     val error: String? = null,
     val selectedAuditLogs: List<AuditLogEntry> = emptyList(),
-    val reportUrl: String? = null
+    val reportUrl: String? = null,
 )
 
 class ContentManagementViewModel(
-    private val repository: ContentManagementRepository
+    private val repository: ContentManagementRepository,
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(ContentManagementState())
     val state: StateFlow<ContentManagementState> = _state.asStateFlow()
 
@@ -38,7 +37,8 @@ class ContentManagementViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
-                repository.getManagedContent(_state.value.filter, page = 1, limit = 20)
+                repository
+                    .getManagedContent(_state.value.filter, page = 1, limit = 20)
                     .collectLatest { items ->
                         _state.update { it.copy(isLoading = false, items = items) }
                     }
@@ -48,14 +48,19 @@ class ContentManagementViewModel(
         }
     }
 
-    fun updateFilter(query: String? = null, type: String? = null, status: AdminContentStatus? = null) {
-        _state.update { 
+    fun updateFilter(
+        query: String? = null,
+        type: String? = null,
+        status: AdminContentStatus? = null,
+    ) {
+        _state.update {
             it.copy(
-                filter = it.filter.copy(
-                    query = query ?: it.filter.query,
-                    type = type,
-                    status = status
-                )
+                filter =
+                    it.filter.copy(
+                        query = query ?: it.filter.query,
+                        type = type,
+                        status = status,
+                    ),
             )
         }
         loadContent() // Re-trigger collection
@@ -103,7 +108,7 @@ class ContentManagementViewModel(
             }
         }
     }
-    
+
     fun clearReportUrl() {
         _state.update { it.copy(reportUrl = null) }
     }

@@ -4,7 +4,7 @@ enum class AiSafetyStatus {
     SAFE,
     PENDING_REVIEW,
     FLAGGED,
-    REJECTED
+    REJECTED,
 }
 
 data class AiMetadata(
@@ -17,29 +17,32 @@ data class AiMetadata(
     val humanReviewed: Boolean = false,
     val disclosureRequired: Boolean = false,
     val safetyStatus: AiSafetyStatus = AiSafetyStatus.SAFE,
-    val aiDisclaimers: List<String> = emptyList()
+    val aiDisclaimers: List<String> = emptyList(),
 )
 
 data class AiContentReport(
-    val reportId: String = java.util.UUID.randomUUID().toString(),
+    val reportId: String =
+        java.util.UUID
+            .randomUUID()
+            .toString(),
     val contentId: String,
     val contentType: String,
     val reporterId: String,
     val reason: String,
     val details: String = "",
     val reportedAt: Long = System.currentTimeMillis(),
-    val status: String = "PENDING"
+    val status: String = "PENDING",
 )
 
 enum class AiProviderStatus {
     ACTIVE,
     DISABLED_TEMPORARILY,
-    DISABLED_PERMANENTLY
+    DISABLED_PERMANENTLY,
 }
 
 data class AiProviderConfig(
     val id: String,
     val name: String,
     val status: AiProviderStatus = AiProviderStatus.ACTIVE,
-    val disableReason: String? = null
+    val disableReason: String? = null,
 )

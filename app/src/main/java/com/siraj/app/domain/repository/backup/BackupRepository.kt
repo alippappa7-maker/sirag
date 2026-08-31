@@ -11,22 +11,29 @@ import kotlinx.coroutines.flow.Flow
 
 interface BackupRepository {
     fun getBackupSnapshots(environment: BackupEnvironment? = null): Flow<List<BackupSnapshot>>
+
     fun getRestoreJobs(): Flow<List<RestoreJob>>
+
     fun getDisasterRecoveryPlan(): Flow<DisasterRecoveryPlan>
+
     fun getRetentionPolicy(): Flow<BackupRetentionPolicy>
+
     suspend fun triggerBackup(
         type: BackupType,
         environment: BackupEnvironment,
-        notes: String
+        notes: String,
     ): Result<BackupSnapshot>
+
     suspend fun executeDryRunRestore(
         snapshotId: String,
-        targetEnv: RestoreTargetEnvironment = RestoreTargetEnvironment.ISOLATED_RECOVERY_SANDBOX
+        targetEnv: RestoreTargetEnvironment = RestoreTargetEnvironment.ISOLATED_RECOVERY_SANDBOX,
     ): Result<RestoreJob>
+
     suspend fun restoreProjectFromSnapshot(
         snapshotId: String,
         projectId: String,
-        targetWorkspaceId: String
+        targetWorkspaceId: String,
     ): Result<RestoreJob>
+
     suspend fun getDeletedUsersTombstoneCount(): Int
 }

@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.siraj.app.core.utils.Resource
 import com.siraj.app.domain.models.flash.Flash
-import com.siraj.app.domain.models.flash.FlashPublishingState
 import com.siraj.app.domain.models.flash.FlashAuditLog
 import com.siraj.app.domain.repository.flash.FlashPublishingRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,21 +18,29 @@ data class FlashPublishingStateUI(
     val currentFlash: Flash? = null,
     val error: String? = null,
     val successMessage: String? = null,
-    val auditLogs: List<FlashAuditLog> = emptyList()
+    val auditLogs: List<FlashAuditLog> = emptyList(),
 )
 
 class FlashPublishingViewModel(
-    private val repository: FlashPublishingRepository
+    private val repository: FlashPublishingRepository,
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(FlashPublishingStateUI())
     val state: StateFlow<FlashPublishingStateUI> = _state.asStateFlow()
 
-    fun createDraft(creatorId: String, creatorName: String, workspaceId: String, videoFile: File?, assetId: String?, durationMs: Long) {
+    fun createDraft(
+        creatorId: String,
+        creatorName: String,
+        workspaceId: String,
+        videoFile: File?,
+        assetId: String?,
+        durationMs: Long,
+    ) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null, successMessage = null)
             when (val result = repository.createDraft(creatorId, creatorName, workspaceId, videoFile, assetId, durationMs)) {
-                is Resource.Success -> _state.value = _state.value.copy(isLoading = false, currentFlash = result.data, successMessage = "تم إنشاء المسودة")
+                is Resource.Success ->
+                    _state.value =
+                        _state.value.copy(isLoading = false, currentFlash = result.data, successMessage = "تم إنشاء المسودة")
                 is Resource.Error -> _state.value = _state.value.copy(isLoading = false, error = result.message)
                 else -> {}
             }
@@ -48,19 +55,36 @@ class FlashPublishingViewModel(
         tags: List<String>,
         visibility: String,
         showCreatorInfo: Boolean,
-        sourceIds: List<String>
+        sourceIds: List<String>,
     ) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null, successMessage = null)
-            when (val result = repository.updateFlashDetails(flashId, title, description, category, tags, visibility, showCreatorInfo, sourceIds)) {
-                is Resource.Success -> _state.value = _state.value.copy(isLoading = false, currentFlash = result.data, successMessage = "تم تحديث التفاصيل بنجاح")
+            when (
+                val result =
+                    repository.updateFlashDetails(
+                        flashId,
+                        title,
+                        description,
+                        category,
+                        tags,
+                        visibility,
+                        showCreatorInfo,
+                        sourceIds,
+                    )
+            ) {
+                is Resource.Success ->
+                    _state.value =
+                        _state.value.copy(isLoading = false, currentFlash = result.data, successMessage = "تم تحديث التفاصيل بنجاح")
                 is Resource.Error -> _state.value = _state.value.copy(isLoading = false, error = result.message)
                 else -> {}
             }
         }
     }
 
-    fun submitForReview(flashId: String, userId: String) {
+    fun submitForReview(
+        flashId: String,
+        userId: String,
+    ) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null, successMessage = null)
             // 1. Run Automated Checks
@@ -69,32 +93,44 @@ class FlashPublishingViewModel(
                 _state.value = _state.value.copy(isLoading = false, error = "فشل الفحص التلقائي: ${checkResult.message}")
                 return@launch
             }
-            
+
             // 2. Submit
             when (val result = repository.submitForReview(flashId, userId)) {
-                is Resource.Success -> _state.value = _state.value.copy(isLoading = false, currentFlash = result.data, successMessage = "تم الإرسال للمراجعة")
+                is Resource.Success ->
+                    _state.value =
+                        _state.value.copy(isLoading = false, currentFlash = result.data, successMessage = "تم الإرسال للمراجعة")
                 is Resource.Error -> _state.value = _state.value.copy(isLoading = false, error = result.message)
                 else -> {}
             }
         }
     }
 
-    fun publish(flashId: String, userId: String) {
+    fun publish(
+        flashId: String,
+        userId: String,
+    ) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null, successMessage = null)
             when (val result = repository.publishFlash(flashId, userId)) {
-                is Resource.Success -> _state.value = _state.value.copy(isLoading = false, currentFlash = result.data, successMessage = "تم النشر بنجاح")
+                is Resource.Success ->
+                    _state.value =
+                        _state.value.copy(isLoading = false, currentFlash = result.data, successMessage = "تم النشر بنجاح")
                 is Resource.Error -> _state.value = _state.value.copy(isLoading = false, error = result.message)
                 else -> {}
             }
         }
     }
-    
-    fun mockApprove(flashId: String, reviewerId: String) { // For demo purposes
+
+    fun mockApprove(
+        flashId: String,
+        reviewerId: String,
+    ) { // For demo purposes
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
             when (val result = repository.approveFlash(flashId, reviewerId)) {
-                is Resource.Success -> _state.value = _state.value.copy(isLoading = false, currentFlash = result.data, successMessage = "تم الاعتماد")
+                is Resource.Success ->
+                    _state.value =
+                        _state.value.copy(isLoading = false, currentFlash = result.data, successMessage = "تم الاعتماد")
                 is Resource.Error -> _state.value = _state.value.copy(isLoading = false, error = result.message)
                 else -> {}
             }
@@ -116,7 +152,7 @@ class FlashPublishingViewModel(
 }
 
 class FlashPublishingViewModelFactory(
-    private val repository: FlashPublishingRepository
+    private val repository: FlashPublishingRepository,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

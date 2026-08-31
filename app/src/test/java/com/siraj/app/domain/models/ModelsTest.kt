@@ -1,11 +1,9 @@
 package com.siraj.app.domain.models
 
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Test
 
 class ModelsTest {
-
     @Test
     fun testUserProfile() {
         val user = UserProfile(id = "u1", name = "Ali", email = "ali@example.com")
@@ -31,39 +29,42 @@ class ModelsTest {
 
     @Test
     fun testSource() {
-        val source = Source(
-            id = "s1",
-            type = SourceType.TAFSIR,
-            title = "تفسير ابن كثير",
-            authorOrNarrator = "ابن كثير",
-            reviewStatus = SourceVerificationStatus.VERIFIED
-        )
+        val source =
+            Source(
+                id = "s1",
+                type = SourceType.TAFSIR,
+                title = "تفسير ابن كثير",
+                authorOrNarrator = "ابن كثير",
+                reviewStatus = SourceVerificationStatus.VERIFIED,
+            )
         assertEquals(SourceVerificationStatus.VERIFIED, source.reviewStatus)
         assertEquals("تفسير ابن كثير", source.title)
     }
 
     @Test
     fun testAsset() {
-        val asset = Asset(
-            id = "a1",
-            projectId = "p1",
-            type = AssetType.IMAGE,
-            license = "CC-BY",
-            status = AssetStatus.READY
-        )
+        val asset =
+            Asset(
+                id = "a1",
+                projectId = "p1",
+                type = AssetType.IMAGE,
+                license = "CC-BY",
+                status = AssetStatus.READY,
+            )
         assertEquals(AssetStatus.READY, asset.status)
         assertEquals(AssetType.IMAGE, asset.type)
     }
 
     @Test
     fun testScene() {
-        val scene = Scene(
-            id = "sc1",
-            projectId = "p1",
-            orderIndex = 1,
-            title = "A scene",
-            durationMs = 5000L
-        )
+        val scene =
+            Scene(
+                id = "sc1",
+                projectId = "p1",
+                orderIndex = 1,
+                title = "A scene",
+                durationMs = 5000L,
+            )
         assertEquals(1, scene.orderIndex)
         assertEquals(5000L, scene.durationMs)
     }

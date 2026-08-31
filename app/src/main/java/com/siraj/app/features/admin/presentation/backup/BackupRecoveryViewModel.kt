@@ -33,13 +33,12 @@ data class BackupRecoveryUiState(
     val showProjectRestoreModal: Boolean = false,
     val showDrRunbookModal: Boolean = false,
     val bannerMessage: String? = null,
-    val deletedUsersTombstoneCount: Int = 14
+    val deletedUsersTombstoneCount: Int = 14,
 )
 
 class BackupRecoveryViewModel(
-    private val backupRepository: BackupRepository
+    private val backupRepository: BackupRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(BackupRecoveryUiState())
     val uiState: StateFlow<BackupRecoveryUiState> = _uiState.asStateFlow()
 
@@ -55,7 +54,7 @@ class BackupRecoveryViewModel(
                 backupRepository.getBackupSnapshots(),
                 backupRepository.getRestoreJobs(),
                 backupRepository.getDisasterRecoveryPlan(),
-                backupRepository.getRetentionPolicy()
+                backupRepository.getRetentionPolicy(),
             ) { snapshots, jobs, drPlan, retention ->
                 val env = _uiState.value.selectedEnvironment
                 val filtered = if (env != null) snapshots.filter { it.environment == env } else snapshots
@@ -65,7 +64,7 @@ class BackupRecoveryViewModel(
                     restoreJobs = jobs,
                     drPlan = drPlan,
                     retentionPolicy = retention,
-                    isLoading = false
+                    isLoading = false,
                 )
             }.collect { newState ->
                 _uiState.value = newState
@@ -81,10 +80,11 @@ class BackupRecoveryViewModel(
     fun setEnvironmentFilter(environment: BackupEnvironment?) {
         val currentSnapshots = _uiState.value.snapshots
         val filtered = if (environment != null) currentSnapshots.filter { it.environment == environment } else currentSnapshots
-        _uiState.value = _uiState.value.copy(
-            selectedEnvironment = environment,
-            filteredSnapshots = filtered
-        )
+        _uiState.value =
+            _uiState.value.copy(
+                selectedEnvironment = environment,
+                filteredSnapshots = filtered,
+            )
     }
 
     fun selectSnapshot(snapshot: BackupSnapshot?) {
@@ -95,11 +95,15 @@ class BackupRecoveryViewModel(
         _uiState.value = _uiState.value.copy(showCreateBackupDialog = visible)
     }
 
-    fun setDryRunModalVisible(visible: Boolean, snapshot: BackupSnapshot? = null) {
-        _uiState.value = _uiState.value.copy(
-            showDryRunModal = visible,
-            selectedSnapshot = snapshot ?: _uiState.value.selectedSnapshot
-        )
+    fun setDryRunModalVisible(
+        visible: Boolean,
+        snapshot: BackupSnapshot? = null,
+    ) {
+        _uiState.value =
+            _uiState.value.copy(
+                showDryRunModal = visible,
+                selectedSnapshot = snapshot ?: _uiState.value.selectedSnapshot,
+            )
     }
 
     fun setProjectRestoreModalVisible(visible: Boolean) {
@@ -114,58 +118,78 @@ class BackupRecoveryViewModel(
         _uiState.value = _uiState.value.copy(bannerMessage = null)
     }
 
-    fun triggerNewBackup(type: BackupType, environment: BackupEnvironment, notes: String) {
+    fun triggerNewBackup(
+        type: BackupType,
+        environment: BackupEnvironment,
+        notes: String,
+    ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isTriggeringBackup = true, showCreateBackupDialog = false)
             val result = backupRepository.triggerBackup(type, environment, notes)
-            result.onSuccess { snapshot ->
-                _uiState.value = _uiState.value.copy(
-                    isTriggeringBackup = false,
-                    bannerMessage = "تم إنشاء النسخة الاحتياطية بنجاح (${snapshot.id}) ومطابقتها بتشفير CMEK"
-                )
-            }.onFailure { error ->
-                _uiState.value = _uiState.value.copy(
-                    isTriggeringBackup = false,
-                    bannerMessage = "فشل إنشاء النسخة: ${error.localizedMessage}"
-                )
-            }
+            result
+                .onSuccess { snapshot ->
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isTriggeringBackup = false,
+                            bannerMessage = "تم إنشاء النسخة الاحتياطية بنجاح (${snapshot.id}) ومطابقتها بتشفير CMEK",
+                        )
+                }.onFailure { error ->
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isTriggeringBackup = false,
+                            bannerMessage = "فشل إنشاء النسخة: ${error.localizedMessage}",
+                        )
+                }
         }
     }
 
-    fun executeDryRunRestore(snapshotId: String, targetEnv: RestoreTargetEnvironment = RestoreTargetEnvironment.ISOLATED_RECOVERY_SANDBOX) {
+    fun executeDryRunRestore(
+        snapshotId: String,
+        targetEnv: RestoreTargetEnvironment = RestoreTargetEnvironment.ISOLATED_RECOVERY_SANDBOX,
+    ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isExecutingDryRun = true)
             val result = backupRepository.executeDryRunRestore(snapshotId, targetEnv)
-            result.onSuccess { job ->
-                _uiState.value = _uiState.value.copy(
-                    isExecutingDryRun = false,
-                    activeDryRunJob = job,
-                    bannerMessage = "نجح اختبار الاستعادة التجريبي للنسخة $snapshotId مع استبعاد وتطهير بيانات الحذف بالكامل"
-                )
-            }.onFailure { error ->
-                _uiState.value = _uiState.value.copy(
-                    isExecutingDryRun = false,
-                    bannerMessage = "فشل اختبار الاستعادة: ${error.localizedMessage}"
-                )
-            }
+            result
+                .onSuccess { job ->
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isExecutingDryRun = false,
+                            activeDryRunJob = job,
+                            bannerMessage = "نجح اختبار الاستعادة التجريبي للنسخة $snapshotId مع استبعاد وتطهير بيانات الحذف بالكامل",
+                        )
+                }.onFailure { error ->
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isExecutingDryRun = false,
+                            bannerMessage = "فشل اختبار الاستعادة: ${error.localizedMessage}",
+                        )
+                }
         }
     }
 
-    fun executeProjectRestore(projectId: String, targetWorkspaceId: String, snapshotId: String) {
+    fun executeProjectRestore(
+        projectId: String,
+        targetWorkspaceId: String,
+        snapshotId: String,
+    ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, showProjectRestoreModal = false)
             val result = backupRepository.restoreProjectFromSnapshot(snapshotId, projectId, targetWorkspaceId)
-            result.onSuccess { job ->
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    bannerMessage = "تمت استعادة المشروع $projectId بنجاح في مساحة العمل $targetWorkspaceId"
-                )
-            }.onFailure { error ->
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    bannerMessage = "فشلت استعادة المشروع: ${error.localizedMessage}"
-                )
-            }
+            result
+                .onSuccess { job ->
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isLoading = false,
+                            bannerMessage = "تمت استعادة المشروع $projectId بنجاح في مساحة العمل $targetWorkspaceId",
+                        )
+                }.onFailure { error ->
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isLoading = false,
+                            bannerMessage = "فشلت استعادة المشروع: ${error.localizedMessage}",
+                        )
+                }
         }
     }
 }

@@ -3,7 +3,15 @@ package com.siraj.app.domain.models
 import java.util.UUID
 
 enum class ReviewState {
-    DRAFT, SUBMITTED, IN_REVIEW, CHANGES_REQUESTED, APPROVED, REJECTED, PUBLISHED, SUSPENDED, CORRECTED
+    DRAFT,
+    SUBMITTED,
+    IN_REVIEW,
+    CHANGES_REQUESTED,
+    APPROVED,
+    REJECTED,
+    PUBLISHED,
+    SUSPENDED,
+    CORRECTED,
 }
 
 data class ReviewLog(
@@ -13,5 +21,5 @@ data class ReviewLog(
     val previousState: ReviewState,
     val newState: ReviewState,
     val comments: String,
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
 )

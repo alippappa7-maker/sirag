@@ -32,13 +32,12 @@ data class DefectTriageUiState(
     val isStatusDialogOpen: Boolean = false,
     val isLoading: Boolean = false,
     val userMessage: String? = null,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
 )
 
 class DefectTriageViewModel(
-    private val repository: BetaDefectManagementRepository = FirebaseBetaDefectManagementRepositoryImpl()
+    private val repository: BetaDefectManagementRepository = FirebaseBetaDefectManagementRepositoryImpl(),
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(DefectTriageUiState(isLoading = true))
     val uiState: StateFlow<DefectTriageUiState> = _uiState.asStateFlow()
 
@@ -52,7 +51,7 @@ class DefectTriageViewModel(
                 _uiState.update { current ->
                     current.copy(
                         allDefects = defects,
-                        isLoading = false
+                        isLoading = false,
                     )
                 }
                 applyFilterAndSorting()
@@ -74,7 +73,7 @@ class DefectTriageViewModel(
     fun onSelectClassificationFilter(classification: DefectClassification?) {
         _uiState.update {
             it.copy(
-                selectedClassification = if (it.selectedClassification == classification) null else classification
+                selectedClassification = if (it.selectedClassification == classification) null else classification,
             )
         }
         applyFilterAndSorting()
@@ -83,7 +82,7 @@ class DefectTriageViewModel(
     fun onSelectDomainFilter(domain: DefectDomain?) {
         _uiState.update {
             it.copy(
-                selectedDomain = if (it.selectedDomain == domain) null else domain
+                selectedDomain = if (it.selectedDomain == domain) null else domain,
             )
         }
         applyFilterAndSorting()
@@ -92,7 +91,7 @@ class DefectTriageViewModel(
     fun onSelectStatusFilter(status: DefectStatus?) {
         _uiState.update {
             it.copy(
-                selectedStatus = if (it.selectedStatus == status) null else status
+                selectedStatus = if (it.selectedStatus == status) null else status,
             )
         }
         applyFilterAndSorting()
@@ -132,26 +131,28 @@ class DefectTriageViewModel(
         classification: DefectClassification,
         priority: DefectPriority,
         assignedRole: String,
-        targetRelease: String
+        targetRelease: String,
     ) {
         viewModelScope.launch {
-            val result = repository.triageDefect(
-                id = defectId,
-                classification = classification,
-                priority = priority,
-                assignedRole = assignedRole,
-                targetRelease = targetRelease
-            )
-            result.onSuccess {
-                _uiState.update {
-                    it.copy(
-                        isTriageDialogOpen = false,
-                        userMessage = "تم تحديث فرز وتصنيف العيب بنجاح"
-                    )
+            val result =
+                repository.triageDefect(
+                    id = defectId,
+                    classification = classification,
+                    priority = priority,
+                    assignedRole = assignedRole,
+                    targetRelease = targetRelease,
+                )
+            result
+                .onSuccess {
+                    _uiState.update {
+                        it.copy(
+                            isTriageDialogOpen = false,
+                            userMessage = "تم تحديث فرز وتصنيف العيب بنجاح",
+                        )
+                    }
+                }.onFailure { err ->
+                    _uiState.update { it.copy(errorMessage = err.message ?: "فشل في حفظ الفرز") }
                 }
-            }.onFailure { err ->
-                _uiState.update { it.copy(errorMessage = err.message ?: "فشل في حفظ الفرز") }
-            }
         }
     }
 
@@ -160,81 +161,85 @@ class DefectTriageViewModel(
         newStatus: DefectStatus,
         resolutionNote: String?,
         closureReason: String?,
-        verificationTest: String?
+        verificationTest: String?,
     ) {
         viewModelScope.launch {
-            val result = repository.updateDefectStatus(
-                id = defectId,
-                newStatus = newStatus,
-                resolutionNote = resolutionNote,
-                closureReason = closureReason,
-                verificationTest = verificationTest
-            )
-            result.onSuccess {
-                _uiState.update {
-                    it.copy(
-                        isStatusDialogOpen = false,
-                        userMessage = "تم تحديث حالة العيب بنجاح إلى: ${newStatus.titleAr}"
-                    )
+            val result =
+                repository.updateDefectStatus(
+                    id = defectId,
+                    newStatus = newStatus,
+                    resolutionNote = resolutionNote,
+                    closureReason = closureReason,
+                    verificationTest = verificationTest,
+                )
+            result
+                .onSuccess {
+                    _uiState.update {
+                        it.copy(
+                            isStatusDialogOpen = false,
+                            userMessage = "تم تحديث حالة العيب بنجاح إلى: ${newStatus.titleAr}",
+                        )
+                    }
+                }.onFailure { err ->
+                    _uiState.update { it.copy(errorMessage = err.message ?: "فشل في تحديث الحالة") }
                 }
-            }.onFailure { err ->
-                _uiState.update { it.copy(errorMessage = err.message ?: "فشل في تحديث الحالة") }
-            }
         }
     }
 
     private fun applyFilterAndSorting() {
         val current = _uiState.value
-        val filtered = current.allDefects.filter { defect ->
-            val matchesClassification = current.selectedClassification == null || defect.classification == current.selectedClassification
-            val matchesDomain = current.selectedDomain == null || defect.domain == current.selectedDomain
-            val matchesStatus = current.selectedStatus == null || defect.status == current.selectedStatus
-            val query = current.searchQuery.trim().lowercase()
-            val matchesQuery = query.isEmpty() ||
-                defect.id.lowercase().contains(query) ||
-                defect.title.lowercase().contains(query) ||
-                defect.description.lowercase().contains(query) ||
-                defect.deviceModel.lowercase().contains(query) ||
-                defect.assignedRole.lowercase().contains(query) ||
-                defect.targetRelease.lowercase().contains(query)
+        val filtered =
+            current.allDefects.filter { defect ->
+                val matchesClassification =
+                    current.selectedClassification == null || defect.classification == current.selectedClassification
+                val matchesDomain = current.selectedDomain == null || defect.domain == current.selectedDomain
+                val matchesStatus = current.selectedStatus == null || defect.status == current.selectedStatus
+                val query = current.searchQuery.trim().lowercase()
+                val matchesQuery =
+                    query.isEmpty() ||
+                        defect.id.lowercase().contains(query) ||
+                        defect.title.lowercase().contains(query) ||
+                        defect.description.lowercase().contains(query) ||
+                        defect.deviceModel.lowercase().contains(query) ||
+                        defect.assignedRole.lowercase().contains(query) ||
+                        defect.targetRelease.lowercase().contains(query)
 
-            matchesClassification && matchesDomain && matchesStatus && matchesQuery
-        }
+                matchesClassification && matchesDomain && matchesStatus && matchesQuery
+            }
 
-        val sorted = if (current.isPrioritizedView) {
-            filtered.sortedWith(
-                compareBy<BetaDefectRecord> {
-                    // الترتيب الصارم: مفتوح أولاً ثم حسب الأولوية ثم التصنيف
-                    when (it.status) {
-                        DefectStatus.CLOSED, DefectStatus.DEFERRED -> 1
-                        else -> 0
-                    }
-                }
-                .thenBy { it.priority.orderWeight }
-                .thenBy {
-                    when (it.classification) {
-                        DefectClassification.BLOCKER -> 0
-                        DefectClassification.CRITICAL -> 1
-                        DefectClassification.MAJOR -> 2
-                        DefectClassification.MINOR -> 3
-                        DefectClassification.ENHANCEMENT -> 4
-                        DefectClassification.DUPLICATE -> 5
-                        DefectClassification.NOT_REPRODUCIBLE -> 6
-                        DefectClassification.EXPECTED_BEHAVIOR -> 7
-                    }
-                }
-                .thenByDescending { it.updatedAt }
-            )
-        } else {
-            filtered.sortedByDescending { it.updatedAt }
-        }
+        val sorted =
+            if (current.isPrioritizedView) {
+                filtered.sortedWith(
+                    compareBy<BetaDefectRecord> {
+                        // الترتيب الصارم: مفتوح أولاً ثم حسب الأولوية ثم التصنيف
+                        when (it.status) {
+                            DefectStatus.CLOSED, DefectStatus.DEFERRED -> 1
+                            else -> 0
+                        }
+                    }.thenBy { it.priority.orderWeight }
+                        .thenBy {
+                            when (it.classification) {
+                                DefectClassification.BLOCKER -> 0
+                                DefectClassification.CRITICAL -> 1
+                                DefectClassification.MAJOR -> 2
+                                DefectClassification.MINOR -> 3
+                                DefectClassification.ENHANCEMENT -> 4
+                                DefectClassification.DUPLICATE -> 5
+                                DefectClassification.NOT_REPRODUCIBLE -> 6
+                                DefectClassification.EXPECTED_BEHAVIOR -> 7
+                            }
+                        }.thenByDescending { it.updatedAt },
+                )
+            } else {
+                filtered.sortedByDescending { it.updatedAt }
+            }
 
         _uiState.update { it.copy(filteredDefects = sorted) }
     }
 }
 
 class DefectTriageViewModelFactory(
-    private val repository: BetaDefectManagementRepository = FirebaseBetaDefectManagementRepositoryImpl()
+    private val repository: BetaDefectManagementRepository = FirebaseBetaDefectManagementRepositoryImpl(),
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

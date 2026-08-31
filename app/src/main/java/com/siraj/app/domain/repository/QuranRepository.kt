@@ -7,8 +7,22 @@ import kotlinx.coroutines.flow.Flow
 
 interface QuranRepository {
     suspend fun getSurahs(): Resource<List<Surah>>
+
     suspend fun getAyahs(surahId: Int): Resource<List<Ayah>>
-    suspend fun toggleBookmark(verseKey: String, surahId: Int, verseNumber: Int, isBookmarked: Boolean)
-    suspend fun saveNote(verseKey: String, surahId: Int, verseNumber: Int, note: String)
+
+    suspend fun toggleBookmark(
+        verseKey: String,
+        surahId: Int,
+        verseNumber: Int,
+        isBookmarked: Boolean,
+    )
+
+    suspend fun saveNote(
+        verseKey: String,
+        surahId: Int,
+        verseNumber: Int,
+        note: String,
+    )
+
     fun getBookmarkedVerseKeys(): Flow<List<String>>
 }

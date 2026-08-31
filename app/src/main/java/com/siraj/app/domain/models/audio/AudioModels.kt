@@ -1,19 +1,21 @@
 package com.siraj.app.domain.models.audio
 
 enum class AudioVerificationStatus {
-    APPROVED, PENDING_REVIEW, REJECTED
+    APPROVED,
+    PENDING_REVIEW,
+    REJECTED,
 }
 
 data class AudioRights(
     val licenseType: String,
     val sourceUrl: String,
-    val commercialUseAllowed: Boolean = false
+    val commercialUseAllowed: Boolean = false,
 )
 
 data class AudioTranscriptSegment(
     val startMs: Long,
     val endMs: Long,
-    val text: String
+    val text: String,
 )
 
 data class AudioTrack(
@@ -31,24 +33,23 @@ data class AudioTrack(
     val isFavorite: Boolean = false,
     val isDownloaded: Boolean = false,
     val transcript: String? = null,
-    val transcriptSegments: List<AudioTranscriptSegment> = emptyList()
+    val transcriptSegments: List<AudioTranscriptSegment> = emptyList(),
 )
 
 data class AudioFilter(
     val query: String = "",
     val categoryId: String? = null,
-    val sortOption: AudioSortOption = AudioSortOption.NEWEST
+    val sortOption: AudioSortOption = AudioSortOption.NEWEST,
 )
 
-fun AudioTrack.getCategoryArabic(): String {
-    return when (category) {
+fun AudioTrack.getCategoryArabic(): String =
+    when (category) {
         "recitation" -> "تلاوة"
         "lesson" -> "درس"
         "lecture" -> "محاضرة"
         "podcast" -> "بودكاست"
         else -> category
     }
-}
 
 fun AudioTrack.getFormattedDuration(): String {
     val minutes = durationSeconds / 60
@@ -57,5 +58,7 @@ fun AudioTrack.getFormattedDuration(): String {
 }
 
 enum class AudioSortOption {
-    NEWEST, MOST_LISTENED, ALPHABETICAL
+    NEWEST,
+    MOST_LISTENED,
+    ALPHABETICAL,
 }

@@ -10,88 +10,92 @@ import kotlinx.coroutines.flow.map
 import java.util.UUID
 
 class MinorSafetyRepositoryImpl : MinorSafetyRepository {
-
-    private val policiesMap = MutableStateFlow<Map<String, MinorSafetyPolicy>>(
-        mapOf(
-            "default_user" to MinorSafetyEngine.generatePolicyForAgeBracket(
-                userId = "default_user",
-                ageBracket = UserAgeBracket.ADULT_18_PLUS
+    private val policiesMap =
+        MutableStateFlow<Map<String, MinorSafetyPolicy>>(
+            mapOf(
+                "default_user" to
+                    MinorSafetyEngine.generatePolicyForAgeBracket(
+                        userId = "default_user",
+                        ageBracket = UserAgeBracket.ADULT_18_PLUS,
+                    ),
+                "teen_user_sample" to
+                    MinorSafetyEngine.generatePolicyForAgeBracket(
+                        userId = "teen_user_sample",
+                        ageBracket = UserAgeBracket.TEEN_13_TO_17,
+                        guardianEmail = "parent@example.com",
+                    ),
+                "child_user_sample" to
+                    MinorSafetyEngine.generatePolicyForAgeBracket(
+                        userId = "child_user_sample",
+                        ageBracket = UserAgeBracket.CHILD_UNDER_13,
+                        guardianEmail = "father@example.com",
+                        isParentalConsentVerified = false,
+                    ),
             ),
-            "teen_user_sample" to MinorSafetyEngine.generatePolicyForAgeBracket(
-                userId = "teen_user_sample",
-                ageBracket = UserAgeBracket.TEEN_13_TO_17,
-                guardianEmail = "parent@example.com"
+        )
+
+    private val consentsFlow =
+        MutableStateFlow<List<ParentalConsentRecord>>(
+            listOf(
+                ParentalConsentRecord(
+                    consentId = "consent_sample_01",
+                    childUserId = "child_user_sample",
+                    guardianEmail = "father@example.com",
+                    guardianName = "أبو عبد الله",
+                    status = ParentalConsentStatus.PENDING_VERIFICATION,
+                    verificationCodeHash = MinorSafetyEngine.sha256("123456"),
+                    requestedAt = System.currentTimeMillis() - 3600000L,
+                    permissionsGranted = listOf("quran_learning", "adhkar", "safe_ai_prompts"),
+                ),
             ),
-            "child_user_sample" to MinorSafetyEngine.generatePolicyForAgeBracket(
-                userId = "child_user_sample",
-                ageBracket = UserAgeBracket.CHILD_UNDER_13,
-                guardianEmail = "father@example.com",
-                isParentalConsentVerified = false
-            )
         )
-    )
 
-    private val consentsFlow = MutableStateFlow<List<ParentalConsentRecord>>(
-        listOf(
-            ParentalConsentRecord(
-                consentId = "consent_sample_01",
-                childUserId = "child_user_sample",
-                guardianEmail = "father@example.com",
-                guardianName = "أبو عبد الله",
-                status = ParentalConsentStatus.PENDING_VERIFICATION,
-                verificationCodeHash = MinorSafetyEngine.sha256("123456"),
-                requestedAt = System.currentTimeMillis() - 3600000L,
-                permissionsGranted = listOf("quran_learning", "adhkar", "safe_ai_prompts")
-            )
+    private val incidentReportsFlow =
+        MutableStateFlow<List<ChildSafetyIncidentReport>>(
+            listOf(
+                ChildSafetyIncidentReport(
+                    reportId = "inc_child_001",
+                    incidentType = ChildSafetyIncidentType.EXPLOITATION_OR_ABUSE,
+                    urgency = IncidentUrgency.CRITICAL_EMERGENCY,
+                    reportedUserId = "suspicious_acc_99",
+                    reportedContentId = "media_flag_55",
+                    reporterUserId = "concerned_parent_01",
+                    description = "اشتباه في محاولة نشر وسائط غير لائقة تستهدف بيئة الأطفال.",
+                    timestamp = System.currentTimeMillis() - 7200000L,
+                    status = IncidentResolutionStatus.OPEN_ESCALATED,
+                    internalNotes = "تم الحظر المؤقت وتصعيد الملف فوراً لفريق التدقيق والسلامة.",
+                ),
+            ),
         )
-    )
 
-    private val incidentReportsFlow = MutableStateFlow<List<ChildSafetyIncidentReport>>(
-        listOf(
-            ChildSafetyIncidentReport(
-                reportId = "inc_child_001",
-                incidentType = ChildSafetyIncidentType.EXPLOITATION_OR_ABUSE,
-                urgency = IncidentUrgency.CRITICAL_EMERGENCY,
-                reportedUserId = "suspicious_acc_99",
-                reportedContentId = "media_flag_55",
-                reporterUserId = "concerned_parent_01",
-                description = "اشتباه في محاولة نشر وسائط غير لائقة تستهدف بيئة الأطفال.",
-                timestamp = System.currentTimeMillis() - 7200000L,
-                status = IncidentResolutionStatus.OPEN_ESCALATED,
-                internalNotes = "تم الحظر المؤقت وتصعيد الملف فوراً لفريق التدقيق والسلامة."
-            )
-        )
-    )
-
-    override fun getMinorSafetyPolicy(userId: String): Flow<MinorSafetyPolicy> {
-        return policiesMap.map { map ->
+    override fun getMinorSafetyPolicy(userId: String): Flow<MinorSafetyPolicy> =
+        policiesMap.map { map ->
             map[userId] ?: MinorSafetyEngine.generatePolicyForAgeBracket(
                 userId = userId,
-                ageBracket = UserAgeBracket.UNSPECIFIED
+                ageBracket = UserAgeBracket.UNSPECIFIED,
             )
         }
-    }
 
-    override fun getUserAgeBracket(userId: String): Flow<UserAgeBracket> {
-        return policiesMap.map { map ->
+    override fun getUserAgeBracket(userId: String): Flow<UserAgeBracket> =
+        policiesMap.map { map ->
             map[userId]?.ageBracket ?: UserAgeBracket.UNSPECIFIED
         }
-    }
 
     override suspend fun setUserAgeBracket(
         userId: String,
         bracket: UserAgeBracket,
-        guardianEmail: String?
+        guardianEmail: String?,
     ): Resource<MinorSafetyPolicy> {
         val currentConsents = consentsFlow.value
         val isVerified = currentConsents.any { it.childUserId == userId && it.status == ParentalConsentStatus.APPROVED_VERIFIED }
-        
-        val newPolicy = MinorSafetyEngine.generatePolicyForAgeBracket(
-            userId = userId,
-            ageBracket = bracket,
-            guardianEmail = guardianEmail,
-            isParentalConsentVerified = isVerified
-        )
+
+        val newPolicy =
+            MinorSafetyEngine.generatePolicyForAgeBracket(
+                userId = userId,
+                ageBracket = bracket,
+                guardianEmail = guardianEmail,
+                isParentalConsentVerified = isVerified,
+            )
 
         val updatedMap = policiesMap.value.toMutableMap()
         updatedMap[userId] = newPolicy
@@ -103,23 +107,24 @@ class MinorSafetyRepositoryImpl : MinorSafetyRepository {
     override suspend fun requestParentalConsent(
         childUserId: String,
         guardianEmail: String,
-        guardianName: String
+        guardianName: String,
     ): Resource<ParentalConsentRecord> {
         if (guardianEmail.isBlank() || !guardianEmail.contains("@")) {
             return Resource.Error("يرجى إدخال بريد إلكتروني صالح لولي الأمر.")
         }
 
         val code = "123456" // Mock verification code sent via backend email
-        val newRecord = ParentalConsentRecord(
-            consentId = "consent_${UUID.randomUUID().toString().take(8)}",
-            childUserId = childUserId,
-            guardianEmail = guardianEmail.trim(),
-            guardianName = guardianName.trim().ifBlank { "ولي الأمر" },
-            status = ParentalConsentStatus.PENDING_VERIFICATION,
-            verificationCodeHash = MinorSafetyEngine.sha256(code),
-            requestedAt = System.currentTimeMillis(),
-            permissionsGranted = listOf("curated_quran", "audio_listening", "safe_educational_ai")
-        )
+        val newRecord =
+            ParentalConsentRecord(
+                consentId = "consent_${UUID.randomUUID().toString().take(8)}",
+                childUserId = childUserId,
+                guardianEmail = guardianEmail.trim(),
+                guardianName = guardianName.trim().ifBlank { "ولي الأمر" },
+                status = ParentalConsentStatus.PENDING_VERIFICATION,
+                verificationCodeHash = MinorSafetyEngine.sha256(code),
+                requestedAt = System.currentTimeMillis(),
+                permissionsGranted = listOf("curated_quran", "audio_listening", "safe_educational_ai"),
+            )
 
         val currentList = consentsFlow.value.toMutableList()
         currentList.add(0, newRecord)
@@ -130,7 +135,7 @@ class MinorSafetyRepositoryImpl : MinorSafetyRepository {
 
     override suspend fun verifyParentalConsent(
         consentId: String,
-        verificationCode: String
+        verificationCode: String,
     ): Resource<ParentalConsentRecord> {
         val currentList = consentsFlow.value.toMutableList()
         val index = currentList.indexOfFirst { it.consentId == consentId }
@@ -146,20 +151,22 @@ class MinorSafetyRepositoryImpl : MinorSafetyRepository {
             return Resource.Error("رمز التحقق غير صحيح. يرجى إدخال الرمز المرسل لبريد ولي الأمر.")
         }
 
-        val updated = record.copy(
-            status = ParentalConsentStatus.APPROVED_VERIFIED,
-            verifiedAt = System.currentTimeMillis()
-        )
+        val updated =
+            record.copy(
+                status = ParentalConsentStatus.APPROVED_VERIFIED,
+                verifiedAt = System.currentTimeMillis(),
+            )
         currentList[index] = updated
         consentsFlow.value = currentList
 
         // Update user policy to reflect verified parental consent
         val userPolicy = policiesMap.value[record.childUserId]
         if (userPolicy != null) {
-            val updatedPolicy = userPolicy.copy(
-                isParentalConsentVerified = true,
-                parentalGuardianEmail = record.guardianEmail
-            )
+            val updatedPolicy =
+                userPolicy.copy(
+                    isParentalConsentVerified = true,
+                    parentalGuardianEmail = record.guardianEmail,
+                )
             val updatedMap = policiesMap.value.toMutableMap()
             updatedMap[record.childUserId] = updatedPolicy
             policiesMap.value = updatedMap
@@ -193,12 +200,13 @@ class MinorSafetyRepositoryImpl : MinorSafetyRepository {
     }
 
     override suspend fun submitChildSafetyReport(report: ChildSafetyIncidentReport): Resource<ChildSafetyIncidentReport> {
-        val escalated = MinorSafetyEngine.triageAndEscalateIncident(
-            report.copy(
-                reportId = if (report.reportId.isBlank()) "rep_${UUID.randomUUID().toString().take(8)}" else report.reportId,
-                timestamp = System.currentTimeMillis()
+        val escalated =
+            MinorSafetyEngine.triageAndEscalateIncident(
+                report.copy(
+                    reportId = if (report.reportId.isBlank()) "rep_${UUID.randomUUID().toString().take(8)}" else report.reportId,
+                    timestamp = System.currentTimeMillis(),
+                ),
             )
-        )
 
         val current = incidentReportsFlow.value.toMutableList()
         current.add(0, escalated)
@@ -207,23 +215,23 @@ class MinorSafetyRepositoryImpl : MinorSafetyRepository {
         return Resource.Success(escalated)
     }
 
-    override fun getChildSafetyReports(): Flow<List<ChildSafetyIncidentReport>> {
-        return incidentReportsFlow
-    }
+    override fun getChildSafetyReports(): Flow<List<ChildSafetyIncidentReport>> = incidentReportsFlow
 
     override suspend fun purgeMinorData(userId: String): Resource<MinorDataDeletionSummary> {
-        val summary = MinorSafetyEngine.executeMinorDataPurge(
-            childUserId = userId,
-            recordingsCount = 4,
-            projectsCount = 2
-        )
+        val summary =
+            MinorSafetyEngine.executeMinorDataPurge(
+                childUserId = userId,
+                recordingsCount = 4,
+                projectsCount = 2,
+            )
 
         // Reset policy to clean state
         val updatedMap = policiesMap.value.toMutableMap()
-        updatedMap[userId] = MinorSafetyEngine.generatePolicyForAgeBracket(
-            userId = userId,
-            ageBracket = UserAgeBracket.UNSPECIFIED
-        )
+        updatedMap[userId] =
+            MinorSafetyEngine.generatePolicyForAgeBracket(
+                userId = userId,
+                ageBracket = UserAgeBracket.UNSPECIFIED,
+            )
         policiesMap.value = updatedMap
 
         return Resource.Success(summary)
@@ -232,13 +240,12 @@ class MinorSafetyRepositoryImpl : MinorSafetyRepository {
     override fun evaluateEducationalContent(
         contentId: String,
         title: String,
-        textSnippet: String
-    ): EducationalContentSafetyCheck {
-        return MinorSafetyEngine.evaluateEducationalContentSafety(
+        textSnippet: String,
+    ): EducationalContentSafetyCheck =
+        MinorSafetyEngine.evaluateEducationalContentSafety(
             contentId = contentId,
             title = title,
             textSnippet = textSnippet,
-            hasInAppPurchasesOrAds = false
+            hasInAppPurchasesOrAds = false,
         )
-    }
 }

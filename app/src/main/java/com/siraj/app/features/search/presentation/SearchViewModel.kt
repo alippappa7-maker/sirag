@@ -237,7 +237,7 @@ class SearchViewModelFactory(
             val templateRepo = com.siraj.app.data.repository.FirebaseTemplateRepositoryImpl()
             val projectRepo = com.siraj.app.data.repository.FirebaseProjectRepositoryImpl()
             val historyDao = com.siraj.app.data.local.SearchHistoryDatabase.getInstance(application).searchHistoryDao()
-            
+
             val searchRepository = com.siraj.app.data.repository.search.UnifiedSearchRepositoryImpl(
                 quranRepository = quranRepo,
                 audioRepository = audioRepo,

@@ -9,7 +9,7 @@ data class IdeaGenerationRequest(
     val duration: String = "قصير (أقل من دقيقة)",
     val tone: String = "تحفيزي",
     val goal: String = "توعية",
-    val hasReligiousElement: Boolean = false
+    val hasReligiousElement: Boolean = false,
 )
 
 data class GeneratedIdea(
@@ -22,5 +22,5 @@ data class GeneratedIdea(
     val requiredSources: List<String>,
     val riskLevel: RiskLevel,
     val needsReview: Boolean,
-    val disclaimer: String?
+    val disclaimer: String?,
 )

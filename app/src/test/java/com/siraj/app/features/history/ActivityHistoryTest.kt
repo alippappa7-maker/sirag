@@ -19,41 +19,42 @@ class FakeActivityHistoryRepository : ActivityHistoryRepository {
         userId: String,
         tab: ActivityTab,
         limit: Int,
-        offset: Int
-    ): Flow<List<UserActivityItem>> {
-        return flowOf(
-            items.values.filter { it.userId == userId }
+        offset: Int,
+    ): Flow<List<UserActivityItem>> =
+        flowOf(
+            items.values
+                .filter { it.userId == userId }
                 .filter { item ->
                     when (tab) {
                         ActivityTab.ALL -> true
                         ActivityTab.VIDEO -> item.entityType == ActivityEntityType.VIDEO || item.entityType == ActivityEntityType.FLASH
-                        ActivityTab.AUDIO -> item.entityType == ActivityEntityType.AUDIO || item.entityType == ActivityEntityType.QURAN_RECITATION
+                        ActivityTab.AUDIO ->
+                            item.entityType == ActivityEntityType.AUDIO ||
+                                item.entityType == ActivityEntityType.QURAN_RECITATION
                         ActivityTab.WATCH_LATER -> item.isWatchLater
                         ActivityTab.DOWNLOADED -> item.isDownloaded
                         ActivityTab.COMPLETED -> item.completed
                     }
-                }
-                .sortedByDescending { it.lastPlayedAt }
+                }.sortedByDescending { it.lastPlayedAt }
                 .drop(offset)
-                .take(limit)
+                .take(limit),
         )
-    }
 
-    override fun getRecentResumeItem(userId: String): Flow<UserActivityItem?> {
-        return preferences.map { prefs ->
-            if (!prefs.isHistoryEnabled) null
-            else {
+    override fun getRecentResumeItem(userId: String): Flow<UserActivityItem?> =
+        preferences.map { prefs ->
+            if (!prefs.isHistoryEnabled) {
+                null
+            } else {
                 items.values
                     .filter { it.userId == userId && !it.completed && it.positionMs > 0 }
                     .maxByOrNull { it.lastPlayedAt }
             }
         }
-    }
 
     override suspend fun getLastPosition(
         userId: String,
         entityType: ActivityEntityType,
-        entityId: String
+        entityId: String,
     ): Long? {
         val id = "$userId-${entityType.name}-$entityId"
         return items[id]?.takeIf { !it.completed }?.positionMs
@@ -65,20 +66,21 @@ class FakeActivityHistoryRepository : ActivityHistoryRepository {
         val progress = if (item.durationMs > 0) (item.positionMs.toFloat() / item.durationMs.toFloat()) * 100f else 0f
         val isCompleted = progress >= 90f || item.completed
 
-        val updated = item.copy(
-            progressPercent = progress.coerceIn(0f, 100f),
-            completed = isCompleted,
-            isWatchLater = existing?.isWatchLater ?: item.isWatchLater,
-            isDownloaded = existing?.isDownloaded ?: item.isDownloaded,
-            lastPlayedAt = System.currentTimeMillis()
-        )
+        val updated =
+            item.copy(
+                progressPercent = progress.coerceIn(0f, 100f),
+                completed = isCompleted,
+                isWatchLater = existing?.isWatchLater ?: item.isWatchLater,
+                isDownloaded = existing?.isDownloaded ?: item.isDownloaded,
+                lastPlayedAt = System.currentTimeMillis(),
+            )
         items[item.id] = updated
     }
 
     override suspend fun markAsCompleted(
         userId: String,
         entityType: ActivityEntityType,
-        entityId: String
+        entityId: String,
     ) {
         val id = "$userId-${entityType.name}-$entityId"
         items[id]?.let {
@@ -86,7 +88,10 @@ class FakeActivityHistoryRepository : ActivityHistoryRepository {
         }
     }
 
-    override suspend fun toggleWatchLater(userId: String, item: UserActivityItem) {
+    override suspend fun toggleWatchLater(
+        userId: String,
+        item: UserActivityItem,
+    ) {
         val existing = items[item.id]
         if (existing != null) {
             items[item.id] = existing.copy(isWatchLater = !existing.isWatchLater)
@@ -95,7 +100,10 @@ class FakeActivityHistoryRepository : ActivityHistoryRepository {
         }
     }
 
-    override suspend fun toggleDownloaded(userId: String, item: UserActivityItem) {
+    override suspend fun toggleDownloaded(
+        userId: String,
+        item: UserActivityItem,
+    ) {
         val existing = items[item.id]
         if (existing != null) {
             items[item.id] = existing.copy(isDownloaded = !existing.isDownloaded)
@@ -104,7 +112,10 @@ class FakeActivityHistoryRepository : ActivityHistoryRepository {
         }
     }
 
-    override suspend fun deleteItem(userId: String, id: String) {
+    override suspend fun deleteItem(
+        userId: String,
+        id: String,
+    ) {
         items.remove(id)
     }
 
@@ -123,11 +134,12 @@ class FakeActivityHistoryRepository : ActivityHistoryRepository {
         toRemove.forEach { items.remove(it) }
     }
 
-    override fun observePreferences(userId: String): Flow<ActivityHistoryPreferences> {
-        return preferences
-    }
+    override fun observePreferences(userId: String): Flow<ActivityHistoryPreferences> = preferences
 
-    override suspend fun updatePreferences(userId: String, preferences: ActivityHistoryPreferences) {
+    override suspend fun updatePreferences(
+        userId: String,
+        preferences: ActivityHistoryPreferences,
+    ) {
         this.preferences.value = preferences
     }
 
@@ -150,7 +162,6 @@ class FakeActivityHistoryRepository : ActivityHistoryRepository {
 }
 
 class ActivityHistoryTest {
-
     private lateinit var repo: FakeActivityHistoryRepository
     private val testUser = "test_user_123"
 
@@ -160,120 +171,130 @@ class ActivityHistoryTest {
     }
 
     @Test
-    fun testRecordPlaybackPosition_calculatesProgressAndCompletion() = runBlocking {
-        val item = UserActivityItem(
-            id = "$testUser-VIDEO-vid_001",
-            userId = testUser,
-            entityType = ActivityEntityType.VIDEO,
-            entityId = "vid_001",
-            title = "قصة أصحاب الكهف",
-            positionMs = 50000L, // 50s
-            durationMs = 100000L // 100s -> 50%
-        )
+    fun testRecordPlaybackPosition_calculatesProgressAndCompletion() =
+        runBlocking {
+            val item =
+                UserActivityItem(
+                    id = "$testUser-VIDEO-vid_001",
+                    userId = testUser,
+                    entityType = ActivityEntityType.VIDEO,
+                    entityId = "vid_001",
+                    title = "قصة أصحاب الكهف",
+                    positionMs = 50000L, // 50s
+                    durationMs = 100000L, // 100s -> 50%
+                )
 
-        repo.recordPlaybackPosition(item)
+            repo.recordPlaybackPosition(item)
 
-        val saved = repo.items[item.id]
-        assertNotNull(saved)
-        assertEquals(50f, saved!!.progressPercent, 0.1f)
-        assertFalse(saved.completed)
+            val saved = repo.items[item.id]
+            assertNotNull(saved)
+            assertEquals(50f, saved!!.progressPercent, 0.1f)
+            assertFalse(saved.completed)
 
-        // Near completion (>90%)
-        val itemNearEnd = item.copy(positionMs = 95000L)
-        repo.recordPlaybackPosition(itemNearEnd)
-        val savedNearEnd = repo.items[item.id]
-        assertNotNull(savedNearEnd)
-        assertEquals(95f, savedNearEnd!!.progressPercent, 0.1f)
-        assertTrue(savedNearEnd.completed)
-    }
-
-    @Test
-    fun testDisabledHistory_doesNotSaveProgress() = runBlocking {
-        repo.updatePreferences(testUser, ActivityHistoryPreferences(isHistoryEnabled = false))
-
-        val item = UserActivityItem(
-            id = "$testUser-AUDIO-aud_001",
-            userId = testUser,
-            entityType = ActivityEntityType.AUDIO,
-            entityId = "aud_001",
-            title = "سورة الرحمن",
-            positionMs = 30000L,
-            durationMs = 60000L
-        )
-
-        repo.recordPlaybackPosition(item)
-
-        val saved = repo.items[item.id]
-        assertNull(saved)
-    }
+            // Near completion (>90%)
+            val itemNearEnd = item.copy(positionMs = 95000L)
+            repo.recordPlaybackPosition(itemNearEnd)
+            val savedNearEnd = repo.items[item.id]
+            assertNotNull(savedNearEnd)
+            assertEquals(95f, savedNearEnd!!.progressPercent, 0.1f)
+            assertTrue(savedNearEnd.completed)
+        }
 
     @Test
-    fun testWatchLaterToggle() = runBlocking {
-        val item = UserActivityItem(
-            id = "$testUser-VIDEO-vid_002",
-            userId = testUser,
-            entityType = ActivityEntityType.VIDEO,
-            entityId = "vid_002",
-            title = "تفسير سورة النور",
-            positionMs = 0L,
-            durationMs = 120000L
-        )
+    fun testDisabledHistory_doesNotSaveProgress() =
+        runBlocking {
+            repo.updatePreferences(testUser, ActivityHistoryPreferences(isHistoryEnabled = false))
 
-        repo.toggleWatchLater(testUser, item)
-        assertTrue(repo.items[item.id]?.isWatchLater == true)
+            val item =
+                UserActivityItem(
+                    id = "$testUser-AUDIO-aud_001",
+                    userId = testUser,
+                    entityType = ActivityEntityType.AUDIO,
+                    entityId = "aud_001",
+                    title = "سورة الرحمن",
+                    positionMs = 30000L,
+                    durationMs = 60000L,
+                )
 
-        repo.toggleWatchLater(testUser, repo.items[item.id]!!)
-        assertFalse(repo.items[item.id]?.isWatchLater == true)
-    }
+            repo.recordPlaybackPosition(item)
+
+            val saved = repo.items[item.id]
+            assertNull(saved)
+        }
 
     @Test
-    fun testClearCompletedAndClearAll() = runBlocking {
-        val item1 = UserActivityItem(
-            id = "$testUser-VIDEO-1",
-            userId = testUser,
-            entityType = ActivityEntityType.VIDEO,
-            entityId = "1",
-            title = "فيديو 1",
-            positionMs = 100000L,
-            durationMs = 100000L,
-            completed = true
-        )
-        val item2 = UserActivityItem(
-            id = "$testUser-VIDEO-2",
-            userId = testUser,
-            entityType = ActivityEntityType.VIDEO,
-            entityId = "2",
-            title = "فيديو 2",
-            positionMs = 20000L,
-            durationMs = 100000L,
-            completed = false
-        )
+    fun testWatchLaterToggle() =
+        runBlocking {
+            val item =
+                UserActivityItem(
+                    id = "$testUser-VIDEO-vid_002",
+                    userId = testUser,
+                    entityType = ActivityEntityType.VIDEO,
+                    entityId = "vid_002",
+                    title = "تفسير سورة النور",
+                    positionMs = 0L,
+                    durationMs = 120000L,
+                )
 
-        repo.items[item1.id] = item1
-        repo.items[item2.id] = item2
+            repo.toggleWatchLater(testUser, item)
+            assertTrue(repo.items[item.id]?.isWatchLater == true)
 
-        assertEquals(2, repo.items.size)
+            repo.toggleWatchLater(testUser, repo.items[item.id]!!)
+            assertFalse(repo.items[item.id]?.isWatchLater == true)
+        }
 
-        repo.clearCompleted(testUser)
-        assertEquals(1, repo.items.size)
-        assertNull(repo.items[item1.id])
-        assertNotNull(repo.items[item2.id])
+    @Test
+    fun testClearCompletedAndClearAll() =
+        runBlocking {
+            val item1 =
+                UserActivityItem(
+                    id = "$testUser-VIDEO-1",
+                    userId = testUser,
+                    entityType = ActivityEntityType.VIDEO,
+                    entityId = "1",
+                    title = "فيديو 1",
+                    positionMs = 100000L,
+                    durationMs = 100000L,
+                    completed = true,
+                )
+            val item2 =
+                UserActivityItem(
+                    id = "$testUser-VIDEO-2",
+                    userId = testUser,
+                    entityType = ActivityEntityType.VIDEO,
+                    entityId = "2",
+                    title = "فيديو 2",
+                    positionMs = 20000L,
+                    durationMs = 100000L,
+                    completed = false,
+                )
 
-        repo.clearAllHistory(testUser)
-        assertEquals(0, repo.items.size)
-    }
+            repo.items[item1.id] = item1
+            repo.items[item2.id] = item2
+
+            assertEquals(2, repo.items.size)
+
+            repo.clearCompleted(testUser)
+            assertEquals(1, repo.items.size)
+            assertNull(repo.items[item1.id])
+            assertNotNull(repo.items[item2.id])
+
+            repo.clearAllHistory(testUser)
+            assertEquals(0, repo.items.size)
+        }
 
     @Test
     fun testFormattingHelpers() {
-        val item = UserActivityItem(
-            id = "test-1",
-            userId = "user",
-            entityType = ActivityEntityType.VIDEO,
-            entityId = "1",
-            title = "اختبار",
-            positionMs = 125000L, // 2m 5s
-            durationMs = 360000L // 6m 0s
-        )
+        val item =
+            UserActivityItem(
+                id = "test-1",
+                userId = "user",
+                entityType = ActivityEntityType.VIDEO,
+                entityId = "1",
+                title = "اختبار",
+                positionMs = 125000L, // 2m 5s
+                durationMs = 360000L, // 6m 0s
+            )
 
         assertEquals("02:05", item.getFormattedPosition())
         assertEquals("06:00", item.getFormattedDuration())

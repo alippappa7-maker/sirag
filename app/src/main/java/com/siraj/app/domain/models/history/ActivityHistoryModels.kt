@@ -4,29 +4,34 @@ enum class ActivityEntityType {
     VIDEO,
     AUDIO,
     FLASH,
-    QURAN_RECITATION
+    QURAN_RECITATION,
 }
 
 enum class SyncStatus {
     SYNCED,
     PENDING_SYNC,
-    PENDING_DELETE
+    PENDING_DELETE,
 }
 
-enum class RetentionPolicy(val days: Int, val titleArabic: String) {
+enum class RetentionPolicy(
+    val days: Int,
+    val titleArabic: String,
+) {
     DAYS_30(30, "30 يوماً"),
     DAYS_90(90, "90 يوماً (مستحسن)"),
     YEAR_1(365, "سنة واحدة"),
-    FOREVER(-1, "احتفاظ دائم (بلا حذف تلقائي)")
+    FOREVER(-1, "احتفاظ دائم (بلا حذف تلقائي)"),
 }
 
-enum class ActivityTab(val title: String) {
+enum class ActivityTab(
+    val title: String,
+) {
     ALL("الكل"),
     VIDEO("الفيديو والومضات"),
     AUDIO("الصوت والتلاوات"),
     WATCH_LATER("المتابعة لاحقاً"),
     DOWNLOADED("التنزيلات"),
-    COMPLETED("المكتملة")
+    COMPLETED("المكتملة"),
 }
 
 data class UserActivityItem(
@@ -46,15 +51,11 @@ data class UserActivityItem(
     val deviceId: String = "",
     val isWatchLater: Boolean = false,
     val isDownloaded: Boolean = false,
-    val syncStatus: SyncStatus = SyncStatus.SYNCED
+    val syncStatus: SyncStatus = SyncStatus.SYNCED,
 ) {
-    fun getFormattedPosition(): String {
-        return formatTime(positionMs)
-    }
+    fun getFormattedPosition(): String = formatTime(positionMs)
 
-    fun getFormattedDuration(): String {
-        return formatTime(durationMs)
-    }
+    fun getFormattedDuration(): String = formatTime(durationMs)
 
     fun getRemainingTimeText(): String {
         if (durationMs <= 0) return ""
@@ -81,5 +82,5 @@ data class ActivityHistoryPreferences(
     val retentionPolicy: RetentionPolicy = RetentionPolicy.DAYS_90,
     val saveWatchHistory: Boolean = true,
     val saveListenHistory: Boolean = true,
-    val saveDownloadsHistory: Boolean = true
+    val saveDownloadsHistory: Boolean = true,
 )

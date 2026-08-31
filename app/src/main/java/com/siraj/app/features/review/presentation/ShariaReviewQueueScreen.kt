@@ -14,11 +14,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.siraj.app.domain.models.review.*
 import com.siraj.app.features.review.presentation.components.ReviewQueueItemCard
 
@@ -29,7 +27,7 @@ fun ShariaReviewQueueScreen(
     currentUserRole: String,
     currentUserId: String,
     onNavigateToItemDetail: (String) -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -62,18 +60,23 @@ fun ShariaReviewQueueScreen(
                         Text(
                             text = "لوحة المراجعة الشرعية",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                         Text(
                             text = "فحص وتوثيق النصوص والمصادر والادعاءات",
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.outline
+                            color = MaterialTheme.colorScheme.outline,
                         )
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack, modifier = Modifier.testTag("btn_back_review_queue")) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.back),
+                        )
                     }
                 },
                 actions = {
@@ -81,25 +84,26 @@ fun ShariaReviewQueueScreen(
                         onClick = {
                             sortByDateAsc = !sortByDateAsc
                             viewModel.updateFilter(
-                                state.activeFilter.copy(sortByDateAscending = sortByDateAsc)
+                                state.activeFilter.copy(sortByDateAscending = sortByDateAsc),
                             )
-                        }
+                        },
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.Sort,
                             contentDescription = "ترتيب",
-                            tint = if (sortByDateAsc) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            tint = if (sortByDateAsc) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                         )
                     }
-                }
+                },
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
         ) {
             // Search Input
             OutlinedTextField(
@@ -118,32 +122,39 @@ fun ShariaReviewQueueScreen(
                             searchQuery = ""
                             viewModel.updateFilter(state.activeFilter.copy(searchQuery = ""))
                         }) {
-                            Icon(Icons.Default.Clear, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.clear))
+                            Icon(
+                                Icons.Default.Clear,
+                                contentDescription =
+                                    androidx.compose.ui.res
+                                        .stringResource(com.siraj.app.R.string.clear),
+                            )
                         }
                     }
                 },
                 singleLine = true,
                 shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .testTag("search_review_queue")
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .testTag("search_review_queue"),
             )
 
             // Horizontal Filters Row 1: Risk Level
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "مستوى الخطر:",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.outline,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
 
                 FilterChip(
@@ -152,7 +163,12 @@ fun ShariaReviewQueueScreen(
                         selectedRisk = null
                         viewModel.updateFilter(state.activeFilter.copy(riskLevel = null))
                     },
-                    label = { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.all)) }
+                    label = {
+                        Text(
+                            androidx.compose.ui.res
+                                .stringResource(com.siraj.app.R.string.all),
+                        )
+                    },
                 )
 
                 RiskLevel.values().forEach { risk ->
@@ -162,25 +178,26 @@ fun ShariaReviewQueueScreen(
                             selectedRisk = if (selectedRisk == risk) null else risk
                             viewModel.updateFilter(state.activeFilter.copy(riskLevel = selectedRisk))
                         },
-                        label = { Text(risk.arabicTitle) }
+                        label = { Text(risk.arabicTitle) },
                     )
                 }
             }
 
             // Horizontal Filters Row 2: Categories & Critical Topics
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "القسم الشرعي:",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.outline,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
 
                 FilterChip(
@@ -189,7 +206,7 @@ fun ShariaReviewQueueScreen(
                         selectedCategory = null
                         viewModel.updateFilter(state.activeFilter.copy(category = null))
                     },
-                    label = { Text("جميع الأقسام") }
+                    label = { Text("جميع الأقسام") },
                 )
 
                 categories.forEach { cat ->
@@ -199,25 +216,26 @@ fun ShariaReviewQueueScreen(
                             selectedCategory = if (selectedCategory == cat) null else cat
                             viewModel.updateFilter(state.activeFilter.copy(category = selectedCategory))
                         },
-                        label = { Text(cat) }
+                        label = { Text(cat) },
                     )
                 }
             }
 
             // Status Filter Row
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "الحالة:",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.outline,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
 
                 FilterChip(
@@ -226,7 +244,12 @@ fun ShariaReviewQueueScreen(
                         selectedStatus = null
                         viewModel.updateFilter(state.activeFilter.copy(status = null))
                     },
-                    label = { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.all)) }
+                    label = {
+                        Text(
+                            androidx.compose.ui.res
+                                .stringResource(com.siraj.app.R.string.all),
+                        )
+                    },
                 )
 
                 ShariaReviewStatus.values().forEach { st ->
@@ -236,7 +259,7 @@ fun ShariaReviewQueueScreen(
                             selectedStatus = if (selectedStatus == st) null else st
                             viewModel.updateFilter(state.activeFilter.copy(status = selectedStatus))
                         },
-                        label = { Text(st.arabicTitle) }
+                        label = { Text(st.arabicTitle) },
                     )
                 }
             }
@@ -250,50 +273,51 @@ fun ShariaReviewQueueScreen(
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 } else if (state.queueItems.isEmpty()) {
                     Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(32.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .padding(32.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                        verticalArrangement = Arrangement.Center,
                     ) {
                         Icon(
                             Icons.Default.FactCheck,
                             contentDescription = null,
                             modifier = Modifier.size(56.dp),
-                            tint = MaterialTheme.colorScheme.outline
+                            tint = MaterialTheme.colorScheme.outline,
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "لا توجد عناصر مراجعة مطابقة",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
                             text = "تم فحص كافة العناصر أو لا توجد مواد تطابق خيارات التصفية الحالية.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.outline
+                            color = MaterialTheme.colorScheme.outline,
                         )
                     }
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         item {
                             Text(
                                 text = "قائمة الانتظار (${state.queueItems.size} عناصر جاهزة للمراجعة):",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.colorScheme.primary,
                             )
                         }
 
                         items(state.queueItems, key = { it.id }) { item ->
                             ReviewQueueItemCard(
                                 item = item,
-                                onClick = { onNavigateToItemDetail(item.id) }
+                                onClick = { onNavigateToItemDetail(item.id) },
                             )
                         }
                     }

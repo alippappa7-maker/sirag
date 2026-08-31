@@ -9,7 +9,7 @@ interface SoundtrackRepository {
     fun getSoundtracks(
         category: SoundtrackCategory? = null,
         searchQuery: String = "",
-        hideMusic: Boolean = false
+        hideMusic: Boolean = false,
     ): Flow<List<SoundtrackItem>>
 
     suspend fun getSoundtrackById(id: String): SoundtrackItem?
@@ -17,11 +17,11 @@ interface SoundtrackRepository {
     suspend fun attachTrackToScene(
         projectId: String,
         sceneId: String,
-        config: SceneAudioTrackConfig
+        config: SceneAudioTrackConfig,
     ): Result<Unit>
 
     suspend fun removeTrackFromScene(
         projectId: String,
-        sceneId: String
+        sceneId: String,
     ): Result<Unit>
 }

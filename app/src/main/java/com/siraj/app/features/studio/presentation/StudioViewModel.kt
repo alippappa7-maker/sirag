@@ -17,14 +17,13 @@ data class StudioUiState(
     val searchQuery: String = "",
     val sortOption: String = "الأحدث",
     val filterOption: String = "نشط",
-    val activeWorkspaceId: String? = null
+    val activeWorkspaceId: String? = null,
 )
 
 class StudioViewModel(
     private val authRepository: AuthRepository = FirebaseAuthRepositoryImpl(),
-    private val projectRepository: ProjectRepository = FirebaseProjectRepositoryImpl()
+    private val projectRepository: ProjectRepository = FirebaseProjectRepositoryImpl(),
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(StudioUiState())
     val uiState: StateFlow<StudioUiState> = _uiState.asStateFlow()
 
@@ -52,7 +51,7 @@ class StudioViewModel(
                             }
                         }
                     } else {
-                         _uiState.update { it.copy(projects = Resource.Success(emptyList())) }
+                        _uiState.update { it.copy(projects = Resource.Success(emptyList())) }
                     }
                 }
             }
@@ -82,12 +81,19 @@ class StudioViewModel(
         var filtered = allProjects
 
         // Filter by Status
-        filtered = when (filter) {
-            "نشط" -> filtered.filter { it.status.name == "DRAFT" || it.status.name == "READY" || it.status.name == "COMPLETED" || it.status.name == "PROCESSING" }
-            "مؤرشف" -> filtered.filter { it.status.name == "ARCHIVED" }
-            "محذوف" -> filtered.filter { it.status.name == "DELETED" }
-            else -> filtered
-        }
+        filtered =
+            when (filter) {
+                "نشط" ->
+                    filtered.filter {
+                        it.status.name == "DRAFT" ||
+                            it.status.name == "READY" ||
+                            it.status.name == "COMPLETED" ||
+                            it.status.name == "PROCESSING"
+                    }
+                "مؤرشف" -> filtered.filter { it.status.name == "ARCHIVED" }
+                "محذوف" -> filtered.filter { it.status.name == "DELETED" }
+                else -> filtered
+            }
 
         // Search
         if (query.isNotBlank()) {
@@ -95,17 +101,21 @@ class StudioViewModel(
         }
 
         // Sort
-        filtered = when (sort) {
-            "الأحدث" -> filtered.sortedByDescending { it.updatedAt }
-            "الأقدم" -> filtered.sortedBy { it.updatedAt }
-            "الاسم (أ-ي)" -> filtered.sortedBy { it.title }
-            else -> filtered
-        }
+        filtered =
+            when (sort) {
+                "الأحدث" -> filtered.sortedByDescending { it.updatedAt }
+                "الأقدم" -> filtered.sortedBy { it.updatedAt }
+                "الاسم (أ-ي)" -> filtered.sortedBy { it.title }
+                else -> filtered
+            }
 
         _uiState.update { it.copy(projects = Resource.Success(filtered)) }
     }
 
-    fun copyProject(projectId: String, currentUserId: String) {
+    fun copyProject(
+        projectId: String,
+        currentUserId: String,
+    ) {
         viewModelScope.launch { projectRepository.copyProject(projectId, currentUserId) }
     }
 

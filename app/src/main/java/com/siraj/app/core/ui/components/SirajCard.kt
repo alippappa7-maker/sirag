@@ -17,16 +17,17 @@ import com.siraj.app.ui.theme.MyApplicationTheme
 @Composable
 fun SirajCard(
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface
-        ),
-        shape = MaterialTheme.shapes.medium // 16dp
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface,
+            ),
+        shape = MaterialTheme.shapes.medium, // 16dp
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             content()

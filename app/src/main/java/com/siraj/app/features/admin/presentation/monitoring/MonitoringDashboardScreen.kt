@@ -27,17 +27,11 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.CloudOff
-import androidx.compose.material.icons.filled.CrisisAlert
-import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.ReportProblem
 import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.Storage
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -50,7 +44,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -91,7 +84,7 @@ import com.siraj.app.ui.theme.statusColors
 @Composable
 fun MonitoringDashboardScreen(
     viewModel: MonitoringDashboardViewModel,
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var selectedTab by remember { mutableStateOf(0) }
@@ -108,7 +101,7 @@ fun MonitoringDashboardScreen(
                         Text(
                             "صحة المنظومة وسلامة المزودين ومسارات التحويل التلقائي",
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 },
@@ -121,7 +114,7 @@ fun MonitoringDashboardScreen(
                     IconButton(
                         onClick = { viewModel.runAllHealthProbes() },
                         enabled = !uiState.isProbing,
-                        modifier = Modifier.testTag("refresh_all_probes_button")
+                        modifier = Modifier.testTag("refresh_all_probes_button"),
                     ) {
                         if (uiState.isProbing) {
                             CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
@@ -129,32 +122,33 @@ fun MonitoringDashboardScreen(
                             Icon(Icons.Default.Refresh, contentDescription = "فحص الكل الآن")
                         }
                     }
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding),
         ) {
             // Banner notification
             AnimatedVisibility(visible = uiState.bannerMessage != null) {
                 Surface(
                     color = MaterialTheme.colorScheme.primaryContainer,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
                 ) {
                     Row(
                         modifier = Modifier.padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
                             text = uiState.bannerMessage ?: "",
                             fontSize = 13.sp,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
                         )
                         TextButton(onClick = { viewModel.clearBanner() }) {
                             Text("إغلاق", fontSize = 12.sp)
@@ -172,32 +166,48 @@ fun MonitoringDashboardScreen(
                     Tab(
                         selected = selectedTab == index,
                         onClick = { selectedTab = index },
-                        text = { Text(title, fontSize = 13.sp, fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal) }
+                        text = {
+                            Text(
+                                title,
+                                fontSize = 13.sp,
+                                fontWeight =
+                                    if (selectedTab ==
+                                        index
+                                    ) {
+                                        FontWeight.Bold
+                                    } else {
+                                        FontWeight.Normal
+                                    },
+                            )
+                        },
                     )
                 }
             }
 
             when (selectedTab) {
-                0 -> ServicesHealthListTab(
-                    uiState = uiState,
-                    onCategorySelected = { viewModel.filterByCategory(it) },
-                    onRunSingleProbe = { viewModel.runSingleProbe(it) },
-                    onToggleCircuitBreaker = { service, disable, reason ->
-                        viewModel.toggleCircuitBreaker(service, disable, reason)
-                    },
-                    onOpenRunbook = { viewModel.selectServiceForRunbook(it) }
-                )
-                1 -> IncidentsManagementTab(
-                    uiState = uiState,
-                    onCreateIncidentClick = { showCreateIncidentDialog = true },
-                    onSelectIncidentDetail = { viewModel.selectIncidentForDetail(it) },
-                    onUpdateState = { id, state, notes -> viewModel.updateIncidentState(id, state, notes) }
-                )
-                2 -> AlertsAndPerformanceTab(
-                    uiState = uiState,
-                    onAcknowledgeAlert = { viewModel.acknowledgeAlert(it) },
-                    onDismissAlert = { viewModel.dismissAlert(it) }
-                )
+                0 ->
+                    ServicesHealthListTab(
+                        uiState = uiState,
+                        onCategorySelected = { viewModel.filterByCategory(it) },
+                        onRunSingleProbe = { viewModel.runSingleProbe(it) },
+                        onToggleCircuitBreaker = { service, disable, reason ->
+                            viewModel.toggleCircuitBreaker(service, disable, reason)
+                        },
+                        onOpenRunbook = { viewModel.selectServiceForRunbook(it) },
+                    )
+                1 ->
+                    IncidentsManagementTab(
+                        uiState = uiState,
+                        onCreateIncidentClick = { showCreateIncidentDialog = true },
+                        onSelectIncidentDetail = { viewModel.selectIncidentForDetail(it) },
+                        onUpdateState = { id, state, notes -> viewModel.updateIncidentState(id, state, notes) },
+                    )
+                2 ->
+                    AlertsAndPerformanceTab(
+                        uiState = uiState,
+                        onAcknowledgeAlert = { viewModel.acknowledgeAlert(it) },
+                        onDismissAlert = { viewModel.dismissAlert(it) },
+                    )
             }
         }
     }
@@ -209,7 +219,7 @@ fun MonitoringDashboardScreen(
             onConfirm = { service, title, desc, sev ->
                 viewModel.createIncident(service, title, desc, sev)
                 showCreateIncidentDialog = false
-            }
+            },
         )
     }
 
@@ -220,7 +230,7 @@ fun MonitoringDashboardScreen(
             onDismiss = { viewModel.selectIncidentForDetail(null) },
             onUpdateState = { newState, notes, rootCause, mitigation ->
                 viewModel.updateIncidentState(incident.incidentId, newState, notes, rootCause, mitigation)
-            }
+            },
         )
     }
 
@@ -231,7 +241,7 @@ fun MonitoringDashboardScreen(
             onDismiss = { viewModel.selectServiceForRunbook(null) },
             onToggleCircuitBreaker = { disable, reason ->
                 viewModel.toggleCircuitBreaker(service, disable, reason)
-            }
+            },
         )
     }
 }
@@ -239,43 +249,45 @@ fun MonitoringDashboardScreen(
 @Composable
 fun TelemetryOverviewCards(telemetry: SystemTelemetryOverview) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
-                        modifier = Modifier
-                            .size(10.dp)
-                            .clip(CircleShape)
-                            .background(
-                                when (telemetry.overallSystemStatus) {
-                                    ServiceHealthStatus.HEALTHY -> MaterialTheme.statusColors.successFg
-                                    ServiceHealthStatus.DEGRADED -> MaterialTheme.statusColors.warningFg
-                                    else -> MaterialTheme.statusColors.errorFg
-                                }
-                            )
+                        modifier =
+                            Modifier
+                                .size(10.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    when (telemetry.overallSystemStatus) {
+                                        ServiceHealthStatus.HEALTHY -> MaterialTheme.statusColors.successFg
+                                        ServiceHealthStatus.DEGRADED -> MaterialTheme.statusColors.warningFg
+                                        else -> MaterialTheme.statusColors.errorFg
+                                    },
+                                ),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "الحالة العامة: ${telemetry.overallSystemStatus.displayNameArabic}",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
+                        fontSize = 14.sp,
                     )
                 }
 
                 Text(
                     text = "${telemetry.healthyServicesCount} / ${telemetry.totalServicesCount} خدمة تعمل",
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
@@ -285,7 +297,7 @@ fun TelemetryOverviewCards(telemetry: SystemTelemetryOverview) {
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 TelemetryMetricItem("متوسط الاستجابة", "${telemetry.avgSystemLatencyMs} ms")
                 TelemetryMetricItem("نسبة الأعطال", "${telemetry.globalErrorRatePercent}%")
@@ -297,7 +309,10 @@ fun TelemetryOverviewCards(telemetry: SystemTelemetryOverview) {
 }
 
 @Composable
-fun TelemetryMetricItem(title: String, value: String) {
+fun TelemetryMetricItem(
+    title: String,
+    value: String,
+) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(title, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(value, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
@@ -310,25 +325,26 @@ fun ServicesHealthListTab(
     onCategorySelected: (ServiceCategory?) -> Unit,
     onRunSingleProbe: (MonitoredService) -> Unit,
     onToggleCircuitBreaker: (MonitoredService, Boolean, String) -> Unit,
-    onOpenRunbook: (MonitoredService) -> Unit
+    onOpenRunbook: (MonitoredService) -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         // Category filters
         item {
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(vertical = 4.dp)
+                modifier = Modifier.padding(vertical = 4.dp),
             ) {
                 item {
                     FilterChip(
                         selected = uiState.selectedCategory == null,
                         onClick = { onCategorySelected(null) },
-                        label = { Text("الكل (${uiState.servicesHealthList.size})") }
+                        label = { Text("الكل (${uiState.servicesHealthList.size})") },
                     )
                 }
                 items(ServiceCategory.values()) { category ->
@@ -336,7 +352,7 @@ fun ServicesHealthListTab(
                     FilterChip(
                         selected = uiState.selectedCategory == category,
                         onClick = { onCategorySelected(category) },
-                        label = { Text("${category.displayNameArabic} ($count)") }
+                        label = { Text("${category.displayNameArabic} ($count)") },
                     )
                 }
             }
@@ -351,10 +367,10 @@ fun ServicesHealthListTab(
                     onToggleCircuitBreaker(
                         serviceCheck.service,
                         disable,
-                        "تعطيل يدوي من مدير النظام لحماية جودة الخدمة"
+                        "تعطيل يدوي من مدير النظام لحماية جودة الخدمة",
                     )
                 },
-                onOpenRunbook = { onOpenRunbook(serviceCheck.service) }
+                onOpenRunbook = { onOpenRunbook(serviceCheck.service) },
             )
         }
 
@@ -367,65 +383,70 @@ fun ServiceHealthCheckCard(
     check: ServiceHealthCheck,
     onRunProbe: () -> Unit,
     onToggleCircuitBreaker: (Boolean) -> Unit,
-    onOpenRunbook: () -> Unit
+    onOpenRunbook: () -> Unit,
 ) {
-    val statusColor = when (check.status) {
-        ServiceHealthStatus.HEALTHY -> MaterialTheme.statusColors.successFg
-        ServiceHealthStatus.DEGRADED -> MaterialTheme.statusColors.warningFg
-        ServiceHealthStatus.UNAVAILABLE -> MaterialTheme.statusColors.errorFg
-        ServiceHealthStatus.CIRCUIT_BROKEN_DISABLED -> MaterialTheme.statusColors.neutralFg
-        ServiceHealthStatus.MAINTENANCE -> Color(0xFF0277BD)
-    }
+    val statusColor =
+        when (check.status) {
+            ServiceHealthStatus.HEALTHY -> MaterialTheme.statusColors.successFg
+            ServiceHealthStatus.DEGRADED -> MaterialTheme.statusColors.warningFg
+            ServiceHealthStatus.UNAVAILABLE -> MaterialTheme.statusColors.errorFg
+            ServiceHealthStatus.CIRCUIT_BROKEN_DISABLED -> MaterialTheme.statusColors.neutralFg
+            ServiceHealthStatus.MAINTENANCE -> Color(0xFF0277BD)
+        }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (check.isCircuitBroken) 
-                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f) 
-            else 
-                MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        colors =
+            CardDefaults.cardColors(
+                containerColor =
+                    if (check.isCircuitBroken) {
+                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                    } else {
+                        MaterialTheme.colorScheme.surface
+                    },
+            ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                     Box(
-                        modifier = Modifier
-                            .size(10.dp)
-                            .clip(CircleShape)
-                            .background(statusColor)
+                        modifier =
+                            Modifier
+                                .size(10.dp)
+                                .clip(CircleShape)
+                                .background(statusColor),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
                         Text(
                             text = check.service.displayNameArabic,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
+                            fontSize = 14.sp,
                         )
                         Text(
                             text = check.service.category.displayNameArabic,
                             fontSize = 11.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
 
                 Surface(
                     color = statusColor.copy(alpha = 0.12f),
-                    shape = RoundedCornerShape(6.dp)
+                    shape = RoundedCornerShape(6.dp),
                 ) {
                     Text(
                         text = check.status.displayNameArabic,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                         color = statusColor,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                     )
                 }
             }
@@ -434,7 +455,7 @@ fun ServiceHealthCheckCard(
             Text(
                 text = check.statusMessageArabic,
                 fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
 
             // Dynamic Fallback notice if present
@@ -443,19 +464,24 @@ fun ServiceHealthCheckCard(
                 Surface(
                     color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f),
                     shape = RoundedCornerShape(6.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Row(
                         modifier = Modifier.padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(Icons.Default.CloudDone, contentDescription = null, modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.secondary)
+                        Icon(
+                            Icons.Default.CloudDone,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.secondary,
+                        )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "المسار البديل النشط: ${fallback.displayNameArabic}",
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
                         )
                     }
                 }
@@ -469,7 +495,7 @@ fun ServiceHealthCheckCard(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text("الاستجابة: ${check.latencyMs}ms", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -490,13 +516,13 @@ fun ServiceHealthCheckCard(
                     }
                     IconButton(
                         onClick = { onToggleCircuitBreaker(!check.isCircuitBroken) },
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier.size(28.dp),
                     ) {
                         Icon(
                             imageVector = if (check.isCircuitBroken) Icons.Default.PowerSettingsNew else Icons.Default.CloudOff,
                             contentDescription = if (check.isCircuitBroken) "إعادة التفعيل" else "تعطيل احترازي",
                             tint = if (check.isCircuitBroken) MaterialTheme.statusColors.successFg else MaterialTheme.statusColors.errorFg,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(16.dp),
                         )
                     }
                 }
@@ -510,24 +536,25 @@ fun IncidentsManagementTab(
     uiState: MonitoringDashboardUiState,
     onCreateIncidentClick: () -> Unit,
     onSelectIncidentDetail: (ServiceIncident) -> Unit,
-    onUpdateState: (String, IncidentState, String) -> Unit
+    onUpdateState: (String, IncidentState, String) -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text("الأعطال النشطة والبلاغات التشغيلية", fontWeight = FontWeight.Bold, fontSize = 15.sp)
                 Button(
                     onClick = onCreateIncidentClick,
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
                 ) {
                     Icon(Icons.Default.AddAlert, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(6.dp))
@@ -540,18 +567,28 @@ fun IncidentsManagementTab(
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
                 ) {
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.statusColors.successFg, modifier = Modifier.size(36.dp))
+                        Icon(
+                            Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            tint = MaterialTheme.statusColors.successFg,
+                            modifier = Modifier.size(36.dp),
+                        )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text("لا توجد أعطال أو بلاغات تشغيلية نشطة حالياً", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                        Text("كافة الخدمات تعمل ضمن الكفاءة المحددة ودون أي انقطاع", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            "كافة الخدمات تعمل ضمن الكفاءة المحددة ودون أي انقطاع",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                 }
             }
@@ -562,7 +599,7 @@ fun IncidentsManagementTab(
                     onClick = { onSelectIncidentDetail(incident) },
                     onQuickResolve = {
                         onUpdateState(incident.incidentId, IncidentState.RESOLVED, "تم حل العطل وتأكيد استقرار الخدمة.")
-                    }
+                    },
                 )
             }
         }
@@ -576,7 +613,7 @@ fun IncidentsManagementTab(
             IncidentCardItem(
                 incident = resolvedIncident,
                 onClick = { onSelectIncidentDetail(resolvedIncident) },
-                onQuickResolve = {}
+                onQuickResolve = {},
             )
         }
 
@@ -588,50 +625,53 @@ fun IncidentsManagementTab(
 fun IncidentCardItem(
     incident: ServiceIncident,
     onClick: () -> Unit,
-    onQuickResolve: () -> Unit
+    onQuickResolve: () -> Unit,
 ) {
-    val severityColor = when (incident.severity) {
-        IncidentSeverity.P0_CRITICAL -> MaterialTheme.statusColors.errorFg
-        IncidentSeverity.P1_HIGH -> MaterialTheme.statusColors.warningFg
-        IncidentSeverity.P2_MEDIUM -> MaterialTheme.statusColors.warningFg
-        IncidentSeverity.P3_LOW -> Color(0xFF1565C0)
-    }
+    val severityColor =
+        when (incident.severity) {
+            IncidentSeverity.P0_CRITICAL -> MaterialTheme.statusColors.errorFg
+            IncidentSeverity.P1_HIGH -> MaterialTheme.statusColors.warningFg
+            IncidentSeverity.P2_MEDIUM -> MaterialTheme.statusColors.warningFg
+            IncidentSeverity.P3_LOW -> Color(0xFF1565C0)
+        }
 
-    val stateColor = when (incident.state) {
-        IncidentState.INVESTIGATING -> MaterialTheme.statusColors.errorFg
-        IncidentState.IDENTIFIED -> MaterialTheme.statusColors.warningFg
-        IncidentState.MITIGATING -> Color(0xFF0277BD)
-        IncidentState.RESOLVED -> MaterialTheme.statusColors.successFg
-        IncidentState.MONITORING -> Color(0xFF00897B)
-    }
+    val stateColor =
+        when (incident.state) {
+            IncidentState.INVESTIGATING -> MaterialTheme.statusColors.errorFg
+            IncidentState.IDENTIFIED -> MaterialTheme.statusColors.warningFg
+            IncidentState.MITIGATING -> Color(0xFF0277BD)
+            IncidentState.RESOLVED -> MaterialTheme.statusColors.successFg
+            IncidentState.MONITORING -> Color(0xFF00897B)
+        }
 
     val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault())
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable { onClick() },
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Surface(
                         color = severityColor.copy(alpha = 0.15f),
-                        shape = RoundedCornerShape(4.dp)
+                        shape = RoundedCornerShape(4.dp),
                     ) {
                         Text(
                             text = incident.severity.name.replace("_", " "),
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             color = severityColor,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
@@ -639,20 +679,20 @@ fun IncidentCardItem(
                         text = incident.incidentId,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 }
 
                 Surface(
                     color = stateColor.copy(alpha = 0.15f),
-                    shape = RoundedCornerShape(4.dp)
+                    shape = RoundedCornerShape(4.dp),
                 ) {
                     Text(
                         text = incident.state.displayNameArabic,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
                         color = stateColor,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                     )
                 }
             }
@@ -668,12 +708,12 @@ fun IncidentCardItem(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "البدء: ${dateFormat.format(Date(incident.startTimestamp))}",
                     fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 if (incident.state != IncidentState.RESOLVED) {
@@ -684,7 +724,7 @@ fun IncidentCardItem(
                     Text(
                         text = "تم الحل: ${dateFormat.format(Date(incident.resolvedTimestamp ?: incident.startTimestamp))}",
                         fontSize = 11.sp,
-                        color = MaterialTheme.statusColors.successFg
+                        color = MaterialTheme.statusColors.successFg,
                     )
                 }
             }
@@ -696,13 +736,14 @@ fun IncidentCardItem(
 fun AlertsAndPerformanceTab(
     uiState: MonitoringDashboardUiState,
     onAcknowledgeAlert: (String) -> Unit,
-    onDismissAlert: (String) -> Unit
+    onDismissAlert: (String) -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         item {
             Text("التنبيهات الفورية غير المكررة (Deduplicated Alerts)", fontWeight = FontWeight.Bold, fontSize = 15.sp)
@@ -712,15 +753,21 @@ fun AlertsAndPerformanceTab(
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
                 ) {
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Icon(Icons.Default.NotificationsActive, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(32.dp))
+                        Icon(
+                            Icons.Default.NotificationsActive,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(32.dp),
+                        )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text("لا توجد تنبيهات عاجلة غير مقروءة", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                     }
@@ -731,7 +778,7 @@ fun AlertsAndPerformanceTab(
                 AlertItemCard(
                     alert = alert,
                     onAcknowledge = { onAcknowledgeAlert(alert.alertId) },
-                    onDismiss = { onDismissAlert(alert.alertId) }
+                    onDismiss = { onDismissAlert(alert.alertId) },
                 )
             }
         }
@@ -741,14 +788,23 @@ fun AlertsAndPerformanceTab(
             Text("قواعد العزل البيئي والتنبيه الآمن", fontWeight = FontWeight.Bold, fontSize = 14.sp)
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
-                    Text("• منع تكرار التنبيهات: يتم تجميع التنبيهات المتطابقة بناءً على بصمة التجزئة (Deduplication Hash).", fontSize = 12.sp)
+                    Text(
+                        "• منع تكرار التنبيهات: يتم تجميع التنبيهات المتطابقة بناءً على بصمة التجزئة (Deduplication Hash).",
+                        fontSize = 12.sp,
+                    )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text("• حظر اختبار المحتوى الديني: الفحص الآلي يستخدم رموزاً اصطناعية محايدة تماماً دون مساس بآيات القرآن.", fontSize = 12.sp)
+                    Text(
+                        "• حظر اختبار المحتوى الديني: الفحص الآلي يستخدم رموزاً اصطناعية محايدة تماماً دون مساس بآيات القرآن.",
+                        fontSize = 12.sp,
+                    )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text("• أمان الرسائل الموجهة للمستخدم: إخفاء عناوين IP، ومفاتيح API، وبنية الـ Cloud Functions عن العميل.", fontSize = 12.sp)
+                    Text(
+                        "• أمان الرسائل الموجهة للمستخدم: إخفاء عناوين IP، ومفاتيح API، وبنية الـ Cloud Functions عن العميل.",
+                        fontSize = 12.sp,
+                    )
                 }
             }
         }
@@ -761,18 +817,18 @@ fun AlertsAndPerformanceTab(
 fun AlertItemCard(
     alert: MonitoringAlert,
     onAcknowledge: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(alert.titleArabic, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = MaterialTheme.colorScheme.error)
                 Text(alert.service.displayNameArabic, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -785,7 +841,7 @@ fun AlertItemCard(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 TextButton(onClick = onDismiss) {
                     Text("تجاهل", fontSize = 11.sp)
@@ -794,7 +850,7 @@ fun AlertItemCard(
                 Button(
                     onClick = onAcknowledge,
                     shape = RoundedCornerShape(6.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                 ) {
                     Text("تأكيد الاستلام", fontSize = 11.sp)
                 }
@@ -806,7 +862,7 @@ fun AlertItemCard(
 @Composable
 fun CreateIncidentDialog(
     onDismiss: () -> Unit,
-    onConfirm: (MonitoredService, String, String, IncidentSeverity) -> Unit
+    onConfirm: (MonitoredService, String, String, IncidentSeverity) -> Unit,
 ) {
     var selectedService by remember { mutableStateOf(MonitoredService.GEMINI_AI_PROVIDER) }
     var title by remember { mutableStateOf("") }
@@ -818,10 +874,11 @@ fun CreateIncidentDialog(
         title = { Text("فتح بلاغ عطل تشغيلي (Create Incident)", fontWeight = FontWeight.Bold, fontSize = 16.sp) },
         text = {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 Text("اختر الخدمة المتأثرة:", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -829,7 +886,7 @@ fun CreateIncidentDialog(
                         FilterChip(
                             selected = selectedService == service,
                             onClick = { selectedService = service },
-                            label = { Text(service.displayNameArabic, fontSize = 11.sp) }
+                            label = { Text(service.displayNameArabic, fontSize = 11.sp) },
                         )
                     }
                 }
@@ -840,7 +897,7 @@ fun CreateIncidentDialog(
                         FilterChip(
                             selected = severity == sev,
                             onClick = { severity = sev },
-                            label = { Text(sev.name.take(2), fontSize = 11.sp) }
+                            label = { Text(sev.name.take(2), fontSize = 11.sp) },
                         )
                     }
                 }
@@ -849,7 +906,7 @@ fun CreateIncidentDialog(
                     value = title,
                     onValueChange = { title = it },
                     label = { Text("عنوان العطل المختصر") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 OutlinedTextField(
@@ -857,21 +914,21 @@ fun CreateIncidentDialog(
                     onValueChange = { description = it },
                     label = { Text("التفاصيل والملاحظات الأولية") },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 3
+                    minLines = 3,
                 )
             }
         },
         confirmButton = {
             Button(
                 onClick = { onConfirm(selectedService, title, description, severity) },
-                enabled = title.isNotBlank() && description.isNotBlank()
+                enabled = title.isNotBlank() && description.isNotBlank(),
             ) {
                 Text("فتح البلاغ وإشعار الفريق")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("إلغاء") }
-        }
+        },
     )
 }
 
@@ -879,7 +936,7 @@ fun CreateIncidentDialog(
 fun IncidentDetailDialog(
     incident: ServiceIncident,
     onDismiss: () -> Unit,
-    onUpdateState: (IncidentState, String, String?, String?) -> Unit
+    onUpdateState: (IncidentState, String, String?, String?) -> Unit,
 ) {
     var newState by remember { mutableStateOf(incident.state) }
     var notes by remember { mutableStateOf("") }
@@ -894,7 +951,7 @@ fun IncidentDetailDialog(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text("تفاصيل البلاغ ${incident.incidentId}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text(incident.severity.name, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
@@ -902,10 +959,11 @@ fun IncidentDetailDialog(
         },
         text = {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 Text(incident.titleArabic, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 Text(incident.descriptionArabic, fontSize = 12.sp)
@@ -918,7 +976,7 @@ fun IncidentDetailDialog(
                         FilterChip(
                             selected = newState == st,
                             onClick = { newState = st },
-                            label = { Text(st.displayNameArabic, fontSize = 11.sp) }
+                            label = { Text(st.displayNameArabic, fontSize = 11.sp) },
                         )
                     }
                 }
@@ -927,21 +985,21 @@ fun IncidentDetailDialog(
                     value = rootCause,
                     onValueChange = { rootCause = it },
                     label = { Text("السبب الجذري (Root Cause)") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 OutlinedTextField(
                     value = mitigation,
                     onValueChange = { mitigation = it },
                     label = { Text("إجراء التخفيف / المسار البديل (Mitigation)") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { notes = it },
                     label = { Text("ملاحظات التحديث الزمني") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Text("السجل الزمني للأحداث (Timeline):", fontSize = 12.sp, fontWeight = FontWeight.Bold)
@@ -949,15 +1007,19 @@ fun IncidentDetailDialog(
                     Surface(
                         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                         shape = RoundedCornerShape(6.dp),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         Column(modifier = Modifier.padding(8.dp)) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                horizontalArrangement = Arrangement.SpaceBetween,
                             ) {
                                 Text(event.state.displayNameArabic, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                                Text(dateFormat.format(Date(event.timestamp)), fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(
+                                    dateFormat.format(Date(event.timestamp)),
+                                    fontSize = 10.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
                             }
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(event.notesArabic, fontSize = 11.sp)
@@ -971,14 +1033,14 @@ fun IncidentDetailDialog(
                 onClick = {
                     onUpdateState(newState, notes.ifBlank { "تحديث حالة البلاغ إلى ${newState.displayNameArabic}" }, rootCause, mitigation)
                     onDismiss()
-                }
+                },
             ) {
                 Text("حفظ وتطبيق التحديث")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("إغلاق") }
-        }
+        },
     )
 }
 
@@ -986,55 +1048,65 @@ fun IncidentDetailDialog(
 fun ServiceRunbookModal(
     service: MonitoredService,
     onDismiss: () -> Unit,
-    onToggleCircuitBreaker: (Boolean, String) -> Unit
+    onToggleCircuitBreaker: (Boolean, String) -> Unit,
 ) {
-    val runbookSteps = when (service) {
-        MonitoredService.AUTHENTICATION -> listOf(
-            "1. فحص حالة Firebase Auth و Google Identity Services عبر Google Cloud Status.",
-            "2. التحقق من صحة شهادات SSL ونطاقات OAuth المعتمدة في Console.",
-            "3. إذا كان العطل من مزود جهة خارجية، تفعيل وضع تسجيل الدخول بالبريد ورسالة التنبيه اللطيفة."
-        )
-        MonitoredService.FIRESTORE -> listOf(
-            "1. مراجعة حصص العمليات (Read/Write Quotas) في مشروع Firebase.",
-            "2. التحقق من اكتمال الفهارس المركبة (Composite Indexes) لضمان عدم توقف الاستعلامات.",
-            "3. تفعيل وضع القراءة فقط للكاش المحلي (Offline Persistence) على أجهزة العملاء."
-        )
-        MonitoredService.STORAGE -> listOf(
-            "1. فحص حصص النطاق الترددي ومساحة الأصول والتسجيلات الصوتية.",
-            "2. التحقق من صلاحيات مفاتيح التشفير السحابية CMEK في Cloud KMS.",
-            "3. تفعيل التخزين الاحتياطي المؤقت (Temporary Storage Bucket)."
-        )
-        MonitoredService.GEMINI_AI_PROVIDER -> listOf(
-            "1. فحص حصص الـ Rate Limits ومستوى استهلاك الـ Tokens عبر Cloud Functions Backend.",
-            "2. تفعيل قاطع الدائرة (Circuit Breaker) لتحويل العملاء فوراً إلى القوالب اليدوية.",
-            "3. عدم إرسال أي نصوص دينية حساسة للفحص، واستخدام نصوص محايدة اصطناعية فقط."
-        )
-        MonitoredService.QURAN_API_PROVIDER -> listOf(
-            "1. التحقق من استجابة واجهة مجمع الملك فهد ومصحف المدينة الرقمي.",
-            "2. التحويل التلقائي والفوري لقاعدة البيانات المحلية المشفرة المعتمدة.",
-            "3. إظهار شارة الاعتماد للمستخدم مع تأكيد صحة نص الآية ورقمها."
-        )
-        MonitoredService.IMAGE_GENERATION_PROVIDER -> listOf(
-            "1. فحص زمن استجابة مزود الصور في الـ Backend.",
-            "2. في حال تجاوز المهلة (Timeout > 5s)، تفعيل المسار البديل إلى مكتبة الأصول الإسلامية الجاهزة.",
-            "3. إعادة رصيد العملية للمستخدم آلياً في حال فشل التوليد."
-        )
-        MonitoredService.VIDEO_RENDERING_QUEUE -> listOf(
-            "1. فحص عمق طابور المهام (Queue Depth) وحاويات Cloud Run المخصصة للرندرة.",
-            "2. زيادة التوسع الأفقي التلقائي للحاويات (Auto-scaling Cloud Run instances).",
-            "3. إبلاغ المستخدم بوضعه في طابور التصدير وإشعاره عبر FCM عند اكتمال الفيديو."
-        )
-        MonitoredService.GOOGLE_PLAY_BILLING, MonitoredService.APPLE_APP_STORE_BILLING -> listOf(
-            "1. فحص خادم التحقق من الرموز (Purchase Token Server-to-Server Verifier).",
-            "2. التأكد من حفظ رمز الشراء في جدول المزامنة الآمنة وعدم خصم أي ميزة دون إثبات رسمي.",
-            "3. إذا كان المتجر تحت الصيانة، إبقاء حالة الشراء Pending وإعادة المحاولة مع Exponential Backoff."
-        )
-        else -> listOf(
-            "1. فحص سجلات الخدمة في Google Cloud Logging.",
-            "2. التأكد من عدم وجود اختناقات في شبكة الاتصال.",
-            "3. التحويل للمسار الاحتياطي عند استمرار العطل أكثر من دقيقتين."
-        )
-    }
+    val runbookSteps =
+        when (service) {
+            MonitoredService.AUTHENTICATION ->
+                listOf(
+                    "1. فحص حالة Firebase Auth و Google Identity Services عبر Google Cloud Status.",
+                    "2. التحقق من صحة شهادات SSL ونطاقات OAuth المعتمدة في Console.",
+                    "3. إذا كان العطل من مزود جهة خارجية، تفعيل وضع تسجيل الدخول بالبريد ورسالة التنبيه اللطيفة.",
+                )
+            MonitoredService.FIRESTORE ->
+                listOf(
+                    "1. مراجعة حصص العمليات (Read/Write Quotas) في مشروع Firebase.",
+                    "2. التحقق من اكتمال الفهارس المركبة (Composite Indexes) لضمان عدم توقف الاستعلامات.",
+                    "3. تفعيل وضع القراءة فقط للكاش المحلي (Offline Persistence) على أجهزة العملاء.",
+                )
+            MonitoredService.STORAGE ->
+                listOf(
+                    "1. فحص حصص النطاق الترددي ومساحة الأصول والتسجيلات الصوتية.",
+                    "2. التحقق من صلاحيات مفاتيح التشفير السحابية CMEK في Cloud KMS.",
+                    "3. تفعيل التخزين الاحتياطي المؤقت (Temporary Storage Bucket).",
+                )
+            MonitoredService.GEMINI_AI_PROVIDER ->
+                listOf(
+                    "1. فحص حصص الـ Rate Limits ومستوى استهلاك الـ Tokens عبر Cloud Functions Backend.",
+                    "2. تفعيل قاطع الدائرة (Circuit Breaker) لتحويل العملاء فوراً إلى القوالب اليدوية.",
+                    "3. عدم إرسال أي نصوص دينية حساسة للفحص، واستخدام نصوص محايدة اصطناعية فقط.",
+                )
+            MonitoredService.QURAN_API_PROVIDER ->
+                listOf(
+                    "1. التحقق من استجابة واجهة مجمع الملك فهد ومصحف المدينة الرقمي.",
+                    "2. التحويل التلقائي والفوري لقاعدة البيانات المحلية المشفرة المعتمدة.",
+                    "3. إظهار شارة الاعتماد للمستخدم مع تأكيد صحة نص الآية ورقمها.",
+                )
+            MonitoredService.IMAGE_GENERATION_PROVIDER ->
+                listOf(
+                    "1. فحص زمن استجابة مزود الصور في الـ Backend.",
+                    "2. في حال تجاوز المهلة (Timeout > 5s)، تفعيل المسار البديل إلى مكتبة الأصول الإسلامية الجاهزة.",
+                    "3. إعادة رصيد العملية للمستخدم آلياً في حال فشل التوليد.",
+                )
+            MonitoredService.VIDEO_RENDERING_QUEUE ->
+                listOf(
+                    "1. فحص عمق طابور المهام (Queue Depth) وحاويات Cloud Run المخصصة للرندرة.",
+                    "2. زيادة التوسع الأفقي التلقائي للحاويات (Auto-scaling Cloud Run instances).",
+                    "3. إبلاغ المستخدم بوضعه في طابور التصدير وإشعاره عبر FCM عند اكتمال الفيديو.",
+                )
+            MonitoredService.GOOGLE_PLAY_BILLING, MonitoredService.APPLE_APP_STORE_BILLING ->
+                listOf(
+                    "1. فحص خادم التحقق من الرموز (Purchase Token Server-to-Server Verifier).",
+                    "2. التأكد من حفظ رمز الشراء في جدول المزامنة الآمنة وعدم خصم أي ميزة دون إثبات رسمي.",
+                    "3. إذا كان المتجر تحت الصيانة، إبقاء حالة الشراء Pending وإعادة المحاولة مع Exponential Backoff.",
+                )
+            else ->
+                listOf(
+                    "1. فحص سجلات الخدمة في Google Cloud Logging.",
+                    "2. التأكد من عدم وجود اختناقات في شبكة الاتصال.",
+                    "3. التحويل للمسار الاحتياطي عند استمرار العطل أكثر من دقيقتين.",
+                )
+        }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -1047,17 +1119,18 @@ fun ServiceRunbookModal(
         },
         text = {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text("إجراءات الاستجابة والتعامل القياسية (Standard Operating Procedures):", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                 runbookSteps.forEach { step ->
                     Surface(
                         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                         shape = RoundedCornerShape(6.dp),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(step, fontSize = 12.sp, modifier = Modifier.padding(8.dp))
                     }
@@ -1068,7 +1141,10 @@ fun ServiceRunbookModal(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text("إجراءات الطوارئ الفورية:", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
-                Text("في حال تعطل المزود الخارجي أو حدوث تكدس حاد، يمكنك تفعيل قاطع الدائرة لتحويل الحركة آلياً للمسار البديل.", fontSize = 11.sp)
+                Text(
+                    "في حال تعطل المزود الخارجي أو حدوث تكدس حاد، يمكنك تفعيل قاطع الدائرة لتحويل الحركة آلياً للمسار البديل.",
+                    fontSize = 11.sp,
+                )
             }
         },
         confirmButton = {
@@ -1077,13 +1153,13 @@ fun ServiceRunbookModal(
                     onToggleCircuitBreaker(true, "تفعيل قاطع الدائرة بناءً على دليل التشغيل المعتمد")
                     onDismiss()
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
             ) {
                 Text("تفعيل قاطع الدائرة احترازياً")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("إغلاق") }
-        }
+        },
     )
 }

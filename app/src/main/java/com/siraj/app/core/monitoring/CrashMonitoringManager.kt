@@ -12,7 +12,6 @@ import com.siraj.app.domain.monitoring.ErrorSeverity
  * Provides unified, thread-safe access to crash diagnostics with full privacy protection.
  */
 object CrashMonitoringManager {
-
     private const val TAG = "CrashMonitoringMgr"
     private var service: CrashMonitoringService = FirebaseCrashMonitoringServiceImpl()
     private var isInitialized: Boolean = false
@@ -27,7 +26,11 @@ object CrashMonitoringManager {
     /**
      * Bootstraps monitoring with application version and environment metadata.
      */
-    fun initialize(environment: String, appVersion: String, buildNumber: String) {
+    fun initialize(
+        environment: String,
+        appVersion: String,
+        buildNumber: String,
+    ) {
         service.initialize(environment, appVersion, buildNumber)
         installUncaughtExceptionHandler()
         isInitialized = true
@@ -43,13 +46,13 @@ object CrashMonitoringManager {
             try {
                 service.logBreadcrumb(
                     message = "Uncaught exception on thread: ${thread.name}",
-                    type = BreadcrumbType.SYSTEM_EVENT
+                    type = BreadcrumbType.SYSTEM_EVENT,
                 )
                 service.recordException(
                     throwable = throwable,
                     category = ErrorCategory.SYSTEM,
                     severity = ErrorSeverity.FATAL,
-                    customKeys = mapOf("fatal" to true, "thread_name" to thread.name)
+                    customKeys = mapOf("fatal" to true, "thread_name" to thread.name),
                 )
             } catch (e: Exception) {
                 Log.e(TAG, "Error in uncaught exception handler: ${e.message}")
@@ -70,7 +73,7 @@ object CrashMonitoringManager {
         category: ErrorCategory = ErrorCategory.UNKNOWN,
         severity: ErrorSeverity = ErrorSeverity.ERROR,
         requestId: String? = null,
-        customKeys: Map<String, Any> = emptyMap()
+        customKeys: Map<String, Any> = emptyMap(),
     ) {
         service.recordException(throwable, category, severity, requestId, customKeys)
     }
@@ -78,7 +81,7 @@ object CrashMonitoringManager {
     fun logBreadcrumb(
         message: String,
         type: BreadcrumbType = BreadcrumbType.SYSTEM_EVENT,
-        attributes: Map<String, String> = emptyMap()
+        attributes: Map<String, String> = emptyMap(),
     ) {
         service.logBreadcrumb(message, type, attributes)
     }
@@ -86,26 +89,32 @@ object CrashMonitoringManager {
     /**
      * Convenience method for recording screen navigation breadcrumbs safely.
      */
-    fun logNavigation(destination: String, from: String? = null) {
+    fun logNavigation(
+        destination: String,
+        from: String? = null,
+    ) {
         val attrs = mutableMapOf("destination" to destination)
         if (from != null) attrs["from"] = from
         logBreadcrumb(
             message = "Navigated to $destination",
             type = BreadcrumbType.NAVIGATION,
-            attributes = attrs
+            attributes = attrs,
         )
     }
 
     /**
      * Convenience method for recording user action breadcrumbs without sensitive payloads.
      */
-    fun logUserAction(actionName: String, entityType: String? = null) {
+    fun logUserAction(
+        actionName: String,
+        entityType: String? = null,
+    ) {
         val attrs = mutableMapOf("action" to actionName)
         if (entityType != null) attrs["entity_type"] = entityType
         logBreadcrumb(
             message = "Action: $actionName",
             type = BreadcrumbType.USER_ACTION,
-            attributes = attrs
+            attributes = attrs,
         )
     }
 
@@ -121,15 +130,24 @@ object CrashMonitoringManager {
         service.setRequestId(requestId)
     }
 
-    fun setCustomKey(key: String, value: String) {
+    fun setCustomKey(
+        key: String,
+        value: String,
+    ) {
         service.setCustomKey(key, value)
     }
 
-    fun setCustomKey(key: String, value: Boolean) {
+    fun setCustomKey(
+        key: String,
+        value: Boolean,
+    ) {
         service.setCustomKey(key, value)
     }
 
-    fun setCustomKey(key: String, value: Int) {
+    fun setCustomKey(
+        key: String,
+        value: Int,
+    ) {
         service.setCustomKey(key, value)
     }
 

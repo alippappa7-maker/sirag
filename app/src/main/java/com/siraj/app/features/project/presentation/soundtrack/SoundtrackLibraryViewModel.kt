@@ -18,9 +18,8 @@ class SoundtrackLibraryViewModel(
     private val projectId: String,
     private val sceneId: String? = null,
     private val soundtrackRepository: SoundtrackRepository = FirebaseSoundtrackRepositoryImpl(),
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
 ) : ViewModel() {
-
     // Filters
     var searchQuery = MutableStateFlow("")
         private set
@@ -77,7 +76,7 @@ class SoundtrackLibraryViewModel(
             combine(
                 searchQuery,
                 selectedCategory,
-                hideMusicOnly
+                hideMusicOnly,
             ) { query, cat, hideMusic ->
                 Triple(query, cat, hideMusic)
             }.flatMapLatest { (query, cat, hideMusic) ->
@@ -91,28 +90,32 @@ class SoundtrackLibraryViewModel(
 
     private fun loadCurrentSceneAudio() {
         if (sceneId.isNullOrBlank()) return
-        firestore.collection("projects").document(projectId)
-            .collection("scenes").document(sceneId)
+        firestore
+            .collection("projects")
+            .document(projectId)
+            .collection("scenes")
+            .document(sceneId)
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot != null && snapshot.exists()) {
                     val map = snapshot.get("soundtrackTrack") as? Map<*, *>
                     if (map != null) {
                         try {
-                            val cfg = SceneAudioTrackConfig(
-                                audioId = map["audioId"] as? String ?: "",
-                                soundTitle = map["soundTitle"] as? String ?: "",
-                                soundUrl = map["soundUrl"] as? String ?: "",
-                                volume = (map["volume"] as? Number)?.toFloat() ?: 0.5f,
-                                loop = map["loop"] as? Boolean ?: true,
-                                fadeIn = map["fadeIn"] as? Boolean ?: true,
-                                fadeOut = map["fadeOut"] as? Boolean ?: true,
-                                startTrimMs = (map["startTrimMs"] as? Number)?.toLong() ?: 0L,
-                                endTrimMs = (map["endTrimMs"] as? Number)?.toLong() ?: 0L,
-                                effectiveDurationMs = (map["effectiveDurationMs"] as? Number)?.toLong() ?: 0L,
-                                attributionRequired = map["attributionRequired"] as? Boolean ?: false,
-                                attributionText = map["attributionText"] as? String ?: "",
-                                licenseDisplayName = map["licenseDisplayName"] as? String ?: ""
-                            )
+                            val cfg =
+                                SceneAudioTrackConfig(
+                                    audioId = map["audioId"] as? String ?: "",
+                                    soundTitle = map["soundTitle"] as? String ?: "",
+                                    soundUrl = map["soundUrl"] as? String ?: "",
+                                    volume = (map["volume"] as? Number)?.toFloat() ?: 0.5f,
+                                    loop = map["loop"] as? Boolean ?: true,
+                                    fadeIn = map["fadeIn"] as? Boolean ?: true,
+                                    fadeOut = map["fadeOut"] as? Boolean ?: true,
+                                    startTrimMs = (map["startTrimMs"] as? Number)?.toLong() ?: 0L,
+                                    endTrimMs = (map["endTrimMs"] as? Number)?.toLong() ?: 0L,
+                                    effectiveDurationMs = (map["effectiveDurationMs"] as? Number)?.toLong() ?: 0L,
+                                    attributionRequired = map["attributionRequired"] as? Boolean ?: false,
+                                    attributionText = map["attributionText"] as? String ?: "",
+                                    licenseDisplayName = map["licenseDisplayName"] as? String ?: "",
+                                )
                             _currentSceneTrackConfig.value = cfg
                         } catch (_: Exception) {
                             _currentSceneTrackConfig.value = null
@@ -145,30 +148,32 @@ class SoundtrackLibraryViewModel(
 
         try {
             mediaPlayer?.release()
-            mediaPlayer = MediaPlayer().apply {
-                setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .build()
-                )
-                setDataSource(item.audioUrl)
-                prepareAsync()
-                setOnPreparedListener { mp ->
-                    mp.start()
-                    _isPlaying.value = true
-                    _currentlyPlayingId.value = item.id
+            mediaPlayer =
+                MediaPlayer().apply {
+                    setAudioAttributes(
+                        AudioAttributes
+                            .Builder()
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                            .build(),
+                    )
+                    setDataSource(item.audioUrl)
+                    prepareAsync()
+                    setOnPreparedListener { mp ->
+                        mp.start()
+                        _isPlaying.value = true
+                        _currentlyPlayingId.value = item.id
+                    }
+                    setOnCompletionListener {
+                        _isPlaying.value = false
+                        _currentlyPlayingId.value = null
+                    }
+                    setOnErrorListener { _, _, _ ->
+                        _isPlaying.value = false
+                        _currentlyPlayingId.value = null
+                        true
+                    }
                 }
-                setOnCompletionListener {
-                    _isPlaying.value = false
-                    _currentlyPlayingId.value = null
-                }
-                setOnErrorListener { _, _, _ ->
-                    _isPlaying.value = false
-                    _currentlyPlayingId.value = null
-                    true
-                }
-            }
         } catch (e: Exception) {
             _userMessage.value = "تعذر تشغيل الصوت: ${e.message}"
         }
@@ -219,34 +224,36 @@ class SoundtrackLibraryViewModel(
         val endMs = range.endInclusive.toLong()
         val effectiveDuration = (endMs - startMs).coerceAtLeast(1000L)
 
-        val config = SceneAudioTrackConfig(
-            audioId = item.id,
-            soundTitle = item.title,
-            soundUrl = item.audioUrl,
-            category = item.category,
-            isMusic = item.isMusic,
-            volume = trackVolume.value,
-            loop = isLooping.value,
-            fadeIn = isFadeIn.value,
-            fadeOut = isFadeOut.value,
-            fadeInDurationMs = 1000L,
-            fadeOutDurationMs = 1000L,
-            startTrimMs = startMs,
-            endTrimMs = endMs,
-            effectiveDurationMs = effectiveDuration,
-            attributionRequired = item.licenseType.requiresAttribution,
-            attributionText = item.attributionText,
-            licenseDisplayName = item.licenseType.displayName
-        )
+        val config =
+            SceneAudioTrackConfig(
+                audioId = item.id,
+                soundTitle = item.title,
+                soundUrl = item.audioUrl,
+                category = item.category,
+                isMusic = item.isMusic,
+                volume = trackVolume.value,
+                loop = isLooping.value,
+                fadeIn = isFadeIn.value,
+                fadeOut = isFadeOut.value,
+                fadeInDurationMs = 1000L,
+                fadeOutDurationMs = 1000L,
+                startTrimMs = startMs,
+                endTrimMs = endMs,
+                effectiveDurationMs = effectiveDuration,
+                attributionRequired = item.licenseType.requiresAttribution,
+                attributionText = item.attributionText,
+                licenseDisplayName = item.licenseType.displayName,
+            )
 
         viewModelScope.launch {
             val result = soundtrackRepository.attachTrackToScene(projectId, sceneId, config)
-            result.onSuccess {
-                _userMessage.value = "تم تعيين الصوت الخلفي للمشهد وتوثيق الرخصة"
-                closeConfigureDialog()
-            }.onFailure { err ->
-                _userMessage.value = "فشل في حفظ الصوت بالمشهد: ${err.message}"
-            }
+            result
+                .onSuccess {
+                    _userMessage.value = "تم تعيين الصوت الخلفي للمشهد وتوثيق الرخصة"
+                    closeConfigureDialog()
+                }.onFailure { err ->
+                    _userMessage.value = "فشل في حفظ الصوت بالمشهد: ${err.message}"
+                }
         }
     }
 
@@ -254,11 +261,12 @@ class SoundtrackLibraryViewModel(
         if (sceneId.isNullOrBlank()) return
         viewModelScope.launch {
             val result = soundtrackRepository.removeTrackFromScene(projectId, sceneId)
-            result.onSuccess {
-                _userMessage.value = "تمت إزالة الصوت الخلفي من المشهد"
-            }.onFailure { err ->
-                _userMessage.value = "فشل في إزالة الصوت: ${err.message}"
-            }
+            result
+                .onSuccess {
+                    _userMessage.value = "تمت إزالة الصوت الخلفي من المشهد"
+                }.onFailure { err ->
+                    _userMessage.value = "فشل في إزالة الصوت: ${err.message}"
+                }
         }
     }
 
@@ -275,7 +283,7 @@ class SoundtrackLibraryViewModel(
 
 class SoundtrackLibraryViewModelFactory(
     private val projectId: String,
-    private val sceneId: String? = null
+    private val sceneId: String? = null,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SoundtrackLibraryViewModel::class.java)) {

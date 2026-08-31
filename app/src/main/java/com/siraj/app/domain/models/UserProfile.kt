@@ -1,12 +1,19 @@
 package com.siraj.app.domain.models
 
 enum class UserRole {
-    USER, CREATOR, REVIEWER, ADMIN, OWNER
+    USER,
+    CREATOR,
+    REVIEWER,
+    ADMIN,
+    OWNER,
 }
 
 enum class ThemeMode { LIGHT, DARK, SYSTEM }
+
 enum class CalculationMethod { UMM_AL_QURA, MWL, EGYPT, MAKKAH, ISNA, TEHRAN, JAFARI }
+
 enum class Madhab { SHAFI, HANAFI }
+
 enum class VideoQuality { HIGH, MEDIUM, LOW }
 
 data class UserPreferences(
@@ -34,7 +41,7 @@ data class UserPreferences(
     val locationOptIn: Boolean = true,
     val preciseLocationOptIn: Boolean = false,
     val accountDeletionStatus: String = "NONE",
-    val accountDeletionScheduledAt: Long? = null
+    val accountDeletionScheduledAt: Long? = null,
 )
 
 data class UserProfile(
@@ -43,5 +50,5 @@ data class UserProfile(
     val email: String,
     val avatarUrl: String? = null,
     val role: UserRole = UserRole.USER,
-    val preferences: UserPreferences = UserPreferences()
+    val preferences: UserPreferences = UserPreferences(),
 )

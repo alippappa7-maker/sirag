@@ -21,15 +21,14 @@ data class HomeUiState(
     val userProfile: UserProfile? = null,
     val activeWorkspace: Workspace? = null,
     val recentProjects: Resource<List<Project>> = Resource.Loading,
-    val isOffline: Boolean = false
+    val isOffline: Boolean = false,
 )
 
 class HomeViewModel(
     private val authRepository: AuthRepository = FirebaseAuthRepositoryImpl(),
     private val projectRepository: ProjectRepository = FirebaseProjectRepositoryImpl(),
-    private val workspaceRepository: WorkspaceRepository = FirebaseWorkspaceRepositoryImpl()
+    private val workspaceRepository: WorkspaceRepository = FirebaseWorkspaceRepositoryImpl(),
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
@@ -54,13 +53,13 @@ class HomeViewModel(
                             } else {
                                 val activeId = user.preferences.activeWorkspaceId ?: workspaces.first().id
                                 val activeWs = workspaces.find { it.id == activeId } ?: workspaces.first()
-                                
+
                                 if (user.preferences.activeWorkspaceId != activeWs.id) {
-                                     authRepository.updatePreferences(user.preferences.copy(activeWorkspaceId = activeWs.id))
+                                    authRepository.updatePreferences(user.preferences.copy(activeWorkspaceId = activeWs.id))
                                 }
-                                
+
                                 _uiState.update { it.copy(activeWorkspace = activeWs) }
-                                
+
                                 // Fetch projects for active workspace
                                 projectRepository.getRecentProjects(activeWs.id, 5).collect { projectsRes ->
                                     _uiState.update { it.copy(recentProjects = projectsRes) }
@@ -75,16 +74,20 @@ class HomeViewModel(
         }
     }
 
-    fun createProject(title: String, onSuccess: (String) -> Unit) {
+    fun createProject(
+        title: String,
+        onSuccess: (String) -> Unit,
+    ) {
         viewModelScope.launch {
             val user = _uiState.value.userProfile ?: return@launch
             val workspace = _uiState.value.activeWorkspace ?: return@launch
-            val newProject = Project(
-                ownerId = user.id,
-                workspaceId = workspace.id,
-                title = title,
-                description = ""
-            )
+            val newProject =
+                Project(
+                    ownerId = user.id,
+                    workspaceId = workspace.id,
+                    title = title,
+                    description = "",
+                )
             val result = projectRepository.createProject(newProject)
             if (result is Resource.Success) {
                 onSuccess(result.data)

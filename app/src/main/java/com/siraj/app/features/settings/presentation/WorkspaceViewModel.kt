@@ -20,14 +20,13 @@ data class WorkspaceUiState(
     val members: Resource<List<WorkspaceMember>> = Resource.Loading,
     val invitations: List<WorkspaceInvitation> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
 )
 
 class WorkspaceViewModel(
     private val authRepository: AuthRepository = FirebaseAuthRepositoryImpl(),
-    private val workspaceRepository: WorkspaceRepository = FirebaseWorkspaceRepositoryImpl()
+    private val workspaceRepository: WorkspaceRepository = FirebaseWorkspaceRepositoryImpl(),
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(WorkspaceUiState())
     val uiState: StateFlow<WorkspaceUiState> = _uiState.asStateFlow()
 
@@ -45,26 +44,33 @@ class WorkspaceViewModel(
                         if (workspacesRes is Resource.Success && workspacesRes.data.isNotEmpty()) {
                             val activeId = user.preferences.activeWorkspaceId ?: workspacesRes.data.first().id
                             val activeWs = workspacesRes.data.find { it.id == activeId } ?: workspacesRes.data.first()
-                            
-                            _uiState.update { it.copy(
-                                workspaces = workspacesRes.data,
-                                activeWorkspace = activeWs
-                            ) }
-                            
+
+                            _uiState.update {
+                                it.copy(
+                                    workspaces = workspacesRes.data,
+                                    activeWorkspace = activeWs,
+                                )
+                            }
+
                             // Load members for active workspace
                             workspaceRepository.getWorkspaceMembers(activeWs.id).collect { membersRes ->
-                                val currentUserRole = if (membersRes is Resource.Success) {
-                                    membersRes.data.find { it.userId == user.id }?.role
-                                } else null
-                                
-                                _uiState.update { it.copy(
-                                    members = membersRes,
-                                    currentUserRole = currentUserRole
-                                ) }
+                                val currentUserRole =
+                                    if (membersRes is Resource.Success) {
+                                        membersRes.data.find { it.userId == user.id }?.role
+                                    } else {
+                                        null
+                                    }
+
+                                _uiState.update {
+                                    it.copy(
+                                        members = membersRes,
+                                        currentUserRole = currentUserRole,
+                                    )
+                                }
                             }
                         }
                     }
-                    
+
                     // Fetch user invitations
                     workspaceRepository.getUserInvitations(user.email).collect { invRes ->
                         if (invRes is Resource.Success) {
@@ -84,7 +90,10 @@ class WorkspaceViewModel(
         }
     }
 
-    fun createWorkspace(name: String, type: WorkspaceType) {
+    fun createWorkspace(
+        name: String,
+        type: WorkspaceType,
+    ) {
         viewModelScope.launch {
             val user = _uiState.value.currentUser ?: return@launch
             _uiState.update { it.copy(isLoading = true, error = null) }
@@ -99,17 +108,23 @@ class WorkspaceViewModel(
         }
     }
 
-    fun inviteMember(email: String, role: WorkspaceRole) {
+    fun inviteMember(
+        email: String,
+        role: WorkspaceRole,
+    ) {
         viewModelScope.launch {
             val user = _uiState.value.currentUser ?: return@launch
             val workspace = _uiState.value.activeWorkspace ?: return@launch
             val currentUserRole = _uiState.value.currentUserRole ?: return@launch
-            
-            if (currentUserRole == WorkspaceRole.EDITOR || currentUserRole == WorkspaceRole.REVIEWER || currentUserRole == WorkspaceRole.VIEWER) {
+
+            if (currentUserRole == WorkspaceRole.EDITOR ||
+                currentUserRole == WorkspaceRole.REVIEWER ||
+                currentUserRole == WorkspaceRole.VIEWER
+            ) {
                 _uiState.update { it.copy(error = "ليس لديك صلاحية لدعوة أعضاء") }
                 return@launch
             }
-            
+
             _uiState.update { it.copy(isLoading = true, error = null) }
             val res = workspaceRepository.inviteMember(workspace.id, email, role, user.id)
             if (res is Resource.Error) {
@@ -119,7 +134,10 @@ class WorkspaceViewModel(
         }
     }
 
-    fun respondToInvitation(invitationId: String, accept: Boolean) {
+    fun respondToInvitation(
+        invitationId: String,
+        accept: Boolean,
+    ) {
         viewModelScope.launch {
             val user = _uiState.value.currentUser ?: return@launch
             _uiState.update { it.copy(isLoading = true, error = null) }
@@ -131,16 +149,19 @@ class WorkspaceViewModel(
         }
     }
 
-    fun updateMemberRole(userId: String, newRole: WorkspaceRole) {
+    fun updateMemberRole(
+        userId: String,
+        newRole: WorkspaceRole,
+    ) {
         viewModelScope.launch {
             val workspace = _uiState.value.activeWorkspace ?: return@launch
             val currentUserRole = _uiState.value.currentUserRole ?: return@launch
-            
+
             if (currentUserRole != WorkspaceRole.OWNER && currentUserRole != WorkspaceRole.MANAGER) {
                 _uiState.update { it.copy(error = "ليس لديك صلاحية لتعديل الأدوار") }
                 return@launch
             }
-            
+
             if (newRole == WorkspaceRole.OWNER && currentUserRole != WorkspaceRole.OWNER) {
                 _uiState.update { it.copy(error = "فقط المالك يمكنه تعيين مالك جديد") }
                 return@launch
@@ -156,21 +177,21 @@ class WorkspaceViewModel(
     }
 
     fun removeMember(userId: String) {
-        viewModelScope.launch { 
-             val workspace = _uiState.value.activeWorkspace ?: return@launch
-             val currentUserRole = _uiState.value.currentUserRole ?: return@launch
-             
-             if (currentUserRole != WorkspaceRole.OWNER && currentUserRole != WorkspaceRole.MANAGER) {
-                 _uiState.update { it.copy(error = "ليس لديك صلاحية لإزالة الأعضاء") }
-                 return@launch
-             }
-             
-             _uiState.update { it.copy(isLoading = true, error = null) }
-             val res = workspaceRepository.removeMember(workspace.id, userId)
-             if (res is Resource.Error) {
-                 _uiState.update { it.copy(error = res.message) }
-             }
-             _uiState.update { it.copy(isLoading = false) }
+        viewModelScope.launch {
+            val workspace = _uiState.value.activeWorkspace ?: return@launch
+            val currentUserRole = _uiState.value.currentUserRole ?: return@launch
+
+            if (currentUserRole != WorkspaceRole.OWNER && currentUserRole != WorkspaceRole.MANAGER) {
+                _uiState.update { it.copy(error = "ليس لديك صلاحية لإزالة الأعضاء") }
+                return@launch
+            }
+
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            val res = workspaceRepository.removeMember(workspace.id, userId)
+            if (res is Resource.Error) {
+                _uiState.update { it.copy(error = res.message) }
+            }
+            _uiState.update { it.copy(isLoading = false) }
         }
     }
 
@@ -178,12 +199,12 @@ class WorkspaceViewModel(
         viewModelScope.launch {
             val user = _uiState.value.currentUser ?: return@launch
             val workspace = _uiState.value.activeWorkspace ?: return@launch
-            
+
             if (workspace.ownerId == user.id) {
                 _uiState.update { it.copy(error = "لا يمكن للمالك مغادرة مساحة العمل، يرجى نقل الملكية أولاً") }
                 return@launch
             }
-            
+
             _uiState.update { it.copy(isLoading = true, error = null) }
             val res = workspaceRepository.leaveWorkspace(workspace.id, user.id)
             if (res is Resource.Success) {
@@ -198,18 +219,18 @@ class WorkspaceViewModel(
             _uiState.update { it.copy(isLoading = false) }
         }
     }
-    
+
     fun transferOwnership(newOwnerId: String) {
         viewModelScope.launch {
             val user = _uiState.value.currentUser ?: return@launch
             val workspace = _uiState.value.activeWorkspace ?: return@launch
             val currentUserRole = _uiState.value.currentUserRole ?: return@launch
-            
+
             if (currentUserRole != WorkspaceRole.OWNER) {
-                 _uiState.update { it.copy(error = "فقط المالك يمكنه نقل الملكية") }
-                 return@launch
+                _uiState.update { it.copy(error = "فقط المالك يمكنه نقل الملكية") }
+                return@launch
             }
-            
+
             _uiState.update { it.copy(isLoading = true, error = null) }
             val res = workspaceRepository.transferOwnership(workspace.id, newOwnerId, user.id)
             if (res is Resource.Error) {
@@ -218,17 +239,17 @@ class WorkspaceViewModel(
             _uiState.update { it.copy(isLoading = false) }
         }
     }
-    
+
     fun archiveWorkspace() {
         viewModelScope.launch {
             val workspace = _uiState.value.activeWorkspace ?: return@launch
             val currentUserRole = _uiState.value.currentUserRole ?: return@launch
-            
+
             if (currentUserRole != WorkspaceRole.OWNER) {
-                 _uiState.update { it.copy(error = "فقط المالك يمكنه أرشفة مساحة العمل") }
-                 return@launch
+                _uiState.update { it.copy(error = "فقط المالك يمكنه أرشفة مساحة العمل") }
+                return@launch
             }
-            
+
             _uiState.update { it.copy(isLoading = true, error = null) }
             val res = workspaceRepository.archiveWorkspace(workspace.id)
             if (res is Resource.Error) {

@@ -15,7 +15,7 @@ interface ProductionJobRepository {
         fps: Int = 30,
         includeSourceCitation: Boolean = true,
         includeWatermark: Boolean = true,
-        isPreviewOnly: Boolean = false
+        isPreviewOnly: Boolean = false,
     ): Result<ProductionJob>
 
     fun observeJob(jobId: String): Flow<ProductionJob?>
@@ -24,7 +24,10 @@ interface ProductionJobRepository {
 
     fun getJobsForUser(userId: String): Flow<List<ProductionJob>>
 
-    suspend fun cancelJob(jobId: String, reason: String = "تم الإلغاء بواسطة المستخدم"): Result<Unit>
+    suspend fun cancelJob(
+        jobId: String,
+        reason: String = "تم الإلغاء بواسطة المستخدم",
+    ): Result<Unit>
 
     suspend fun retryJob(jobId: String): Result<ProductionJob>
 

@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface PrayerRepository {
     suspend fun getPrayerTimes(settings: PrayerSettings): Resource<PrayerTimes>
+
     fun getPrayerSettings(): Flow<PrayerSettings>
+
     suspend fun updateSettings(settings: PrayerSettings)
 }

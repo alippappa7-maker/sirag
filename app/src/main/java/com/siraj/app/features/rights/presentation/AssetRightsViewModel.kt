@@ -16,14 +16,13 @@ data class RightsUiState(
     val asset: Asset? = null,
     val isLoading: Boolean = false,
     val error: String? = null,
-    val isUpdated: Boolean = false
+    val isUpdated: Boolean = false,
 )
 
 class AssetRightsViewModel(
     private val rightsRepository: RightsRepository,
-    private val assetRepository: AssetRepository
+    private val assetRepository: AssetRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(RightsUiState())
     val uiState: StateFlow<RightsUiState> = _uiState.asStateFlow()
 
@@ -56,7 +55,7 @@ class AssetRightsViewModel(
         proofUrl: String,
         expiresAt: Long?,
         newStatus: RightsStatus,
-        reason: String
+        reason: String,
     ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null, isUpdated = false)
@@ -66,20 +65,21 @@ class AssetRightsViewModel(
                 return@launch
             }
 
-            val updates = mapOf(
-                "sourceUrl" to sourceUrl,
-                "creatorName" to creatorName,
-                "provider" to provider,
-                "license" to licenseType,
-                "commercialUseAllowed" to commercialUseAllowed,
-                "modificationAllowed" to modificationAllowed,
-                "attributionRequired" to attributionRequired,
-                "attribution" to attributionText,
-                "proofUrl" to proofUrl,
-                "expiresAt" to expiresAt,
-                "rightsStatus" to newStatus.name,
-                "acquiredAt" to (currentAsset.acquiredAt ?: System.currentTimeMillis())
-            )
+            val updates =
+                mapOf(
+                    "sourceUrl" to sourceUrl,
+                    "creatorName" to creatorName,
+                    "provider" to provider,
+                    "license" to licenseType,
+                    "commercialUseAllowed" to commercialUseAllowed,
+                    "modificationAllowed" to modificationAllowed,
+                    "attributionRequired" to attributionRequired,
+                    "attribution" to attributionText,
+                    "proofUrl" to proofUrl,
+                    "expiresAt" to expiresAt,
+                    "rightsStatus" to newStatus.name,
+                    "acquiredAt" to (currentAsset.acquiredAt ?: System.currentTimeMillis()),
+                )
 
             val updateResult = rightsRepository.updateAssetRights(assetId, updates)
             if (updateResult is Resource.Success) {
@@ -89,9 +89,9 @@ class AssetRightsViewModel(
                     reviewerId = reviewerId,
                     previousStatus = currentAsset.rightsStatus,
                     newStatus = newStatus,
-                    reason = reason
+                    reason = reason,
                 )
-                
+
                 _uiState.value = _uiState.value.copy(isLoading = false, isUpdated = true)
                 loadAsset(assetId) // reload
             } else if (updateResult is Resource.Error) {

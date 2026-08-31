@@ -12,19 +12,24 @@ data class ContentTaxonomyFilter(
     val rightsStatus: TaxonomyRightsStatus? = null,
     val isQuranOnly: Boolean = false,
     val isAiOnly: Boolean = false,
-    val query: String = ""
+    val query: String = "",
 )
 
 interface ContentTaxonomyRepository {
     fun getClassifiedItems(filter: ContentTaxonomyFilter): Flow<List<ClassifiedContentItem>>
+
     fun getItemById(id: String): Flow<ClassifiedContentItem?>
+
     suspend fun saveClassifiedItem(item: ClassifiedContentItem): Resource<ClassifiedContentItem>
+
     suspend fun updateTaxonomyMetadata(
         id: String,
         newMetadata: ContentTaxonomyMetadata,
         userRole: String,
-        userId: String
+        userId: String,
     ): Resource<ClassifiedContentItem>
+
     fun getTaxonomyAuditReport(): Flow<TaxonomyAuditReport>
+
     suspend fun runLegacyMigration(items: List<LegacyContentItem>): Resource<TaxonomyMigrationResult>
 }

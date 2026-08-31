@@ -19,13 +19,12 @@ data class ContentTaxonomyUiState(
     val isLoading: Boolean = false,
     val isMigrating: Boolean = false,
     val errorMessage: String? = null,
-    val successMessage: String? = null
+    val successMessage: String? = null,
 )
 
 class ContentTaxonomyViewModel(
-    private val repository: ContentTaxonomyRepository
+    private val repository: ContentTaxonomyRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(ContentTaxonomyUiState())
     val uiState: StateFlow<ContentTaxonomyUiState> = _uiState.asStateFlow()
 
@@ -36,15 +35,15 @@ class ContentTaxonomyViewModel(
     private fun loadData() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            
+
             // Collect items with filter
             repository.getClassifiedItems(_uiState.value.filter).collect { items ->
-                _uiState.update { 
+                _uiState.update {
                     it.copy(
                         items = items,
                         filteredItems = items,
-                        isLoading = false
-                    ) 
+                        isLoading = false,
+                    )
                 }
             }
         }
@@ -64,20 +63,21 @@ class ContentTaxonomyViewModel(
         rightsStatus: TaxonomyRightsStatus? = null,
         isQuranOnly: Boolean = false,
         isAiOnly: Boolean = false,
-        query: String = _uiState.value.filter.query
+        query: String = _uiState.value.filter.query,
     ) {
-        val newFilter = ContentTaxonomyFilter(
-            originType = originType,
-            disciplineType = disciplineType,
-            mediaType = mediaType,
-            verificationStatus = verificationStatus,
-            rightsStatus = rightsStatus,
-            isQuranOnly = isQuranOnly,
-            isAiOnly = isAiOnly,
-            query = query
-        )
+        val newFilter =
+            ContentTaxonomyFilter(
+                originType = originType,
+                disciplineType = disciplineType,
+                mediaType = mediaType,
+                verificationStatus = verificationStatus,
+                rightsStatus = rightsStatus,
+                isQuranOnly = isQuranOnly,
+                isAiOnly = isAiOnly,
+                query = query,
+            )
         _uiState.update { it.copy(filter = newFilter) }
-        
+
         viewModelScope.launch {
             repository.getClassifiedItems(newFilter).collect { items ->
                 _uiState.update { it.copy(filteredItems = items) }
@@ -93,7 +93,7 @@ class ContentTaxonomyViewModel(
         itemId: String,
         newMetadata: ContentTaxonomyMetadata,
         userRole: String = "ADMIN",
-        userId: String = "admin_user"
+        userId: String = "admin_user",
     ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null, successMessage = null) }
@@ -103,7 +103,7 @@ class ContentTaxonomyViewModel(
                         it.copy(
                             isLoading = false,
                             selectedItem = res.data,
-                            successMessage = "تم تحديث التصنيف بنجاح وتطبيق القيود الخادمية"
+                            successMessage = "تم تحديث التصنيف بنجاح وتطبيق القيود الخادمية",
                         )
                     }
                 }
@@ -111,7 +111,7 @@ class ContentTaxonomyViewModel(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            errorMessage = res.message ?: "فشل تحديث التصنيف"
+                            errorMessage = res.message ?: "فشل تحديث التصنيف",
                         )
                     }
                 }
@@ -123,35 +123,36 @@ class ContentTaxonomyViewModel(
     fun runSampleLegacyMigration() {
         viewModelScope.launch {
             _uiState.update { it.copy(isMigrating = true, errorMessage = null, successMessage = null) }
-            val sampleLegacy = listOf(
-                LegacyContentItem(
-                    id = "legacy_001",
-                    title = "سورة الكهف - قراءة وتدبر",
-                    rawCategory = "quran",
-                    rawSource = "مصحف المدينة",
-                    isQuran = true,
-                    isAi = false,
-                    ownerId = "system"
-                ),
-                LegacyContentItem(
-                    id = "legacy_002",
-                    title = "فوائد الاستغفار في الأثر",
-                    rawCategory = "hadith_general",
-                    rawSource = "السنن الكبرى",
-                    isQuran = false,
-                    isAi = false,
-                    ownerId = "creator_user_1"
-                ),
-                LegacyContentItem(
-                    id = "legacy_003",
-                    title = "خطة محتوى أسبوعي مقترحة للإنتاج",
-                    rawCategory = "ai_plan",
-                    rawSource = "Gemini API",
-                    isQuran = false,
-                    isAi = true,
-                    ownerId = "creator_user_1"
+            val sampleLegacy =
+                listOf(
+                    LegacyContentItem(
+                        id = "legacy_001",
+                        title = "سورة الكهف - قراءة وتدبر",
+                        rawCategory = "quran",
+                        rawSource = "مصحف المدينة",
+                        isQuran = true,
+                        isAi = false,
+                        ownerId = "system",
+                    ),
+                    LegacyContentItem(
+                        id = "legacy_002",
+                        title = "فوائد الاستغفار في الأثر",
+                        rawCategory = "hadith_general",
+                        rawSource = "السنن الكبرى",
+                        isQuran = false,
+                        isAi = false,
+                        ownerId = "creator_user_1",
+                    ),
+                    LegacyContentItem(
+                        id = "legacy_003",
+                        title = "خطة محتوى أسبوعي مقترحة للإنتاج",
+                        rawCategory = "ai_plan",
+                        rawSource = "Gemini API",
+                        isQuran = false,
+                        isAi = true,
+                        ownerId = "creator_user_1",
+                    ),
                 )
-            )
 
             when (val res = repository.runLegacyMigration(sampleLegacy)) {
                 is Resource.Success -> {
@@ -159,7 +160,7 @@ class ContentTaxonomyViewModel(
                         it.copy(
                             isMigrating = false,
                             migrationResult = res.data,
-                            successMessage = "تم ترحيل ${res.data?.successCount} مادة قديمة إلى التصنيف الموحد بنجاح"
+                            successMessage = "تم ترحيل ${res.data?.successCount} مادة قديمة إلى التصنيف الموحد بنجاح",
                         )
                     }
                 }
@@ -167,7 +168,7 @@ class ContentTaxonomyViewModel(
                     _uiState.update {
                         it.copy(
                             isMigrating = false,
-                            errorMessage = res.message ?: "فشل ترحيل البيانات القديمة"
+                            errorMessage = res.message ?: "فشل ترحيل البيانات القديمة",
                         )
                     }
                 }

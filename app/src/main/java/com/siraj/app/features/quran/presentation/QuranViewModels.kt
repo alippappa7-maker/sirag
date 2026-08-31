@@ -23,7 +23,7 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
     )
     private val _surahs = MutableStateFlow<Resource<List<Surah>>>(Resource.Loading)
     val surahs: StateFlow<Resource<List<Surah>>> = _surahs.asStateFlow()
-    
+
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
 
@@ -37,7 +37,7 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
             _surahs.value = repository.getSurahs()
         }
     }
-    
+
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
     }
@@ -49,7 +49,7 @@ class QuranReaderViewModel(application: Application, private val surahId: Int) :
         QuranDatabase.getDatabase(application).quranDao()
     )
     private val _ayahs = MutableStateFlow<Resource<List<Ayah>>>(Resource.Loading)
-    
+
     val ayahsWithBookmarks = combine(_ayahs, repository.getBookmarkedVerseKeys()) { result, bookmarks ->
         if (result is Resource.Success) {
             Resource.Success(result.data.map { it.copy(isBookmarked = bookmarks.contains(it.verseKey)) })
@@ -77,7 +77,7 @@ class QuranReaderViewModel(application: Application, private val surahId: Int) :
             repository.toggleBookmark(verseKey, surahId, verseNumber, !currentStatus)
         }
     }
-    
+
     fun saveNote(verseKey: String, verseNumber: Int, note: String) {
         viewModelScope.launch {
             repository.saveNote(verseKey, surahId, verseNumber, note)

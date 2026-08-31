@@ -36,22 +36,23 @@ object ActivityHistoryManager {
         thumbnailUrl: String? = null,
         positionMs: Long,
         durationMs: Long,
-        userId: String = currentUserId
+        userId: String = currentUserId,
     ) {
         val repo = repository ?: return
         scope.launch {
-            val item = UserActivityItem(
-                id = "$userId-${entityType.name}-$entityId",
-                userId = userId,
-                entityType = entityType,
-                entityId = entityId,
-                title = title,
-                subtitle = subtitle,
-                mediaUrl = mediaUrl,
-                thumbnailUrl = thumbnailUrl,
-                positionMs = positionMs,
-                durationMs = durationMs
-            )
+            val item =
+                UserActivityItem(
+                    id = "$userId-${entityType.name}-$entityId",
+                    userId = userId,
+                    entityType = entityType,
+                    entityId = entityId,
+                    title = title,
+                    subtitle = subtitle,
+                    mediaUrl = mediaUrl,
+                    thumbnailUrl = thumbnailUrl,
+                    positionMs = positionMs,
+                    durationMs = durationMs,
+                )
             repo.recordPlaybackPosition(item)
         }
     }
@@ -59,7 +60,7 @@ object ActivityHistoryManager {
     suspend fun getSavedPosition(
         entityType: ActivityEntityType,
         entityId: String,
-        userId: String = currentUserId
+        userId: String = currentUserId,
     ): Long? {
         val repo = repository ?: return null
         return repo.getLastPosition(userId, entityType, entityId)
@@ -68,7 +69,7 @@ object ActivityHistoryManager {
     fun markCompleted(
         entityType: ActivityEntityType,
         entityId: String,
-        userId: String = currentUserId
+        userId: String = currentUserId,
     ) {
         val repo = repository ?: return
         scope.launch {
@@ -78,7 +79,7 @@ object ActivityHistoryManager {
 
     fun toggleWatchLater(
         item: UserActivityItem,
-        userId: String = currentUserId
+        userId: String = currentUserId,
     ) {
         val repo = repository ?: return
         scope.launch {

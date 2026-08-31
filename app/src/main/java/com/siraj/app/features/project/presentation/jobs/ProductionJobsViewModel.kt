@@ -17,9 +17,8 @@ class ProductionJobsViewModel(
     private val projectId: String?,
     private val jobRepository: ProductionJobRepository = FirebaseProductionJobRepositoryImpl(),
     private val compositionService: VideoCompositionService = FirebaseVideoCompositionServiceImpl(),
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
 ) : ViewModel() {
-
     private val _jobs = MutableStateFlow<List<ProductionJob>>(emptyList())
     val jobs: StateFlow<List<ProductionJob>> = _jobs.asStateFlow()
 
@@ -75,7 +74,10 @@ class ProductionJobsViewModel(
         }
     }
 
-    fun openCreateJobDialog(aspectRatio: String = "9:16", isPreview: Boolean = false) {
+    fun openCreateJobDialog(
+        aspectRatio: String = "9:16",
+        isPreview: Boolean = false,
+    ) {
         _selectedAspectRatio.value = aspectRatio
         _isPreviewMode.value = isPreview
         _showCreateJobDialog.value = true
@@ -101,54 +103,62 @@ class ProductionJobsViewModel(
         _isPreviewMode.value = preview
     }
 
-    fun submitProductionJob(targetProjectId: String, workspaceId: String = "") {
+    fun submitProductionJob(
+        targetProjectId: String,
+        workspaceId: String = "",
+    ) {
         if (targetProjectId.isBlank()) return
         viewModelScope.launch {
             _isSubmitting.value = true
             val isPreview = _isPreviewMode.value
             val idempotencyKey = "job_${targetProjectId}_${if (isPreview) "prev" else "full"}_${System.currentTimeMillis() / 60000}"
 
-            val result = jobRepository.createJob(
-                projectId = targetProjectId,
-                workspaceId = workspaceId,
-                quality = _selectedQuality.value,
-                burnSubtitles = _burnSubtitles.value,
-                aspectRatio = _selectedAspectRatio.value,
-                idempotencyKey = idempotencyKey,
-                fps = 30,
-                includeSourceCitation = true,
-                includeWatermark = true,
-                isPreviewOnly = isPreview
-            )
+            val result =
+                jobRepository.createJob(
+                    projectId = targetProjectId,
+                    workspaceId = workspaceId,
+                    quality = _selectedQuality.value,
+                    burnSubtitles = _burnSubtitles.value,
+                    aspectRatio = _selectedAspectRatio.value,
+                    idempotencyKey = idempotencyKey,
+                    fps = 30,
+                    includeSourceCitation = true,
+                    includeWatermark = true,
+                    isPreviewOnly = isPreview,
+                )
 
-            result.onSuccess { newJob ->
-                _showCreateJobDialog.value = false
-                _userMessage.value = if (isPreview) "تم إدراج مهمة المعاينة السريعة بنجاح." else "تم إدراج مهمة الإنتاج بنجاح في طابور المعالجة."
-                trackJob(newJob.jobId)
+            result
+                .onSuccess { newJob ->
+                    _showCreateJobDialog.value = false
+                    _userMessage.value =
+                        if (isPreview) "تم إدراج مهمة المعاينة السريعة بنجاح." else "تم إدراج مهمة الإنتاج بنجاح في طابور المعالجة."
+                    trackJob(newJob.jobId)
 
-                // Trigger Composition Worker Pipeline
-                launch {
-                    val manifestRes = compositionService.buildManifest(
-                        projectId = targetProjectId,
-                        quality = _selectedQuality.value,
-                        aspectRatio = _selectedAspectRatio.value,
-                        burnSubtitles = _burnSubtitles.value,
-                        fps = 30,
-                        includeSourceCitation = true,
-                        includeWatermark = true,
-                        isPreview = isPreview
-                    )
-                    manifestRes.onSuccess { manifest ->
-                        compositionService.executeComposition(newJob, manifest).collect { updatedJob ->
-                            _currentJob.value = updatedJob
-                        }
-                    }.onFailure { e ->
-                        _userMessage.value = "خطأ في بناء تفويض التركيب: ${e.message}"
+                    // Trigger Composition Worker Pipeline
+                    launch {
+                        val manifestRes =
+                            compositionService.buildManifest(
+                                projectId = targetProjectId,
+                                quality = _selectedQuality.value,
+                                aspectRatio = _selectedAspectRatio.value,
+                                burnSubtitles = _burnSubtitles.value,
+                                fps = 30,
+                                includeSourceCitation = true,
+                                includeWatermark = true,
+                                isPreview = isPreview,
+                            )
+                        manifestRes
+                            .onSuccess { manifest ->
+                                compositionService.executeComposition(newJob, manifest).collect { updatedJob ->
+                                    _currentJob.value = updatedJob
+                                }
+                            }.onFailure { e ->
+                                _userMessage.value = "خطأ في بناء تفويض التركيب: ${e.message}"
+                            }
                     }
+                }.onFailure { err ->
+                    _userMessage.value = err.message ?: "فشل إنشاء مهمة الإنتاج"
                 }
-            }.onFailure { err ->
-                _userMessage.value = err.message ?: "فشل إنشاء مهمة الإنتاج"
-            }
             _isSubmitting.value = false
         }
     }
@@ -156,11 +166,12 @@ class ProductionJobsViewModel(
     fun deleteExportedFile(jobId: String) {
         viewModelScope.launch {
             val result = jobRepository.deleteExportedFile(jobId)
-            result.onSuccess {
-                _userMessage.value = "تم حذف الملف النهائي الناتج بنجاح."
-            }.onFailure { err ->
-                _userMessage.value = err.message ?: "تعذر حذف الملف"
-            }
+            result
+                .onSuccess {
+                    _userMessage.value = "تم حذف الملف النهائي الناتج بنجاح."
+                }.onFailure { err ->
+                    _userMessage.value = err.message ?: "تعذر حذف الملف"
+                }
         }
     }
 
@@ -175,38 +186,41 @@ class ProductionJobsViewModel(
     fun cancelJob(jobId: String) {
         viewModelScope.launch {
             val result = jobRepository.cancelJob(jobId)
-            result.onSuccess {
-                _userMessage.value = "تم إلغاء المهمة واسترداد الرصيد المحجوز."
-            }.onFailure { err ->
-                _userMessage.value = err.message ?: "تعذر إلغاء المهمة"
-            }
+            result
+                .onSuccess {
+                    _userMessage.value = "تم إلغاء المهمة واسترداد الرصيد المحجوز."
+                }.onFailure { err ->
+                    _userMessage.value = err.message ?: "تعذر إلغاء المهمة"
+                }
         }
     }
 
     fun retryJob(jobId: String) {
         viewModelScope.launch {
             val result = jobRepository.retryJob(jobId)
-            result.onSuccess { updatedJob ->
-                _userMessage.value = "تمت إعادة محاولة المهمة بنجاح."
-                if (!projectId.isNullOrBlank()) {
-                    launch {
-                        val manifestRes = compositionService.buildManifest(
-                            projectId = projectId,
-                            quality = updatedJob.quality,
-                            aspectRatio = updatedJob.aspectRatio,
-                            burnSubtitles = updatedJob.burnSubtitles,
-                            isPreview = updatedJob.isPreviewOnly
-                        )
-                        manifestRes.onSuccess { manifest ->
-                            compositionService.executeComposition(updatedJob, manifest).collect { stepJob ->
-                                _currentJob.value = stepJob
+            result
+                .onSuccess { updatedJob ->
+                    _userMessage.value = "تمت إعادة محاولة المهمة بنجاح."
+                    if (!projectId.isNullOrBlank()) {
+                        launch {
+                            val manifestRes =
+                                compositionService.buildManifest(
+                                    projectId = projectId,
+                                    quality = updatedJob.quality,
+                                    aspectRatio = updatedJob.aspectRatio,
+                                    burnSubtitles = updatedJob.burnSubtitles,
+                                    isPreview = updatedJob.isPreviewOnly,
+                                )
+                            manifestRes.onSuccess { manifest ->
+                                compositionService.executeComposition(updatedJob, manifest).collect { stepJob ->
+                                    _currentJob.value = stepJob
+                                }
                             }
                         }
                     }
+                }.onFailure { err ->
+                    _userMessage.value = err.message ?: "تعذر إعادة المحاولة"
                 }
-            }.onFailure { err ->
-                _userMessage.value = err.message ?: "تعذر إعادة المحاولة"
-            }
         }
     }
 
@@ -216,7 +230,7 @@ class ProductionJobsViewModel(
 }
 
 class ProductionJobsViewModelFactory(
-    private val projectId: String? = null
+    private val projectId: String? = null,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProductionJobsViewModel::class.java)) {
@@ -226,4 +240,3 @@ class ProductionJobsViewModelFactory(
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
-

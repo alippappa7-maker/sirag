@@ -18,9 +18,8 @@ import kotlinx.coroutines.launch
 class AssetLibraryViewModel(
     private val projectId: String,
     private val assetRepository: AssetRepository = FirebaseAssetRepositoryImpl(),
-    private val projectRepository: ProjectRepository = FirebaseProjectRepositoryImpl()
+    private val projectRepository: ProjectRepository = FirebaseProjectRepositoryImpl(),
 ) : ViewModel() {
-
     private val _assetsState = MutableStateFlow<Resource<List<Asset>>>(Resource.Loading)
     val assetsState: StateFlow<Resource<List<Asset>>> = _assetsState.asStateFlow()
 
@@ -41,7 +40,7 @@ class AssetLibraryViewModel(
                 _projectState.value = res.data
             }
         }
-        
+
         viewModelScope.launch {
             assetRepository.getProjectAssets(projectId).collect {
                 _assetsState.value = it
@@ -50,9 +49,15 @@ class AssetLibraryViewModel(
     }
 
     // Mock upload function for MVP
-    fun uploadMockAsset(name: String, type: AssetType, sourceUrl: String, license: String, attribution: String) {
+    fun uploadMockAsset(
+        name: String,
+        type: AssetType,
+        sourceUrl: String,
+        license: String,
+        attribution: String,
+    ) {
         val proj = _projectState.value ?: return
-        
+
         // Size validation mock
         val mockSizeBytes = if (type == AssetType.VIDEO) 50_000_000L else 1_000_000L
         if (type == AssetType.VIDEO && mockSizeBytes > 500_000_000L) {
@@ -60,25 +65,27 @@ class AssetLibraryViewModel(
             return
         }
 
-        val newAsset = Asset(
-            ownerId = proj.ownerId,
-            workspaceId = proj.workspaceId,
-            projectId = proj.id,
-            type = type,
-            storagePath = "workspaces/${proj.workspaceId}/projects/${proj.id}/${type.name.lowercase()}_${System.currentTimeMillis()}",
-            downloadUrl = "https://mock-url.com/$name",
-            mimeType = when(type) {
-                AssetType.IMAGE -> "image/jpeg"
-                AssetType.VIDEO -> "video/mp4"
-                AssetType.AUDIO -> "audio/mp3"
-                else -> "application/octet-stream"
-            },
-            sizeBytes = mockSizeBytes,
-            sourceUrl = sourceUrl,
-            license = license,
-            attribution = attribution,
-            status = AssetStatus.READY
-        )
+        val newAsset =
+            Asset(
+                ownerId = proj.ownerId,
+                workspaceId = proj.workspaceId,
+                projectId = proj.id,
+                type = type,
+                storagePath = "workspaces/${proj.workspaceId}/projects/${proj.id}/${type.name.lowercase()}_${System.currentTimeMillis()}",
+                downloadUrl = "https://mock-url.com/$name",
+                mimeType =
+                    when (type) {
+                        AssetType.IMAGE -> "image/jpeg"
+                        AssetType.VIDEO -> "video/mp4"
+                        AssetType.AUDIO -> "audio/mp3"
+                        else -> "application/octet-stream"
+                    },
+                sizeBytes = mockSizeBytes,
+                sourceUrl = sourceUrl,
+                license = license,
+                attribution = attribution,
+                status = AssetStatus.READY,
+            )
 
         viewModelScope.launch {
             val res = assetRepository.addAsset(newAsset)
@@ -101,7 +108,7 @@ class AssetLibraryViewModel(
         // Check if used in project (we will just warn, or prevent if strictly required)
         val proj = _projectState.value
         val isUsed = proj?.scenes?.any { it.assetIds.contains(asset.id) } == true
-        
+
         if (isUsed) {
             viewModelScope.launch {
                 _uiMessage.emit("تحذير: هذا الأصل مستخدم في أحد المشاهد! أزله من المشاهد أولاً.")
@@ -121,7 +128,7 @@ class AssetLibraryViewModel(
 }
 
 class AssetLibraryViewModelFactory(
-    private val projectId: String
+    private val projectId: String,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AssetLibraryViewModel::class.java)) {

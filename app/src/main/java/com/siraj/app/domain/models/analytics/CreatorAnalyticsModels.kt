@@ -1,9 +1,11 @@
 package com.siraj.app.domain.models.analytics
 
-enum class AnalyticsTimeFilter(val displayName: String) {
+enum class AnalyticsTimeFilter(
+    val displayName: String,
+) {
     LAST_7_DAYS("آخر 7 أيام"),
     LAST_30_DAYS("آخر 30 يوماً"),
-    ALL_TIME("كل الوقت")
+    ALL_TIME("كل الوقت"),
 }
 
 data class FlashAnalyticsSummary(
@@ -19,7 +21,7 @@ data class FlashAnalyticsSummary(
     val trafficSources: Map<String, Float> = emptyMap(),
     val topCountries: Map<String, Float>? = null,
     val templateUsed: String? = null,
-    val publishedAt: Long = 0
+    val publishedAt: Long = 0,
 )
 
 data class CreatorAnalyticsDashboard(
@@ -29,5 +31,5 @@ data class CreatorAnalyticsDashboard(
     val bestPostingTimes: List<String> = emptyList(),
     val topPerformingTemplates: Map<String, Long> = emptyMap(),
     val flashes: List<FlashAnalyticsSummary> = emptyList(),
-    val timeFilter: AnalyticsTimeFilter = AnalyticsTimeFilter.LAST_30_DAYS
+    val timeFilter: AnalyticsTimeFilter = AnalyticsTimeFilter.LAST_30_DAYS,
 )

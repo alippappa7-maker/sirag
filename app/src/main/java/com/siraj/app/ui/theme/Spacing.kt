@@ -11,7 +11,7 @@ data class Elevations(
     val none: Dp = 0.dp,
     val small: Dp = 2.dp,
     val medium: Dp = 4.dp,
-    val large: Dp = 8.dp
+    val large: Dp = 8.dp,
 )
 
 data class Spacing(
@@ -22,7 +22,7 @@ data class Spacing(
     val large: Dp = 24.dp,
     val extraLarge: Dp = 32.dp,
     val huge: Dp = 48.dp,
-    val elevations: Elevations = Elevations()
+    val elevations: Elevations = Elevations(),
 )
 
 val LocalSpacing = compositionLocalOf { Spacing() }

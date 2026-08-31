@@ -15,13 +15,12 @@ data class SettingsUiState(
     val profile: UserProfile? = null,
     val isLoading: Boolean = false,
     val error: String? = null,
-    val saveMessage: String? = null
+    val saveMessage: String? = null,
 )
 
 class SettingsViewModel(
-    private val authRepository: AuthRepository = FirebaseAuthRepositoryImpl()
+    private val authRepository: AuthRepository = FirebaseAuthRepositoryImpl(),
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
@@ -36,9 +35,9 @@ class SettingsViewModel(
     fun updatePreferences(update: (UserPreferences) -> UserPreferences) {
         val currentProfile = _uiState.value.profile ?: return
         val newPrefs = update(currentProfile.preferences)
-        
+
         // Optimistic update locally
-        _uiState.update { 
+        _uiState.update {
             it.copy(profile = it.profile?.copy(preferences = newPrefs))
         }
 
@@ -70,7 +69,7 @@ class SettingsViewModel(
             onSuccess()
         }
     }
-    
+
     fun deleteAccount(onSuccess: () -> Unit) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }

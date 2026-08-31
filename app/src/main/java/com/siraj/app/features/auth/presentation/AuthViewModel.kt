@@ -12,9 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class AuthViewModel(
-    private val authRepository: AuthRepository = FirebaseAuthRepositoryImpl()
+    private val authRepository: AuthRepository = FirebaseAuthRepositoryImpl(),
 ) : ViewModel() {
-
     private val _authState = MutableStateFlow<Resource<UserProfile?>>(Resource.Loading)
     val authState: StateFlow<Resource<UserProfile?>> = _authState
 
@@ -29,14 +28,21 @@ class AuthViewModel(
         }
     }
 
-    fun login(email: String, pass: String) {
+    fun login(
+        email: String,
+        pass: String,
+    ) {
         viewModelScope.launch {
             _actionState.value = Resource.Loading
             _actionState.value = authRepository.login(email, pass)
         }
     }
 
-    fun register(name: String, email: String, pass: String) {
+    fun register(
+        name: String,
+        email: String,
+        pass: String,
+    ) {
         viewModelScope.launch {
             _actionState.value = Resource.Loading
             _actionState.value = authRepository.register(name, email, pass)
@@ -50,7 +56,10 @@ class AuthViewModel(
         }
     }
 
-    fun updateProfile(name: String, avatarUrl: String? = null) {
+    fun updateProfile(
+        name: String,
+        avatarUrl: String? = null,
+    ) {
         viewModelScope.launch {
             _actionState.value = Resource.Loading
             _actionState.value = authRepository.updateProfile(name, avatarUrl)

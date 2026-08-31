@@ -27,39 +27,47 @@ fun SirajButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    contentDescriptionText: String? = null
+    contentDescriptionText: String? = null,
 ) {
     val a11yConfig = LocalAccessibilityConfig.current
     val isHighContrast = a11yConfig.highContrastMode
 
     Button(
         onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = 48.dp) // Touch target minimum 48dp, scales flexibly
-            .sirajTouchTarget()
-            .semantics {
-                role = Role.Button
-                if (contentDescriptionText != null) {
-                    contentDescription = contentDescriptionText
-                }
-            },
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp) // Touch target minimum 48dp, scales flexibly
+                .sirajTouchTarget()
+                .semantics {
+                    role = Role.Button
+                    if (contentDescriptionText != null) {
+                        contentDescription = contentDescriptionText
+                    }
+                },
         enabled = enabled,
         shape = MaterialTheme.shapes.small, // 8dp
-        border = if (isHighContrast) {
-            BorderStroke(2.dp, if (enabled) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f))
-        } else null,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
-            disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.38f),
-            disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
-        )
+        border =
+            if (isHighContrast) {
+                BorderStroke(
+                    2.dp,
+                    if (enabled) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+                )
+            } else {
+                null
+            },
+        colors =
+            ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.38f),
+                disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
+            ),
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.padding(vertical = 4.dp)
+            modifier = Modifier.padding(vertical = 4.dp),
         )
     }
 }
@@ -72,4 +80,3 @@ fun SirajButtonPreview() {
         SirajButton(text = "اعتماد النص", onClick = {})
     }
 }
-

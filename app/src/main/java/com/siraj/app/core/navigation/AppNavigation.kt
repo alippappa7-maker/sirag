@@ -1,7 +1,5 @@
 package com.siraj.app.core.navigation
 
-
-
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -14,13 +12,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.siraj.app.core.ui.components.ErrorScreen
@@ -41,12 +37,10 @@ import com.siraj.app.features.flashes.presentation.FlashPublishingViewModel
 import com.siraj.app.features.flashes.presentation.FlashPublishingViewModelFactory
 import com.siraj.app.data.repository.flash.FirebaseFlashPublishingRepositoryImpl
 import com.siraj.app.features.home.presentation.HomeScreen
-import com.siraj.app.features.audio.presentation.AudioScreen
 import com.siraj.app.features.audio.presentation.AudioPlayerScreen
 import com.siraj.app.core.audio.MiniPlayer
 import com.siraj.app.features.mihrab.presentation.MihrabScreen
 import com.siraj.app.features.onboarding.presentation.OnboardingScreen
-import com.siraj.app.features.settings.presentation.ProfileScreen
 import com.siraj.app.features.project.presentation.scenes.ScenesScreen
 import com.siraj.app.features.settings.presentation.WorkspaceSettingsScreen
 import com.siraj.app.features.splash.presentation.SplashScreen
@@ -55,12 +49,6 @@ import com.siraj.app.features.ideation.presentation.IdeationScreen
 import com.siraj.app.features.project.presentation.plan.ContentPlanScreen
 import com.siraj.app.features.quran.presentation.QuranScreen
 import com.siraj.app.features.quran.presentation.SurahScreen
-import com.siraj.app.features.mihrab.prayer.presentation.PrayerSettingsScreen
-import com.siraj.app.features.mihrab.prayer.presentation.PrayerTimesScreen
-import com.siraj.app.features.mihrab.qibla.presentation.QiblaScreen
-import com.siraj.app.features.mihrab.calendar.presentation.HijriCalendarScreen
-import com.siraj.app.features.mihrab.adhkar.presentation.AdhkarCategoriesScreen
-import com.siraj.app.features.mihrab.adhkar.presentation.AdhkarReaderScreen
 import com.siraj.app.features.search.presentation.SearchScreen
 import com.siraj.app.features.search.presentation.SearchViewModel
 import com.siraj.app.features.search.presentation.SearchViewModelFactory
@@ -69,13 +57,11 @@ import androidx.compose.ui.platform.LocalContext
 import android.app.Application
 import java.net.URLDecoder
 
-
-
 @Composable
 fun AppNavigation(
     navController: NavHostController,
     toggleTheme: () -> Unit,
-    authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory())
+    authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory()),
 ) {
     val authState by authViewModel.authState.collectAsState()
 
@@ -94,17 +80,19 @@ fun AppNavigation(
 
     LaunchedEffect(currentRoute) {
         currentRoute?.let { route ->
-            com.siraj.app.core.monitoring.CrashMonitoringManager.logNavigation(route)
+            com.siraj.app.core.monitoring.CrashMonitoringManager
+                .logNavigation(route)
         }
     }
 
-    val mainRoutes = listOf(
-        Screen.Home.route,
-        Screen.Studio.route,
-        Screen.Flashes.route,
-        Screen.Audio.route,
-        Screen.Mihrab.route
-    )
+    val mainRoutes =
+        listOf(
+            Screen.Home.route,
+            Screen.Studio.route,
+            Screen.Flashes.route,
+            Screen.Audio.route,
+            Screen.Mihrab.route,
+        )
 
     val isMainScreen = mainRoutes.contains(currentRoute)
 
@@ -116,7 +104,7 @@ fun AppNavigation(
             enterTransition = { fadeIn(animationSpec = tween(300)) },
             exitTransition = { fadeOut(animationSpec = tween(300)) },
             popEnterTransition = { fadeIn(animationSpec = tween(300)) },
-            popExitTransition = { fadeOut(animationSpec = tween(300)) }
+            popExitTransition = { fadeOut(animationSpec = tween(300)) },
         ) {
             // Public Routes
             composable(Screen.Splash.route) {
@@ -128,44 +116,48 @@ fun AppNavigation(
                 })
             }
             composable(Screen.Onboarding.route) {
-                if (isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Home.route) { popUpTo(0) } } }
-                else {
+                if (isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Home.route) { popUpTo(0) } }
+                } else {
                     OnboardingScreen(onNavigateToLogin = {
                         navController.navigate(Screen.Login.route)
                     })
                 }
             }
             composable(Screen.Login.route) {
-                if (isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Home.route) { popUpTo(0) } } }
-                else {
+                if (isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Home.route) { popUpTo(0) } }
+                } else {
                     LoginScreen(
                         onLoginSuccess = {
                             navController.navigate(Screen.Home.route) { popUpTo(0) { inclusive = true } }
                         },
                         onNavigateToRegister = {
                             navController.navigate(Screen.Register.route)
-                        }
+                        },
                     )
                 }
             }
             composable(Screen.Register.route) {
-                if (isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Home.route) { popUpTo(0) } } }
-                else {
+                if (isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Home.route) { popUpTo(0) } }
+                } else {
                     RegisterScreen(
                         onRegisterSuccess = {
                             navController.navigate(Screen.Home.route) { popUpTo(0) { inclusive = true } }
                         },
                         onNavigateToLogin = {
                             navController.navigate(Screen.Login.route)
-                        }
+                        },
                     )
                 }
             }
 
             // Protected Routes
             composable(Screen.Home.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else { 
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     HomeScreen(
                         toggleTheme = toggleTheme,
                         onNavigateToProject = { projectId ->
@@ -185,27 +177,43 @@ fun AppNavigation(
                         },
                         onNavigateToTesterHub = {
                             navController.navigate(Screen.TesterHub.route)
-                        }
-                    ) 
+                        },
+                    )
                 }
             }
-            
+
             composable(Screen.CreatorAnalytics.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
-                    val authRepository = remember { com.siraj.app.data.repository.FirebaseAuthRepositoryImpl() }
-                    val analyticsRepository = remember { com.siraj.app.data.repository.analytics.FirebaseCreatorAnalyticsRepositoryImpl() }
-                    val viewModel = remember { com.siraj.app.features.studio.presentation.analytics.CreatorAnalyticsViewModel(analyticsRepository, authRepository) }
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
+                    val authRepository =
+                        remember {
+                            com.siraj.app.data.repository
+                                .FirebaseAuthRepositoryImpl()
+                        }
+                    val analyticsRepository =
+                        remember {
+                            com.siraj.app.data.repository.analytics
+                                .FirebaseCreatorAnalyticsRepositoryImpl()
+                        }
+                    val viewModel =
+                        remember {
+                            com.siraj.app.features.studio.presentation.analytics.CreatorAnalyticsViewModel(
+                                analyticsRepository,
+                                authRepository,
+                            )
+                        }
                     com.siraj.app.features.studio.presentation.analytics.CreatorAnalyticsScreen(
                         viewModel = viewModel,
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
                     )
                 }
             }
 
             composable(Screen.Studio.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else { 
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     StudioScreen(
                         onNavigateToProject = { projectId ->
                             navController.navigate(Screen.ProjectEditor.createRoute(projectId))
@@ -218,94 +226,116 @@ fun AppNavigation(
                         },
                         onNavigateToAnalytics = {
                             navController.navigate(Screen.CreatorAnalytics.route)
-                        }
-                    ) 
+                        },
+                    )
                 }
             }
             composable(Screen.Mihrab.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else { 
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     MihrabScreen(
                         onNavigateToQuran = { navController.navigate(Screen.Quran.route) },
                         onNavigateToPrayerTimes = { navController.navigate(Screen.PrayerTimes.route) },
                         onNavigateToQibla = { navController.navigate(Screen.Qibla.route) },
                         onNavigateToCalendar = { navController.navigate(Screen.HijriCalendar.route) },
-                        onNavigateToAdhkar = { navController.navigate(Screen.AdhkarCategories.route) }
-                    ) 
+                        onNavigateToAdhkar = { navController.navigate(Screen.AdhkarCategories.route) },
+                    )
                 }
             }
             composable(Screen.Audio.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else { AudioLibraryScreen() }
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
+                    AudioLibraryScreen()
+                }
             }
             composable(Screen.ContentModeration.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
-                    val moderationViewModel: com.siraj.app.features.moderation.presentation.ModerationViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-                        factory = com.siraj.app.features.moderation.presentation.ModerationViewModelFactory(
-                            com.siraj.app.data.repository.community.FirebaseSafetyRepositoryImpl()
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
+                    val moderationViewModel: com.siraj.app.features.moderation.presentation.ModerationViewModel =
+                        androidx.lifecycle.viewmodel.compose.viewModel(
+                            factory =
+                                com.siraj.app.features.moderation.presentation.ModerationViewModelFactory(
+                                    com.siraj.app.data.repository.community
+                                        .FirebaseSafetyRepositoryImpl(),
+                                ),
                         )
-                    )
                     com.siraj.app.features.moderation.presentation.ContentModerationScreen(
                         viewModel = moderationViewModel,
                         currentUserRole = (authState as? com.siraj.app.core.utils.Resource.Success)?.data?.role?.name ?: "REVIEWER",
                         currentUserId = (authState as? com.siraj.app.core.utils.Resource.Success)?.data?.id ?: "user123",
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
                     )
                 }
             }
             composable(Screen.Flashes.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
-                    val flashesViewModel: com.siraj.app.features.flashes.presentation.FlashesViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-                        factory = com.siraj.app.features.flashes.presentation.FlashesViewModelFactory(
-                            com.siraj.app.data.repository.flash.FirebaseFlashRepositoryImpl()
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
+                    val flashesViewModel: com.siraj.app.features.flashes.presentation.FlashesViewModel =
+                        androidx.lifecycle.viewmodel.compose.viewModel(
+                            factory =
+                                com.siraj.app.features.flashes.presentation.FlashesViewModelFactory(
+                                    com.siraj.app.data.repository.flash
+                                        .FirebaseFlashRepositoryImpl(),
+                                ),
                         )
-                    )
-                    val interactionViewModel: com.siraj.app.features.community.presentation.InteractionViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-                        factory = com.siraj.app.features.community.presentation.InteractionViewModelFactory(
-                            com.siraj.app.data.repository.community.FirebaseInteractionRepositoryImpl()
+                    val interactionViewModel: com.siraj.app.features.community.presentation.InteractionViewModel =
+                        androidx.lifecycle.viewmodel.compose.viewModel(
+                            factory =
+                                com.siraj.app.features.community.presentation.InteractionViewModelFactory(
+                                    com.siraj.app.data.repository.community
+                                        .FirebaseInteractionRepositoryImpl(),
+                                ),
                         )
-                    )
-                    val safetyViewModel: com.siraj.app.features.community.presentation.SafetyViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-                        factory = com.siraj.app.features.community.presentation.SafetyViewModelFactory(
-                            com.siraj.app.data.repository.community.FirebaseSafetyRepositoryImpl()
+                    val safetyViewModel: com.siraj.app.features.community.presentation.SafetyViewModel =
+                        androidx.lifecycle.viewmodel.compose.viewModel(
+                            factory =
+                                com.siraj.app.features.community.presentation.SafetyViewModelFactory(
+                                    com.siraj.app.data.repository.community
+                                        .FirebaseSafetyRepositoryImpl(),
+                                ),
                         )
-                    )
                     com.siraj.app.features.flashes.presentation.FlashesScreen(
                         viewModel = flashesViewModel,
                         interactionViewModel = interactionViewModel,
                         safetyViewModel = safetyViewModel,
                         currentUserId = (authState as? com.siraj.app.core.utils.Resource.Success)?.data?.id ?: "user123",
                         onNavigateBack = { navController.popBackStack() },
-                        onNavigateToDetails = { id -> navController.navigate(Screen.Details.createRoute(id)) }
+                        onNavigateToDetails = { id -> navController.navigate(Screen.Details.createRoute(id)) },
                     )
                 }
             }
-            
+
             composable(Screen.FlashPublishing.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
-                    val publishingViewModel: FlashPublishingViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-                        factory = FlashPublishingViewModelFactory(FirebaseFlashPublishingRepositoryImpl())
-                    )
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
+                    val publishingViewModel: FlashPublishingViewModel =
+                        androidx.lifecycle.viewmodel.compose.viewModel(
+                            factory = FlashPublishingViewModelFactory(FirebaseFlashPublishingRepositoryImpl()),
+                        )
                     FlashPublishingScreen(
                         viewModel = publishingViewModel,
                         currentUserId = (authState as? com.siraj.app.core.utils.Resource.Success)?.data?.id ?: "user123",
                         currentUserName = (authState as? com.siraj.app.core.utils.Resource.Success)?.data?.name ?: "User",
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
                     )
                 }
             }
-                        composable(Screen.WorkspaceSettings.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+            composable(Screen.WorkspaceSettings.route) {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     WorkspaceSettingsScreen(onNavigateBack = { navController.popBackStack() })
                 }
             }
             composable(Screen.Settings.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else { 
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     com.siraj.app.features.settings.presentation.SettingsScreen(
                         onNavigateToWorkspaceSettings = { navController.navigate(Screen.WorkspaceSettings.route) },
                         onNavigateToActivityHistory = { navController.navigate(Screen.ActivityHistory.route) },
@@ -322,33 +352,38 @@ fun AppNavigation(
                             navController.navigate(Screen.Login.route) {
                                 popUpTo(0) { inclusive = true }
                             }
-                        }
+                        },
                     )
                 }
             }
             composable(Screen.Admin.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     val user = (authState as? Resource.Success)?.data
                     if (user?.role == UserRole.ADMIN || user?.role == UserRole.OWNER) {
                         AdminScreen()
                     } else {
                         ErrorScreen(
                             message = "ليس لديك صلاحية للوصول إلى لوحة الإدارة.",
-                            onRetry = { navController.popBackStack() }
+                            onRetry = { navController.popBackStack() },
                         )
                     }
                 }
             }
 
             composable(Screen.ShariaReviewQueue.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
-                    val reviewViewModel: com.siraj.app.features.review.presentation.ShariaReviewViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-                        factory = com.siraj.app.features.review.presentation.ShariaReviewViewModelFactory(
-                            com.siraj.app.data.repository.review.FirebaseShariaReviewRepositoryImpl()
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
+                    val reviewViewModel: com.siraj.app.features.review.presentation.ShariaReviewViewModel =
+                        androidx.lifecycle.viewmodel.compose.viewModel(
+                            factory =
+                                com.siraj.app.features.review.presentation.ShariaReviewViewModelFactory(
+                                    com.siraj.app.data.repository.review
+                                        .FirebaseShariaReviewRepositoryImpl(),
+                                ),
                         )
-                    )
                     val user = (authState as? Resource.Success)?.data
                     com.siraj.app.features.review.presentation.ShariaReviewQueueScreen(
                         viewModel = reviewViewModel,
@@ -357,19 +392,23 @@ fun AppNavigation(
                         onNavigateToItemDetail = { itemId ->
                             navController.navigate(Screen.ShariaReviewDetail.createRoute(itemId))
                         },
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
                     )
                 }
             }
 
             composable(Screen.ReviewList.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
-                    val reviewViewModel: com.siraj.app.features.review.presentation.ShariaReviewViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-                        factory = com.siraj.app.features.review.presentation.ShariaReviewViewModelFactory(
-                            com.siraj.app.data.repository.review.FirebaseShariaReviewRepositoryImpl()
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
+                    val reviewViewModel: com.siraj.app.features.review.presentation.ShariaReviewViewModel =
+                        androidx.lifecycle.viewmodel.compose.viewModel(
+                            factory =
+                                com.siraj.app.features.review.presentation.ShariaReviewViewModelFactory(
+                                    com.siraj.app.data.repository.review
+                                        .FirebaseShariaReviewRepositoryImpl(),
+                                ),
                         )
-                    )
                     val user = (authState as? Resource.Success)?.data
                     com.siraj.app.features.review.presentation.ShariaReviewQueueScreen(
                         viewModel = reviewViewModel,
@@ -378,23 +417,27 @@ fun AppNavigation(
                         onNavigateToItemDetail = { itemId ->
                             navController.navigate(Screen.ShariaReviewDetail.createRoute(itemId))
                         },
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
                     )
                 }
             }
 
             composable(
                 route = Screen.ShariaReviewDetail.route,
-                arguments = listOf(navArgument("itemId") { type = NavType.StringType })
+                arguments = listOf(navArgument("itemId") { type = NavType.StringType }),
             ) { backStackEntry ->
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
-                    val reviewViewModel: com.siraj.app.features.review.presentation.ShariaReviewViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-                        factory = com.siraj.app.features.review.presentation.ShariaReviewViewModelFactory(
-                            com.siraj.app.data.repository.review.FirebaseShariaReviewRepositoryImpl()
+                    val reviewViewModel: com.siraj.app.features.review.presentation.ShariaReviewViewModel =
+                        androidx.lifecycle.viewmodel.compose.viewModel(
+                            factory =
+                                com.siraj.app.features.review.presentation.ShariaReviewViewModelFactory(
+                                    com.siraj.app.data.repository.review
+                                        .FirebaseShariaReviewRepositoryImpl(),
+                                ),
                         )
-                    )
                     val user = (authState as? Resource.Success)?.data
                     com.siraj.app.features.review.presentation.ShariaReviewDetailScreen(
                         itemId = itemId,
@@ -402,18 +445,17 @@ fun AppNavigation(
                         currentUserRole = user?.role?.name ?: "REVIEWER",
                         currentUserId = user?.id ?: "user_reviewer",
                         currentUserName = user?.name ?: "المراجع الشرعي",
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
                     )
                 }
             }
 
-
             composable(
                 route = Screen.ProjectEditor.route,
-                arguments = listOf(navArgument("id") { type = NavType.StringType })
+                arguments = listOf(navArgument("id") { type = NavType.StringType }),
             ) { backStackEntry ->
-                if (!isLoggedIn) { 
-                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } 
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
                 } else {
                     val id = backStackEntry.arguments?.getString("id") ?: ""
                     com.siraj.app.features.project.presentation.ProjectEditorScreen(
@@ -424,71 +466,75 @@ fun AppNavigation(
                         },
                         onNavigateToAssetLibrary = { projectId ->
                             navController.navigate(Screen.AssetLibrary.createRoute(projectId))
-                        }
+                        },
                     )
                 }
             }
 
-            
             composable(Screen.Quran.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     QuranScreen(
                         onNavigateToSurah = { surahId, surahName -> navController.navigate(Screen.Surah.createRoute(surahId, surahName)) },
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
                     )
                 }
             }
-            
+
             composable(
                 route = Screen.Surah.route,
-                arguments = listOf(
-                    navArgument("surahId") { type = NavType.IntType },
-                    navArgument("surahName") { type = NavType.StringType }
-                )
+                arguments =
+                    listOf(
+                        navArgument("surahId") { type = NavType.IntType },
+                        navArgument("surahName") { type = NavType.StringType },
+                    ),
             ) { backStackEntry ->
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     val surahId = backStackEntry.arguments?.getInt("surahId") ?: 1
                     val surahName = backStackEntry.arguments?.getString("surahName") ?: ""
                     SurahScreen(
                         surahId = surahId,
                         surahName = surahName,
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
                     )
                 }
             }
 
-            
             composable(
                 route = Screen.Scenes.route,
-                arguments = listOf(navArgument("projectId") { type = NavType.StringType })
+                arguments = listOf(navArgument("projectId") { type = NavType.StringType }),
             ) { backStackEntry ->
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
                     ScenesScreen(
                         projectId = projectId,
                         onNavigateBack = { navController.popBackStack() },
-                        onNavigateToSceneEditor = { sceneId -> 
+                        onNavigateToSceneEditor = { sceneId ->
                             navController.navigate(Screen.SceneEditor.createRoute(projectId, sceneId))
                         },
                         onNavigateToPreview = {
                             navController.navigate(Screen.ProjectPreview.createRoute(projectId))
-                        }
+                        },
                     )
                 }
             }
-            
+
             composable(
                 route = Screen.SceneEditor.route,
-                arguments = listOf(
-                    navArgument("projectId") { type = NavType.StringType },
-                    navArgument("sceneId") { type = NavType.StringType }
-                )
+                arguments =
+                    listOf(
+                        navArgument("projectId") { type = NavType.StringType },
+                        navArgument("sceneId") { type = NavType.StringType },
+                    ),
             ) { backStackEntry ->
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
                     val sceneId = backStackEntry.arguments?.getString("sceneId") ?: ""
                     com.siraj.app.features.project.presentation.scenes.SceneEditorScreen(
@@ -506,19 +552,21 @@ fun AppNavigation(
                         },
                         onNavigateToSubtitles = { pid, sid, initialText ->
                             navController.navigate(Screen.SubtitleEditor.createRoute(pid, sid, initialText))
-                        }
+                        },
                     )
                 }
             }
-            
+
             composable(
                 route = Screen.AssetLibrary.route,
-                arguments = listOf(
-                    navArgument("projectId") { type = NavType.StringType }
-                )
+                arguments =
+                    listOf(
+                        navArgument("projectId") { type = NavType.StringType },
+                    ),
             ) { backStackEntry ->
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
                     com.siraj.app.features.project.presentation.assets.AssetLibraryScreen(
                         projectId = projectId,
@@ -526,143 +574,162 @@ fun AppNavigation(
                         onNavigateToSearch = { navController.navigate(Screen.ExternalMediaSearch.createRoute(projectId)) },
                         onNavigateToAiGenerator = { navController.navigate(Screen.AiImageGenerator.createRoute(projectId)) },
                         onNavigateToAudioStudio = { navController.navigate(Screen.AudioStudio.createRoute(projectId)) },
-                        onNavigateToSoundtracks = { navController.navigate(Screen.SoundtrackLibrary.createRoute(projectId)) }
+                        onNavigateToSoundtracks = { navController.navigate(Screen.SoundtrackLibrary.createRoute(projectId)) },
                     )
                 }
             }
 
             composable(
                 route = Screen.ExternalMediaSearch.route,
-                arguments = listOf(
-                    navArgument("projectId") { type = NavType.StringType }
-                )
+                arguments =
+                    listOf(
+                        navArgument("projectId") { type = NavType.StringType },
+                    ),
             ) { backStackEntry ->
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
                     com.siraj.app.features.project.presentation.assets.ExternalMediaSearchScreen(
                         projectId = projectId,
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
                     )
                 }
             }
 
             composable(
                 route = Screen.AiImageGenerator.route,
-                arguments = listOf(
-                    navArgument("projectId") { type = NavType.StringType },
-                    navArgument("sceneId") { 
-                        type = NavType.StringType
-                        nullable = true
-                        defaultValue = null
-                    }
-                )
+                arguments =
+                    listOf(
+                        navArgument("projectId") { type = NavType.StringType },
+                        navArgument("sceneId") {
+                            type = NavType.StringType
+                            nullable = true
+                            defaultValue = null
+                        },
+                    ),
             ) { backStackEntry ->
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
                     val sceneId = backStackEntry.arguments?.getString("sceneId")
                     com.siraj.app.features.project.presentation.ai.AiImageGeneratorScreen(
                         projectId = projectId,
                         sceneId = sceneId,
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
                     )
                 }
             }
 
             composable(
                 route = Screen.AudioStudio.route,
-                arguments = listOf(
-                    navArgument("projectId") { type = NavType.StringType },
-                    navArgument("sceneId") {
-                        type = NavType.StringType
-                        nullable = true
-                        defaultValue = null
-                    },
-                    navArgument("initialText") {
-                        type = NavType.StringType
-                        nullable = true
-                        defaultValue = null
-                    }
-                )
+                arguments =
+                    listOf(
+                        navArgument("projectId") { type = NavType.StringType },
+                        navArgument("sceneId") {
+                            type = NavType.StringType
+                            nullable = true
+                            defaultValue = null
+                        },
+                        navArgument("initialText") {
+                            type = NavType.StringType
+                            nullable = true
+                            defaultValue = null
+                        },
+                    ),
             ) { backStackEntry ->
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
                     val sceneId = backStackEntry.arguments?.getString("sceneId")
                     val rawInitialText = backStackEntry.arguments?.getString("initialText") ?: ""
-                    val decodedInitialText = try {
-                        java.net.URLDecoder.decode(rawInitialText, "UTF-8")
-                    } catch (e: Exception) {
-                        rawInitialText
-                    }
+                    val decodedInitialText =
+                        try {
+                            java.net.URLDecoder.decode(rawInitialText, "UTF-8")
+                        } catch (e: Exception) {
+                            rawInitialText
+                        }
                     com.siraj.app.features.project.presentation.audio.AudioStudioScreen(
                         projectId = projectId,
                         sceneId = sceneId,
                         initialNarrationText = decodedInitialText,
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
                     )
                 }
             }
 
             composable(
                 route = Screen.SoundtrackLibrary.route,
-                arguments = listOf(
-                    navArgument("projectId") { type = NavType.StringType },
-                    navArgument("sceneId") {
-                        type = NavType.StringType
-                        nullable = true
-                        defaultValue = null
-                    }
-                )
+                arguments =
+                    listOf(
+                        navArgument("projectId") { type = NavType.StringType },
+                        navArgument("sceneId") {
+                            type = NavType.StringType
+                            nullable = true
+                            defaultValue = null
+                        },
+                    ),
             ) { backStackEntry ->
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
                     val sceneId = backStackEntry.arguments?.getString("sceneId")
                     com.siraj.app.features.project.presentation.soundtrack.SoundtrackLibraryScreen(
                         projectId = projectId,
                         sceneId = sceneId,
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
                     )
                 }
             }
 
             composable(
                 route = Screen.SubtitleEditor.route,
-                arguments = listOf(
-                    navArgument("projectId") { type = NavType.StringType },
-                    navArgument("sceneId") { type = NavType.StringType },
-                    navArgument("initialText") {
-                        type = NavType.StringType
-                        nullable = true
-                        defaultValue = null
-                    }
-                )
+                arguments =
+                    listOf(
+                        navArgument("projectId") { type = NavType.StringType },
+                        navArgument("sceneId") { type = NavType.StringType },
+                        navArgument("initialText") {
+                            type = NavType.StringType
+                            nullable = true
+                            defaultValue = null
+                        },
+                    ),
             ) { backStackEntry ->
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
                     val sceneId = backStackEntry.arguments?.getString("sceneId") ?: ""
                     val rawInitialText = backStackEntry.arguments?.getString("initialText")
-                    val decodedInitialText = if (!rawInitialText.isNullOrBlank()) {
-                        try { java.net.URLDecoder.decode(rawInitialText, "UTF-8") } catch (e: Exception) { rawInitialText }
-                    } else ""
+                    val decodedInitialText =
+                        if (!rawInitialText.isNullOrBlank()) {
+                            try {
+                                java.net.URLDecoder.decode(rawInitialText, "UTF-8")
+                            } catch (e: Exception) {
+                                rawInitialText
+                            }
+                        } else {
+                            ""
+                        }
                     com.siraj.app.features.project.presentation.subtitles.SubtitleEditorScreen(
                         projectId = projectId,
                         sceneId = sceneId,
                         initialSceneText = decodedInitialText,
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
                     )
                 }
             }
 
             composable(
                 route = Screen.ProjectPreview.route,
-                arguments = listOf(navArgument("projectId") { type = NavType.StringType })
+                arguments = listOf(navArgument("projectId") { type = NavType.StringType }),
             ) { backStackEntry ->
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
                     com.siraj.app.features.project.presentation.preview.ProjectPreviewScreen(
                         projectId = projectId,
@@ -675,82 +742,88 @@ fun AppNavigation(
                         },
                         onNavigateToExportJob = {
                             navController.navigate(Screen.ProjectExport.createRoute(projectId))
-                        }
+                        },
                     )
                 }
             }
 
             composable(
                 route = Screen.ProjectExport.route,
-                arguments = listOf(navArgument("projectId") { type = NavType.StringType })
+                arguments = listOf(navArgument("projectId") { type = NavType.StringType }),
             ) { backStackEntry ->
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
                     com.siraj.app.features.project.presentation.export.ProjectExportScreen(
                         projectId = projectId,
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
                     )
                 }
             }
 
             composable(
                 route = Screen.ProductionJobs.route,
-                arguments = listOf(
-                    navArgument("projectId") {
-                        type = NavType.StringType
-                        nullable = true
-                        defaultValue = null
-                    }
-                )
+                arguments =
+                    listOf(
+                        navArgument("projectId") {
+                            type = NavType.StringType
+                            nullable = true
+                            defaultValue = null
+                        },
+                    ),
             ) { backStackEntry ->
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     val projectId = backStackEntry.arguments?.getString("projectId")
                     com.siraj.app.features.project.presentation.jobs.ProductionJobsScreen(
                         projectId = projectId,
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
                     )
                 }
             }
 
             composable(Screen.AudioPlayer.route) {
                 AudioPlayerScreen(
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
                 )
             }
             composable(Screen.Ideation.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     IdeationScreen(
                         onNavigateBack = { navController.popBackStack() },
                         onNavigateToProject = { projectId ->
                             navController.navigate(Screen.ProjectEditor.createRoute(projectId)) {
                                 popUpTo(Screen.Studio.route)
                             }
-                        }
+                        },
                     )
                 }
             }
 
             composable(
                 route = Screen.ContentPlan.route,
-                arguments = listOf(navArgument("projectId") { type = NavType.StringType })
+                arguments = listOf(navArgument("projectId") { type = NavType.StringType }),
             ) { backStackEntry ->
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
                     ContentPlanScreen(
                         projectId = projectId,
                         onNavigateBack = { navController.popBackStack() },
-                        onNavigateToScenes = { pid -> navController.navigate(Screen.Scenes.createRoute(pid)) }
+                        onNavigateToScenes = { pid -> navController.navigate(Screen.Scenes.createRoute(pid)) },
                     )
                 }
             }
 
             composable(Screen.NotificationCenter.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     com.siraj.app.features.notification.presentation.NotificationCenterScreen(
                         onNavigateBack = { navController.popBackStack() },
                         onNavigateToSettings = { navController.navigate(Screen.NotificationSettings.route) },
@@ -758,23 +831,25 @@ fun AppNavigation(
                         onNavigateToReview = { rid -> navController.navigate(Screen.ReviewList.route) },
                         onNavigateToAudio = { aid -> navController.navigate(Screen.Audio.route) },
                         onNavigateToFlashes = { navController.navigate(Screen.Flashes.route) },
-                        onNavigateToMihrab = { navController.navigate(Screen.Mihrab.route) }
+                        onNavigateToMihrab = { navController.navigate(Screen.Mihrab.route) },
                     )
                 }
             }
 
             composable(Screen.NotificationSettings.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     com.siraj.app.features.notification.presentation.NotificationSettingsScreen(
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
                     )
                 }
             }
 
             composable(Screen.ActivityHistory.route) {
-                if (!isLoggedIn) { LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } } }
-                else {
+                if (!isLoggedIn) {
+                    LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+                } else {
                     com.siraj.app.features.history.presentation.ActivityHistoryScreen(
                         onNavigateBack = { navController.popBackStack() },
                         onResumeVideo = { videoId ->
@@ -790,7 +865,7 @@ fun AppNavigation(
                         },
                         onResumeFlash = { _ ->
                             navController.navigate(Screen.Flashes.route)
-                        }
+                        },
                     )
                 }
             }
@@ -798,7 +873,7 @@ fun AppNavigation(
             composable(
                 route = Screen.Details.route,
                 arguments = listOf(navArgument("id") { type = NavType.StringType }),
-                deepLinks = listOf(navDeepLink { uriPattern = "${Screen.Details.DEEP_LINK_URI}/{id}" })
+                deepLinks = listOf(navDeepLink { uriPattern = "${Screen.Details.DEEP_LINK_URI}/{id}" }),
             ) { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id") ?: ""
                 DetailsScreen(id = id)
@@ -806,28 +881,33 @@ fun AppNavigation(
 
             composable(
                 route = Screen.ShareRouter.route,
-                arguments = listOf(
-                    navArgument("linkId") { type = NavType.StringType },
-                    navArgument("token") { 
-                        type = NavType.StringType 
-                        nullable = true
-                    }
-                ),
-                deepLinks = listOf(
-                    navDeepLink { uriPattern = "${Screen.ShareRouter.DEEP_LINK_URI_HTTPS}/{linkId}?token={token}" },
-                    navDeepLink { uriPattern = "${Screen.ShareRouter.DEEP_LINK_URI_HTTPS}/{linkId}" },
-                    navDeepLink { uriPattern = "${Screen.ShareRouter.DEEP_LINK_URI_APP}/{linkId}?token={token}" },
-                    navDeepLink { uriPattern = "${Screen.ShareRouter.DEEP_LINK_URI_APP}/{linkId}" }
-                )
+                arguments =
+                    listOf(
+                        navArgument("linkId") { type = NavType.StringType },
+                        navArgument("token") {
+                            type = NavType.StringType
+                            nullable = true
+                        },
+                    ),
+                deepLinks =
+                    listOf(
+                        navDeepLink { uriPattern = "${Screen.ShareRouter.DEEP_LINK_URI_HTTPS}/{linkId}?token={token}" },
+                        navDeepLink { uriPattern = "${Screen.ShareRouter.DEEP_LINK_URI_HTTPS}/{linkId}" },
+                        navDeepLink { uriPattern = "${Screen.ShareRouter.DEEP_LINK_URI_APP}/{linkId}?token={token}" },
+                        navDeepLink { uriPattern = "${Screen.ShareRouter.DEEP_LINK_URI_APP}/{linkId}" },
+                    ),
             ) { backStackEntry ->
                 val linkId = backStackEntry.arguments?.getString("linkId") ?: ""
                 val token = backStackEntry.arguments?.getString("token")
-                
-                val shareViewModel: com.siraj.app.features.share.presentation.SharedContentViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-                    factory = com.siraj.app.features.share.presentation.SharedContentViewModelFactory(
-                        com.siraj.app.data.repository.share.FirebaseShareRepositoryImpl()
+
+                val shareViewModel: com.siraj.app.features.share.presentation.SharedContentViewModel =
+                    androidx.lifecycle.viewmodel.compose.viewModel(
+                        factory =
+                            com.siraj.app.features.share.presentation.SharedContentViewModelFactory(
+                                com.siraj.app.data.repository.share
+                                    .FirebaseShareRepositoryImpl(),
+                            ),
                     )
-                )
 
                 com.siraj.app.features.share.presentation.SharedContentRouterScreen(
                     linkId = linkId,
@@ -846,18 +926,20 @@ fun AppNavigation(
                     },
                     onNavigateHome = {
                         navController.navigate(Screen.Home.route) { popUpTo(0) }
-                    }
+                    },
                 )
             }
 
             composable(Screen.Search.route) {
                 val context = LocalContext.current
-                val searchViewModel: SearchViewModel = viewModel(
-                    factory = SearchViewModelFactory(
-                        application = context.applicationContext as Application,
-                        currentUserId = (authState as? Resource.Success)?.data?.id ?: "user_default"
+                val searchViewModel: SearchViewModel =
+                    viewModel(
+                        factory =
+                            SearchViewModelFactory(
+                                application = context.applicationContext as Application,
+                                currentUserId = (authState as? Resource.Success)?.data?.id ?: "user_default",
+                            ),
                     )
-                )
 
                 SearchScreen(
                     viewModel = searchViewModel,
@@ -895,7 +977,7 @@ fun AppNavigation(
                                 }
                             }
                         }
-                    }
+                    },
                 )
             }
             composable(Screen.TesterHub.route) {
@@ -903,18 +985,21 @@ fun AppNavigation(
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToRoute = { targetRoute ->
                         navController.navigate(targetRoute)
-                    }
+                    },
                 )
             }
             composable(Screen.DefectTriage.route) {
                 DefectTriageScreen(
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
                 )
             }
             composable(Screen.HelpCenter.route) {
-                val supportViewModel: com.siraj.app.features.support.presentation.SupportViewModel = viewModel(
-                    factory = com.siraj.app.features.support.presentation.SupportViewModelFactory()
-                )
+                val supportViewModel: com.siraj.app.features.support.presentation.SupportViewModel =
+                    viewModel(
+                        factory =
+                            com.siraj.app.features.support.presentation
+                                .SupportViewModelFactory(),
+                    )
                 com.siraj.app.features.support.presentation.HelpCenterScreen(
                     viewModel = supportViewModel,
                     onNavigateBack = { navController.popBackStack() },
@@ -935,39 +1020,54 @@ fun AppNavigation(
                     },
                     onNavigateToPrivacyCenter = {
                         navController.navigate(Screen.Settings.route)
-                    }
+                    },
                 )
             }
             composable(
                 route = Screen.HelpArticleDetail.route,
-                arguments = listOf(navArgument("articleId") { type = NavType.StringType })
+                arguments = listOf(navArgument("articleId") { type = NavType.StringType }),
             ) { backStackEntry ->
                 val articleId = backStackEntry.arguments?.getString("articleId") ?: ""
-                val supportViewModel: com.siraj.app.features.support.presentation.SupportViewModel = viewModel(
-                    factory = com.siraj.app.features.support.presentation.SupportViewModelFactory()
-                )
+                val supportViewModel: com.siraj.app.features.support.presentation.SupportViewModel =
+                    viewModel(
+                        factory =
+                            com.siraj.app.features.support.presentation
+                                .SupportViewModelFactory(),
+                    )
                 com.siraj.app.features.support.presentation.HelpArticleDetailScreen(
                     articleId = articleId,
                     viewModel = supportViewModel,
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToCreateTicket = { category ->
                         navController.navigate(Screen.CreateTicket.createRoute(category?.name))
-                    }
+                    },
                 )
             }
             composable(
                 route = Screen.CreateTicket.route,
-                arguments = listOf(navArgument("category") { 
-                    type = NavType.StringType
-                    nullable = true
-                    defaultValue = null
-                })
+                arguments =
+                    listOf(
+                        navArgument("category") {
+                            type = NavType.StringType
+                            nullable = true
+                            defaultValue = null
+                        },
+                    ),
             ) { backStackEntry ->
                 val catString = backStackEntry.arguments?.getString("category")
-                val category = catString?.let { runCatching { com.siraj.app.domain.models.support.TicketCategory.valueOf(it) }.getOrNull() }
-                val supportViewModel: com.siraj.app.features.support.presentation.SupportViewModel = viewModel(
-                    factory = com.siraj.app.features.support.presentation.SupportViewModelFactory()
-                )
+                val category =
+                    catString?.let {
+                        runCatching {
+                            com.siraj.app.domain.models.support.TicketCategory
+                                .valueOf(it)
+                        }.getOrNull()
+                    }
+                val supportViewModel: com.siraj.app.features.support.presentation.SupportViewModel =
+                    viewModel(
+                        factory =
+                            com.siraj.app.features.support.presentation
+                                .SupportViewModelFactory(),
+                    )
                 com.siraj.app.features.support.presentation.CreateTicketScreen(
                     initialCategory = category,
                     viewModel = supportViewModel,
@@ -976,13 +1076,16 @@ fun AppNavigation(
                         navController.navigate(Screen.TicketDetail.createRoute(ticketId)) {
                             popUpTo(Screen.HelpCenter.route)
                         }
-                    }
+                    },
                 )
             }
             composable(Screen.TicketList.route) {
-                val supportViewModel: com.siraj.app.features.support.presentation.SupportViewModel = viewModel(
-                    factory = com.siraj.app.features.support.presentation.SupportViewModelFactory()
-                )
+                val supportViewModel: com.siraj.app.features.support.presentation.SupportViewModel =
+                    viewModel(
+                        factory =
+                            com.siraj.app.features.support.presentation
+                                .SupportViewModelFactory(),
+                    )
                 com.siraj.app.features.support.presentation.TicketListScreen(
                     viewModel = supportViewModel,
                     onNavigateBack = { navController.popBackStack() },
@@ -991,58 +1094,75 @@ fun AppNavigation(
                     },
                     onNavigateToTicketDetail = { ticketId ->
                         navController.navigate(Screen.TicketDetail.createRoute(ticketId))
-                    }
+                    },
                 )
             }
             composable(
                 route = Screen.TicketDetail.route,
-                arguments = listOf(navArgument("ticketId") { type = NavType.StringType })
+                arguments = listOf(navArgument("ticketId") { type = NavType.StringType }),
             ) { backStackEntry ->
                 val ticketId = backStackEntry.arguments?.getString("ticketId") ?: ""
-                val supportViewModel: com.siraj.app.features.support.presentation.SupportViewModel = viewModel(
-                    factory = com.siraj.app.features.support.presentation.SupportViewModelFactory()
-                )
+                val supportViewModel: com.siraj.app.features.support.presentation.SupportViewModel =
+                    viewModel(
+                        factory =
+                            com.siraj.app.features.support.presentation
+                                .SupportViewModelFactory(),
+                    )
                 com.siraj.app.features.support.presentation.TicketDetailScreen(
                     ticketId = ticketId,
                     viewModel = supportViewModel,
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
                 )
             }
             composable(Screen.ServiceStatus.route) {
                 com.siraj.app.features.support.presentation.ServiceStatusScreen(
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
                 )
             }
             composable(Screen.AiPolicy.route) {
                 com.siraj.app.features.ai.presentation.AiPolicyScreen(
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
                 )
             }
             composable(Screen.ContentPolicy.route) {
                 com.siraj.app.features.support.presentation.ContentPolicyScreen(
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToAppeal = {
-                        navController.navigate(Screen.CreateTicket.createRoute(com.siraj.app.domain.models.support.TicketCategory.APPEAL_AND_POLICY.name))
+                        navController.navigate(
+                            Screen.CreateTicket.createRoute(com.siraj.app.domain.models.support.TicketCategory.APPEAL_AND_POLICY.name),
+                        )
                     },
                     onNavigateToSourceCorrection = {
-                        navController.navigate(Screen.CreateTicket.createRoute(com.siraj.app.domain.models.support.TicketCategory.SOURCE_CORRECTION.name))
-                    }
+                        navController.navigate(
+                            Screen.CreateTicket.createRoute(com.siraj.app.domain.models.support.TicketCategory.SOURCE_CORRECTION.name),
+                        )
+                    },
                 )
             }
             composable(Screen.CommunityGuidelines.route) {
                 com.siraj.app.features.moderation.presentation.CommunityGuidelinesScreen(
                     onNavigateBack = { navController.popBackStack() },
                     onContactSafety = {
-                        navController.navigate(Screen.CreateTicket.createRoute(com.siraj.app.domain.models.support.TicketCategory.APPEAL_AND_POLICY.name))
-                    }
+                        navController.navigate(
+                            Screen.CreateTicket.createRoute(com.siraj.app.domain.models.support.TicketCategory.APPEAL_AND_POLICY.name),
+                        )
+                    },
                 )
             }
             composable(Screen.MinorSafety.route) {
-                val repository = remember { com.siraj.app.data.repository.minor.MinorSafetyRepositoryImpl() }
-                val minorViewModel = remember { com.siraj.app.features.minor.presentation.MinorSafetyViewModel(repository) }
+                val repository =
+                    remember {
+                        com.siraj.app.data.repository.minor
+                            .MinorSafetyRepositoryImpl()
+                    }
+                val minorViewModel =
+                    remember {
+                        com.siraj.app.features.minor.presentation
+                            .MinorSafetyViewModel(repository)
+                    }
                 com.siraj.app.features.minor.presentation.MinorSafetyScreen(
                     viewModel = minorViewModel,
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
                 )
             }
 //            composable(Screen.SecretsLifecycle.route) {
@@ -1054,40 +1174,70 @@ fun AppNavigation(
 //                )
 //            }
             composable(Screen.CostDashboard.route) {
-                val engine = remember { com.siraj.app.features.cost.domain.CostEngine() }
-                val repository = remember { com.siraj.app.data.repository.cost.CostManagementRepositoryImpl(engine) }
-                val viewModel = remember { com.siraj.app.features.cost.presentation.CostDashboardViewModel(repository) }
+                val engine =
+                    remember {
+                        com.siraj.app.features.cost.domain
+                            .CostEngine()
+                    }
+                val repository =
+                    remember {
+                        com.siraj.app.data.repository.cost
+                            .CostManagementRepositoryImpl(engine)
+                    }
+                val viewModel =
+                    remember {
+                        com.siraj.app.features.cost.presentation
+                            .CostDashboardViewModel(repository)
+                    }
                 com.siraj.app.features.cost.presentation.CostDashboardScreen(
                     viewModel = viewModel,
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
                 )
             }
             composable(Screen.AdminSecurity.route) {
-                val engine = remember { com.siraj.app.features.admin.domain.AdminSecurityEngine() }
-                val repository = remember { com.siraj.app.data.repository.admin.AdminSecurityRepositoryImpl(engine) }
-                val viewModel = remember { com.siraj.app.features.admin.presentation.AdminSecurityViewModel(repository) }
+                val engine =
+                    remember {
+                        com.siraj.app.features.admin.domain
+                            .AdminSecurityEngine()
+                    }
+                val repository =
+                    remember {
+                        com.siraj.app.data.repository.admin
+                            .AdminSecurityRepositoryImpl(engine)
+                    }
+                val viewModel =
+                    remember {
+                        com.siraj.app.features.admin.presentation
+                            .AdminSecurityViewModel(repository)
+                    }
                 com.siraj.app.features.admin.presentation.AdminSecurityDashboardScreen(
                     viewModel = viewModel,
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
                 )
             }
         }
     }
 
-    val isConfigInitialized by com.siraj.app.core.config.FeatureFlagManager.isInitialized.collectAsState()
-    val isMaintenanceMode = remember(isConfigInitialized) {
-        com.siraj.app.core.config.FeatureFlagManager.isFeatureEnabled(com.siraj.app.core.config.FeatureFlagManager.FEATURE_MAINTENANCE_MODE)
-    }
-    val isReadOnlyMode = remember(isConfigInitialized) {
-        com.siraj.app.core.config.FeatureFlagManager.isFeatureEnabled(com.siraj.app.core.config.FeatureFlagManager.FEATURE_SYSTEM_READ_ONLY_MODE)
-    }
+    val isConfigInitialized by com.siraj.app.core.config.FeatureFlagManager.isInitialized
+        .collectAsState()
+    val isMaintenanceMode =
+        remember(isConfigInitialized) {
+            com.siraj.app.core.config.FeatureFlagManager
+                .isFeatureEnabled(com.siraj.app.core.config.FeatureFlagManager.FEATURE_MAINTENANCE_MODE)
+        }
+    val isReadOnlyMode =
+        remember(isConfigInitialized) {
+            com.siraj.app.core.config.FeatureFlagManager.isFeatureEnabled(
+                com.siraj.app.core.config.FeatureFlagManager.FEATURE_SYSTEM_READ_ONLY_MODE,
+            )
+        }
 
     androidx.compose.foundation.layout.Column(modifier = Modifier.fillMaxSize()) {
         com.siraj.app.core.ui.components.SystemStatusBanner(
             isMaintenanceMode = isMaintenanceMode,
-            isReadOnlyMode = isReadOnlyMode
+            isReadOnlyMode = isReadOnlyMode,
         )
-        
+
         Box(modifier = Modifier.weight(1f)) {
             if (isMainScreen) {
                 MainShellScreen(navController = navController) { paddingValues ->
@@ -1095,7 +1245,7 @@ fun AppNavigation(
                         content(Modifier)
                         MiniPlayer(
                             modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp),
-                            onExpand = { navController.navigate(Screen.AudioPlayer.route) }
+                            onExpand = { navController.navigate(Screen.AudioPlayer.route) },
                         )
                     }
                 }
@@ -1104,7 +1254,7 @@ fun AppNavigation(
                     content(Modifier)
                     MiniPlayer(
                         modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp),
-                        onExpand = { navController.navigate(Screen.AudioPlayer.route) }
+                        onExpand = { navController.navigate(Screen.AudioPlayer.route) },
                     )
                 }
             }

@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.siraj.app.core.ui.components.SirajButton
 import com.siraj.app.ui.theme.spacing
 
@@ -32,64 +31,71 @@ fun OnboardingScreen(onNavigateToLogin: () -> Unit) {
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+        contentAlignment = Alignment.Center,
     ) {
         // Techno-spiritual background glow
         AnimatedVisibility(
             visible = visible,
-            enter = fadeIn(animationSpec = tween(1500))
+            enter = fadeIn(animationSpec = tween(1500)),
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.radialGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-                                Color.Transparent
-                            ),
-                            radius = 800f
-                        )
-                    )
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .background(
+                            brush =
+                                Brush.radialGradient(
+                                    colors =
+                                        listOf(
+                                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                                            Color.Transparent,
+                                        ),
+                                    radius = 800f,
+                                ),
+                        ),
             )
         }
 
         AnimatedVisibility(
             visible = visible,
-            enter = fadeIn(animationSpec = tween(1000)) + slideInVertically(
-                initialOffsetY = { 50 },
-                animationSpec = tween(1000)
-            )
+            enter =
+                fadeIn(animationSpec = tween(1000)) +
+                    slideInVertically(
+                        initialOffsetY = { 50 },
+                        animationSpec = tween(1000),
+                    ),
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(MaterialTheme.spacing.extraLarge),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(MaterialTheme.spacing.extraLarge),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
                     text = "مرحباً بك في سراج",
                     style = MaterialTheme.typography.displayLarge,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
                 Text(
                     text = "المنصة الأولى لصناعة ونشر المحتوى الإسلامي العربي الموثق.",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.huge))
-                
+
                 // Using SirajButton directly as it should pick up primary color scheme
                 SirajButton(
-                    text = "ابدأ الآن", 
+                    text = "ابدأ الآن",
                     onClick = onNavigateToLogin,
-                    modifier = Modifier.fillMaxWidth(0.8f)
+                    modifier = Modifier.fillMaxWidth(0.8f),
                 )
             }
         }

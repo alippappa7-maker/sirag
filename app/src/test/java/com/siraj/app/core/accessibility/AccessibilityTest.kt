@@ -1,9 +1,7 @@
 package com.siraj.app.core.accessibility
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.sp
 import com.siraj.app.domain.models.UserPreferences
-
 
 import com.siraj.app.ui.theme.Typography
 import com.siraj.app.ui.theme.getScaledTypography
@@ -11,7 +9,6 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class AccessibilityTest {
-
     @Test
     fun testBlackAndWhiteContrastRatio_isMaximal() {
         val ratio = ColorContrastHelper.getContrastRatio(Color.Black, Color.White)
@@ -45,17 +42,17 @@ class AccessibilityTest {
         assertEquals(
             baseTypography.bodyLarge.fontSize.value * 1.5f,
             scaledTypography.bodyLarge.fontSize.value,
-            0.01f
+            0.01f,
         )
         assertEquals(
             baseTypography.titleMedium.fontSize.value * 1.5f,
             scaledTypography.titleMedium.fontSize.value,
-            0.01f
+            0.01f,
         )
         assertEquals(
             baseTypography.headlineMedium.fontSize.value * 1.5f,
             scaledTypography.headlineMedium.fontSize.value,
-            0.01f
+            0.01f,
         )
     }
 
@@ -73,15 +70,16 @@ class AccessibilityTest {
 
     @Test
     fun testUserPreferences_customAccessibilityConfiguration() {
-        val customPrefs = UserPreferences(
-            highContrastMode = true,
-            fontScaleMultiplier = 1.3f,
-            reduceMotion = true,
-            showCaptions = true,
-            showTranscripts = true,
-            screenReaderOptimized = true,
-            soundAlertsWithHaptic = true
-        )
+        val customPrefs =
+            UserPreferences(
+                highContrastMode = true,
+                fontScaleMultiplier = 1.3f,
+                reduceMotion = true,
+                showCaptions = true,
+                showTranscripts = true,
+                screenReaderOptimized = true,
+                soundAlertsWithHaptic = true,
+            )
         assertTrue(customPrefs.highContrastMode)
         assertEquals(1.3f, customPrefs.fontScaleMultiplier, 0.01f)
         assertTrue(customPrefs.reduceMotion)

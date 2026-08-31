@@ -5,7 +5,6 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class ProjectExportViewModelTest {
-
     @Test
     fun `calculateCost dynamically adjusts based on quality, fps and preview`() {
         val baseDurationSec = 30L

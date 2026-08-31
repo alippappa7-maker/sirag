@@ -1,7 +1,5 @@
 package com.siraj.app.features.admin.presentation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -30,7 +28,7 @@ import java.util.Locale
 @Composable
 fun ContentManagementScreen(
     viewModel: ContentManagementViewModel,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
@@ -46,57 +44,63 @@ fun ContentManagementScreen(
                     IconButton(onClick = { viewModel.exportReport() }) {
                         Icon(Icons.Default.Download, contentDescription = "تصدير تقرير")
                     }
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp),
         ) {
             // Search & Filters
             OutlinedTextField(
                 value = searchQuery,
-                onValueChange = { 
-                    searchQuery = it 
+                onValueChange = {
+                    searchQuery = it
                     viewModel.updateFilter(query = it)
                 },
                 label = { Text("بحث...") },
                 modifier = Modifier.fillMaxWidth(),
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilterChip(
                     selected = selectedStatus == null,
-                    onClick = { 
+                    onClick = {
                         selectedStatus = null
                         viewModel.updateFilter(status = null)
                     },
-                    label = { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.all)) }
+                    label = {
+                        Text(
+                            androidx.compose.ui.res
+                                .stringResource(com.siraj.app.R.string.all),
+                        )
+                    },
                 )
                 FilterChip(
                     selected = selectedStatus == AdminContentStatus.PENDING_REVIEW,
-                    onClick = { 
+                    onClick = {
                         selectedStatus = AdminContentStatus.PENDING_REVIEW
                         viewModel.updateFilter(status = AdminContentStatus.PENDING_REVIEW)
                     },
-                    label = { Text("قيد المراجعة") }
+                    label = { Text("قيد المراجعة") },
                 )
                 FilterChip(
                     selected = selectedStatus == AdminContentStatus.APPROVED,
-                    onClick = { 
+                    onClick = {
                         selectedStatus = AdminContentStatus.APPROVED
                         viewModel.updateFilter(status = AdminContentStatus.APPROVED)
                     },
-                    label = { Text("معتمد") }
+                    label = { Text("معتمد") },
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
 
             if (state.isLoading) {
@@ -106,7 +110,7 @@ fun ContentManagementScreen(
             } else {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 ) {
                     items(state.items) { item ->
                         AdminContentCard(
@@ -115,10 +119,10 @@ fun ContentManagementScreen(
                             onSuspend = { viewModel.suspendContent(item.id) },
                             onArchive = { viewModel.archiveContent(item.id) },
                             onRestore = { viewModel.restoreContent(item.id) },
-                            onViewLogs = { 
+                            onViewLogs = {
                                 selectedItemForLogs = item
                                 viewModel.loadAuditLogs(item.id)
-                            }
+                            },
                         )
                     }
                 }
@@ -150,9 +154,12 @@ fun ContentManagementScreen(
             },
             confirmButton = {
                 TextButton(onClick = { selectedItemForLogs = null }) {
-                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.close))
+                    Text(
+                        androidx.compose.ui.res
+                            .stringResource(com.siraj.app.R.string.close),
+                    )
                 }
-            }
+            },
         )
     }
 
@@ -165,7 +172,7 @@ fun ContentManagementScreen(
                 TextButton(onClick = { viewModel.clearReportUrl() }) {
                     Text("حسناً")
                 }
-            }
+            },
         )
     }
 }
@@ -177,14 +184,18 @@ fun AdminContentCard(
     onSuspend: () -> Unit,
     onArchive: () -> Unit,
     onRestore: () -> Unit,
-    onViewLogs: () -> Unit
+    onViewLogs: () -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
                 Text(text = item.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Badge(containerColor = getStatusColor(item.status)) {
                     Text(item.status.name)
@@ -194,7 +205,7 @@ fun AdminContentCard(
             Text("النوع: ${item.type} | نص شرعي: ${if (item.isReligiousText) "نعم" else "لا"}", style = MaterialTheme.typography.bodySmall)
             val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(item.createdAt))
             Text("تاريخ الإنشاء: $date | المالك: ${item.ownerId}", style = MaterialTheme.typography.bodySmall)
-            
+
             Spacer(modifier = Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 if (item.status != AdminContentStatus.APPROVED) {
@@ -214,12 +225,11 @@ fun AdminContentCard(
     }
 }
 
-fun getStatusColor(status: AdminContentStatus): Color {
-    return when(status) {
+fun getStatusColor(status: AdminContentStatus): Color =
+    when (status) {
         AdminContentStatus.APPROVED -> Color(0xFF4CAF50)
         AdminContentStatus.PENDING_REVIEW -> Color(0xFFFF9800)
         AdminContentStatus.SUSPENDED -> Color(0xFFF44336)
         AdminContentStatus.ARCHIVED -> Color(0xFF9E9E9E)
         AdminContentStatus.REJECTED -> Color(0xFFE91E63)
     }
-}

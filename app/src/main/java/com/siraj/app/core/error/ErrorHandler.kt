@@ -18,46 +18,58 @@ import java.net.UnknownHostException
 import java.util.concurrent.TimeoutException
 
 object ErrorHandler {
-
     private val logger: Logger = SirajLogger()
 
-    fun handle(exception: Throwable, requestId: String? = null): AppError {
-        val error = when (exception) {
-            is AppError -> exception
-            is UnknownHostException, is IOException, is SocketTimeoutException, is TimeoutException, is FirebaseNetworkException -> {
-                AppError.Network(details = CrashlyticsSanitizer.sanitizeMessage(exception.message))
-            }
-            is FirebaseAuthException -> {
-                AppError.Auth(details = CrashlyticsSanitizer.sanitizeMessage(exception.message))
-            }
-            is FirebaseFirestoreException -> {
-                when (exception.code) {
-                    FirebaseFirestoreException.Code.PERMISSION_DENIED -> AppError.Permission(details = CrashlyticsSanitizer.sanitizeMessage(exception.message))
-                    FirebaseFirestoreException.Code.UNAVAILABLE -> AppError.Network(details = CrashlyticsSanitizer.sanitizeMessage(exception.message))
-                    else -> AppError.Database(details = CrashlyticsSanitizer.sanitizeMessage(exception.message))
+    fun handle(
+        exception: Throwable,
+        requestId: String? = null,
+    ): AppError {
+        val error =
+            when (exception) {
+                is AppError -> exception
+                is UnknownHostException, is IOException, is SocketTimeoutException, is TimeoutException, is FirebaseNetworkException -> {
+                    AppError.Network(details = CrashlyticsSanitizer.sanitizeMessage(exception.message))
+                }
+                is FirebaseAuthException -> {
+                    AppError.Auth(details = CrashlyticsSanitizer.sanitizeMessage(exception.message))
+                }
+                is FirebaseFirestoreException -> {
+                    when (exception.code) {
+                        FirebaseFirestoreException.Code.PERMISSION_DENIED ->
+                            AppError.Permission(
+                                details = CrashlyticsSanitizer.sanitizeMessage(exception.message),
+                            )
+                        FirebaseFirestoreException.Code.UNAVAILABLE ->
+                            AppError.Network(
+                                details = CrashlyticsSanitizer.sanitizeMessage(exception.message),
+                            )
+                        else -> AppError.Database(details = CrashlyticsSanitizer.sanitizeMessage(exception.message))
+                    }
+                }
+                is StorageException -> {
+                    when (exception.errorCode) {
+                        StorageException.ERROR_NOT_AUTHORIZED ->
+                            AppError.Permission(
+                                details = CrashlyticsSanitizer.sanitizeMessage(exception.message),
+                            )
+                        else -> AppError.Storage(details = CrashlyticsSanitizer.sanitizeMessage(exception.message))
+                    }
+                }
+                is FirebaseException -> {
+                    AppError.Database(details = CrashlyticsSanitizer.sanitizeMessage(exception.message))
+                }
+                else -> {
+                    AppError.Unknown(details = CrashlyticsSanitizer.sanitizeMessage(exception.message))
                 }
             }
-            is StorageException -> {
-                when (exception.errorCode) {
-                    StorageException.ERROR_NOT_AUTHORIZED -> AppError.Permission(details = CrashlyticsSanitizer.sanitizeMessage(exception.message))
-                    else -> AppError.Storage(details = CrashlyticsSanitizer.sanitizeMessage(exception.message))
-                }
-            }
-            is FirebaseException -> {
-                AppError.Database(details = CrashlyticsSanitizer.sanitizeMessage(exception.message))
-            }
-            else -> {
-                AppError.Unknown(details = CrashlyticsSanitizer.sanitizeMessage(exception.message))
-            }
-        }
-        
+
         val category = mapToErrorCategory(error)
         logAndReportError(error, exception, category, requestId)
         return error
     }
 
-    private fun mapToErrorCategory(error: AppError): ErrorCategory {
-        return when (error) {
+    private fun mapToErrorCategory(error: AppError): ErrorCategory =
+        when (error) {
             is AppError.Network -> ErrorCategory.NETWORK
             is AppError.Auth -> ErrorCategory.AUTH
             is AppError.Permission -> ErrorCategory.SECURITY
@@ -69,28 +81,28 @@ object ErrorHandler {
             is AppError.LocalExecution -> ErrorCategory.LOCAL_EXECUTION
             is AppError.Unknown -> ErrorCategory.UNKNOWN
         }
-    }
 
     private fun logAndReportError(
         error: AppError,
         originalException: Throwable,
         category: ErrorCategory,
-        requestId: String?
+        requestId: String?,
     ) {
         val sanitizedDetails = CrashlyticsSanitizer.sanitizeMessage(error.technicalDetails)
         val logMessage = "ErrorRef: [${error.referenceId}] | Type: ${error.javaClass.simpleName} | Details: $sanitizedDetails"
-        
+
         logger.e("ErrorHandler", logMessage, originalException)
 
         // Log structured event to Crashlytics
         CrashMonitoringManager.logBreadcrumb(
             message = "AppError [${error.referenceId}]: ${error.javaClass.simpleName}",
             type = BreadcrumbType.SYSTEM_EVENT,
-            attributes = mapOf(
-                "ref_id" to error.referenceId,
-                "is_retryable" to error.isRetryable.toString(),
-                "category" to category.key
-            )
+            attributes =
+                mapOf(
+                    "ref_id" to error.referenceId,
+                    "is_retryable" to error.isRetryable.toString(),
+                    "category" to category.key,
+                ),
         )
 
         CrashMonitoringManager.recordException(
@@ -98,12 +110,12 @@ object ErrorHandler {
             category = category,
             severity = if (error.isRetryable) ErrorSeverity.WARNING else ErrorSeverity.ERROR,
             requestId = requestId ?: error.referenceId,
-            customKeys = mapOf(
-                "reference_id" to error.referenceId,
-                "is_retryable" to error.isRetryable,
-                "error_class" to error.javaClass.simpleName
-            )
+            customKeys =
+                mapOf(
+                    "reference_id" to error.referenceId,
+                    "is_retryable" to error.isRetryable,
+                    "error_class" to error.javaClass.simpleName,
+                ),
         )
     }
 }
-

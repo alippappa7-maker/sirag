@@ -25,7 +25,7 @@ fun SirajTextField(
     isError: Boolean = false,
     errorMessage: String? = null,
     singleLine: Boolean = true,
-    trailingIcon: @Composable (() -> Unit)? = null
+    trailingIcon: @Composable (() -> Unit)? = null,
 ) {
     val a11yConfig = LocalAccessibilityConfig.current
     val isHighContrast = a11yConfig.highContrastMode
@@ -35,27 +35,39 @@ fun SirajTextField(
         onValueChange = onValueChange,
         label = { Text(label) },
         trailingIcon = trailingIcon,
-        modifier = modifier
-            .fillMaxWidth()
-            .defaultMinSize(minHeight = 48.dp)
-            .semantics {
-                if (isError && errorMessage != null) {
-                    error(errorMessage)
-                }
-            },
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = 48.dp)
+                .semantics {
+                    if (isError && errorMessage != null) {
+                        error(errorMessage)
+                    }
+                },
         singleLine = singleLine,
         shape = MaterialTheme.shapes.small,
         isError = isError,
-        supportingText = if (isError && errorMessage != null) {
-            { Text(text = errorMessage, color = MaterialTheme.colorScheme.error) }
-        } else null,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = if (isHighContrast) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = if (isHighContrast) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-            errorBorderColor = MaterialTheme.colorScheme.error,
-            focusedLabelColor = MaterialTheme.colorScheme.primary,
-            unfocusedLabelColor = if (isHighContrast) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        supportingText =
+            if (isError && errorMessage != null) {
+                { Text(text = errorMessage, color = MaterialTheme.colorScheme.error) }
+            } else {
+                null
+            },
+        colors =
+            OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = if (isHighContrast) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor =
+                    if (isHighContrast) {
+                        MaterialTheme.colorScheme.onBackground
+                    } else {
+                        MaterialTheme.colorScheme.onSurface.copy(
+                            alpha = 0.38f,
+                        )
+                    },
+                errorBorderColor = MaterialTheme.colorScheme.error,
+                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                unfocusedLabelColor = if (isHighContrast) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
     )
 }
 
@@ -67,8 +79,7 @@ fun SirajTextFieldPreview() {
         SirajTextField(
             value = "نص تجريبي",
             onValueChange = {},
-            label = "العنوان"
+            label = "العنوان",
         )
     }
 }
-

@@ -16,11 +16,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.siraj.app.features.project.domain.models.*
 
@@ -30,9 +28,10 @@ fun SoundtrackLibraryScreen(
     projectId: String,
     sceneId: String? = null,
     onNavigateBack: () -> Unit,
-    viewModel: SoundtrackLibraryViewModel = viewModel(
-        factory = SoundtrackLibraryViewModelFactory(projectId, sceneId)
-    )
+    viewModel: SoundtrackLibraryViewModel =
+        viewModel(
+            factory = SoundtrackLibraryViewModelFactory(projectId, sceneId),
+        ),
 ) {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
@@ -69,77 +68,90 @@ fun SoundtrackLibraryScreen(
                         Text(
                             text = if (sceneId != null) "مكتبة المؤثرات والخلفيات الصوتية" else "مكتبة الصوتيات والمؤثرات",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                         Text(
                             text = "مرخصة • طبيعية وفوكالز • تحكم كامل بالطبقات",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.back),
+                        )
                     }
-                }
+                },
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding),
         ) {
             // Search Input Field
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { viewModel.onSearchQueryChange(it) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                 placeholder = { Text("ابحث عن مؤثر، صوت طبيعة، صوت كتابة، مطر، نشيد...") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 trailingIcon = {
                     if (searchQuery.isNotEmpty()) {
                         IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
-                            Icon(Icons.Default.Close, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.clear))
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription =
+                                    androidx.compose.ui.res
+                                        .stringResource(com.siraj.app.R.string.clear),
+                            )
                         }
                     }
                 },
                 shape = RoundedCornerShape(12.dp),
-                singleLine = true
+                singleLine = true,
             )
 
             // Preferences & Islamic Filter Bar (Hide Music Toggle)
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Surface(
                     shape = RoundedCornerShape(8.dp),
                     color = if (hideMusicOnly) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-                    modifier = Modifier.clickable { viewModel.onToggleHideMusic(!hideMusicOnly) }
+                    modifier = Modifier.clickable { viewModel.onToggleHideMusic(!hideMusicOnly) },
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
                             imageVector = if (hideMusicOnly) Icons.Default.Check else Icons.Default.Clear,
                             contentDescription = null,
                             tint = if (hideMusicOnly) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(16.dp),
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "إخفاء الموسيقى (أصوات طبيعية وفوكالز فقط)",
                             style = MaterialTheme.typography.labelSmall,
-                            fontWeight = if (hideMusicOnly) FontWeight.Bold else FontWeight.Normal
+                            fontWeight = if (hideMusicOnly) FontWeight.Bold else FontWeight.Normal,
                         )
                     }
                 }
@@ -147,16 +159,22 @@ fun SoundtrackLibraryScreen(
 
             // Categories Filter Chips
             LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 6.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 item {
                     FilterChip(
                         selected = selectedCategory == null,
                         onClick = { viewModel.onCategorySelect(null) },
-                        label = { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.all)) }
+                        label = {
+                            Text(
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.all),
+                            )
+                        },
                     )
                 }
                 items(SoundtrackCategory.values()) { cat ->
@@ -164,7 +182,7 @@ fun SoundtrackLibraryScreen(
                         FilterChip(
                             selected = selectedCategory == cat,
                             onClick = { viewModel.onCategorySelect(cat) },
-                            label = { Text(cat.displayName) }
+                            label = { Text(cat.displayName) },
                         )
                     }
                 }
@@ -174,15 +192,16 @@ fun SoundtrackLibraryScreen(
             if (sceneId != null && currentSceneTrack != null) {
                 val track = currentSceneTrack!!
                 Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 6.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 6.dp),
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f))
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f)),
                 ) {
                     Row(
                         modifier = Modifier.padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         Spacer(modifier = Modifier.width(10.dp))
@@ -190,12 +209,12 @@ fun SoundtrackLibraryScreen(
                             Text(
                                 text = "الصوت النشط بالمشهد: ${track.soundTitle}",
                                 style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
                             )
                             Text(
                                 text = "مستوى الصوت: ${(track.volume * 100).toInt()}% • تكرار: ${if (track.loop) "نعم" else "لا"} • تلاشي: ${if (track.fadeIn) "نعم" else "لا"}",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                         IconButton(onClick = { viewModel.removeTrackFromScene() }) {
@@ -212,32 +231,34 @@ fun SoundtrackLibraryScreen(
                 }
             } else if (soundtracks.isEmpty()) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(32.dp),
-                    contentAlignment = Alignment.Center
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(32.dp),
+                    contentAlignment = Alignment.Center,
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
                             Icons.Default.Search,
                             contentDescription = null,
                             modifier = Modifier.size(56.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
                             text = "لم يتم العثور على مؤثرات صوتية تطابق الفلتر الحالي",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
             } else {
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp, vertical = 6.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     items(soundtracks, key = { it.id }) { item ->
                         SoundtrackItemCard(
@@ -245,7 +266,7 @@ fun SoundtrackLibraryScreen(
                             isPlaying = isPlaying && playingId == item.id,
                             onPlayToggle = { viewModel.togglePlaySoundtrack(item) },
                             onSelectForConfig = { viewModel.openConfigureDialog(item) },
-                            isSceneContext = sceneId != null
+                            isSceneContext = sceneId != null,
                         )
                     }
                     item {
@@ -273,12 +294,12 @@ fun SoundtrackLibraryScreen(
                     Text(
                         text = track.title,
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     Text(
                         text = "التصنيف: ${track.category.displayName} • المدة: ${(track.durationMs / 1000f)} ث",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -289,23 +310,24 @@ fun SoundtrackLibraryScreen(
                     Text(
                         text = "مستوى صوت الخلفية: ${(volume * 100).toInt()}%",
                         style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     Slider(
                         value = volume,
                         onValueChange = { viewModel.onVolumeChange(it) },
                         valueRange = 0.05f..1.0f,
                         steps = 19,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
 
                     // Looping & Fade toggles
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { viewModel.onLoopToggle(!isLooping) }
-                            .padding(vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable { viewModel.onLoopToggle(!isLooping) }
+                                .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Checkbox(checked = isLooping, onCheckedChange = { viewModel.onLoopToggle(it) })
                         Spacer(modifier = Modifier.width(6.dp))
@@ -313,11 +335,12 @@ fun SoundtrackLibraryScreen(
                     }
 
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { viewModel.onFadeInToggle(!isFadeIn) }
-                            .padding(vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable { viewModel.onFadeInToggle(!isFadeIn) }
+                                .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Checkbox(checked = isFadeIn, onCheckedChange = { viewModel.onFadeInToggle(it) })
                         Spacer(modifier = Modifier.width(6.dp))
@@ -325,11 +348,12 @@ fun SoundtrackLibraryScreen(
                     }
 
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { viewModel.onFadeOutToggle(!isFadeOut) }
-                            .padding(vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable { viewModel.onFadeOutToggle(!isFadeOut) }
+                                .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Checkbox(checked = isFadeOut, onCheckedChange = { viewModel.onFadeOutToggle(it) })
                         Spacer(modifier = Modifier.width(6.dp))
@@ -339,25 +363,25 @@ fun SoundtrackLibraryScreen(
                     // License Card
                     Spacer(modifier = Modifier.height(8.dp))
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)),
                     ) {
                         Column(modifier = Modifier.padding(8.dp)) {
                             Text(
                                 text = "الترخيص: ${track.licenseType.displayName}",
                                 style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
                             )
                             if (track.attributionText.isNotBlank()) {
                                 Text(
                                     text = "نص النسبة: ${track.attributionText}",
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
                             Text(
                                 text = "القيود: ${track.usageRestrictions}",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.outline
+                                color = MaterialTheme.colorScheme.outline,
                             )
                         }
                     }
@@ -370,9 +394,12 @@ fun SoundtrackLibraryScreen(
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.closeConfigureDialog() }) {
-                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
+                    Text(
+                        androidx.compose.ui.res
+                            .stringResource(com.siraj.app.R.string.cancel),
+                    )
                 }
-            }
+            },
         )
     }
 }
@@ -383,30 +410,31 @@ fun SoundtrackItemCard(
     isPlaying: Boolean,
     onPlayToggle: () -> Unit,
     onSelectForConfig: () -> Unit,
-    isSceneContext: Boolean
+    isSceneContext: Boolean,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 // Play / Pause Icon Button
                 IconButton(
                     onClick = onPlayToggle,
-                    modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary)
+                    modifier =
+                        Modifier
+                            .size(42.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary),
                 ) {
                     Icon(
                         imageVector = if (isPlaying) Icons.Default.Close else Icons.Default.PlayArrow,
                         contentDescription = if (isPlaying) "إيقاف" else "معاينة",
-                        tint = MaterialTheme.colorScheme.onPrimary
+                        tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 }
 
@@ -418,27 +446,40 @@ fun SoundtrackItemCard(
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = "${item.category.displayName} • ${(item.durationMs / 1000f)} ثانية",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
 
                 // Nature / SFX / Music Badge
                 Surface(
                     shape = RoundedCornerShape(6.dp),
-                    color = if (item.isMusic) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.primaryContainer
+                    color = if (item.isMusic) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.primaryContainer,
                 ) {
                     Text(
-                        text = if (item.isMusic) "موسيقى مرخصة" else if (item.category == SoundtrackCategory.NATURE_AMBIENCE) "طبيعة" else if (item.category == SoundtrackCategory.NASHEED_VOCAL) "فوكال بشري" else "مؤثر SFX",
+                        text =
+                            if (item.isMusic) {
+                                "موسيقى مرخصة"
+                            } else if (item.category ==
+                                SoundtrackCategory.NATURE_AMBIENCE
+                            ) {
+                                "طبيعة"
+                            } else if (item.category ==
+                                SoundtrackCategory.NASHEED_VOCAL
+                            ) {
+                                "فوكال بشري"
+                            } else {
+                                "مؤثر SFX"
+                            },
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                         color = if (item.isMusic) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                     )
                 }
             }
@@ -449,26 +490,26 @@ fun SoundtrackItemCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
 
             Spacer(modifier = Modifier.height(6.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "الرخصة: ${item.licenseType.displayName}",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.outline
+                    color = MaterialTheme.colorScheme.outline,
                 )
 
                 if (isSceneContext) {
                     FilledTonalButton(
                         onClick = onSelectForConfig,
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                        modifier = Modifier.height(34.dp)
+                        modifier = Modifier.height(34.dp),
                     ) {
                         Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))

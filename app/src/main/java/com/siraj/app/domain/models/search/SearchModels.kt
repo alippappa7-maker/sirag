@@ -1,46 +1,57 @@
 package com.siraj.app.domain.models.search
 
-import androidx.compose.ui.graphics.Color
 import java.util.UUID
 
-enum class SearchCategory(val titleArabic: String, val englishName: String) {
+enum class SearchCategory(
+    val titleArabic: String,
+    val englishName: String,
+) {
     ALL("الكل", "All"),
     QURAN("القرآن الكريم", "Quran"),
     AUDIO("المكتبة الصوتية", "Audio"),
     FLASH("الومضات", "Flashes"),
     PROJECT("مشاريعي", "Projects"),
     TEMPLATE("القوالب", "Templates"),
-    SOURCE("المصادر والمراجع", "Sources")
+    SOURCE("المصادر والمراجع", "Sources"),
 }
 
-enum class SearchLanguage(val titleArabic: String, val code: String) {
+enum class SearchLanguage(
+    val titleArabic: String,
+    val code: String,
+) {
     ALL("جميع اللغات", "all"),
     ARABIC("العربية", "ar"),
     ENGLISH("الإنجليزية", "en"),
     URDU("الأردية", "ur"),
     FRENCH("الفرنسية", "fr"),
-    OTHER("أخرى", "other")
+    OTHER("أخرى", "other"),
 }
 
-enum class SearchContentType(val titleArabic: String) {
+enum class SearchContentType(
+    val titleArabic: String,
+) {
     ALL("جميع الأنواع"),
     TEXT("نصوص وتفاسير"),
     AUDIO("صوتيات وتلاوات"),
     VIDEO("فيديوهات ومرئيات"),
     PROJECT("مشاريع عمل"),
     TEMPLATE("قوالب إنتاج"),
-    REFERENCE("مراجع وأحاديث")
+    REFERENCE("مراجع وأحاديث"),
 }
 
-enum class SearchVerificationFilter(val titleArabic: String) {
+enum class SearchVerificationFilter(
+    val titleArabic: String,
+) {
     ALL_APPROVED("المعتمد والموثق"),
-    VERIFIED_ONLY("المراجع الموثقة فقط (Verified)")
+    VERIFIED_ONLY("المراجع الموثقة فقط (Verified)"),
 }
 
-enum class SearchSortOption(val titleArabic: String) {
+enum class SearchSortOption(
+    val titleArabic: String,
+) {
     RELEVANCE("الأعلى صلة"),
     NEWEST("الأحدث أولاً"),
-    POPULAR("الأكثر استماعاً وتداولاً")
+    POPULAR("الأكثر استماعاً وتداولاً"),
 }
 
 data class SearchFilter(
@@ -49,7 +60,7 @@ data class SearchFilter(
     val contentType: SearchContentType = SearchContentType.ALL,
     val verificationFilter: SearchVerificationFilter = SearchVerificationFilter.ALL_APPROVED,
     val sortOption: SearchSortOption = SearchSortOption.RELEVANCE,
-    val onlyPrivateProjects: Boolean = false
+    val onlyPrivateProjects: Boolean = false,
 )
 
 data class SearchResultItem(
@@ -67,7 +78,7 @@ data class SearchResultItem(
     val timestamp: Long = System.currentTimeMillis(),
     val targetRoute: String = "",
     val durationText: String? = null,
-    val extraMetadata: Map<String, String> = emptyMap()
+    val extraMetadata: Map<String, String> = emptyMap(),
 )
 
 data class GlobalSearchResult(
@@ -76,7 +87,7 @@ data class GlobalSearchResult(
     val items: List<SearchResultItem> = emptyList(),
     val categoryCounts: Map<SearchCategory, Int> = emptyMap(),
     val page: Int = 1,
-    val hasMore: Boolean = false
+    val hasMore: Boolean = false,
 )
 
 data class SearchHistoryItem(
@@ -85,11 +96,11 @@ data class SearchHistoryItem(
     val category: SearchCategory = SearchCategory.ALL,
     val timestamp: Long = System.currentTimeMillis(),
     val resultCount: Int = 0,
-    val userId: String? = null
+    val userId: String? = null,
 )
 
 data class SearchSuggestion(
     val text: String,
     val category: SearchCategory = SearchCategory.ALL,
-    val isHistory: Boolean = false
+    val isHistory: Boolean = false,
 )

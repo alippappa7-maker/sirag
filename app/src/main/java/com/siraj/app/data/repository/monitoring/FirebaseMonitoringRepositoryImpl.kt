@@ -35,7 +35,7 @@ class FirebaseMonitoringRepositoryImpl(
             val healthyCount = healthList.count { it.status == ServiceHealthStatus.HEALTHY }
             val degradedCount = healthList.count { it.status == ServiceHealthStatus.DEGRADED }
             val unavailableCount = healthList.count { it.status == ServiceHealthStatus.UNAVAILABLE || it.status == ServiceHealthStatus.CIRCUIT_BROKEN_DISABLED }
-            
+
             val overallStatus = when {
                 unavailableCount > 0 -> ServiceHealthStatus.UNAVAILABLE
                 degradedCount > 0 -> ServiceHealthStatus.DEGRADED
@@ -80,7 +80,7 @@ class FirebaseMonitoringRepositoryImpl(
     override suspend fun runProbeHealthCheck(service: MonitoredService): Result<ServiceHealthCheck> {
         return try {
             val startTime = System.currentTimeMillis()
-            
+
             // Non-intrusive probe simulation (Safe ping, no religious text abuse, no secrets)
             val currentList = _servicesHealthFlow.value
             val current = currentList.firstOrNull { it.service == service }
@@ -110,7 +110,7 @@ class FirebaseMonitoringRepositoryImpl(
             )
 
             _servicesHealthFlow.value = currentList.map { if (it.service == service) updated else it }
-            
+
             // Persist probe record to Firestore telemetry collection if online
             try {
                 if (firestore != null) {
@@ -210,7 +210,7 @@ class FirebaseMonitoringRepositoryImpl(
             )
 
             _incidentsFlow.value = listOf(incident) + _incidentsFlow.value
-            
+
             // Link incident to service
             _servicesHealthFlow.value = _servicesHealthFlow.value.map { check ->
                 if (check.service == service) {

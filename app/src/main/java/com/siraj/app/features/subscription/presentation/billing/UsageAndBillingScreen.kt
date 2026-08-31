@@ -37,7 +37,7 @@ import java.util.Locale
 fun UsageAndBillingScreen(
     viewModel: SubscriptionViewModel,
     onNavigateBack: () -> Unit,
-    onNavigateToPlans: () -> Unit
+    onNavigateToPlans: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
@@ -48,11 +48,16 @@ fun UsageAndBillingScreen(
                 title = { Text("الاستخدام والفوترة") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.back),
+                        )
                     }
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         if (state.isLoading && state.subscription == null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -60,60 +65,66 @@ fun UsageAndBillingScreen(
             }
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(padding),
                 contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 // Subscription Info
                 item {
                     val currentPlanName = state.availablePlans.find { it.id == state.subscription?.planId }?.name ?: "الخطة المجانية"
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text("الخطة الحالية", style = MaterialTheme.typography.labelMedium)
                             Text(currentPlanName, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                            
+
                             Spacer(modifier = Modifier.height(8.dp))
-                            
+
                             val sub = state.subscription
                             if (sub != null && sub.status == SubscriptionStatus.ACTIVE) {
                                 val date = sub.renewsAt?.let { SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date(it)) } ?: "غير معروف"
                                 Text("تتجدد في: $date", style = MaterialTheme.typography.bodyMedium)
                             } else if (sub != null && sub.status == SubscriptionStatus.CANCELLED) {
                                 val date = sub.expiresAt?.let { SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date(it)) } ?: "غير معروف"
-                                Text("تنتهي في: $date (تم الإلغاء)", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium)
+                                Text(
+                                    "تنتهي في: $date (تم الإلغاء)",
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
                             }
-                            
+
                             Spacer(modifier = Modifier.height(16.dp))
-                            
+
                             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Button(onClick = onNavigateToPlans, modifier = Modifier.weight(1f)) {
                                     Text("تغيير الخطة")
                                 }
-                                
+
                                 OutlinedButton(
                                     onClick = {
                                         // Open Google Play Subscriptions
-                                        val url = if (sub?.productId != null && sub.productId != "free") {
-                                            "https://play.google.com/store/account/subscriptions?sku=${sub.productId}&package=${context.packageName}"
-                                        } else {
-                                            "https://play.google.com/store/account/subscriptions"
-                                        }
+                                        val url =
+                                            if (sub?.productId != null && sub.productId != "free") {
+                                                "https://play.google.com/store/account/subscriptions?sku=${sub.productId}&package=${context.packageName}"
+                                            } else {
+                                                "https://play.google.com/store/account/subscriptions"
+                                            }
                                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                                         context.startActivity(intent)
                                     },
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.weight(1f),
                                 ) {
                                     Text("إدارة في المتجر")
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Icon(Icons.Default.OpenInNew, contentDescription = null, modifier = Modifier.size(16.dp))
                                 }
                             }
-                            
+
                             TextButton(onClick = { viewModel.restorePurchases() }, modifier = Modifier.fillMaxWidth()) {
                                 Text("استعادة المشتريات")
                             }
@@ -125,46 +136,55 @@ fun UsageAndBillingScreen(
                 item {
                     state.balance?.let { balance ->
                         val usagePercent = if (balance.totalPurchased > 0) (balance.totalUsed.toFloat() / balance.totalPurchased) else 0f
-                        
+
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(Icons.Default.CreditCard, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    Text("رصيد العمليات الإضافية", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                                    Text(
+                                        "رصيد العمليات الإضافية",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold,
+                                    )
                                 }
-                                
+
                                 Spacer(modifier = Modifier.height(16.dp))
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                                     Column {
                                         Text("المتبقي", style = MaterialTheme.typography.labelSmall)
-                                        Text("${balance.availableCredits} نقطة", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary)
+                                        Text(
+                                            "${balance.availableCredits} نقطة",
+                                            style = MaterialTheme.typography.headlineMedium,
+                                            color = MaterialTheme.colorScheme.primary,
+                                        )
                                     }
                                     Column(horizontalAlignment = Alignment.End) {
                                         Text("المستهلك", style = MaterialTheme.typography.labelSmall)
                                         Text("${balance.totalUsed} نقطة", style = MaterialTheme.typography.titleMedium)
                                     }
                                 }
-                                
+
                                 if (usagePercent > 0.8f) {
                                     Spacer(modifier = Modifier.height(12.dp))
                                     Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clip(RoundedCornerShape(8.dp))
-                                            .background(MaterialTheme.colorScheme.errorContainer)
-                                            .padding(8.dp),
-                                        verticalAlignment = Alignment.CenterVertically
+                                        modifier =
+                                            Modifier
+                                                .fillMaxWidth()
+                                                .clip(RoundedCornerShape(8.dp))
+                                                .background(MaterialTheme.colorScheme.errorContainer)
+                                                .padding(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
                                     ) {
                                         Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
                                             "لقد استهلكت أكثر من 80% من رصيدك. يرجى الترقية لتجنب توقف الخدمات.",
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onErrorContainer
+                                            color = MaterialTheme.colorScheme.onErrorContainer,
                                         )
                                     }
                                 }
@@ -176,22 +196,35 @@ fun UsageAndBillingScreen(
                 // Highest Cost Operations
                 item {
                     if (state.transactions.isNotEmpty()) {
-                        val aggregated = state.transactions
-                            .filter { it.type == TransactionType.DEBIT }
-                            .groupBy { it.operationType }
-                            .mapValues { entry -> entry.value.sumOf { it.amount } }
-                            .entries.sortedByDescending { it.value }
-                            .take(3)
-                            
+                        val aggregated =
+                            state.transactions
+                                .filter { it.type == TransactionType.DEBIT }
+                                .groupBy { it.operationType }
+                                .mapValues { entry -> entry.value.sumOf { it.amount } }
+                                .entries
+                                .sortedByDescending { it.value }
+                                .take(3)
+
                         if (aggregated.isNotEmpty()) {
                             Card(modifier = Modifier.fillMaxWidth()) {
                                 Column(modifier = Modifier.padding(16.dp)) {
-                                    Text("أكثر العمليات استهلاكاً للرصيد", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                                    Text(
+                                        "أكثر العمليات استهلاكاً للرصيد",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontWeight = FontWeight.Bold,
+                                    )
                                     Spacer(modifier = Modifier.height(8.dp))
                                     aggregated.forEach { (operation, totalAmount) ->
-                                        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                        ) {
                                             Text(operation, style = MaterialTheme.typography.bodyMedium)
-                                            Text("$totalAmount نقطة", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
+                                            Text(
+                                                "$totalAmount نقطة",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.error,
+                                            )
                                         }
                                     }
                                 }
@@ -230,15 +263,15 @@ fun TransactionItem(tx: CreditTransaction) {
     val isCredit = tx.type == TransactionType.CREDIT || tx.type == TransactionType.BONUS
     val color = if (isCredit) Color(0xFF4CAF50) else MaterialTheme.colorScheme.error
     val sign = if (isCredit) "+" else "-"
-    
+
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Row(
             modifier = Modifier.padding(16.dp).fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(tx.reason, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
@@ -252,7 +285,7 @@ fun TransactionItem(tx: CreditTransaction) {
                 "$sign${tx.amount}",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = color
+                color = color,
             )
         }
     }

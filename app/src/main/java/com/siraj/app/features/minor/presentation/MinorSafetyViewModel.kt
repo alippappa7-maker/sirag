@@ -23,13 +23,12 @@ data class MinorSafetyUiState(
     val showVerifyOtpDialog: Boolean = false,
     val selectedConsentIdToVerify: String? = null,
     val showReportDialog: Boolean = false,
-    val showPurgeConfirmDialog: Boolean = false
+    val showPurgeConfirmDialog: Boolean = false,
 )
 
 class MinorSafetyViewModel(
-    private val repository: MinorSafetyRepository
+    private val repository: MinorSafetyRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(MinorSafetyUiState())
     val uiState: StateFlow<MinorSafetyUiState> = _uiState.asStateFlow()
 
@@ -56,7 +55,10 @@ class MinorSafetyViewModel(
         }
     }
 
-    fun setUserAgeBracket(bracket: UserAgeBracket, guardianEmail: String? = null) {
+    fun setUserAgeBracket(
+        bracket: UserAgeBracket,
+        guardianEmail: String? = null,
+    ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             when (val res = repository.setUserAgeBracket(_uiState.value.currentUserId, bracket, guardianEmail)) {
@@ -66,7 +68,7 @@ class MinorSafetyViewModel(
                             policy = res.data ?: it.policy,
                             ageBracket = bracket,
                             isLoading = false,
-                            userMessage = "تم تحديث الفئة العمرية وتطبيق سياسة الحماية الصارمة بنجاح."
+                            userMessage = "تم تحديث الفئة العمرية وتطبيق سياسة الحماية الصارمة بنجاح.",
                         )
                     }
                 }
@@ -75,7 +77,7 @@ class MinorSafetyViewModel(
                         it.copy(
                             isLoading = false,
                             userMessage = res.message ?: "فشل تحديث الفئة العمرية.",
-                            isErrorMessage = true
+                            isErrorMessage = true,
                         )
                     }
                 }
@@ -84,7 +86,10 @@ class MinorSafetyViewModel(
         }
     }
 
-    fun requestParentalConsent(guardianEmail: String, guardianName: String) {
+    fun requestParentalConsent(
+        guardianEmail: String,
+        guardianName: String,
+    ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             when (val res = repository.requestParentalConsent(_uiState.value.currentUserId, guardianEmail, guardianName)) {
@@ -96,7 +101,7 @@ class MinorSafetyViewModel(
                             consents = updatedConsents,
                             isLoading = false,
                             showConsentDialog = false,
-                            userMessage = "تم إرسال طلب الموافقة ورمز التحقق إلى بريد ولي الأمر: $guardianEmail"
+                            userMessage = "تم إرسال طلب الموافقة ورمز التحقق إلى بريد ولي الأمر: $guardianEmail",
                         )
                     }
                 }
@@ -105,7 +110,7 @@ class MinorSafetyViewModel(
                         it.copy(
                             isLoading = false,
                             userMessage = res.message ?: "فشل إرسال طلب الموافقة.",
-                            isErrorMessage = true
+                            isErrorMessage = true,
                         )
                     }
                 }
@@ -114,21 +119,25 @@ class MinorSafetyViewModel(
         }
     }
 
-    fun verifyParentalConsent(consentId: String, code: String) {
+    fun verifyParentalConsent(
+        consentId: String,
+        code: String,
+    ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             when (val res = repository.verifyParentalConsent(consentId, code)) {
                 is Resource.Success -> {
-                    val updatedConsents = _uiState.value.consents.map {
-                        if (it.consentId == consentId) res.data ?: it else it
-                    }
+                    val updatedConsents =
+                        _uiState.value.consents.map {
+                            if (it.consentId == consentId) res.data ?: it else it
+                        }
                     _uiState.update {
                         it.copy(
                             consents = updatedConsents,
                             isLoading = false,
                             showVerifyOtpDialog = false,
                             selectedConsentIdToVerify = null,
-                            userMessage = "تم التحقق وتوثيق موافقة ولي الأمر رسمياً وتفعيل الصلاحيات المعتمدة."
+                            userMessage = "تم التحقق وتوثيق موافقة ولي الأمر رسمياً وتفعيل الصلاحيات المعتمدة.",
                         )
                     }
                 }
@@ -137,7 +146,7 @@ class MinorSafetyViewModel(
                         it.copy(
                             isLoading = false,
                             userMessage = res.message ?: "رمز التحقق غير صحيح.",
-                            isErrorMessage = true
+                            isErrorMessage = true,
                         )
                     }
                 }
@@ -151,14 +160,15 @@ class MinorSafetyViewModel(
             _uiState.update { it.copy(isLoading = true) }
             when (val res = repository.revokeParentalConsent(consentId)) {
                 is Resource.Success -> {
-                    val updatedConsents = _uiState.value.consents.map {
-                        if (it.consentId == consentId) res.data ?: it else it
-                    }
+                    val updatedConsents =
+                        _uiState.value.consents.map {
+                            if (it.consentId == consentId) res.data ?: it else it
+                        }
                     _uiState.update {
                         it.copy(
                             consents = updatedConsents,
                             isLoading = false,
-                            userMessage = "تم سحب موافقة ولي الأمر وإعادة تفعيل وضع الحظر التام."
+                            userMessage = "تم سحب موافقة ولي الأمر وإعادة تفعيل وضع الحظر التام.",
                         )
                     }
                 }
@@ -167,7 +177,7 @@ class MinorSafetyViewModel(
                         it.copy(
                             isLoading = false,
                             userMessage = res.message ?: "فشل سحب الموافقة.",
-                            isErrorMessage = true
+                            isErrorMessage = true,
                         )
                     }
                 }
@@ -180,24 +190,25 @@ class MinorSafetyViewModel(
         incidentType: ChildSafetyIncidentType,
         description: String,
         reportedUserId: String?,
-        reportedContentId: String?
+        reportedContentId: String?,
     ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            val report = ChildSafetyIncidentReport(
-                incidentType = incidentType,
-                reportedUserId = reportedUserId,
-                reportedContentId = reportedContentId,
-                reporterUserId = _uiState.value.currentUserId,
-                description = description
-            )
+            val report =
+                ChildSafetyIncidentReport(
+                    incidentType = incidentType,
+                    reportedUserId = reportedUserId,
+                    reportedContentId = reportedContentId,
+                    reporterUserId = _uiState.value.currentUserId,
+                    description = description,
+                )
             when (val res = repository.submitChildSafetyReport(report)) {
                 is Resource.Success -> {
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             showReportDialog = false,
-                            userMessage = "تم تسجيل وتصعيد البلاغ ذي الأولوية القصوى (${res.data?.urgency?.titleArabic}) لفريق حماية الأطفال والإدارة فوراً."
+                            userMessage = "تم تسجيل وتصعيد البلاغ ذي الأولوية القصوى (${res.data?.urgency?.titleArabic}) لفريق حماية الأطفال والإدارة فوراً.",
                         )
                     }
                 }
@@ -206,7 +217,7 @@ class MinorSafetyViewModel(
                         it.copy(
                             isLoading = false,
                             userMessage = res.message ?: "فشل إرسال البلاغ.",
-                            isErrorMessage = true
+                            isErrorMessage = true,
                         )
                     }
                 }
@@ -225,7 +236,7 @@ class MinorSafetyViewModel(
                             isLoading = false,
                             showPurgeConfirmDialog = false,
                             lastDeletionSummary = res.data,
-                            userMessage = "تم تطهير وحذف كافة بيانات وتسجيلات ومشاريع القاصر نهائياً."
+                            userMessage = "تم تطهير وحذف كافة بيانات وتسجيلات ومشاريع القاصر نهائياً.",
                         )
                     }
                 }
@@ -234,7 +245,7 @@ class MinorSafetyViewModel(
                         it.copy(
                             isLoading = false,
                             userMessage = res.message ?: "فشل عملية الحذف والتطهير.",
-                            isErrorMessage = true
+                            isErrorMessage = true,
                         )
                     }
                 }
@@ -243,29 +254,39 @@ class MinorSafetyViewModel(
         }
     }
 
-    fun evaluateEducationalContent(title: String, textSnippet: String) {
-        val check = repository.evaluateEducationalContent(
-            contentId = "edu_preview_${System.currentTimeMillis()}",
-            title = title,
-            textSnippet = textSnippet
-        )
+    fun evaluateEducationalContent(
+        title: String,
+        textSnippet: String,
+    ) {
+        val check =
+            repository.evaluateEducationalContent(
+                contentId = "edu_preview_${System.currentTimeMillis()}",
+                title = title,
+                textSnippet = textSnippet,
+            )
         _uiState.update { it.copy(educationalSafetyCheck = check) }
     }
 
     fun openConsentDialog() = _uiState.update { it.copy(showConsentDialog = true) }
+
     fun closeConsentDialog() = _uiState.update { it.copy(showConsentDialog = false) }
 
-    fun openVerifyOtpDialog(consentId: String) = _uiState.update {
-        it.copy(showVerifyOtpDialog = true, selectedConsentIdToVerify = consentId)
-    }
-    fun closeVerifyOtpDialog() = _uiState.update {
-        it.copy(showVerifyOtpDialog = false, selectedConsentIdToVerify = null)
-    }
+    fun openVerifyOtpDialog(consentId: String) =
+        _uiState.update {
+            it.copy(showVerifyOtpDialog = true, selectedConsentIdToVerify = consentId)
+        }
+
+    fun closeVerifyOtpDialog() =
+        _uiState.update {
+            it.copy(showVerifyOtpDialog = false, selectedConsentIdToVerify = null)
+        }
 
     fun openReportDialog() = _uiState.update { it.copy(showReportDialog = true) }
+
     fun closeReportDialog() = _uiState.update { it.copy(showReportDialog = false) }
 
     fun openPurgeConfirmDialog() = _uiState.update { it.copy(showPurgeConfirmDialog = true) }
+
     fun closePurgeConfirmDialog() = _uiState.update { it.copy(showPurgeConfirmDialog = false) }
 
     fun dismissUserMessage() = _uiState.update { it.copy(userMessage = null, isErrorMessage = false) }

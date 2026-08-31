@@ -11,25 +11,24 @@ import java.util.UUID
  * محرك الحوكمة والتحقق لإصدارات وتصحيحات المحتوى الشرعي والفني
  */
 object ContentCorrectionEngine {
-
     data class CorrectionDraftResult(
         val newVersion: ContentVersion,
         val correctionNotice: CorrectionNotice,
         val sourceRevisions: List<SourceRevision>,
         val affectedAssets: List<AffectedAsset>,
-        val updatedPreviousVersion: ContentVersion
+        val updatedPreviousVersion: ContentVersion,
     )
 
     data class CorrectionApprovalResult(
         val newPublishedVersion: ContentVersion,
         val supersededPreviousVersion: ContentVersion,
         val approvedNotice: CorrectionNotice,
-        val updatedAssets: List<AffectedAsset>
+        val updatedAssets: List<AffectedAsset>,
     )
 
     data class CorrectionRejectionResult(
         val rejectedDraftVersion: ContentVersion,
-        val rejectedNotice: CorrectionNotice
+        val rejectedNotice: CorrectionNotice,
     )
 
     /**
@@ -52,7 +51,7 @@ object ContentCorrectionEngine {
         createdByName: String,
         changeSummary: String,
         publicNoticeText: String = "",
-        forceImmediateSuspension: Boolean = false
+        forceImmediateSuspension: Boolean = false,
     ): CorrectionDraftResult {
         require(reason.isNotBlank()) { "يجب تدوين سبب التصحيح بوضوح" }
         require(detailedExplanation.isNotBlank()) { "يجب تقديم شرح تفصيلي وموثق لمسوغات التصحيح" }
@@ -61,89 +60,96 @@ object ContentCorrectionEngine {
         val noticeId = UUID.randomUUID().toString()
         val nextVersionNumber = currentVersion.versionNumber + 1
 
-        val shouldImmediatelySuspend = forceImmediateSuspension ||
+        val shouldImmediatelySuspend =
+            forceImmediateSuspension ||
                 correctionType == CorrectionType.RIGHTS_ISSUE ||
                 correctionType == CorrectionType.SAFETY_ISSUE
 
         // تحديث النسخة الحالية لتكون مقيدة فوراً في حال قضايا الحقوق أو السلامة
-        val updatedPreviousVersion = if (shouldImmediatelySuspend) {
-            currentVersion.copy(
-                status = VersionStatus.RESTRICTED_SUSPENDED,
-                isRestricted = true,
-                restrictionReason = "تم تعليق النشر فورياً بسبب: ${correctionType.arabicTitle} - $reason"
-            )
-        } else {
-            currentVersion
-        }
+        val updatedPreviousVersion =
+            if (shouldImmediatelySuspend) {
+                currentVersion.copy(
+                    status = VersionStatus.RESTRICTED_SUSPENDED,
+                    isRestricted = true,
+                    restrictionReason = "تم تعليق النشر فورياً بسبب: ${correctionType.arabicTitle} - $reason",
+                )
+            } else {
+                currentVersion
+            }
 
         // إنشاء إشعار التصحيح
-        val notice = CorrectionNotice(
-            id = noticeId,
-            contentId = currentVersion.contentId,
-            fromVersionNumber = currentVersion.versionNumber,
-            toVersionNumber = nextVersionNumber,
-            correctionType = correctionType,
-            reason = reason,
-            detailedExplanation = detailedExplanation,
-            discoveredBy = discoveredBy,
-            discoveredByType = discoveredByType,
-            reportedAt = System.currentTimeMillis(),
-            requiresPublicNotice = true,
-            isPubliclyVisible = true,
-            publicNoticeText = if (publicNoticeText.isNotBlank()) publicNoticeText else "تنبيه تصحيحي: $reason",
-            status = if (correctionType.requiresReviewer) ShariaReviewStatus.PENDING else ShariaReviewStatus.APPROVED,
-            isImmediateSuspensionApplied = shouldImmediatelySuspend,
-            notificationSent = false
-        )
+        val notice =
+            CorrectionNotice(
+                id = noticeId,
+                contentId = currentVersion.contentId,
+                fromVersionNumber = currentVersion.versionNumber,
+                toVersionNumber = nextVersionNumber,
+                correctionType = correctionType,
+                reason = reason,
+                detailedExplanation = detailedExplanation,
+                discoveredBy = discoveredBy,
+                discoveredByType = discoveredByType,
+                reportedAt = System.currentTimeMillis(),
+                requiresPublicNotice = true,
+                isPubliclyVisible = true,
+                publicNoticeText = if (publicNoticeText.isNotBlank()) publicNoticeText else "تنبيه تصحيحي: $reason",
+                status = if (correctionType.requiresReviewer) ShariaReviewStatus.PENDING else ShariaReviewStatus.APPROVED,
+                isImmediateSuspensionApplied = shouldImmediatelySuspend,
+                notificationSent = false,
+            )
 
         // إرفاق معرف الإشعار بالمصادر المعدلة
-        val boundSourceRevisions = sourceRevisions.map {
-            it.copy(correctionNoticeId = noticeId)
-        }
+        val boundSourceRevisions =
+            sourceRevisions.map {
+                it.copy(correctionNoticeId = noticeId)
+            }
 
         // إرفاق معرف الإشعار بالأصول المتأثرة
-        val boundAffectedAssets = affectedAssets.map {
-            it.copy(
-                contentId = currentVersion.contentId,
-                correctionNoticeId = noticeId,
-                status = if (shouldImmediatelySuspend) AssetImpactStatus.SUSPENDED else AssetImpactStatus.REQUIRES_RE_RENDER
-            )
-        }
+        val boundAffectedAssets =
+            affectedAssets.map {
+                it.copy(
+                    contentId = currentVersion.contentId,
+                    correctionNoticeId = noticeId,
+                    status = if (shouldImmediatelySuspend) AssetImpactStatus.SUSPENDED else AssetImpactStatus.REQUIRES_RE_RENDER,
+                )
+            }
 
         // إنشاء النسخة الجديدة كمسودة
-        val draftVersion = ContentVersion(
-            id = UUID.randomUUID().toString(),
-            contentId = currentVersion.contentId,
-            versionNumber = nextVersionNumber,
-            title = correctedTitle,
-            fullContentText = correctedFullContentText,
-            claims = correctedClaims,
-            sources = correctedSources,
-            status = if (correctionType.requiresReviewer) VersionStatus.IN_REVIEW else VersionStatus.DRAFT,
-            correctionNoticeId = noticeId,
-            createdBy = createdBy,
-            createdByName = createdByName,
-            createdAt = System.currentTimeMillis(),
-            publishedAt = null,
-            supersededAt = null,
-            supersededByVersion = null,
-            immutableHash = computeHash(
+        val draftVersion =
+            ContentVersion(
+                id = UUID.randomUUID().toString(),
                 contentId = currentVersion.contentId,
-                version = nextVersionNumber,
-                text = correctedFullContentText,
-                timestamp = System.currentTimeMillis()
-            ),
-            changeSummary = changeSummary,
-            isRestricted = false,
-            restrictionReason = null
-        )
+                versionNumber = nextVersionNumber,
+                title = correctedTitle,
+                fullContentText = correctedFullContentText,
+                claims = correctedClaims,
+                sources = correctedSources,
+                status = if (correctionType.requiresReviewer) VersionStatus.IN_REVIEW else VersionStatus.DRAFT,
+                correctionNoticeId = noticeId,
+                createdBy = createdBy,
+                createdByName = createdByName,
+                createdAt = System.currentTimeMillis(),
+                publishedAt = null,
+                supersededAt = null,
+                supersededByVersion = null,
+                immutableHash =
+                    computeHash(
+                        contentId = currentVersion.contentId,
+                        version = nextVersionNumber,
+                        text = correctedFullContentText,
+                        timestamp = System.currentTimeMillis(),
+                    ),
+                changeSummary = changeSummary,
+                isRestricted = false,
+                restrictionReason = null,
+            )
 
         return CorrectionDraftResult(
             newVersion = draftVersion,
             correctionNotice = notice,
             sourceRevisions = boundSourceRevisions,
             affectedAssets = boundAffectedAssets,
-            updatedPreviousVersion = updatedPreviousVersion
+            updatedPreviousVersion = updatedPreviousVersion,
         )
     }
 
@@ -155,7 +161,7 @@ object ContentCorrectionEngine {
         draftVersion: ContentVersion,
         previousVersion: ContentVersion,
         review: CorrectionReview,
-        affectedAssets: List<AffectedAsset>
+        affectedAssets: List<AffectedAsset>,
     ): CorrectionApprovalResult {
         require(review.isApproved) { "لا يمكن نشر التصحيح دون اعتماد صريح من المراجع الشرعي" }
         require(review.reviewerId.isNotBlank()) { "يجب تسجيل معرف المراجع الشرعي المعتمد" }
@@ -163,50 +169,55 @@ object ContentCorrectionEngine {
         val now = System.currentTimeMillis()
 
         // 1. ترقية النسخة الجديدة إلى نسخة منشورة ومعتمدة
-        val publishedVersion = draftVersion.copy(
-            status = VersionStatus.ACTIVE_PUBLISHED,
-            publishedAt = now,
-            immutableHash = computeHash(
-                contentId = draftVersion.contentId,
-                version = draftVersion.versionNumber,
-                text = draftVersion.fullContentText,
-                timestamp = now
+        val publishedVersion =
+            draftVersion.copy(
+                status = VersionStatus.ACTIVE_PUBLISHED,
+                publishedAt = now,
+                immutableHash =
+                    computeHash(
+                        contentId = draftVersion.contentId,
+                        version = draftVersion.versionNumber,
+                        text = draftVersion.fullContentText,
+                        timestamp = now,
+                    ),
             )
-        )
 
         // 2. تحديث النسخة السابقة لتصبح مستبدلة في السجل التاريخي الثابت
-        val supersededVersion = previousVersion.copy(
-            status = VersionStatus.SUPERSEDED,
-            supersededAt = now,
-            supersededByVersion = draftVersion.versionNumber,
-            isRestricted = true,
-            restrictionReason = "تم استبدال هذه النسخة بالنسخة رقم (${draftVersion.versionNumber}) بناءً على إشعار التصحيح: ${notice.reason}"
-        )
+        val supersededVersion =
+            previousVersion.copy(
+                status = VersionStatus.SUPERSEDED,
+                supersededAt = now,
+                supersededByVersion = draftVersion.versionNumber,
+                isRestricted = true,
+                restrictionReason = "تم استبدال هذه النسخة بالنسخة رقم (${draftVersion.versionNumber}) بناءً على إشعار التصحيح: ${notice.reason}",
+            )
 
         // 3. تحديث الإشعار
-        val approvedNotice = notice.copy(
-            status = ShariaReviewStatus.APPROVED,
-            reviewerId = review.reviewerId,
-            reviewerName = review.reviewerName,
-            reviewedAt = now,
-            notificationSent = notice.requiresPublicNotice,
-            notificationSentAt = if (notice.requiresPublicNotice) now else null
-        )
+        val approvedNotice =
+            notice.copy(
+                status = ShariaReviewStatus.APPROVED,
+                reviewerId = review.reviewerId,
+                reviewerName = review.reviewerName,
+                reviewedAt = now,
+                notificationSent = notice.requiresPublicNotice,
+                notificationSentAt = if (notice.requiresPublicNotice) now else null,
+            )
 
         // 4. تحديث الأصول المتأثرة
-        val updatedAssets = affectedAssets.map { asset ->
-            asset.copy(
-                status = AssetImpactStatus.UPDATED,
-                remediationAction = "تم تحديث الأصل ليتوافق مع الإصدار المصحح رقم (${draftVersion.versionNumber})",
-                updatedAt = now
-            )
-        }
+        val updatedAssets =
+            affectedAssets.map { asset ->
+                asset.copy(
+                    status = AssetImpactStatus.UPDATED,
+                    remediationAction = "تم تحديث الأصل ليتوافق مع الإصدار المصحح رقم (${draftVersion.versionNumber})",
+                    updatedAt = now,
+                )
+            }
 
         return CorrectionApprovalResult(
             newPublishedVersion = publishedVersion,
             supersededPreviousVersion = supersededVersion,
             approvedNotice = approvedNotice,
-            updatedAssets = updatedAssets
+            updatedAssets = updatedAssets,
         )
     }
 
@@ -216,25 +227,27 @@ object ContentCorrectionEngine {
     fun rejectCorrection(
         notice: CorrectionNotice,
         draftVersion: ContentVersion,
-        review: CorrectionReview
+        review: CorrectionReview,
     ): CorrectionRejectionResult {
         require(!review.isApproved) { "حالة المراجعة تفيد بالاعتماد" }
 
-        val rejectedNotice = notice.copy(
-            status = review.status,
-            reviewerId = review.reviewerId,
-            reviewerName = review.reviewerName,
-            reviewedAt = System.currentTimeMillis()
-        )
+        val rejectedNotice =
+            notice.copy(
+                status = review.status,
+                reviewerId = review.reviewerId,
+                reviewerName = review.reviewerName,
+                reviewedAt = System.currentTimeMillis(),
+            )
 
-        val rejectedDraft = draftVersion.copy(
-            status = VersionStatus.DRAFT,
-            changeSummary = "مرفوض شرعياً: ${review.reviewerNotes}"
-        )
+        val rejectedDraft =
+            draftVersion.copy(
+                status = VersionStatus.DRAFT,
+                changeSummary = "مرفوض شرعياً: ${review.reviewerNotes}",
+            )
 
         return CorrectionRejectionResult(
             rejectedDraftVersion = rejectedDraft,
-            rejectedNotice = rejectedNotice
+            rejectedNotice = rejectedNotice,
         )
     }
 
@@ -243,7 +256,7 @@ object ContentCorrectionEngine {
      */
     fun generateImpactReport(
         notice: CorrectionNotice,
-        affectedAssets: List<AffectedAsset>
+        affectedAssets: List<AffectedAsset>,
     ): ImpactReport {
         val projects = affectedAssets.filter { it.assetType == AffectedAssetType.PROJECT }.distinctBy { it.projectId }
         val scenes = affectedAssets.filter { it.assetType == AffectedAssetType.SCENE }
@@ -264,14 +277,19 @@ object ContentCorrectionEngine {
             affectedPublishedFlashesCount = flashes.size,
             affectedAssets = affectedAssets,
             generatedAt = System.currentTimeMillis(),
-            summary = summary
+            summary = summary,
         )
     }
 
     /**
      * حساب بصمة النزاهة الرقمية الثابتة (SHA-256 Hash) لمنع التعديل السري
      */
-    fun computeHash(contentId: String, version: Int, text: String, timestamp: Long): String {
+    fun computeHash(
+        contentId: String,
+        version: Int,
+        text: String,
+        timestamp: Long,
+    ): String {
         val raw = "$contentId:$version:$text:$timestamp"
         val digest = MessageDigest.getInstance("SHA-256")
         val hashBytes = digest.digest(raw.toByteArray(Charsets.UTF_8))

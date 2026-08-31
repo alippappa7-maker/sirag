@@ -1,7 +1,9 @@
 package com.siraj.app.domain.models
 
 enum class TemplateStatus {
-    ACTIVE, DRAFT, ARCHIVED
+    ACTIVE,
+    DRAFT,
+    ARCHIVED,
 }
 
 data class ContentTemplate(
@@ -19,12 +21,12 @@ data class ContentTemplate(
     val status: TemplateStatus = TemplateStatus.ACTIVE,
     val version: Int = 1,
     val createdAt: Long = System.currentTimeMillis(),
-    val updatedAt: Long = System.currentTimeMillis()
+    val updatedAt: Long = System.currentTimeMillis(),
 )
 
 data class TemplateFavorite(
     val id: String = "", // userId_templateId
     val userId: String = "",
     val templateId: String = "",
-    val savedAt: Long = System.currentTimeMillis()
+    val savedAt: Long = System.currentTimeMillis(),
 )

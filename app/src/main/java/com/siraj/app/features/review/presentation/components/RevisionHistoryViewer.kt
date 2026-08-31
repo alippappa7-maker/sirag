@@ -12,7 +12,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,7 +22,7 @@ import java.util.*
 @Composable
 fun RevisionHistoryViewer(
     revisions: List<RevisionHistoryItem>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale("ar"))
 
@@ -31,41 +30,43 @@ fun RevisionHistoryViewer(
         Card(
             modifier = modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-            )
+            colors =
+                CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                ),
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = "هذه هي النسخة الأولى للمحتوى ولم تطرأ عليها أي تعديلات بعد.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
     } else {
         Column(
             modifier = modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     Icons.Default.History,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(18.dp),
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = "سجل التعديلات والنسخ (${revisions.size} إصدارات):",
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
 
@@ -76,43 +77,44 @@ fun RevisionHistoryViewer(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    border = CardDefaults.outlinedCardBorder()
+                    border = CardDefaults.outlinedCardBorder(),
                 ) {
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(14.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(14.dp),
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Surface(
                                     color = MaterialTheme.colorScheme.primaryContainer,
-                                    shape = RoundedCornerShape(6.dp)
+                                    shape = RoundedCornerShape(6.dp),
                                 ) {
                                     Text(
                                         text = "الإصدار v${rev.versionNumber}",
                                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 11.sp,
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                     )
                                 }
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = "بواسطة: ${rev.editedBy}",
                                     style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    color = MaterialTheme.colorScheme.onSurface,
                                 )
                             }
 
                             Text(
                                 text = dateFormat.format(Date(rev.editedAt)),
                                 style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.outline
+                                color = MaterialTheme.colorScheme.outline,
                             )
                         }
 
@@ -122,29 +124,30 @@ fun RevisionHistoryViewer(
                             text = rev.changeSummary,
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.onSurface,
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { isExpanded = !isExpanded },
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .clickable { isExpanded = !isExpanded },
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
                                 text = if (isExpanded) "إخفاء لقطة النص" else "عرض النص في هذا الإصدار",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
                             )
                             Icon(
                                 if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(16.dp),
                             )
                         }
 
@@ -153,13 +156,13 @@ fun RevisionHistoryViewer(
                                 Surface(
                                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                                     shape = RoundedCornerShape(6.dp),
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
                                 ) {
                                     Text(
                                         text = rev.fullTextSnapshot,
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.padding(10.dp)
+                                        modifier = Modifier.padding(10.dp),
                                     )
                                 }
                             }

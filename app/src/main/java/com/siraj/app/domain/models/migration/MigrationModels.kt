@@ -6,14 +6,14 @@ enum class MigrationStatus {
     PAUSED,
     COMPLETED,
     FAILED,
-    ROLLED_BACK
+    ROLLED_BACK,
 }
 
 data class MigrationError(
     val documentId: String,
     val collectionName: String,
     val errorReason: String,
-    val timestamp: Long
+    val timestamp: Long,
 )
 
 data class MigrationJob(
@@ -30,22 +30,33 @@ data class MigrationJob(
     val successCount: Int = 0,
     val failureCount: Int = 0,
     val errors: List<MigrationError> = emptyList(),
-    val hasBackupVerified: Boolean = false
+    val hasBackupVerified: Boolean = false,
 )
 
 data class DocumentSchemaState(
     val documentId: String,
     val collectionName: String,
     val schemaVersion: Int,
-    val data: Map<String, Any>
+    val data: Map<String, Any>,
 )
 
 object SchemaConstants {
     const val CURRENT_VERSION = 2
-    
-    val ALL_COLLECTIONS = listOf(
-        "users", "workspaces", "projects", "scenes", "assets",
-        "sources", "reviews", "flashes", "audio", "subscriptions",
-        "credits", "notifications", "auditLogs"
-    )
+
+    val ALL_COLLECTIONS =
+        listOf(
+            "users",
+            "workspaces",
+            "projects",
+            "scenes",
+            "assets",
+            "sources",
+            "reviews",
+            "flashes",
+            "audio",
+            "subscriptions",
+            "credits",
+            "notifications",
+            "auditLogs",
+        )
 }

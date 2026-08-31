@@ -30,9 +30,9 @@ class PrayerViewModel(application: Application) : AndroidViewModel(application) 
 
     private val _nextPrayer = MutableStateFlow<NextPrayer?>(null)
     val nextPrayer = _nextPrayer.asStateFlow()
-    
+
     private val _currentTime = MutableStateFlow(System.currentTimeMillis())
-    
+
     private val _locationError = MutableStateFlow<String?>(null)
     val locationError = _locationError.asStateFlow()
 
@@ -43,7 +43,7 @@ class PrayerViewModel(application: Application) : AndroidViewModel(application) 
                 fetchPrayerTimes(newSettings)
             }
         }
-        
+
         viewModelScope.launch {
             while (true) {
                 delay(1000)
@@ -97,36 +97,36 @@ class PrayerViewModel(application: Application) : AndroidViewModel(application) 
                 "المغرب" to times.maghrib,
                 "العشاء" to times.isha
             )
-            
+
             val sdf = SimpleDateFormat("HH:mm", Locale.US)
             val now = Calendar.getInstance()
-            
+
             var nextP: NextPrayer? = null
-            
+
             for ((name, timeStr) in prayers) {
                 val timeDate = sdf.parse(timeStr)
                 if (timeDate != null) {
                     val timeCal = Calendar.getInstance()
                     timeCal.time = timeDate
-                    
+
                     val pCal = Calendar.getInstance()
                     pCal.set(Calendar.HOUR_OF_DAY, timeCal.get(Calendar.HOUR_OF_DAY))
                     pCal.set(Calendar.MINUTE, timeCal.get(Calendar.MINUTE))
                     pCal.set(Calendar.SECOND, 0)
-                    
+
                     if (pCal.timeInMillis > now.timeInMillis) {
                         nextP = NextPrayer(name, timeStr, pCal.timeInMillis - now.timeInMillis)
                         break
                     }
                 }
             }
-            
+
             if (nextP == null) {
                 val fajrDate = sdf.parse(times.fajr)
                 if (fajrDate != null) {
                     val timeCal = Calendar.getInstance()
                     timeCal.time = fajrDate
-                    
+
                     val pCal = Calendar.getInstance()
                     pCal.add(Calendar.DAY_OF_YEAR, 1)
                     pCal.set(Calendar.HOUR_OF_DAY, timeCal.get(Calendar.HOUR_OF_DAY))
@@ -135,7 +135,7 @@ class PrayerViewModel(application: Application) : AndroidViewModel(application) 
                     nextP = NextPrayer("الفجر", times.fajr, pCal.timeInMillis - now.timeInMillis)
                 }
             }
-            
+
             _nextPrayer.value = nextP
         }
     }

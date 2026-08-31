@@ -1,7 +1,6 @@
 package com.siraj.app.features.studio.presentation
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -33,7 +32,7 @@ fun StudioScreen(
     onNavigateToIdeation: () -> Unit = {},
     onNavigateToFlashPublishing: () -> Unit = {},
     onNavigateToAnalytics: () -> Unit = {},
-    viewModel: StudioViewModel = viewModel(factory = StudioViewModelFactory())
+    viewModel: StudioViewModel = viewModel(factory = StudioViewModelFactory()),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val spacing = LocalSpacing.current
@@ -42,19 +41,19 @@ fun StudioScreen(
         floatingActionButton = {
             Column(
                 horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(spacing.medium)
+                verticalArrangement = Arrangement.spacedBy(spacing.medium),
             ) {
                 SmallFloatingActionButton(
                     onClick = onNavigateToAnalytics,
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 ) {
                     Icon(Icons.Default.Assessment, contentDescription = "التحليلات")
                 }
                 SmallFloatingActionButton(
                     onClick = onNavigateToFlashPublishing,
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "نشر ومضة")
                 }
@@ -63,17 +62,18 @@ fun StudioScreen(
                     icon = { Icon(Icons.Default.Add, contentDescription = "فكرة جديدة") },
                     text = { Text("فكرة إبداعية جديدة") },
                     containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = MaterialTheme.colorScheme.onSecondary
+                    contentColor = MaterialTheme.colorScheme.onSecondary,
                 )
             }
-        }
+        },
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(spacing.medium)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(spacing.medium),
+            verticalArrangement = Arrangement.spacedBy(spacing.medium),
         ) {
             SirajSectionHeader(title = "استوديو الإنتاج التقني")
 
@@ -83,21 +83,21 @@ fun StudioScreen(
                     value = uiState.searchQuery,
                     onValueChange = { viewModel.updateSearchQuery(it) },
                     placeholder = { Text("بحث في المشاريع...") },
-                    leadingIcon = { 
+                    leadingIcon = {
                         Icon(
-                            Icons.Default.Search, 
+                            Icons.Default.Search,
                             contentDescription = "بحث",
-                            tint = MaterialTheme.colorScheme.tertiary 
-                        ) 
+                            tint = MaterialTheme.colorScheme.tertiary,
+                        )
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium,
-                    singleLine = true
+                    singleLine = true,
                 )
                 Spacer(modifier = Modifier.height(spacing.medium))
                 Row(
-                    modifier = Modifier.fillMaxWidth(), 
-                    horizontalArrangement = Arrangement.spacedBy(spacing.small)
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(spacing.small),
                 ) {
                     Box(modifier = Modifier.weight(1f)) {
                         FilterDropdown("تصفية: ${uiState.filterOption}", listOf("نشط", "مؤرشف", "محذوف")) {
@@ -116,7 +116,7 @@ fun StudioScreen(
             Text(
                 text = "مساحة العمل",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onBackground,
             )
 
             Crossfade(targetState = uiState.projects, label = "projects_crossfade") { projectsRes ->
@@ -137,7 +137,7 @@ fun StudioScreen(
                         } else {
                             LazyColumn(
                                 verticalArrangement = Arrangement.spacedBy(spacing.medium),
-                                contentPadding = PaddingValues(bottom = 80.dp) // Space for FABs
+                                contentPadding = PaddingValues(bottom = 80.dp), // Space for FABs
                             ) {
                                 items(projectsRes.data, key = { it.id }) { project ->
                                     StudioProjectCard(
@@ -146,7 +146,7 @@ fun StudioScreen(
                                         onCopy = { viewModel.copyProject(project.id, project.ownerId) },
                                         onArchive = { viewModel.archiveProject(project.id) },
                                         onRestore = { viewModel.restoreProject(project.id) },
-                                        onDelete = { viewModel.deleteProject(project.id) }
+                                        onDelete = { viewModel.deleteProject(project.id) },
                                     )
                                 }
                             }
@@ -159,14 +159,18 @@ fun StudioScreen(
 }
 
 @Composable
-fun FilterDropdown(label: String, options: List<String>, onSelect: (String) -> Unit) {
+fun FilterDropdown(
+    label: String,
+    options: List<String>,
+    onSelect: (String) -> Unit,
+) {
     var expanded by remember { mutableStateOf(false) }
     Box(modifier = Modifier.fillMaxWidth()) {
         OutlinedButton(
             onClick = { expanded = true },
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.medium,
-            contentPadding = PaddingValues(horizontal = 12.dp)
+            contentPadding = PaddingValues(horizontal = 12.dp),
         ) {
             Icon(Icons.Default.FilterList, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(modifier = Modifier.width(8.dp))
@@ -179,7 +183,7 @@ fun FilterDropdown(label: String, options: List<String>, onSelect: (String) -> U
                     onClick = {
                         onSelect(option)
                         expanded = false
-                    }
+                    },
                 )
             }
         }
@@ -193,60 +197,87 @@ fun StudioProjectCard(
     onCopy: () -> Unit,
     onArchive: () -> Unit,
     onRestore: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
 ) {
     var showMenu by remember { mutableStateOf(false) }
-    
-    val statusType = when (project.status) {
-        ProjectStatus.READY, ProjectStatus.COMPLETED -> StatusType.SUCCESS
-        ProjectStatus.DRAFT, ProjectStatus.ARCHIVED -> StatusType.WARNING
-        ProjectStatus.FAILED, ProjectStatus.DELETED -> StatusType.ERROR
-        ProjectStatus.PROCESSING, ProjectStatus.EXPORTING -> StatusType.INFO
-    }
 
-    val isActive = project.status == ProjectStatus.READY || project.status == ProjectStatus.COMPLETED || project.status == ProjectStatus.PROCESSING || project.status == ProjectStatus.EXPORTING
+    val statusType =
+        when (project.status) {
+            ProjectStatus.READY, ProjectStatus.COMPLETED -> StatusType.SUCCESS
+            ProjectStatus.DRAFT, ProjectStatus.ARCHIVED -> StatusType.WARNING
+            ProjectStatus.FAILED, ProjectStatus.DELETED -> StatusType.ERROR
+            ProjectStatus.PROCESSING, ProjectStatus.EXPORTING -> StatusType.INFO
+        }
+
+    val isActive =
+        project.status == ProjectStatus.READY ||
+            project.status == ProjectStatus.COMPLETED ||
+            project.status == ProjectStatus.PROCESSING ||
+            project.status == ProjectStatus.EXPORTING
 
     SirajTechCard(
         isActive = isActive,
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = project.title, 
+                    text = project.title,
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 SirajStatusBadge(
                     text = project.status.name,
-                    statusType = statusType
+                    statusType = statusType,
                 )
             }
             Box {
                 IconButton(onClick = { showMenu = true }) {
                     Icon(
-                        Icons.Default.MoreVert, 
-                        contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.options),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        Icons.Default.MoreVert,
+                        contentDescription =
+                            androidx.compose.ui.res
+                                .stringResource(com.siraj.app.R.string.options),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
                 DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-                    DropdownMenuItem(text = { Text("فتح في المحرر") }, onClick = { showMenu = false; onClick() })
-                    DropdownMenuItem(text = { Text("نسخ") }, onClick = { showMenu = false; onCopy() })
+                    DropdownMenuItem(text = { Text("فتح في المحرر") }, onClick = {
+                        showMenu = false
+                        onClick()
+                    })
+                    DropdownMenuItem(text = { Text("نسخ") }, onClick = {
+                        showMenu = false
+                        onCopy()
+                    })
                     if (project.status != ProjectStatus.ARCHIVED && project.status != ProjectStatus.DELETED) {
-                        DropdownMenuItem(text = { Text("أرشفة") }, onClick = { showMenu = false; onArchive() })
-                        DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.delete)) }, onClick = { showMenu = false; onDelete() })
+                        DropdownMenuItem(text = { Text("أرشفة") }, onClick = {
+                            showMenu = false
+                            onArchive()
+                        })
+                        DropdownMenuItem(text = {
+                            Text(
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.delete),
+                            )
+                        }, onClick = {
+                            showMenu =
+                                false
+                            ; onDelete()
+                        })
                     } else if (project.status == ProjectStatus.ARCHIVED || project.status == ProjectStatus.DELETED) {
-                        DropdownMenuItem(text = { Text("استعادة") }, onClick = { showMenu = false; onRestore() })
+                        DropdownMenuItem(text = { Text("استعادة") }, onClick = {
+                            showMenu = false
+                            onRestore()
+                        })
                     }
                 }
             }
         }
     }
 }
-

@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.siraj.app.domain.models.Project
-import com.siraj.app.domain.models.ReviewState
 import com.siraj.app.domain.models.Scene
 import com.siraj.app.features.project.data.repositories.FirebaseSubtitleRepositoryImpl
 import com.siraj.app.features.project.domain.models.*
@@ -19,9 +18,8 @@ import kotlinx.coroutines.tasks.await
 class ProjectPreviewViewModel(
     private val projectId: String,
     private val subtitleRepository: SubtitleRepository = FirebaseSubtitleRepositoryImpl(),
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
 ) : ViewModel() {
-
     private val _project = MutableStateFlow<Project?>(null)
     val project: StateFlow<Project?> = _project.asStateFlow()
 
@@ -78,7 +76,12 @@ class ProjectPreviewViewModel(
             _isLoading.value = true
             try {
                 // 1. Fetch Project
-                val projectDoc = firestore.collection("projects").document(projectId).get().await()
+                val projectDoc =
+                    firestore
+                        .collection("projects")
+                        .document(projectId)
+                        .get()
+                        .await()
                 if (projectDoc.exists()) {
                     val p = projectDoc.toObject(Project::class.java) ?: Project(id = projectId)
                     _project.value = p
@@ -86,8 +89,14 @@ class ProjectPreviewViewModel(
                 }
 
                 // 2. Fetch Scenes
-                val scenesSnapshot = firestore.collection("projects").document(projectId)
-                    .collection("scenes").orderBy("orderIndex").get().await()
+                val scenesSnapshot =
+                    firestore
+                        .collection("projects")
+                        .document(projectId)
+                        .collection("scenes")
+                        .orderBy("orderIndex")
+                        .get()
+                        .await()
                 val sceneList = scenesSnapshot.documents.mapNotNull { it.toObject(Scene::class.java) }
                 _scenes.value = sceneList
 
@@ -99,7 +108,6 @@ class ProjectPreviewViewModel(
                     _subtitles.value = subs
                     runPreExportValidation(sceneList, subs)
                 }
-
             } catch (e: Exception) {
                 _userMessage.value = "خطأ في تحميل المشروع: ${e.message}"
             } finally {
@@ -180,22 +188,23 @@ class ProjectPreviewViewModel(
 
     private fun startPlaybackLoop() {
         playbackJob?.cancel()
-        playbackJob = viewModelScope.launch {
-            val stepMs = 50L
-            while (_isPlaying.value && _currentTimeMs.value < _totalDurationMs.value) {
-                val delayTime = (stepMs / _playbackSpeed.value).toLong().coerceAtLeast(10L)
-                delay(delayTime)
-                val newTime = _currentTimeMs.value + stepMs
-                if (newTime >= _totalDurationMs.value) {
-                    _currentTimeMs.value = _totalDurationMs.value
-                    _isPlaying.value = false
-                    break
-                } else {
-                    _currentTimeMs.value = newTime
-                    updateCurrentSceneFromTime(newTime)
+        playbackJob =
+            viewModelScope.launch {
+                val stepMs = 50L
+                while (_isPlaying.value && _currentTimeMs.value < _totalDurationMs.value) {
+                    val delayTime = (stepMs / _playbackSpeed.value).toLong().coerceAtLeast(10L)
+                    delay(delayTime)
+                    val newTime = _currentTimeMs.value + stepMs
+                    if (newTime >= _totalDurationMs.value) {
+                        _currentTimeMs.value = _totalDurationMs.value
+                        _isPlaying.value = false
+                        break
+                    } else {
+                        _currentTimeMs.value = newTime
+                        updateCurrentSceneFromTime(newTime)
+                    }
                 }
             }
-        }
     }
 
     private fun updateCurrentSceneFromTime(timeMs: Long) {
@@ -215,7 +224,10 @@ class ProjectPreviewViewModel(
     }
 
     // Comprehensive Pre-Export Quality, Islamic & Technical Checker
-    fun runPreExportValidation(scenes: List<Scene>, subtitles: List<SubtitleItem>) {
+    fun runPreExportValidation(
+        scenes: List<Scene>,
+        subtitles: List<SubtitleItem>,
+    ) {
         val issues = mutableListOf<PreExportValidationIssue>()
 
         if (scenes.isEmpty()) {
@@ -224,8 +236,8 @@ class ProjectPreviewViewModel(
                     issueType = ValidationIssueType.INVALID_DURATION,
                     severity = ValidationSeverity.BLOCKER,
                     message = "المشروع لا يحتوي على أي مشاهد ليتم تصديره.",
-                    fixRecommendation = "أضف مشهداً واحداً على الأقل من خلال محرر المشاهد."
-                )
+                    fixRecommendation = "أضف مشهداً واحداً على الأقل من خلال محرر المشاهد.",
+                ),
             )
         }
 
@@ -245,8 +257,8 @@ class ProjectPreviewViewModel(
                         issueType = ValidationIssueType.INVALID_DURATION,
                         severity = ValidationSeverity.BLOCKER,
                         message = "مدة المشهد $sceneNumber غير صالحة (0 ثانية).",
-                        fixRecommendation = "اضبط مدة المشهد على 3 ثوانٍ على الأقل."
-                    )
+                        fixRecommendation = "اضبط مدة المشهد على 3 ثوانٍ على الأقل.",
+                    ),
                 )
             }
 
@@ -260,8 +272,8 @@ class ProjectPreviewViewModel(
                         issueType = ValidationIssueType.SCENE_WITHOUT_MEDIA,
                         severity = ValidationSeverity.WARNING,
                         message = "المشهد $sceneNumber فارغ بدون وسائط بصرية أو نص تعليق.",
-                        fixRecommendation = "اربط صورة/فيديو من مدير الوسائط أو اكتب نص المشهد."
-                    )
+                        fixRecommendation = "اربط صورة/فيديو من مدير الوسائط أو اكتب نص المشهد.",
+                    ),
                 )
             }
 
@@ -284,15 +296,20 @@ class ProjectPreviewViewModel(
                             sceneTitle = scene.title.ifBlank { "مشهد $sceneNumber" },
                             issueType = ValidationIssueType.OVERLAPPING_SUBTITLES,
                             severity = ValidationSeverity.BLOCKER,
-                            message = "تداخل زمني في أسطر الترجمة بالمشهد $sceneNumber بين '${currentSub.text.take(15)}...' و '${nextSub.text.take(15)}...'",
-                            fixRecommendation = "افتح محرر الترجمة واضبط نهايات وبدايات الأسطر لمنع التداخل."
-                        )
+                            message = "تداخل زمني في أسطر الترجمة بالمشهد $sceneNumber بين '${currentSub.text.take(
+                                15,
+                            )}...' و '${nextSub.text.take(15)}...'",
+                            fixRecommendation = "افتح محرر الترجمة واضبط نهايات وبدايات الأسطر لمنع التداخل.",
+                        ),
                     )
                 }
             }
 
             // 5. Islamic Sacred Claims check
-            val hasSacredText = scene.narrationText.contains("﴿") || scene.narrationText.contains("قال تعالى") || scene.narrationText.contains("قال رسول الله")
+            val hasSacredText =
+                scene.narrationText.contains("﴿") ||
+                    scene.narrationText.contains("قال تعالى") ||
+                    scene.narrationText.contains("قال رسول الله")
             if (hasSacredText && scene.claimIds.isEmpty()) {
                 issues.add(
                     PreExportValidationIssue(
@@ -302,8 +319,8 @@ class ProjectPreviewViewModel(
                         issueType = ValidationIssueType.UNREVIEWED_CLAIM,
                         severity = ValidationSeverity.WARNING,
                         message = "المشهد $sceneNumber يحتوي على نص شرعي/آية دون ربطه بمصدر موثق في المحراب.",
-                        fixRecommendation = "اربط الآية/الحديث بمرجع معتمد من مكتبة المصادر لضمان التوثيق."
-                    )
+                        fixRecommendation = "اربط الآية/الحديث بمرجع معتمد من مكتبة المصادر لضمان التوثيق.",
+                    ),
                 )
             }
 
@@ -318,8 +335,8 @@ class ProjectPreviewViewModel(
                             issueType = ValidationIssueType.TEXT_OVERFLOW,
                             severity = ValidationSeverity.WARNING,
                             message = "سطر الترجمة طويل جداً في المشهد $sceneNumber وقد يخرج عن إطار الشاشة.",
-                            fixRecommendation = "قسّم السطر إلى شطرين أقصر من خلال محرر الترجمة."
-                        )
+                            fixRecommendation = "قسّم السطر إلى شطرين أقصر من خلال محرر الترجمة.",
+                        ),
                     )
                 }
             }
@@ -341,7 +358,7 @@ class ProjectPreviewViewModel(
 }
 
 class ProjectPreviewViewModelFactory(
-    private val projectId: String
+    private val projectId: String,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProjectPreviewViewModel::class.java)) {

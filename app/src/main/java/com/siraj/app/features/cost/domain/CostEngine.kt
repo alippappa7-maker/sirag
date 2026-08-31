@@ -4,14 +4,14 @@ import com.siraj.app.domain.models.cost.UsageMetrics
 import com.siraj.app.domain.models.cost.WorkspaceLimits
 
 class CostEngine {
-    
-    fun isLimitExceeded(usage: Double, limit: Double): Boolean {
-        return usage >= limit
-    }
+    fun isLimitExceeded(
+        usage: Double,
+        limit: Double,
+    ): Boolean = usage >= limit
 
     fun calculateAlertTriggers(
         currentUsage: Double,
-        limit: Double
+        limit: Double,
     ): List<Int> {
         if (limit <= 0) return emptyList()
         val percentage = (currentUsage / limit) * 100
@@ -27,21 +27,21 @@ class CostEngine {
         metrics: UsageMetrics,
         userId: String,
         estimatedCost: Double,
-        promptHash: String? = null
+        promptHash: String? = null,
     ): Boolean {
         if (isLimitExceeded(metrics.currentDailyUsage + estimatedCost, limits.dailyLimitUsd)) return false
         if (isLimitExceeded(metrics.currentMonthlyUsage + estimatedCost, limits.monthlyLimitUsd)) return false
-        
+
         val userUsage = metrics.userUsageMap[userId] ?: 0.0
         if (isLimitExceeded(userUsage + estimatedCost, limits.perUserLimitUsd)) return false
-        
+
         if (estimatedCost > limits.perOperationLimitUsd) return false
-        
+
         if (promptHash != null) {
             val regens = metrics.regenerationsCountMap[promptHash] ?: 0
             if (regens >= limits.maxRegenerationsPerPrompt) return false
         }
-        
+
         return true
     }
 }

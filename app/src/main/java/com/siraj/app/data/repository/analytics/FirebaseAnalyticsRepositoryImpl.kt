@@ -15,38 +15,43 @@ import java.util.UUID
 
 class FirebaseAnalyticsRepositoryImpl(
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
 ) : AnalyticsRepository {
-    
     private var isEnabled = false
 
     override suspend fun setAnalyticsEnabled(enabled: Boolean) {
         isEnabled = enabled
     }
 
-    override suspend fun logEvent(event: AnalyticsEvent, properties: Map<String, String>) {
+    override suspend fun logEvent(
+        event: AnalyticsEvent,
+        properties: Map<String, String>,
+    ) {
         if (!isEnabled) return
-        
+
         // Strip out any potentially sensitive properties just in case
-        val safeProperties = properties.filterKeys { 
-            !it.contains("text", ignoreCase = true) && 
-            !it.contains("password", ignoreCase = true) &&
-            !it.contains("key", ignoreCase = true)
-        }
+        val safeProperties =
+            properties.filterKeys {
+                !it.contains("text", ignoreCase = true) &&
+                    !it.contains("password", ignoreCase = true) &&
+                    !it.contains("key", ignoreCase = true)
+            }
 
         val currentUser = auth.currentUser
         val hashedUserId = currentUser?.uid?.let { hashString(it) }
 
-        val log = AnalyticsLog(
-            id = UUID.randomUUID().toString(),
-            event = event.eventName,
-            hashedUserId = hashedUserId,
-            timestamp = System.currentTimeMillis(),
-            properties = safeProperties
-        )
+        val log =
+            AnalyticsLog(
+                id = UUID.randomUUID().toString(),
+                event = event.eventName,
+                hashedUserId = hashedUserId,
+                timestamp = System.currentTimeMillis(),
+                properties = safeProperties,
+            )
 
         try {
-            firestore.collection("analytics_events")
+            firestore
+                .collection("analytics_events")
                 .document(log.id)
                 .set(log)
                 .await()
@@ -58,13 +63,15 @@ class FirebaseAnalyticsRepositoryImpl(
     override suspend fun clearUserData() {
         val currentUser = auth.currentUser ?: return
         val hashedUserId = hashString(currentUser.uid)
-        
+
         try {
-            val snapshot = firestore.collection("analytics_events")
-                .whereEqualTo("hashedUserId", hashedUserId)
-                .get()
-                .await()
-                
+            val snapshot =
+                firestore
+                    .collection("analytics_events")
+                    .whereEqualTo("hashedUserId", hashedUserId)
+                    .get()
+                    .await()
+
             for (document in snapshot.documents) {
                 document.reference.delete().await()
             }
@@ -73,24 +80,27 @@ class FirebaseAnalyticsRepositoryImpl(
         }
     }
 
-    override fun getAggregatedEvents(): Flow<List<AnalyticsLog>> = callbackFlow {
-        val subscription = firestore.collection("analytics_events")
-            .orderBy("timestamp", Query.Direction.DESCENDING)
-            .limit(100)
-            .addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    close(error)
-                    return@addSnapshotListener
-                }
-                
-                if (snapshot != null) {
-                    val logs = snapshot.documents.mapNotNull { it.toObject(AnalyticsLog::class.java) }
-                    trySend(logs)
-                }
-            }
-            
-        awaitClose { subscription.remove() }
-    }
+    override fun getAggregatedEvents(): Flow<List<AnalyticsLog>> =
+        callbackFlow {
+            val subscription =
+                firestore
+                    .collection("analytics_events")
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .limit(100)
+                    .addSnapshotListener { snapshot, error ->
+                        if (error != null) {
+                            close(error)
+                            return@addSnapshotListener
+                        }
+
+                        if (snapshot != null) {
+                            val logs = snapshot.documents.mapNotNull { it.toObject(AnalyticsLog::class.java) }
+                            trySend(logs)
+                        }
+                    }
+
+            awaitClose { subscription.remove() }
+        }
 
     private fun hashString(input: String): String {
         val bytes = MessageDigest.getInstance("SHA-256").digest(input.toByteArray())

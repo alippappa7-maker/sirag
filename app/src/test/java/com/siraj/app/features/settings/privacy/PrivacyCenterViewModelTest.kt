@@ -34,10 +34,11 @@ class FakePrivacyRepository : PrivacyRepository {
     var correctionSubmitted = false
 
     override fun observePrivacyOverview(userId: String): Flow<PrivacyOverviewData> = flowOf(overviewData)
+
     override suspend fun getPrivacyOverview(userId: String): PrivacyOverviewData = overviewData
 
-    override suspend fun generateUserDataExport(userId: String): Resource<UserDataExportPackage> {
-        return Resource.Success(
+    override suspend fun generateUserDataExport(userId: String): Resource<UserDataExportPackage> =
+        Resource.Success(
             UserDataExportPackage(
                 exportId = "TEST-EXP-1",
                 userId = userId,
@@ -48,16 +49,17 @@ class FakePrivacyRepository : PrivacyRepository {
                 activityHistory = emptyList(),
                 preferences = emptyMap(),
                 anonymizedInvoicesSummary = emptyList(),
-                sha256Checksum = "abc123sha256"
-            )
+                sha256Checksum = "abc123sha256",
+            ),
         )
-    }
 
-    override suspend fun exportUserDataToJson(userId: String): Resource<String> {
-        return Resource.Success("{\"userId\":\"$userId\",\"exportId\":\"TEST-EXP-1\"}")
-    }
+    override suspend fun exportUserDataToJson(userId: String): Resource<String> =
+        Resource.Success("{\"userId\":\"$userId\",\"exportId\":\"TEST-EXP-1\"}")
 
-    override suspend fun saveExportJsonToFile(context: Context, json: String): Resource<File> {
+    override suspend fun saveExportJsonToFile(
+        context: Context,
+        json: String,
+    ): Resource<File> {
         val file = File(context.cacheDir, "test_export.json")
         file.writeText(json)
         return Resource.Success(file)
@@ -78,11 +80,13 @@ class FakePrivacyRepository : PrivacyRepository {
         return Resource.Success(1024L)
     }
 
-    override suspend fun deleteUserProject(projectId: String): Resource<Unit> {
-        return Resource.Success(Unit)
-    }
+    override suspend fun deleteUserProject(projectId: String): Resource<Unit> = Resource.Success(Unit)
 
-    override suspend fun requestAccountDeletion(userId: String, reason: String, gracePeriodDays: Int): Resource<AccountDeletionRequest> {
+    override suspend fun requestAccountDeletion(
+        userId: String,
+        reason: String,
+        gracePeriodDays: Int,
+    ): Resource<AccountDeletionRequest> {
         deletionRequested = true
         return Resource.Success(
             AccountDeletionRequest(
@@ -92,8 +96,8 @@ class FakePrivacyRepository : PrivacyRepository {
                 requestedAt = System.currentTimeMillis(),
                 scheduledPurgeAt = System.currentTimeMillis() + 14 * 86400000L,
                 gracePeriodDays = gracePeriodDays,
-                reason = reason
-            )
+                reason = reason,
+            ),
         )
     }
 
@@ -107,15 +111,12 @@ class FakePrivacyRepository : PrivacyRepository {
         return Resource.Success(Unit)
     }
 
-    override fun getStandardRetentionPolicies(): List<StoredDataCategory> {
-        return emptyList()
-    }
+    override fun getStandardRetentionPolicies(): List<StoredDataCategory> = emptyList()
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class PrivacyCenterViewModelTest {
-
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var app: Application
     private lateinit var fakeRepo: FakePrivacyRepository
@@ -135,65 +136,71 @@ class PrivacyCenterViewModelTest {
     }
 
     @Test
-    fun `loadOverview updates state with repository data`() = runTest {
-        viewModel.loadOverview("test_user_id")
-        testDispatcher.scheduler.advanceUntilIdle()
+    fun `loadOverview updates state with repository data`() =
+        runTest {
+            viewModel.loadOverview("test_user_id")
+            testDispatcher.scheduler.advanceUntilIdle()
 
-        val state = viewModel.uiState.value
-        assertEquals(3, state.overview.projectsCount)
-        assertEquals(2, state.overview.downloadsCount)
-        assertEquals(2048L, state.overview.downloadsSizeBytes)
-    }
-
-    @Test
-    fun `exportUserData generates file and opens EXPORT_SUCCESS dialog`() = runTest {
-        viewModel.exportUserData(app, "test_user_id")
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        val state = viewModel.uiState.value
-        assertFalse(state.isExporting)
-        assertEquals(PrivacyDialogType.EXPORT_SUCCESS, state.activeDialog)
-        assertNotNull(state.exportedJson)
-        assertEquals("abc123sha256", state.lastExportChecksum)
-    }
-
-    @Test
-    fun `clearWatchHistory triggers repository and updates message`() = runTest {
-        viewModel.clearWatchHistory("test_user_id")
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        assertTrue(fakeRepo.clearHistoryCalled)
-        assertNotNull(viewModel.uiState.value.actionMessage)
-    }
-
-    @Test
-    fun `clearDownloads triggers repository and updates message`() = runTest {
-        viewModel.clearDownloads("test_user_id")
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        assertTrue(fakeRepo.clearDownloadsCalled)
-        assertNotNull(viewModel.uiState.value.actionMessage)
-    }
-
-    @Test
-    fun `requestAccountDeletion initiates grace period and calls onScheduled callback`() = runTest {
-        var callbackCalled = false
-        viewModel.requestAccountDeletion("user_123", "طلب شخصي", 14) {
-            callbackCalled = true
+            val state = viewModel.uiState.value
+            assertEquals(3, state.overview.projectsCount)
+            assertEquals(2, state.overview.downloadsCount)
+            assertEquals(2048L, state.overview.downloadsSizeBytes)
         }
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        assertTrue(fakeRepo.deletionRequested)
-        assertTrue(callbackCalled)
-        assertNotNull(viewModel.uiState.value.actionMessage)
-    }
 
     @Test
-    fun `submitDataCorrection sends request to repository`() = runTest {
-        viewModel.submitDataCorrection("user_123", "الاسم", "اسم قديم", "اسم جديد", "تصحيح إملائي")
-        testDispatcher.scheduler.advanceUntilIdle()
+    fun `exportUserData generates file and opens EXPORT_SUCCESS dialog`() =
+        runTest {
+            viewModel.exportUserData(app, "test_user_id")
+            testDispatcher.scheduler.advanceUntilIdle()
 
-        assertTrue(fakeRepo.correctionSubmitted)
-        assertEquals(PrivacyDialogType.NONE, viewModel.uiState.value.activeDialog)
-    }
+            val state = viewModel.uiState.value
+            assertFalse(state.isExporting)
+            assertEquals(PrivacyDialogType.EXPORT_SUCCESS, state.activeDialog)
+            assertNotNull(state.exportedJson)
+            assertEquals("abc123sha256", state.lastExportChecksum)
+        }
+
+    @Test
+    fun `clearWatchHistory triggers repository and updates message`() =
+        runTest {
+            viewModel.clearWatchHistory("test_user_id")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            assertTrue(fakeRepo.clearHistoryCalled)
+            assertNotNull(viewModel.uiState.value.actionMessage)
+        }
+
+    @Test
+    fun `clearDownloads triggers repository and updates message`() =
+        runTest {
+            viewModel.clearDownloads("test_user_id")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            assertTrue(fakeRepo.clearDownloadsCalled)
+            assertNotNull(viewModel.uiState.value.actionMessage)
+        }
+
+    @Test
+    fun `requestAccountDeletion initiates grace period and calls onScheduled callback`() =
+        runTest {
+            var callbackCalled = false
+            viewModel.requestAccountDeletion("user_123", "طلب شخصي", 14) {
+                callbackCalled = true
+            }
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            assertTrue(fakeRepo.deletionRequested)
+            assertTrue(callbackCalled)
+            assertNotNull(viewModel.uiState.value.actionMessage)
+        }
+
+    @Test
+    fun `submitDataCorrection sends request to repository`() =
+        runTest {
+            viewModel.submitDataCorrection("user_123", "الاسم", "اسم قديم", "اسم جديد", "تصحيح إملائي")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            assertTrue(fakeRepo.correctionSubmitted)
+            assertEquals(PrivacyDialogType.NONE, viewModel.uiState.value.activeDialog)
+        }
 }

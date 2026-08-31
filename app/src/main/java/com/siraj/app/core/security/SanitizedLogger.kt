@@ -9,26 +9,30 @@ import java.util.regex.Pattern
  * تلقائياً لمنع ظهورها في Logcat أو Crashlytics أو شاشات الأخطاء.
  */
 object SanitizedLogger {
-
     private const val REDACTED_MASK = "[REDACTED_SECRET]"
 
     // أنماط الأسرار والمفاتيح الحساسة لاكتشافها وحجبها
-    private val SECRET_PATTERNS = listOf(
-        // Google API Keys / Firebase Keys (AIzaSy...)
-        Pattern.compile("AIza[0-9A-Za-z\\-_]{30,45}"),
-        // OpenAI / Generic sk- keys
-        Pattern.compile("sk-[0-9A-Za-z]{20,60}"),
-        // Bearer Tokens
-        Pattern.compile("(?i)Bearer\\s+[0-9A-Za-z\\-_.~+/]+=*"),
-        // Authorization Headers
-        Pattern.compile("(?i)(authorization|api[_-]?key|secret|token|password|passwd|private[_-]?key)[\"':\\s=]+[\"']?([^\"'\\s,;]+)[\"']?"),
-        // Private Key blocks
-        Pattern.compile("-----BEGIN (RSA |EC |DSA |OPENSSH |ENCRYPTED )?PRIVATE KEY-----[\\s\\S]*?-----END (RSA |EC |DSA |OPENSSH |ENCRYPTED )?PRIVATE KEY-----"),
-        // Generic JWT tokens
-        Pattern.compile("ey[A-Za-z0-9-_=]+\\.ey[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_.+/=]*"),
-        // Database connection strings with credentials (postgres://user:pass@host)
-        Pattern.compile("(?i)(mongodb|postgres|mysql|redis)://[^:]+:([^@]+)@")
-    )
+    private val SECRET_PATTERNS =
+        listOf(
+            // Google API Keys / Firebase Keys (AIzaSy...)
+            Pattern.compile("AIza[0-9A-Za-z\\-_]{30,45}"),
+            // OpenAI / Generic sk- keys
+            Pattern.compile("sk-[0-9A-Za-z]{20,60}"),
+            // Bearer Tokens
+            Pattern.compile("(?i)Bearer\\s+[0-9A-Za-z\\-_.~+/]+=*"),
+            // Authorization Headers
+            Pattern.compile(
+                "(?i)(authorization|api[_-]?key|secret|token|password|passwd|private[_-]?key)[\"':\\s=]+[\"']?([^\"'\\s,;]+)[\"']?",
+            ),
+            // Private Key blocks
+            Pattern.compile(
+                "-----BEGIN (RSA |EC |DSA |OPENSSH |ENCRYPTED )?PRIVATE KEY-----[\\s\\S]*?-----END (RSA |EC |DSA |OPENSSH |ENCRYPTED )?PRIVATE KEY-----",
+            ),
+            // Generic JWT tokens
+            Pattern.compile("ey[A-Za-z0-9-_=]+\\.ey[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_.+/=]*"),
+            // Database connection strings with credentials (postgres://user:pass@host)
+            Pattern.compile("(?i)(mongodb|postgres|mysql|redis)://[^:]+:([^@]+)@"),
+        )
 
     /**
      * تطهير أي نص من المفاتيح والأسرار
@@ -38,12 +42,20 @@ object SanitizedLogger {
         var sanitized = message
 
         // 1. تطهير حقول authorization / token / secret / password
-        val authMatcher = Pattern.compile("(?i)(authorization|api[_-]?key|secret|token|password|passwd|private[_-]?key)[\"':\\s=]+[\"']?([^\"'\\s,;]+)[\"']?").matcher(sanitized)
+        val authMatcher =
+            Pattern
+                .compile(
+                    "(?i)(authorization|api[_-]?key|secret|token|password|passwd|private[_-]?key)[\"':\\s=]+[\"']?([^\"'\\s,;]+)[\"']?",
+                ).matcher(sanitized)
         val sb = StringBuffer()
         while (authMatcher.find()) {
             val keyName = authMatcher.group(1)
             val replacement = "$keyName: \"$REDACTED_MASK\""
-            authMatcher.appendReplacement(sb, java.util.regex.Matcher.quoteReplacement(replacement))
+            authMatcher.appendReplacement(
+                sb,
+                java.util.regex.Matcher
+                    .quoteReplacement(replacement),
+            )
         }
         authMatcher.appendTail(sb)
         sanitized = sb.toString()
@@ -56,7 +68,10 @@ object SanitizedLogger {
         return sanitized
     }
 
-    fun d(tag: String, message: String) {
+    fun d(
+        tag: String,
+        message: String,
+    ) {
         val safeTag = sanitize(tag)
         val safeMessage = sanitize(message)
         try {
@@ -66,7 +81,10 @@ object SanitizedLogger {
         }
     }
 
-    fun i(tag: String, message: String) {
+    fun i(
+        tag: String,
+        message: String,
+    ) {
         val safeTag = sanitize(tag)
         val safeMessage = sanitize(message)
         try {
@@ -76,7 +94,11 @@ object SanitizedLogger {
         }
     }
 
-    fun w(tag: String, message: String, throwable: Throwable? = null) {
+    fun w(
+        tag: String,
+        message: String,
+        throwable: Throwable? = null,
+    ) {
         val safeTag = sanitize(tag)
         val safeMessage = sanitize(message)
         try {
@@ -91,7 +113,11 @@ object SanitizedLogger {
         }
     }
 
-    fun e(tag: String, message: String, throwable: Throwable? = null) {
+    fun e(
+        tag: String,
+        message: String,
+        throwable: Throwable? = null,
+    ) {
         val safeTag = sanitize(tag)
         val safeMessage = sanitize(message)
         try {

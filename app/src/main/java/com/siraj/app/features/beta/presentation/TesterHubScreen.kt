@@ -1,7 +1,6 @@
 package com.siraj.app.features.beta.presentation
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,9 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.siraj.app.core.ui.components.BetaFeedbackDialog
 import com.siraj.app.domain.models.beta.CriticalJourney
@@ -34,7 +31,7 @@ import com.siraj.app.ui.theme.SirajGold
 fun TesterHubScreen(
     onNavigateBack: () -> Unit,
     onNavigateToRoute: (String) -> Unit,
-    viewModel: TesterHubViewModel = viewModel(factory = TesterHubViewModelFactory())
+    viewModel: TesterHubViewModel = viewModel(factory = TesterHubViewModelFactory()),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showBugReportDialog by remember { mutableStateOf(false) }
@@ -49,61 +46,62 @@ fun TesterHubScreen(
                     Column {
                         Text(
                             text = "مركز وخدمات المختبرين",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         )
                         Text(
                             text = "Siraj Beta Tester Hub • v${uiState.appVersion}",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 },
                 navigationIcon = {
                     IconButton(
                         onClick = onNavigateBack,
-                        modifier = Modifier.testTag("tester_hub_back_btn")
+                        modifier = Modifier.testTag("tester_hub_back_btn"),
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "الرجوع"
+                            contentDescription = "الرجوع",
                         )
                     }
                 },
                 actions = {
                     IconButton(
                         onClick = { onNavigateToRoute("defect_triage") },
-                        modifier = Modifier.testTag("open_defect_triage_action_btn")
+                        modifier = Modifier.testTag("open_defect_triage_action_btn"),
                     ) {
                         Icon(
                             imageVector = Icons.Default.Rule,
                             contentDescription = "فرز العيوب والملاحظات",
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     }
                     IconButton(
                         onClick = { showBugReportDialog = true },
-                        modifier = Modifier.testTag("open_bug_report_action_btn")
+                        modifier = Modifier.testTag("open_bug_report_action_btn"),
                     ) {
                         Icon(
                             imageVector = Icons.Default.BugReport,
                             contentDescription = "إرسال تقرير خطأ",
-                            tint = MaterialTheme.colorScheme.error
+                            tint = MaterialTheme.colorScheme.error,
                         )
                     }
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
         ) {
             // Tab Selector
             PrimaryScrollableTabRow(
                 selectedTabIndex = uiState.selectedTab,
                 edgePadding = 16.dp,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 tabTitles.forEachIndexed { index, title ->
                     Tab(
@@ -112,40 +110,44 @@ fun TesterHubScreen(
                         text = {
                             Text(
                                 text = title,
-                                fontWeight = if (uiState.selectedTab == index) FontWeight.Bold else FontWeight.Normal
+                                fontWeight = if (uiState.selectedTab == index) FontWeight.Bold else FontWeight.Normal,
                             )
-                        }
+                        },
                     )
                 }
             }
 
             // Main Tab Content
             when (uiState.selectedTab) {
-                0 -> TesterDashboardTab(
-                    uiState = uiState,
-                    onNavigateToRoute = onNavigateToRoute,
-                    onMarkJourney = { journeyId -> viewModel.markJourneyCompleted(journeyId) },
-                    onOpenFeedback = { showBugReportDialog = true },
-                    onOpenRevokeDialog = { showRevokeConfirmDialog = true }
-                )
-                1 -> InstallationGuidesTab(
-                    channels = uiState.distributionChannels
-                )
-                2 -> ExperienceSurveyTab(
-                    uiState = uiState,
-                    onUpdateOverallRating = viewModel::updateOverallRating,
-                    onUpdateEaseRating = viewModel::updateEaseOfUseRating,
-                    onUpdateShariaRating = viewModel::updateShariaContentRating,
-                    onUpdatePerfRating = viewModel::updatePerformanceRating,
-                    onUpdateValuableFeature = viewModel::updateMostValuableFeature,
-                    onUpdatePainPoint = viewModel::updateBiggestPainPoint,
-                    onUpdateSuggestions = viewModel::updateGeneralSuggestions,
-                    onSubmitSurvey = viewModel::submitSurvey,
-                    onClearStatus = viewModel::clearSurveyStatus
-                )
-                3 -> ReleaseNotesTab(
-                    releaseNotes = uiState.releaseNotes
-                )
+                0 ->
+                    TesterDashboardTab(
+                        uiState = uiState,
+                        onNavigateToRoute = onNavigateToRoute,
+                        onMarkJourney = { journeyId -> viewModel.markJourneyCompleted(journeyId) },
+                        onOpenFeedback = { showBugReportDialog = true },
+                        onOpenRevokeDialog = { showRevokeConfirmDialog = true },
+                    )
+                1 ->
+                    InstallationGuidesTab(
+                        channels = uiState.distributionChannels,
+                    )
+                2 ->
+                    ExperienceSurveyTab(
+                        uiState = uiState,
+                        onUpdateOverallRating = viewModel::updateOverallRating,
+                        onUpdateEaseRating = viewModel::updateEaseOfUseRating,
+                        onUpdateShariaRating = viewModel::updateShariaContentRating,
+                        onUpdatePerfRating = viewModel::updatePerformanceRating,
+                        onUpdateValuableFeature = viewModel::updateMostValuableFeature,
+                        onUpdatePainPoint = viewModel::updateBiggestPainPoint,
+                        onUpdateSuggestions = viewModel::updateGeneralSuggestions,
+                        onSubmitSurvey = viewModel::submitSurvey,
+                        onClearStatus = viewModel::clearSurveyStatus,
+                    )
+                3 ->
+                    ReleaseNotesTab(
+                        releaseNotes = uiState.releaseNotes,
+                    )
             }
         }
     }
@@ -154,7 +156,7 @@ fun TesterHubScreen(
     if (showBugReportDialog) {
         BetaFeedbackDialog(
             currentRoute = "tester_hub",
-            onDismissRequest = { showBugReportDialog = false }
+            onDismissRequest = { showBugReportDialog = false },
         )
     }
 
@@ -166,7 +168,7 @@ fun TesterHubScreen(
             title = { Text("سحب صلاحية حساب الاختبار") },
             text = {
                 Text(
-                    "هل أنت متأكد من رغبتك في مغادرة برنامج الاختبار التجريبي لسراج؟ سيتم سحب صلاحية حساب المختبر وإيقاف استلام التحديثات التجريبية."
+                    "هل أنت متأكد من رغبتك في مغادرة برنامج الاختبار التجريبي لسراج؟ سيتم سحب صلاحية حساب المختبر وإيقاف استلام التحديثات التجريبية.",
                 )
             },
             confirmButton = {
@@ -176,7 +178,7 @@ fun TesterHubScreen(
                         showRevokeConfirmDialog = false
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                    modifier = Modifier.testTag("confirm_revoke_btn")
+                    modifier = Modifier.testTag("confirm_revoke_btn"),
                 ) {
                     Text("تأكيد الانسحاب")
                 }
@@ -185,7 +187,7 @@ fun TesterHubScreen(
                 TextButton(onClick = { showRevokeConfirmDialog = false }) {
                     Text("إلغاء")
                 }
-            }
+            },
         )
     }
 }
@@ -196,7 +198,7 @@ private fun TesterDashboardTab(
     onNavigateToRoute: (String) -> Unit,
     onMarkJourney: (String) -> Unit,
     onOpenFeedback: () -> Unit,
-    onOpenRevokeDialog: () -> Unit
+    onOpenRevokeDialog: () -> Unit,
 ) {
     val profile = uiState.testerProfile
     val completedCount = profile?.completedJourneys?.size ?: 0
@@ -204,34 +206,35 @@ private fun TesterDashboardTab(
     val progress = if (totalJourneys > 0) completedCount.toFloat() / totalJourneys.toFloat() else 0f
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         // Tester Profile Card
         item {
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Column {
                             Text(
                                 text = profile?.name?.ifBlank { "مختبر معتمد" } ?: "مختبر معتمد",
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
                             )
                             Text(
                                 text = profile?.email ?: "tester@siraj.app",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
                             )
                         }
 
@@ -239,13 +242,13 @@ private fun TesterDashboardTab(
                         val status = profile?.status ?: TesterStatus.ACTIVE
                         Surface(
                             color = Color(status.colorHex).copy(alpha = 0.2f),
-                            shape = RoundedCornerShape(8.dp)
+                            shape = RoundedCornerShape(8.dp),
                         ) {
                             Text(
                                 text = status.title,
                                 color = Color(status.colorHex),
                                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                             )
                         }
                     }
@@ -257,18 +260,18 @@ private fun TesterDashboardTab(
                     // Group & Metadata
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Column {
                             Text(
                                 text = "مجموعة الاختبار:",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
                             )
                             Text(
                                 text = profile?.group?.title ?: "مختبرو المجتمع",
                                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
                             )
                         }
 
@@ -276,12 +279,12 @@ private fun TesterDashboardTab(
                             Text(
                                 text = "الجهاز والنظام:",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
                             )
                             Text(
                                 text = uiState.deviceModel,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
                             )
                         }
                     }
@@ -294,39 +297,40 @@ private fun TesterDashboardTab(
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = "المسارات الأساسية للاختبار",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         )
                         Text(
                             text = "$completedCount من $totalJourneys مكتمل",
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
                     LinearProgressIndicator(
                         progress = { progress },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(8.dp)
-                            .clip(RoundedCornerShape(4.dp))
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(8.dp)
+                                .clip(RoundedCornerShape(4.dp)),
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "يُرجى تجربة جميع المسارات والتأكد من سلامة الأداء والمحتوى الشرعي.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -339,7 +343,7 @@ private fun TesterDashboardTab(
                 journey = journey,
                 isCompleted = isCompleted,
                 onStartJourney = { onNavigateToRoute(journey.targetRoute) },
-                onToggleComplete = { onMarkJourney(journey.id) }
+                onToggleComplete = { onMarkJourney(journey.id) },
             )
         }
 
@@ -348,11 +352,12 @@ private fun TesterDashboardTab(
             Spacer(modifier = Modifier.height(8.dp))
             FilledTonalButton(
                 onClick = { onNavigateToRoute("defect_triage") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp)
-                    .testTag("dashboard_defect_triage_btn"),
-                shape = RoundedCornerShape(12.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .testTag("dashboard_defect_triage_btn"),
+                shape = RoundedCornerShape(12.dp),
             ) {
                 Icon(Icons.Default.Rule, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
@@ -363,11 +368,12 @@ private fun TesterDashboardTab(
         item {
             Button(
                 onClick = onOpenFeedback,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp)
-                    .testTag("dashboard_report_bug_btn"),
-                shape = RoundedCornerShape(12.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .testTag("dashboard_report_bug_btn"),
+                shape = RoundedCornerShape(12.dp),
             ) {
                 Icon(Icons.Default.BugReport, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
@@ -378,11 +384,12 @@ private fun TesterDashboardTab(
         item {
             OutlinedButton(
                 onClick = onOpenRevokeDialog,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("dashboard_revoke_access_btn"),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .testTag("dashboard_revoke_access_btn"),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
             ) {
                 Icon(Icons.Default.PersonRemove, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
@@ -398,34 +405,37 @@ private fun CriticalJourneyCard(
     journey: CriticalJourney,
     isCompleted: Boolean,
     onStartJourney: () -> Unit,
-    onToggleComplete: () -> Unit
+    onToggleComplete: () -> Unit,
 ) {
     Card(
-        colors = CardDefaults.cardColors(
-            containerColor = if (isCompleted) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface
-        ),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = if (isCompleted) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface,
+            ),
         shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             // Checkmark or Icon
             Surface(
                 color = if (isCompleted) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(8.dp),
-                modifier = Modifier
-                    .size(44.dp)
-                    .clickable { onToggleComplete() }
+                modifier =
+                    Modifier
+                        .size(44.dp)
+                        .clickable { onToggleComplete() },
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = if (isCompleted) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
                         contentDescription = if (isCompleted) "مكتمل" else "غير مكتمل",
-                        tint = if (isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = if (isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -435,12 +445,12 @@ private fun CriticalJourneyCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = journey.title,
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                 )
                 Text(
                     text = journey.description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
@@ -449,7 +459,7 @@ private fun CriticalJourneyCard(
             FilledTonalButton(
                 onClick = onStartJourney,
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
             ) {
                 Text("بدء", style = MaterialTheme.typography.labelMedium)
             }
@@ -458,24 +468,23 @@ private fun CriticalJourneyCard(
 }
 
 @Composable
-private fun InstallationGuidesTab(
-    channels: List<DistributionChannelInfo>
-) {
+private fun InstallationGuidesTab(channels: List<DistributionChannelInfo>) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         item {
             Text(
                 text = "دليل تثبيت وتحديث الإصدار التجريبي",
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             )
             Text(
                 text = "إرشادات التثبيت الآمن عبر منصات التوزيع المعتمدة (Android & iOS)",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 
@@ -483,28 +492,28 @@ private fun InstallationGuidesTab(
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Surface(
                             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                            shape = RoundedCornerShape(8.dp)
+                            shape = RoundedCornerShape(8.dp),
                         ) {
                             Text(
                                 text = channel.platform,
                                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                             )
                         }
 
                         Text(
                             text = "${channel.channelName} (${channel.methodTitle})",
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                         )
                     }
 
@@ -512,27 +521,28 @@ private fun InstallationGuidesTab(
 
                     Text(
                         text = "خطوات التثبيت:",
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                     )
                     Spacer(modifier = Modifier.height(6.dp))
 
                     channel.stepGuide.forEachIndexed { index, step ->
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 3.dp),
-                            verticalAlignment = Alignment.Top
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 3.dp),
+                            verticalAlignment = Alignment.Top,
                         ) {
                             Text(
                                 text = "${index + 1}.",
                                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.width(22.dp)
+                                modifier = Modifier.width(22.dp),
                             )
                             Text(
                                 text = step,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = MaterialTheme.colorScheme.onSurface,
                             )
                         }
                     }
@@ -546,13 +556,13 @@ private fun InstallationGuidesTab(
                             imageVector = Icons.Default.Autorenew,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(18.dp),
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = channel.updateInstructions,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondary
+                            color = MaterialTheme.colorScheme.secondary,
                         )
                     }
                 }
@@ -572,23 +582,24 @@ private fun ExperienceSurveyTab(
     onUpdatePainPoint: (String) -> Unit,
     onUpdateSuggestions: (String) -> Unit,
     onSubmitSurvey: () -> Unit,
-    onClearStatus: () -> Unit
+    onClearStatus: () -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         item {
             Text(
                 text = "استبانة تقييم تجربة الإصدار التجريبي",
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             )
             Text(
                 text = "تقييمك الدقيق وملاحظاتك تساهم بشكل مباشر في ضبط التجربة والتحقق قبل الإطلاق الرسمي.",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 
@@ -598,18 +609,18 @@ private fun ExperienceSurveyTab(
                 Surface(
                     color = MaterialTheme.colorScheme.primaryContainer,
                     shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = uiState.surveySuccessMessage ?: "تم إرسال التقييم بنجاح!",
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
                         )
                     }
                 }
@@ -619,18 +630,18 @@ private fun ExperienceSurveyTab(
                 Surface(
                     color = MaterialTheme.colorScheme.errorContainer,
                     shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(Icons.Default.ErrorOutline, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = uiState.surveyErrorMessage ?: "",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onErrorContainer
+                            color = MaterialTheme.colorScheme.onErrorContainer,
                         )
                     }
                 }
@@ -642,13 +653,13 @@ private fun ExperienceSurveyTab(
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     RatingQuestionRow(
                         title = "1. التقييم العام لتطبيق سراج",
                         rating = uiState.overallRating,
-                        onRatingChanged = onUpdateOverallRating
+                        onRatingChanged = onUpdateOverallRating,
                     )
 
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -656,7 +667,7 @@ private fun ExperienceSurveyTab(
                     RatingQuestionRow(
                         title = "2. سهولة الاستخدام وتجربة الواجهات (UX/UI)",
                         rating = uiState.easeOfUseRating,
-                        onRatingChanged = onUpdateEaseRating
+                        onRatingChanged = onUpdateEaseRating,
                     )
 
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -664,7 +675,7 @@ private fun ExperienceSurveyTab(
                     RatingQuestionRow(
                         title = "3. دقة وتوثيق المحتوى الشرعي والمصادر",
                         rating = uiState.shariaContentRating,
-                        onRatingChanged = onUpdateShariaRating
+                        onRatingChanged = onUpdateShariaRating,
                     )
 
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -672,7 +683,7 @@ private fun ExperienceSurveyTab(
                     RatingQuestionRow(
                         title = "4. استقرار الأداء وسرعة الاستجابة",
                         rating = uiState.performanceRating,
-                        onRatingChanged = onUpdatePerfRating
+                        onRatingChanged = onUpdatePerfRating,
                     )
                 }
             }
@@ -683,7 +694,7 @@ private fun ExperienceSurveyTab(
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                     OutlinedTextField(
@@ -691,11 +702,12 @@ private fun ExperienceSurveyTab(
                         onValueChange = onUpdateValuableFeature,
                         label = { Text("أكثر ميزة نالت إعجابك وفائدتها") },
                         placeholder = { Text("مثال: سرعة ربط الآيات بالمصادر وتلاوة القراء في المحراب...") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("survey_valuable_feature_input"),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .testTag("survey_valuable_feature_input"),
                         minLines = 2,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(10.dp),
                     )
 
                     OutlinedTextField(
@@ -703,11 +715,12 @@ private fun ExperienceSurveyTab(
                         onValueChange = onUpdatePainPoint,
                         label = { Text("أكبر صعوبة أو عائق واجهك أثناء الاستخدام") },
                         placeholder = { Text("مثال: وضوح زر الانتقال في الاستوديو أو استجابة البحث...") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("survey_pain_point_input"),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .testTag("survey_pain_point_input"),
                         minLines = 2,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(10.dp),
                     )
 
                     OutlinedTextField(
@@ -715,11 +728,12 @@ private fun ExperienceSurveyTab(
                         onValueChange = onUpdateSuggestions,
                         label = { Text("مقترحات عامة ترغب بإضافتها مستقبلاً") },
                         placeholder = { Text("شاركنا أي فكرة أو تطوير تراه مناسباً...") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("survey_suggestions_input"),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .testTag("survey_suggestions_input"),
                         minLines = 2,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(10.dp),
                     )
                 }
             }
@@ -730,23 +744,23 @@ private fun ExperienceSurveyTab(
             Surface(
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                 shape = RoundedCornerShape(10.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Row(
                     modifier = Modifier.padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
                         imageVector = Icons.Default.Info,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(20.dp),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "يتم إرفاق تشخيص الجهاز (${uiState.deviceModel} - ${uiState.osVersion} - v${uiState.appVersion}) تلقائياً للمساعدة في تحليل النتائج دون جمع أي بيانات شخصية حساسة.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -757,17 +771,18 @@ private fun ExperienceSurveyTab(
             Button(
                 onClick = onSubmitSurvey,
                 enabled = !uiState.isSubmittingSurvey,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp)
-                    .testTag("submit_survey_btn"),
-                shape = RoundedCornerShape(12.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .testTag("submit_survey_btn"),
+                shape = RoundedCornerShape(12.dp),
             ) {
                 if (uiState.isSubmittingSurvey) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(24.dp),
                         color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.dp
+                        strokeWidth = 2.dp,
                     )
                 } else {
                     Icon(Icons.Default.Send, contentDescription = null)
@@ -784,54 +799,53 @@ private fun ExperienceSurveyTab(
 private fun RatingQuestionRow(
     title: String,
     rating: Int,
-    onRatingChanged: (Int) -> Unit
+    onRatingChanged: (Int) -> Unit,
 ) {
     Column {
         Text(
             text = title,
-            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
         )
         Spacer(modifier = Modifier.height(8.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             (1..5).forEach { star ->
                 IconButton(
-                    onClick = { onRatingChanged(star) }
+                    onClick = { onRatingChanged(star) },
                 ) {
                     Icon(
                         imageVector = if (star <= rating) Icons.Default.Star else Icons.Default.StarBorder,
                         contentDescription = "$star نجوم",
                         tint = if (star <= rating) com.siraj.app.ui.theme.SirajGold else MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(32.dp),
                     )
                 }
             }
             Text(
                 text = "$rating / 5",
                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
         }
     }
 }
 
 @Composable
-private fun ReleaseNotesTab(
-    releaseNotes: List<com.siraj.app.domain.models.beta.BetaReleaseNote>
-) {
+private fun ReleaseNotesTab(releaseNotes: List<com.siraj.app.domain.models.beta.BetaReleaseNote>) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         item {
             Text(
                 text = "سجل ملاحظات إصدارات النسخة التجريبية (Release Notes)",
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             )
         }
 
@@ -839,30 +853,30 @@ private fun ReleaseNotesTab(
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = "الإصدار ${note.versionName} (Build ${note.buildCode})",
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary,
                         )
                         Text(
                             text = note.releaseDate,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
 
                     Text(
                         text = "القناة: ${note.channel}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -870,7 +884,7 @@ private fun ReleaseNotesTab(
                     // Highlights
                     Text(
                         text = "أبرز الميزات والوظائف:",
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     note.highlights.forEach { item ->
@@ -882,7 +896,7 @@ private fun ReleaseNotesTab(
                     // Fixed Issues
                     Text(
                         text = "التحسينات والإصلاحات:",
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     note.fixedIssues.forEach { item ->
@@ -894,7 +908,7 @@ private fun ReleaseNotesTab(
                     // Known Limitations
                     Text(
                         text = "القيود المعروفة في هذه النسخة:",
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     note.knownLimitations.forEach { item ->
@@ -907,26 +921,32 @@ private fun ReleaseNotesTab(
 }
 
 @Composable
-private fun BulletItem(text: String, icon: ImageVector, iconTint: Color) {
+private fun BulletItem(
+    text: String,
+    icon: ImageVector,
+    iconTint: Color,
+) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 3.dp),
-        verticalAlignment = Alignment.Top
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 3.dp),
+        verticalAlignment = Alignment.Top,
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
             tint = iconTint,
-            modifier = Modifier
-                .size(16.dp)
-                .padding(top = 2.dp)
+            modifier =
+                Modifier
+                    .size(16.dp)
+                    .padding(top = 2.dp),
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = text,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }

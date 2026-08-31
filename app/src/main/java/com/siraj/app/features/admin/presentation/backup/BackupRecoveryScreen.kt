@@ -1,8 +1,6 @@
 package com.siraj.app.features.admin.presentation.backup
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,7 +29,7 @@ import com.siraj.app.ui.theme.statusColors
 @Composable
 fun BackupRecoveryScreen(
     viewModel: BackupRecoveryViewModel,
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val dateFormatter = remember { SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()) }
@@ -42,7 +40,11 @@ fun BackupRecoveryScreen(
                 title = {
                     Column {
                         Text("النسخ الاحتياطي والتعافي من الكوارث", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                        Text("Backup & Disaster Recovery (RPO < 1h, RTO < 4h)", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            "Backup & Disaster Recovery (RPO < 1h, RTO < 4h)",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                 },
                 navigationIcon = {
@@ -53,11 +55,11 @@ fun BackupRecoveryScreen(
                 actions = {
                     IconButton(
                         onClick = { viewModel.setDrRunbookModalVisible(true) },
-                        modifier = Modifier.testTag("backup_dr_runbook_button")
+                        modifier = Modifier.testTag("backup_dr_runbook_button"),
                     ) {
                         Icon(Icons.Default.MenuBook, contentDescription = "دليل التعافي من الكوارث")
                     }
-                }
+                },
             )
         },
         floatingActionButton = {
@@ -67,16 +69,17 @@ fun BackupRecoveryScreen(
                 text = { Text("إنشاء نسخة احتياطية مشفرة") },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.testTag("trigger_backup_fab")
+                modifier = Modifier.testTag("trigger_backup_fab"),
             )
-        }
+        },
     ) { paddingValues ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             // 1. Banner Notification if any
             if (uiState.bannerMessage != null) {
@@ -84,11 +87,11 @@ fun BackupRecoveryScreen(
                     Surface(
                         color = MaterialTheme.colorScheme.primaryContainer,
                         shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth().testTag("backup_banner_message")
+                        modifier = Modifier.fillMaxWidth().testTag("backup_banner_message"),
                     ) {
                         Row(
                             modifier = Modifier.padding(14.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                             Spacer(modifier = Modifier.width(10.dp))
@@ -96,7 +99,7 @@ fun BackupRecoveryScreen(
                                 text = uiState.bannerMessage ?: "",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
                             )
                             IconButton(onClick = { viewModel.clearBannerMessage() }) {
                                 Icon(Icons.Default.Close, contentDescription = "إغلاق")
@@ -118,7 +121,7 @@ fun BackupRecoveryScreen(
                     },
                     onOpenProjectRestore = {
                         viewModel.setProjectRestoreModalVisible(true)
-                    }
+                    },
                 )
             }
 
@@ -126,27 +129,27 @@ fun BackupRecoveryScreen(
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     FilterChip(
                         selected = uiState.selectedEnvironment == null,
                         onClick = { viewModel.setEnvironmentFilter(null) },
-                        label = { Text("الكل (${uiState.snapshots.size})") }
+                        label = { Text("الكل (${uiState.snapshots.size})") },
                     )
                     FilterChip(
                         selected = uiState.selectedEnvironment == BackupEnvironment.PROD,
                         onClick = { viewModel.setEnvironmentFilter(BackupEnvironment.PROD) },
-                        label = { Text("الإنتاج المعزول") }
+                        label = { Text("الإنتاج المعزول") },
                     )
                     FilterChip(
                         selected = uiState.selectedEnvironment == BackupEnvironment.STAGING,
                         onClick = { viewModel.setEnvironmentFilter(BackupEnvironment.STAGING) },
-                        label = { Text("بيئة الاختبار") }
+                        label = { Text("بيئة الاختبار") },
                     )
                     FilterChip(
                         selected = uiState.selectedEnvironment == BackupEnvironment.DEV,
                         onClick = { viewModel.setEnvironmentFilter(BackupEnvironment.DEV) },
-                        label = { Text("التطوير") }
+                        label = { Text("التطوير") },
                     )
                 }
             }
@@ -156,17 +159,17 @@ fun BackupRecoveryScreen(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         "النسخ الاحتياطية الموثقة (${uiState.filteredSnapshots.size})",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     Text(
                         "مشفرة بـ CMEK & WORM",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 }
             }
@@ -176,13 +179,18 @@ fun BackupRecoveryScreen(
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
                     ) {
                         Column(
                             modifier = Modifier.padding(24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            Icon(Icons.Default.CloudOff, contentDescription = null, modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.outline)
+                            Icon(
+                                Icons.Default.CloudOff,
+                                contentDescription = null,
+                                modifier = Modifier.size(48.dp),
+                                tint = MaterialTheme.colorScheme.outline,
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text("لا توجد نسخ احتياطية مسجلة لهذا التصنيف", style = MaterialTheme.typography.bodyMedium)
                         }
@@ -198,7 +206,7 @@ fun BackupRecoveryScreen(
                         },
                         onSelect = {
                             viewModel.selectSnapshot(snapshot)
-                        }
+                        },
                     )
                 }
             }
@@ -216,7 +224,7 @@ fun BackupRecoveryScreen(
             onDismiss = { viewModel.setCreateBackupDialogVisible(false) },
             onConfirm = { type, env, notes ->
                 viewModel.triggerNewBackup(type, env, notes)
-            }
+            },
         )
     }
 
@@ -230,7 +238,7 @@ fun BackupRecoveryScreen(
             onDismiss = { viewModel.setDryRunModalVisible(false) },
             onExecute = {
                 viewModel.executeDryRunRestore(uiState.selectedSnapshot!!.id)
-            }
+            },
         )
     }
 
@@ -241,7 +249,7 @@ fun BackupRecoveryScreen(
             onDismiss = { viewModel.setProjectRestoreModalVisible(false) },
             onRestore = { projectId, targetWorkspaceId, snapshotId ->
                 viewModel.executeProjectRestore(projectId, targetWorkspaceId, snapshotId)
-            }
+            },
         )
     }
 
@@ -250,7 +258,7 @@ fun BackupRecoveryScreen(
         DisasterRecoveryRunbookModal(
             drPlan = uiState.drPlan,
             retention = uiState.retentionPolicy,
-            onDismiss = { viewModel.setDrRunbookModalVisible(false) }
+            onDismiss = { viewModel.setDrRunbookModalVisible(false) },
         )
     }
 }
@@ -261,39 +269,40 @@ private fun BackupHealthKpiDashboard(
     retention: BackupRetentionPolicy,
     tombstoneCount: Int,
     onOpenDryRun: () -> Unit,
-    onOpenProjectRestore: () -> Unit
+    onOpenProjectRestore: () -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth().testTag("backup_health_dashboard"),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(16.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
-                        modifier = Modifier
-                            .size(10.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.statusColors.successFg)
+                        modifier =
+                            Modifier
+                                .size(10.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.statusColors.successFg),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("حالة النسخ الاحتياطي والطوارئ: متوافقة ونشطة", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 }
                 Surface(
                     color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = RoundedCornerShape(6.dp)
+                    shape = RoundedCornerShape(6.dp),
                 ) {
                     Text(
                         "CMEK + WORM Locked",
                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                     )
                 }
             }
@@ -302,7 +311,7 @@ private fun BackupHealthKpiDashboard(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 KpiMetricItem(title = "نافذة فقد البيانات (RPO)", value = "15 دقيقة", subtext = "الحد الأقصى: 60 دقيقة")
                 KpiMetricItem(title = "زمن الاستعادة (RTO)", value = "< 4 ساعات", subtext = "المشروع: 15 دقيقة")
@@ -313,12 +322,16 @@ private fun BackupHealthKpiDashboard(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Button(
                     onClick = onOpenDryRun,
                     modifier = Modifier.weight(1f).testTag("dry_run_test_btn"),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer, contentColor = MaterialTheme.colorScheme.onSecondaryContainer)
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        ),
                 ) {
                     Icon(Icons.Default.Science, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(6.dp))
@@ -327,7 +340,7 @@ private fun BackupHealthKpiDashboard(
 
                 OutlinedButton(
                     onClick = onOpenProjectRestore,
-                    modifier = Modifier.weight(1f).testTag("project_restore_btn")
+                    modifier = Modifier.weight(1f).testTag("project_restore_btn"),
                 ) {
                     Icon(Icons.Default.RestorePage, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(6.dp))
@@ -339,7 +352,11 @@ private fun BackupHealthKpiDashboard(
 }
 
 @Composable
-private fun KpiMetricItem(title: String, value: String, subtext: String) {
+private fun KpiMetricItem(
+    title: String,
+    value: String,
+    subtext: String,
+) {
     Column(horizontalAlignment = Alignment.Start) {
         Text(title, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(value, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = MaterialTheme.colorScheme.primary)
@@ -352,33 +369,35 @@ private fun BackupSnapshotCard(
     snapshot: BackupSnapshot,
     dateFormatter: SimpleDateFormat,
     onTestDryRun: () -> Unit,
-    onSelect: () -> Unit
+    onSelect: () -> Unit,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onSelect() }
-            .testTag("snapshot_card_${snapshot.id}"),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable { onSelect() }
+                .testTag("snapshot_card_${snapshot.id}"),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
     ) {
         Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = when (snapshot.backupType) {
-                            BackupType.FULL -> Icons.Default.FolderZip
-                            BackupType.INCREMENTAL -> Icons.Default.Update
-                            BackupType.METADATA_ONLY -> Icons.Default.Description
-                            BackupType.DISASTER_RECOVERY_SNAPSHOT -> Icons.Default.Shield
-                        },
+                        imageVector =
+                            when (snapshot.backupType) {
+                                BackupType.FULL -> Icons.Default.FolderZip
+                                BackupType.INCREMENTAL -> Icons.Default.Update
+                                BackupType.METADATA_ONLY -> Icons.Default.Description
+                                BackupType.DISASTER_RECOVERY_SNAPSHOT -> Icons.Default.Shield
+                            },
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.colorScheme.primary,
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
@@ -386,29 +405,31 @@ private fun BackupSnapshotCard(
                         Text(
                             dateFormatter.format(Date(snapshot.timestamp)),
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
 
                 Surface(
-                    color = when (snapshot.environment) {
-                        BackupEnvironment.PROD -> MaterialTheme.statusColors.successFg.copy(alpha = 0.15f)
-                        BackupEnvironment.STAGING -> MaterialTheme.statusColors.warningFg.copy(alpha = 0.15f)
-                        BackupEnvironment.DEV -> Color(0xFF0277BD).copy(alpha = 0.15f)
-                    },
-                    shape = RoundedCornerShape(6.dp)
+                    color =
+                        when (snapshot.environment) {
+                            BackupEnvironment.PROD -> MaterialTheme.statusColors.successFg.copy(alpha = 0.15f)
+                            BackupEnvironment.STAGING -> MaterialTheme.statusColors.warningFg.copy(alpha = 0.15f)
+                            BackupEnvironment.DEV -> Color(0xFF0277BD).copy(alpha = 0.15f)
+                        },
+                    shape = RoundedCornerShape(6.dp),
                 ) {
                     Text(
                         snapshot.environment.labelArabic,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = when (snapshot.environment) {
-                            BackupEnvironment.PROD -> MaterialTheme.statusColors.successFg
-                            BackupEnvironment.STAGING -> MaterialTheme.statusColors.warningFg
-                            BackupEnvironment.DEV -> Color(0xFF0277BD)
-                        }
+                        color =
+                            when (snapshot.environment) {
+                                BackupEnvironment.PROD -> MaterialTheme.statusColors.successFg
+                                BackupEnvironment.STAGING -> MaterialTheme.statusColors.warningFg
+                                BackupEnvironment.DEV -> Color(0xFF0277BD)
+                            },
                     )
                 }
             }
@@ -416,24 +437,24 @@ private fun BackupSnapshotCard(
             Text(
                 snapshot.notes.ifBlank { "نسخة احتياطية مشفرة بـ CMEK ومحققة آلياً" },
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 SuggestionChip(
                     onClick = {},
-                    label = { Text("${snapshot.documentCount} مستنداً", fontSize = 11.sp) }
+                    label = { Text("${snapshot.documentCount} مستنداً", fontSize = 11.sp) },
                 )
                 SuggestionChip(
                     onClick = {},
-                    label = { Text("${snapshot.sizeBytes / (1024 * 1024)} MB", fontSize = 11.sp) }
+                    label = { Text("${snapshot.sizeBytes / (1024 * 1024)} MB", fontSize = 11.sp) },
                 )
                 SuggestionChip(
                     onClick = {},
-                    label = { Text("${snapshot.purgedTombstonesCount} مستبعداً (حذف)", fontSize = 11.sp) }
+                    label = { Text("${snapshot.purgedTombstonesCount} مستبعداً (حذف)", fontSize = 11.sp) },
                 )
             }
 
@@ -442,17 +463,17 @@ private fun BackupSnapshotCard(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     "SHA-256: ${snapshot.checksumSha256.take(12)}...",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.outline
+                    color = MaterialTheme.colorScheme.outline,
                 )
 
                 TextButton(
                     onClick = onTestDryRun,
-                    modifier = Modifier.testTag("card_dry_run_btn_${snapshot.id}")
+                    modifier = Modifier.testTag("card_dry_run_btn_${snapshot.id}"),
                 ) {
                     Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
@@ -467,7 +488,7 @@ private fun BackupSnapshotCard(
 private fun CreateBackupDialog(
     isTriggering: Boolean,
     onDismiss: () -> Unit,
-    onConfirm: (BackupType, BackupEnvironment, String) -> Unit
+    onConfirm: (BackupType, BackupEnvironment, String) -> Unit,
 ) {
     var selectedType by remember { mutableStateOf(BackupType.FULL) }
     var selectedEnv by remember { mutableStateOf(BackupEnvironment.PROD) }
@@ -484,12 +505,17 @@ private fun CreateBackupDialog(
                         FilterChip(
                             selected = selectedType == type,
                             onClick = { selectedType = type },
-                            label = { Text(when(type){
-                                BackupType.FULL -> "شاملة"
-                                BackupType.INCREMENTAL -> "تزايدية"
-                                BackupType.METADATA_ONLY -> "بيانات فقط"
-                                BackupType.DISASTER_RECOVERY_SNAPSHOT -> "طوارئ DR"
-                            }, fontSize = 11.sp) }
+                            label = {
+                                Text(
+                                    when (type) {
+                                        BackupType.FULL -> "شاملة"
+                                        BackupType.INCREMENTAL -> "تزايدية"
+                                        BackupType.METADATA_ONLY -> "بيانات فقط"
+                                        BackupType.DISASTER_RECOVERY_SNAPSHOT -> "طوارئ DR"
+                                    },
+                                    fontSize = 11.sp,
+                                )
+                            },
                         )
                     }
                 }
@@ -500,7 +526,7 @@ private fun CreateBackupDialog(
                         FilterChip(
                             selected = selectedEnv == env,
                             onClick = { selectedEnv = env },
-                            label = { Text(env.name, fontSize = 11.sp) }
+                            label = { Text(env.name, fontSize = 11.sp) },
                         )
                     }
                 }
@@ -510,18 +536,26 @@ private fun CreateBackupDialog(
                     onValueChange = { notes = it },
                     label = { Text("ملاحظات النسخة (سبب الإنشاء)") },
                     placeholder = { Text("مثال: نسخة شهرية دورية أو قبل ترقية المخطط") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Surface(
                     color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Row(modifier = Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                        Icon(
+                            Icons.Default.Lock,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp),
+                        )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("سيتم تشفير النسخة فوراً بواسطة مفاتيح CMEK وتخزينها في مستودع آمن منفصل عن بيئة التطوير.", style = MaterialTheme.typography.labelSmall)
+                        Text(
+                            "سيتم تشفير النسخة فوراً بواسطة مفاتيح CMEK وتخزينها في مستودع آمن منفصل عن بيئة التطوير.",
+                            style = MaterialTheme.typography.labelSmall,
+                        )
                     }
                 }
             }
@@ -530,7 +564,7 @@ private fun CreateBackupDialog(
             Button(
                 onClick = { onConfirm(selectedType, selectedEnv, notes) },
                 enabled = !isTriggering,
-                modifier = Modifier.testTag("confirm_create_backup_btn")
+                modifier = Modifier.testTag("confirm_create_backup_btn"),
             ) {
                 if (isTriggering) {
                     CircularProgressIndicator(modifier = Modifier.size(16.dp), color = MaterialTheme.colorScheme.onPrimary)
@@ -543,7 +577,7 @@ private fun CreateBackupDialog(
             TextButton(onClick = onDismiss, enabled = !isTriggering) {
                 Text("إلغاء")
             }
-        }
+        },
     )
 }
 
@@ -554,7 +588,7 @@ private fun DryRunRestoreModal(
     isExecuting: Boolean,
     tombstoneCount: Int,
     onDismiss: () -> Unit,
-    onExecute: () -> Unit
+    onExecute: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = { if (!isExecuting) onDismiss() },
@@ -569,24 +603,41 @@ private fun DryRunRestoreModal(
             Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text("النسخة المحددة: ${snapshot.id}", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                 Text("موقع التخزين: ${snapshot.storageLocationUri}", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                
+
                 Surface(
                     color = MaterialTheme.statusColors.successBg,
                     shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Column(modifier = Modifier.padding(10.dp)) {
-                        Text("🛡️ الضمانات الأمنية للاختبار التجريبي:", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.statusColors.successFg)
-                        Text("• يتم الاختبار داخل Sandbox معزول دون أي تأثير على بيانات الإنتاج.", fontSize = 11.sp, color = MaterialTheme.statusColors.successFg)
-                        Text("• يتم تطبيق استبعاد $tombstoneCount طلباً لحذف الحسابات تلقائياً (Right to be Forgotten).", fontSize = 11.sp, color = MaterialTheme.statusColors.successFg)
-                        Text("• يتم فحص توافق الفهارس وتكامل التواقيع الرقمية SHA-256.", fontSize = 11.sp, color = MaterialTheme.statusColors.successFg)
+                        Text(
+                            "🛡️ الضمانات الأمنية للاختبار التجريبي:",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            color = MaterialTheme.statusColors.successFg,
+                        )
+                        Text(
+                            "• يتم الاختبار داخل Sandbox معزول دون أي تأثير على بيانات الإنتاج.",
+                            fontSize = 11.sp,
+                            color = MaterialTheme.statusColors.successFg,
+                        )
+                        Text(
+                            "• يتم تطبيق استبعاد $tombstoneCount طلباً لحذف الحسابات تلقائياً (Right to be Forgotten).",
+                            fontSize = 11.sp,
+                            color = MaterialTheme.statusColors.successFg,
+                        )
+                        Text(
+                            "• يتم فحص توافق الفهارس وتكامل التواقيع الرقمية SHA-256.",
+                            fontSize = 11.sp,
+                            color = MaterialTheme.statusColors.successFg,
+                        )
                     }
                 }
 
                 if (isExecuting) {
                     Column(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         CircularProgressIndicator()
                         Spacer(modifier = Modifier.height(8.dp))
@@ -597,7 +648,7 @@ private fun DryRunRestoreModal(
                     Surface(
                         color = MaterialTheme.colorScheme.surfaceVariant,
                         shape = RoundedCornerShape(6.dp),
-                        modifier = Modifier.fillMaxWidth().heightIn(max = 160.dp)
+                        modifier = Modifier.fillMaxWidth().heightIn(max = 160.dp),
                     ) {
                         LazyColumn(modifier = Modifier.padding(8.dp)) {
                             items(activeJob.logs) { log ->
@@ -612,7 +663,7 @@ private fun DryRunRestoreModal(
             Button(
                 onClick = onExecute,
                 enabled = !isExecuting,
-                modifier = Modifier.testTag("execute_dry_run_btn")
+                modifier = Modifier.testTag("execute_dry_run_btn"),
             ) {
                 Text(if (activeJob == null) "بدء الاختبار الآن" else "إعادة الاختبار")
             }
@@ -621,7 +672,7 @@ private fun DryRunRestoreModal(
             TextButton(onClick = onDismiss, enabled = !isExecuting) {
                 Text("إغلاق")
             }
-        }
+        },
     )
 }
 
@@ -629,7 +680,7 @@ private fun DryRunRestoreModal(
 private fun ProjectRestoreModal(
     snapshots: List<BackupSnapshot>,
     onDismiss: () -> Unit,
-    onRestore: (String, String, String) -> Unit
+    onRestore: (String, String, String) -> Unit,
 ) {
     var projectId by remember { mutableStateOf("") }
     var targetWorkspaceId by remember { mutableStateOf("workspace_main_01") }
@@ -640,35 +691,40 @@ private fun ProjectRestoreModal(
         title = { Text("استعادة مشروع محدد من نسخة سابقة", fontWeight = FontWeight.Bold) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("تتيح هذه الميزة استعادة مسودة أو مشاهد مشروع محدد تم حذفه عن طريق الخطأ دون استعادة كامل قاعدة البيانات.", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    "تتيح هذه الميزة استعادة مسودة أو مشاهد مشروع محدد تم حذفه عن طريق الخطأ دون استعادة كامل قاعدة البيانات.",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
 
                 OutlinedTextField(
                     value = projectId,
                     onValueChange = { projectId = it },
                     label = { Text("معرف المشروع (Project ID)") },
                     placeholder = { Text("مثال: proj_1700000000_abc") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 OutlinedTextField(
                     value = targetWorkspaceId,
                     onValueChange = { targetWorkspaceId = it },
                     label = { Text("مساحة العمل المستهدفة (Target Workspace)") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Text("النسخة الاحتياطية المصدر:", fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
                 snapshots.take(3).forEach { snapshot ->
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { selectedSnapshotId = snapshot.id }
-                            .padding(vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable { selectedSnapshotId = snapshot.id }
+                                .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(
                             selected = selectedSnapshotId == snapshot.id,
-                            onClick = { selectedSnapshotId = snapshot.id }
+                            onClick = { selectedSnapshotId = snapshot.id },
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text("${snapshot.id} (${snapshot.environment.name})", fontSize = 12.sp)
@@ -680,7 +736,7 @@ private fun ProjectRestoreModal(
             Button(
                 onClick = { onRestore(projectId, targetWorkspaceId, selectedSnapshotId) },
                 enabled = projectId.isNotBlank(),
-                modifier = Modifier.testTag("confirm_project_restore_btn")
+                modifier = Modifier.testTag("confirm_project_restore_btn"),
             ) {
                 Text("استعادة المشروع")
             }
@@ -689,7 +745,7 @@ private fun ProjectRestoreModal(
             TextButton(onClick = onDismiss) {
                 Text("إلغاء")
             }
-        }
+        },
     )
 }
 
@@ -697,7 +753,7 @@ private fun ProjectRestoreModal(
 private fun DisasterRecoveryRunbookModal(
     drPlan: DisasterRecoveryPlan,
     retention: BackupRetentionPolicy,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -711,12 +767,15 @@ private fun DisasterRecoveryRunbookModal(
         text = {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth().heightIn(max = 380.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 item {
                     Text("1. أهداف التعافي المعتمدة (SLAs):", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                     Text("• RPO (Recovery Point Objective): ${drPlan.rpoTargetMinutes} دقيقة للنسخ التزايدي.", fontSize = 12.sp)
-                    Text("• RTO (Recovery Time Objective): ${drPlan.rtoTargetMinutes} دقيقة لاستعادة كامل النظام، و${drPlan.projectRtoMinutes} دقيقة للمشروع الفردي.", fontSize = 12.sp)
+                    Text(
+                        "• RTO (Recovery Time Objective): ${drPlan.rtoTargetMinutes} دقيقة لاستعادة كامل النظام، و${drPlan.projectRtoMinutes} دقيقة للمشروع الفردي.",
+                        fontSize = 12.sp,
+                    )
                     Text("• المنطقة الأساسية: ${drPlan.primaryRegion}", fontSize = 12.sp)
                     Text("• منطقة الطوارئ البديلة (Failover): ${drPlan.failoverRegion}", fontSize = 12.sp)
                 }
@@ -727,7 +786,10 @@ private fun DisasterRecoveryRunbookModal(
                     Text("• النسخ اليومية: احتفاظ لمدة ${retention.dailyRetentionDays} يوماً.", fontSize = 12.sp)
                     Text("• النسخ الأسبوعية: احتفاظ لمدة ${retention.weeklyRetentionWeeks} أسبوعاً.", fontSize = 12.sp)
                     Text("• النسخ الشهرية: احتفاظ لمدة ${retention.monthlyRetentionMonths} شهراً.", fontSize = 12.sp)
-                    Text("• الأرشيف البارد: احتفاظ لمدة ${retention.coldArchiveYears} سنوات مع قفل WORM غير القابل للتعديل.", fontSize = 12.sp)
+                    Text(
+                        "• الأرشيف البارد: احتفاظ لمدة ${retention.coldArchiveYears} سنوات مع قفل WORM غير القابل للتعديل.",
+                        fontSize = 12.sp,
+                    )
                 }
 
                 item {
@@ -750,6 +812,6 @@ private fun DisasterRecoveryRunbookModal(
             Button(onClick = onDismiss) {
                 Text("إغلاق")
             }
-        }
+        },
     )
 }

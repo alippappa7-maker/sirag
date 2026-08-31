@@ -4,7 +4,6 @@ import android.app.Application
 import android.net.Uri
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,7 +15,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -40,16 +38,17 @@ import com.siraj.app.domain.models.quran.QuranReaderSettings
 @Composable
 fun QuranScreen(
     onNavigateToSurah: (Int, String) -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     val context = LocalContext.current
-    val viewModel: QuranViewModel = viewModel(
-        factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return QuranViewModel(context.applicationContext as Application) as T
-            }
-        }
-    )
+    val viewModel: QuranViewModel =
+        viewModel(
+            factory =
+                object : ViewModelProvider.Factory {
+                    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                        QuranViewModel(context.applicationContext as Application) as T
+                },
+        )
     val surahsState by viewModel.surahs.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
 
@@ -58,10 +57,17 @@ fun QuranScreen(
             TopAppBar(
                 title = { Text("سور القرآن الكريم") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back)) }
-                }
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.back),
+                        )
+                    }
+                },
             )
-        }
+        },
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             OutlinedTextField(
@@ -69,15 +75,29 @@ fun QuranScreen(
                 onValueChange = viewModel::updateSearchQuery,
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 placeholder = { Text("بحث عن سورة...") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.search)) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription =
+                            androidx.compose.ui.res
+                                .stringResource(com.siraj.app.R.string.search),
+                    )
+                },
                 singleLine = true,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
             )
 
             Crossfade(targetState = surahsState, label = "SurahsStateCrossfade") { state ->
                 when (state) {
-                    is Resource.Loading -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
-                    is Resource.Error -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text(state.message, color = MaterialTheme.colorScheme.error) }
+                    is Resource.Loading ->
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
+                        ) { CircularProgressIndicator() }
+                    is Resource.Error ->
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text(state.message, color = MaterialTheme.colorScheme.error)
+                        }
                     is Resource.Success -> {
                         val filteredSurahs = state.data.filter { it.nameArabic.contains(searchQuery) }
                         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -85,21 +105,28 @@ fun QuranScreen(
                                 SirajTechCard(
                                     isActive = false,
                                     onClick = { onNavigateToSurah(surah.chapterNumber, surah.nameArabic) },
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
                                 ) {
                                     Row(
                                         modifier = Modifier.padding(16.dp).fillMaxWidth(),
                                         horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
+                                        verticalAlignment = Alignment.CenterVertically,
                                     ) {
                                         Column {
-                                            Text(surah.nameArabic, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                                            Text("${surah.revelationPlace} • ${surah.versesCount} آيات • ${surah.nameTranslated}", style = MaterialTheme.typography.bodySmall)
+                                            Text(
+                                                surah.nameArabic,
+                                                style = MaterialTheme.typography.titleLarge,
+                                                fontWeight = FontWeight.Bold,
+                                            )
+                                            Text(
+                                                "${surah.revelationPlace} • ${surah.versesCount} آيات • ${surah.nameTranslated}",
+                                                style = MaterialTheme.typography.bodySmall,
+                                            )
                                         }
                                         Text(
                                             surah.chapterNumber.toString(),
                                             style = MaterialTheme.typography.headlineMedium,
-                                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                                         )
                                     }
                                 }
@@ -111,7 +138,7 @@ fun QuranScreen(
                                     style = MaterialTheme.typography.labelSmall,
                                     modifier = Modifier.fillMaxWidth(),
                                     textAlign = TextAlign.Center,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
                         }
@@ -127,16 +154,17 @@ fun QuranScreen(
 fun SurahScreen(
     surahId: Int,
     surahName: String,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     val context = LocalContext.current
-    val viewModel: QuranReaderViewModel = viewModel(
-        factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return QuranReaderViewModel(context.applicationContext as Application, surahId) as T
-            }
-        }
-    )
+    val viewModel: QuranReaderViewModel =
+        viewModel(
+            factory =
+                object : ViewModelProvider.Factory {
+                    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                        QuranReaderViewModel(context.applicationContext as Application, surahId) as T
+                },
+        )
     val ayahsState by viewModel.ayahsWithBookmarks.collectAsState(initial = Resource.Loading)
     val settings by viewModel.settings.collectAsState()
 
@@ -149,20 +177,24 @@ fun SurahScreen(
     var repeatMode by remember { mutableStateOf(Player.REPEAT_MODE_OFF) }
 
     DisposableEffect(context) {
-        val player = ExoPlayer.Builder(context).build().apply {
-            addListener(object : Player.Listener {
-                override fun onIsPlayingChanged(isPlayingNow: Boolean) {
-                    isPlaying = isPlayingNow
-                }
-                override fun onPlaybackStateChanged(playbackState: Int) {
-                    if (playbackState == Player.STATE_ENDED) {
-                        if (repeatMode == Player.REPEAT_MODE_OFF) {
-                            currentlyPlayingAyah = null
+        val player =
+            ExoPlayer.Builder(context).build().apply {
+                addListener(
+                    object : Player.Listener {
+                        override fun onIsPlayingChanged(isPlayingNow: Boolean) {
+                            isPlaying = isPlayingNow
                         }
-                    }
-                }
-            })
-        }
+
+                        override fun onPlaybackStateChanged(playbackState: Int) {
+                            if (playbackState == Player.STATE_ENDED) {
+                                if (repeatMode == Player.REPEAT_MODE_OFF) {
+                                    currentlyPlayingAyah = null
+                                }
+                            }
+                        }
+                    },
+                )
+            }
         exoPlayer = player
         onDispose {
             player.release()
@@ -182,13 +214,20 @@ fun SurahScreen(
                     IconButton(onClick = {
                         exoPlayer?.stop()
                         onNavigateBack()
-                    }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back)) }
+                    }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.back),
+                        )
+                    }
                 },
                 actions = {
                     IconButton(onClick = { showSettingsDialog = true }) {
                         Icon(Icons.Default.Settings, contentDescription = "إعدادات القراءة")
                     }
-                }
+                },
             )
         },
         bottomBar = {
@@ -211,28 +250,36 @@ fun SurahScreen(
                         exoPlayer?.repeatMode = repeatMode
                     },
                     onChangeSpeed = {
-                        val nextSpeed = when (settings.playbackSpeed) {
-                            1.0f -> 1.5f
-                            1.5f -> 2.0f
-                            2.0f -> 0.5f
-                            else -> 1.0f
-                        }
+                        val nextSpeed =
+                            when (settings.playbackSpeed) {
+                                1.0f -> 1.5f
+                                1.5f -> 2.0f
+                                2.0f -> 0.5f
+                                else -> 1.0f
+                            }
                         viewModel.updatePlaybackSpeed(nextSpeed)
-                    }
+                    },
                 )
             }
         },
-        containerColor = if (settings.isNightMode) Color(0xFF121212) else MaterialTheme.colorScheme.background
+        containerColor = if (settings.isNightMode) Color(0xFF121212) else MaterialTheme.colorScheme.background,
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
             Crossfade(targetState = ayahsState, label = "AyahsCrossfade") { state ->
                 when (state) {
-                    is Resource.Loading -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
-                    is Resource.Error -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text(state.message, color = MaterialTheme.colorScheme.error) }
+                    is Resource.Loading ->
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
+                        ) { CircularProgressIndicator() }
+                    is Resource.Error ->
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text(state.message, color = MaterialTheme.colorScheme.error)
+                        }
                     is Resource.Success -> {
                         LazyColumn(
                             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 100.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
                         ) {
                             items(state.data) { ayah ->
                                 AyahCard(
@@ -254,7 +301,7 @@ fun SurahScreen(
                                     onToggleBookmark = { viewModel.toggleBookmark(ayah.verseKey, ayah.verseNumber, ayah.isBookmarked) },
                                     onSaveNote = { note -> viewModel.saveNote(ayah.verseKey, ayah.verseNumber, note) },
                                     onShare = { /* TODO System Share */ },
-                                    onDownload = { /* TODO Download Logic */ }
+                                    onDownload = { /* TODO Download Logic */ },
                                 )
                             }
                         }
@@ -270,7 +317,7 @@ fun SurahScreen(
             onDismiss = { showSettingsDialog = false },
             onUpdateFontSize = viewModel::updateFontSize,
             onToggleNightMode = viewModel::toggleNightMode,
-            onChangeReciter = viewModel::changeReciter
+            onChangeReciter = viewModel::changeReciter,
         )
     }
 }
@@ -284,7 +331,7 @@ fun AyahCard(
     onToggleBookmark: () -> Unit,
     onSaveNote: (String) -> Unit,
     onShare: () -> Unit,
-    onDownload: () -> Unit
+    onDownload: () -> Unit,
 ) {
     var selectedTab by remember { mutableStateOf(0) }
     var showNoteDialog by remember { mutableStateOf(false) }
@@ -294,23 +341,29 @@ fun AyahCard(
 
     SirajTechCard(
         isActive = isPlaying,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             // Top Actions
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 AssistChip(
                     onClick = {},
                     label = { Text("الآية ${ayah.verseNumber}") },
-                    colors = AssistChipDefaults.assistChipColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                    colors = AssistChipDefaults.assistChipColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     IconButton(onClick = onShare) {
-                        Icon(Icons.Default.Share, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.share), tint = textColor)
+                        Icon(
+                            Icons.Default.Share,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.share),
+                            tint = textColor,
+                        )
                     }
                     if (ayah.audio != null) {
                         IconButton(onClick = onDownload) {
@@ -320,7 +373,7 @@ fun AyahCard(
                             Icon(
                                 if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                                 contentDescription = "تلاوة",
-                                tint = if (isPlaying) MaterialTheme.colorScheme.primary else textColor
+                                tint = if (isPlaying) MaterialTheme.colorScheme.primary else textColor,
                             )
                         }
                     }
@@ -331,7 +384,7 @@ fun AyahCard(
                         Icon(
                             if (ayah.isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
                             contentDescription = "علامة مرجعية",
-                            tint = if (ayah.isBookmarked) MaterialTheme.colorScheme.primary else textColor
+                            tint = if (ayah.isBookmarked) MaterialTheme.colorScheme.primary else textColor,
                         )
                     }
                 }
@@ -342,13 +395,14 @@ fun AyahCard(
             // Arabic Text (Cannot be modified, from source)
             Text(
                 text = ayah.textUthmani,
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    lineHeight = (settings.fontSize * 1.8f).sp,
-                    fontSize = settings.fontSize.sp
-                ),
+                style =
+                    MaterialTheme.typography.headlineMedium.copy(
+                        lineHeight = (settings.fontSize * 1.8f).sp,
+                        fontSize = settings.fontSize.sp,
+                    ),
                 textAlign = TextAlign.End,
                 color = textColor,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -357,7 +411,7 @@ fun AyahCard(
             TabRow(
                 selectedTabIndex = selectedTab,
                 containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.primary
+                contentColor = MaterialTheme.colorScheme.primary,
             ) {
                 Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }, text = { Text("الترجمة") })
                 Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }, text = { Text("التفسير") })
@@ -368,10 +422,13 @@ fun AyahCard(
 
             // Tab Content
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f), RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp))
-                    .padding(16.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .background(
+                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                            RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp),
+                        ).padding(16.dp),
             ) {
                 when (selectedTab) {
                     0 -> {
@@ -379,14 +436,14 @@ fun AyahCard(
                             Text(
                                 text = ayah.translation?.text ?: "لا توجد ترجمة متاحة.",
                                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = (settings.fontSize * 0.7f).sp),
-                                color = textColor
+                                color = textColor,
                             )
                             if (ayah.translation != null) {
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
                                     text = "المصدر: ${ayah.translation.resourceName}",
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = textColor.copy(alpha = 0.6f)
+                                    color = textColor.copy(alpha = 0.6f),
                                 )
                             }
                         }
@@ -396,14 +453,14 @@ fun AyahCard(
                             Text(
                                 text = ayah.tafsir?.text ?: "لا يوجد تفسير متاح.",
                                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = (settings.fontSize * 0.7f).sp),
-                                color = textColor
+                                color = textColor,
                             )
                             if (ayah.tafsir != null) {
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
                                     text = "المصدر: ${ayah.tafsir.resourceName}",
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = textColor.copy(alpha = 0.6f)
+                                    color = textColor.copy(alpha = 0.6f),
                                 )
                             }
                         }
@@ -412,7 +469,7 @@ fun AyahCard(
                         Text(
                             text = ayah.note ?: "",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary,
                         )
                     }
                 }
@@ -425,7 +482,7 @@ fun AyahCard(
         Dialog(onDismissRequest = { showNoteDialog = false }) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(16.dp),
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text("إضافة ملاحظة للآية ${ayah.verseKey}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
@@ -434,15 +491,29 @@ fun AyahCard(
                         onValueChange = { noteText = it },
                         label = { Text("اكتب ملاحظاتك أو خواطرك هنا...") },
                         modifier = Modifier.fillMaxWidth(),
-                        minLines = 3
+                        minLines = 3,
                     )
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-                        TextButton(onClick = { showNoteDialog = false }) { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel)) }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        TextButton(
+                            onClick = { showNoteDialog = false },
+                        ) {
+                            Text(
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.cancel),
+                            )
+                        }
                         Button(onClick = {
                             onSaveNote(noteText)
                             showNoteDialog = false
                         }) {
-                            Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.save))
+                            Text(
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.save),
+                            )
                         }
                     }
                 }
@@ -457,24 +528,32 @@ fun QuranSettingsDialog(
     onDismiss: () -> Unit,
     onUpdateFontSize: (Float) -> Unit,
     onToggleNightMode: (Boolean) -> Unit,
-    onChangeReciter: (Int) -> Unit
+    onChangeReciter: (Int) -> Unit,
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Text("إعدادات القراءة", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
                     Text("حجم الخط (${settings.fontSize.toInt()})")
                     Slider(
                         value = settings.fontSize,
                         onValueChange = onUpdateFontSize,
                         valueRange = 16f..48f,
-                        modifier = Modifier.weight(1f).padding(start = 16.dp)
+                        modifier = Modifier.weight(1f).padding(start = 16.dp),
                     )
                 }
 
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
                     Text("الوضع الليلي")
                     Switch(checked = settings.isNightMode, onCheckedChange = onToggleNightMode)
                 }
@@ -485,17 +564,20 @@ fun QuranSettingsDialog(
                     FilterChip(
                         selected = settings.selectedReciterId == 1,
                         onClick = { onChangeReciter(1) },
-                        label = { Text("العفاسي") }
+                        label = { Text("العفاسي") },
                     )
                     FilterChip(
                         selected = settings.selectedReciterId == 2,
                         onClick = { onChangeReciter(2) },
-                        label = { Text("الحصري") }
+                        label = { Text("الحصري") },
                     )
                 }
 
                 Button(onClick = onDismiss, modifier = Modifier.align(Alignment.End)) {
-                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.close))
+                    Text(
+                        androidx.compose.ui.res
+                            .stringResource(com.siraj.app.R.string.close),
+                    )
                 }
             }
         }
@@ -511,38 +593,42 @@ fun QuranAudioPlayerBottomBar(
     onPlayPause: () -> Unit,
     onStop: () -> Unit,
     onToggleRepeat: () -> Unit,
-    onChangeSpeed: () -> Unit
+    onChangeSpeed: () -> Unit,
 ) {
     SirajGlowContainer(
         isActive = isPlaying,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Surface(
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 8.dp,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Column {
-                        Text("جاري التلاوة - الآية ${ayah.verseNumber}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text(
+                            "جاري التلاوة - الآية ${ayah.verseNumber}",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
                         Text("القارئ: ${ayah.audio?.reciterName ?: "غير معروف"}", style = MaterialTheme.typography.bodySmall)
                     }
                     IconButton(onClick = onStop) {
                         Icon(Icons.Default.Close, contentDescription = "إيقاف والتسكير")
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     TextButton(onClick = onChangeSpeed) {
                         Text("${speed}x")
@@ -551,16 +637,23 @@ fun QuranAudioPlayerBottomBar(
                         Icon(
                             if (repeatMode == Player.REPEAT_MODE_ONE) Icons.Default.RepeatOne else Icons.Default.Repeat,
                             contentDescription = "تكرار",
-                            tint = if (repeatMode == Player.REPEAT_MODE_ONE) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            tint =
+                                if (repeatMode ==
+                                    Player.REPEAT_MODE_ONE
+                                ) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                },
                         )
                     }
                     FloatingActionButton(
                         onClick = onPlayPause,
-                        containerColor = MaterialTheme.colorScheme.primary
+                        containerColor = MaterialTheme.colorScheme.primary,
                     ) {
                         Icon(
                             if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                            contentDescription = if (isPlaying) "Pause" else "Play"
+                            contentDescription = if (isPlaying) "Pause" else "Play",
                         )
                     }
                 }

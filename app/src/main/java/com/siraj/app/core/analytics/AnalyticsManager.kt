@@ -22,17 +22,20 @@ object AnalyticsManager {
         }
     }
 
-    fun logEvent(event: AnalyticsEvent, properties: Map<String, String> = emptyMap()) {
+    fun logEvent(
+        event: AnalyticsEvent,
+        properties: Map<String, String> = emptyMap(),
+    ) {
         scope.launch {
             repository.logEvent(event, properties)
         }
     }
-    
+
     fun clearUserData() {
         scope.launch {
             repository.clearUserData()
         }
     }
-    
+
     fun getRepository(): AnalyticsRepository = repository
 }

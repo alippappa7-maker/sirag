@@ -18,7 +18,7 @@ data class AudioScreenState(
     val selectedCategory: String = "all",
     val searchQuery: String = "",
     val sortOption: AudioSortOption = AudioSortOption.NEWEST,
-    val tracksResource: Resource<List<AudioTrack>> = Resource.Loading
+    val tracksResource: Resource<List<AudioTrack>> = Resource.Loading,
 )
 
 class AudioViewModel : ViewModel() {
@@ -29,15 +29,16 @@ class AudioViewModel : ViewModel() {
 
     private var searchJob: Job? = null
 
-    val categories = listOf(
-        "all" to "أحدث الإضافات",
-        "recitation" to "تلاوات",
-        "lesson" to "دروس",
-        "lecture" to "محاضرات",
-        "podcast" to "بودكاست",
-        "favorites" to "المفضلة",
-        "downloads" to "التنزيلات"
-    )
+    val categories =
+        listOf(
+            "all" to "أحدث الإضافات",
+            "recitation" to "تلاوات",
+            "lesson" to "دروس",
+            "lecture" to "محاضرات",
+            "podcast" to "بودكاست",
+            "favorites" to "المفضلة",
+            "downloads" to "التنزيلات",
+        )
 
     init {
         loadTracks()
@@ -52,10 +53,11 @@ class AudioViewModel : ViewModel() {
     fun onSearchQueryChanged(query: String) {
         _state.value = _state.value.copy(searchQuery = query)
         searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            delay(500) // debounce
-            loadTracks()
-        }
+        searchJob =
+            viewModelScope.launch {
+                delay(500) // debounce
+                loadTracks()
+            }
     }
 
     fun onSortOptionChanged(sortOption: AudioSortOption) {
@@ -66,11 +68,12 @@ class AudioViewModel : ViewModel() {
     private fun loadTracks() {
         viewModelScope.launch {
             _state.value = _state.value.copy(tracksResource = Resource.Loading)
-            val filter = AudioFilter(
-                query = _state.value.searchQuery,
-                categoryId = _state.value.selectedCategory,
-                sortOption = _state.value.sortOption
-            )
+            val filter =
+                AudioFilter(
+                    query = _state.value.searchQuery,
+                    categoryId = _state.value.selectedCategory,
+                    sortOption = _state.value.sortOption,
+                )
             val result = repository.getTracks(filter)
             _state.value = _state.value.copy(tracksResource = result)
         }
@@ -79,18 +82,18 @@ class AudioViewModel : ViewModel() {
     fun toggleFavorite(trackId: String) {
         viewModelScope.launch {
             repository.toggleFavorite(trackId)
-            loadTracks() 
+            loadTracks()
         }
     }
 
     fun playTrack(track: AudioTrack) {
         AudioController.playTrack(track)
     }
-    
+
     fun togglePlayPause() {
         AudioController.togglePlayPause()
     }
-    
+
     fun reportTrack(trackId: String) {
         viewModelScope.launch {
             repository.reportTrack(trackId, "User reported")

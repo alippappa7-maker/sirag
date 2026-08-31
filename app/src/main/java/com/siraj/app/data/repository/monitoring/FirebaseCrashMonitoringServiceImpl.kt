@@ -14,20 +14,22 @@ import com.siraj.app.domain.monitoring.ErrorSeverity
  * never crash the application.
  */
 class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
-
     private val tag = "SirajCrashlytics"
     private var isEnabled: Boolean = true
 
-    private fun getCrashlyticsInstance(): FirebaseCrashlytics? {
-        return try {
+    private fun getCrashlyticsInstance(): FirebaseCrashlytics? =
+        try {
             FirebaseCrashlytics.getInstance()
         } catch (e: Exception) {
             // Firebase not initialized (e.g. in local unit tests or isolated mode)
             null
         }
-    }
 
-    override fun initialize(environment: String, appVersion: String, buildNumber: String) {
+    override fun initialize(
+        environment: String,
+        appVersion: String,
+        buildNumber: String,
+    ) {
         try {
             val crashlytics = getCrashlyticsInstance()
             if (crashlytics != null) {
@@ -61,7 +63,7 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
         category: ErrorCategory,
         severity: ErrorSeverity,
         requestId: String?,
-        customKeys: Map<String, Any>
+        customKeys: Map<String, Any>,
     ) {
         if (!isEnabled) return
 
@@ -71,7 +73,7 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
                 // Set categorized diagnostic keys
                 crashlytics.setCustomKey("error_category", category.key)
                 crashlytics.setCustomKey("error_severity", severity.level)
-                
+
                 if (!requestId.isNullOrBlank()) {
                     crashlytics.setCustomKey("request_id", requestId)
                 }
@@ -102,7 +104,7 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
     override fun logBreadcrumb(
         message: String,
         type: BreadcrumbType,
-        attributes: Map<String, String>
+        attributes: Map<String, String>,
     ) {
         if (!isEnabled) return
 
@@ -115,7 +117,10 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
         }
     }
 
-    override fun setCustomKey(key: String, value: String) {
+    override fun setCustomKey(
+        key: String,
+        value: String,
+    ) {
         if (!isEnabled || !CrashlyticsSanitizer.isKeyAllowed(key)) return
         try {
             getCrashlyticsInstance()?.setCustomKey(key, CrashlyticsSanitizer.sanitizeMessage(value))
@@ -124,7 +129,10 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
         }
     }
 
-    override fun setCustomKey(key: String, value: Boolean) {
+    override fun setCustomKey(
+        key: String,
+        value: Boolean,
+    ) {
         if (!isEnabled || !CrashlyticsSanitizer.isKeyAllowed(key)) return
         try {
             getCrashlyticsInstance()?.setCustomKey(key, value)
@@ -133,7 +141,10 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
         }
     }
 
-    override fun setCustomKey(key: String, value: Int) {
+    override fun setCustomKey(
+        key: String,
+        value: Int,
+    ) {
         if (!isEnabled || !CrashlyticsSanitizer.isKeyAllowed(key)) return
         try {
             getCrashlyticsInstance()?.setCustomKey(key, value)
@@ -142,7 +153,10 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
         }
     }
 
-    override fun setCustomKey(key: String, value: Long) {
+    override fun setCustomKey(
+        key: String,
+        value: Long,
+    ) {
         if (!isEnabled || !CrashlyticsSanitizer.isKeyAllowed(key)) return
         try {
             getCrashlyticsInstance()?.setCustomKey(key, value)
@@ -151,7 +165,10 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
         }
     }
 
-    override fun setCustomKey(key: String, value: Double) {
+    override fun setCustomKey(
+        key: String,
+        value: Double,
+    ) {
         if (!isEnabled || !CrashlyticsSanitizer.isKeyAllowed(key)) return
         try {
             getCrashlyticsInstance()?.setCustomKey(key, value)
@@ -186,7 +203,7 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
             throwable = testException,
             category = ErrorCategory.SYSTEM,
             severity = ErrorSeverity.WARNING,
-            customKeys = mapOf("test_trigger" to true, "reason" to reason)
+            customKeys = mapOf("test_trigger" to true, "reason" to reason),
         )
     }
 

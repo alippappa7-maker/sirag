@@ -24,7 +24,6 @@ data class TesterHubUiState(
     val osVersion: String = "Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})",
     val appVersion: String = EnvironmentConfig.versionName,
     val buildCode: Int = EnvironmentConfig.versionCode,
-    
     // Survey State
     val overallRating: Int = 5,
     val easeOfUseRating: Int = 5,
@@ -37,25 +36,24 @@ data class TesterHubUiState(
     val surveySuccess: Boolean = false,
     val surveyErrorMessage: String? = null,
     val surveySuccessMessage: String? = null,
-
     // Revocation / Leave Testing Program State
     val isRevoking: Boolean = false,
     val isRevoked: Boolean = false,
-    val revocationMessage: String? = null
+    val revocationMessage: String? = null,
 )
 
 class TesterHubViewModel(
     private val distributionRepository: BetaTesterDistributionRepository = FirebaseBetaTesterDistributionRepositoryImpl(),
-    private val authRepository: AuthRepository = FirebaseAuthRepositoryImpl()
+    private val authRepository: AuthRepository = FirebaseAuthRepositoryImpl(),
 ) : ViewModel() {
-
-    private val _uiState = MutableStateFlow(
-        TesterHubUiState(
-            criticalJourneys = distributionRepository.getCriticalJourneys(),
-            releaseNotes = distributionRepository.getReleaseNotes(),
-            distributionChannels = distributionRepository.getDistributionChannels()
+    private val _uiState =
+        MutableStateFlow(
+            TesterHubUiState(
+                criticalJourneys = distributionRepository.getCriticalJourneys(),
+                releaseNotes = distributionRepository.getReleaseNotes(),
+                distributionChannels = distributionRepository.getDistributionChannels(),
+            ),
         )
-    )
     val uiState: StateFlow<TesterHubUiState> = _uiState.asStateFlow()
 
     init {
@@ -82,7 +80,7 @@ class TesterHubViewModel(
                 deviceModel = _uiState.value.deviceModel,
                 osVersion = _uiState.value.osVersion,
                 appVersion = _uiState.value.appVersion,
-                buildCode = _uiState.value.buildCode
+                buildCode = _uiState.value.buildCode,
             )
 
             // Listen to profile updates
@@ -90,15 +88,16 @@ class TesterHubViewModel(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        testerProfile = profile ?: BetaTesterProfile(
-                            testerId = userId,
-                            email = userEmail,
-                            name = userName,
-                            deviceModel = it.deviceModel,
-                            osVersion = it.osVersion,
-                            installedAppVersion = it.appVersion,
-                            installedBuildCode = it.buildCode
-                        )
+                        testerProfile =
+                            profile ?: BetaTesterProfile(
+                                testerId = userId,
+                                email = userEmail,
+                                name = userName,
+                                deviceModel = it.deviceModel,
+                                osVersion = it.osVersion,
+                                installedAppVersion = it.appVersion,
+                                installedBuildCode = it.buildCode,
+                            ),
                     )
                 }
             }
@@ -153,19 +152,20 @@ class TesterHubViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isSubmittingSurvey = true, surveyErrorMessage = null) }
 
-            val survey = TesterExperienceSurvey(
-                testerId = testerId,
-                testerEmail = testerEmail,
-                overallRating = state.overallRating,
-                easeOfUseRating = state.easeOfUseRating,
-                shariaContentRating = state.shariaContentRating,
-                performanceRating = state.performanceRating,
-                mostValuableFeature = state.mostValuableFeature.trim(),
-                biggestPainPoint = state.biggestPainPoint.trim(),
-                generalSuggestions = state.generalSuggestions.trim(),
-                deviceModel = state.deviceModel,
-                appVersion = state.appVersion
-            )
+            val survey =
+                TesterExperienceSurvey(
+                    testerId = testerId,
+                    testerEmail = testerEmail,
+                    overallRating = state.overallRating,
+                    easeOfUseRating = state.easeOfUseRating,
+                    shariaContentRating = state.shariaContentRating,
+                    performanceRating = state.performanceRating,
+                    mostValuableFeature = state.mostValuableFeature.trim(),
+                    biggestPainPoint = state.biggestPainPoint.trim(),
+                    generalSuggestions = state.generalSuggestions.trim(),
+                    deviceModel = state.deviceModel,
+                    appVersion = state.appVersion,
+                )
 
             val result = distributionRepository.submitExperienceSurvey(survey)
             if (result.isSuccess) {
@@ -176,14 +176,14 @@ class TesterHubViewModel(
                         surveySuccessMessage = "تم حفظ تقييمك بنجاح. شكراً جزيلاً لمساهمتك القيمة في تحسين سراج!",
                         mostValuableFeature = "",
                         biggestPainPoint = "",
-                        generalSuggestions = ""
+                        generalSuggestions = "",
                     )
                 }
             } else {
                 _uiState.update {
                     it.copy(
                         isSubmittingSurvey = false,
-                        surveyErrorMessage = "تعذر إرسال التقييم: ${result.exceptionOrNull()?.localizedMessage ?: "خطأ في الشبكة"}"
+                        surveyErrorMessage = "تعذر إرسال التقييم: ${result.exceptionOrNull()?.localizedMessage ?: "خطأ في الشبكة"}",
                     )
                 }
             }
@@ -200,14 +200,14 @@ class TesterHubViewModel(
                     it.copy(
                         isRevoking = false,
                         isRevoked = true,
-                        revocationMessage = "تم إلغاء تسجيلك وسحب صلاحية حساب الاختبار بنجاح بناءً على طلبك."
+                        revocationMessage = "تم إلغاء تسجيلك وسحب صلاحية حساب الاختبار بنجاح بناءً على طلبك.",
                     )
                 }
             } else {
                 _uiState.update {
                     it.copy(
                         isRevoking = false,
-                        revocationMessage = "تعذر سحب الصلاحية حالياً: ${result.exceptionOrNull()?.localizedMessage}"
+                        revocationMessage = "تعذر سحب الصلاحية حالياً: ${result.exceptionOrNull()?.localizedMessage}",
                     )
                 }
             }
@@ -217,10 +217,8 @@ class TesterHubViewModel(
 
 class TesterHubViewModelFactory(
     private val distributionRepository: BetaTesterDistributionRepository = FirebaseBetaTesterDistributionRepositoryImpl(),
-    private val authRepository: AuthRepository = FirebaseAuthRepositoryImpl()
+    private val authRepository: AuthRepository = FirebaseAuthRepositoryImpl(),
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return TesterHubViewModel(distributionRepository, authRepository) as T
-    }
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = TesterHubViewModel(distributionRepository, authRepository) as T
 }

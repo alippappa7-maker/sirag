@@ -19,11 +19,11 @@ import java.util.Locale
 @Composable
 fun AdminSecurityDashboardScreen(
     viewModel: AdminSecurityViewModel,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     val config by viewModel.config.collectAsState()
     val activeSessions by viewModel.activeSessions.collectAsState()
-    
+
     val dateFormatter = remember { SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US) }
 
     Scaffold(
@@ -34,9 +34,9 @@ fun AdminSecurityDashboardScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
                     }
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         if (config == null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -47,16 +47,17 @@ fun AdminSecurityDashboardScreen(
 
         val securityConfig = config!!
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -71,11 +72,11 @@ fun AdminSecurityDashboardScreen(
                     }
                 }
             }
-            
+
             item {
                 Text("الجلسات النشطة", style = MaterialTheme.typography.titleLarge)
             }
-            
+
             items(activeSessions) { session ->
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -85,7 +86,7 @@ fun AdminSecurityDashboardScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                         Button(
                             onClick = { viewModel.revokeSession(session.sessionId) },
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                         ) {
                             Text("إنهاء الجلسة (Revoke)")
                         }

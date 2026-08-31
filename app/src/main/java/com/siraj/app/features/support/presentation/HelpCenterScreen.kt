@@ -1,6 +1,5 @@
 package com.siraj.app.features.support.presentation
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,7 +31,7 @@ fun HelpCenterScreen(
     onNavigateToTicketList: () -> Unit,
     onNavigateToTicketDetail: (String) -> Unit,
     onNavigateToServiceStatus: () -> Unit,
-    onNavigateToPrivacyCenter: () -> Unit
+    onNavigateToPrivacyCenter: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -70,12 +69,12 @@ fun HelpCenterScreen(
                                         Text("${uiState.myTickets.size}")
                                     }
                                 }
-                            }
+                            },
                         ) {
                             Icon(Icons.Default.ConfirmationNumber, contentDescription = "تذاكري")
                         }
                     }
-                }
+                },
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -83,25 +82,27 @@ fun HelpCenterScreen(
             ExtendedFloatingActionButton(
                 onClick = { onNavigateToCreateTicket(null) },
                 icon = { Icon(Icons.Default.AddComment, contentDescription = null) },
-                text = { Text("فتح تذكرة دعم") }
+                text = { Text("فتح تذكرة دعم") },
             )
-        }
+        },
     ) { padding ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             // Sharia & Security Disclaimers Banner
             item {
                 Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    ),
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        ),
                     shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Column(modifier = Modifier.padding(14.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -109,27 +110,27 @@ fun HelpCenterScreen(
                                 Icons.Default.Info,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(20.dp),
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 "تنبيه إرشادي هام",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.colorScheme.primary,
                             )
                         }
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
                             SupportSanitizerEngine.SHARIA_DISCLAIMER_TEXT,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
                             SupportSanitizerEngine.PASSWORD_WARNING_TEXT,
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.error
+                            color = MaterialTheme.colorScheme.error,
                         )
                     }
                 }
@@ -151,7 +152,7 @@ fun HelpCenterScreen(
                         }
                     },
                     shape = RoundedCornerShape(16.dp),
-                    singleLine = true
+                    singleLine = true,
                 )
             }
 
@@ -160,12 +161,12 @@ fun HelpCenterScreen(
                 Text(
                     "مسارات الدعم السريع",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     QuickActionCard(
                         modifier = Modifier.weight(1f),
@@ -173,7 +174,7 @@ fun HelpCenterScreen(
                         icon = Icons.Default.AutoStories,
                         containerColor = MaterialTheme.colorScheme.errorContainer,
                         contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                        onClick = { onNavigateToCreateTicket(TicketCategory.SHARIA_CONTENT_ERROR) }
+                        onClick = { onNavigateToCreateTicket(TicketCategory.SHARIA_CONTENT_ERROR) },
                     )
                     QuickActionCard(
                         modifier = Modifier.weight(1f),
@@ -181,13 +182,13 @@ fun HelpCenterScreen(
                         icon = Icons.Default.Payment,
                         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                         contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                        onClick = { onNavigateToCreateTicket(TicketCategory.PAYMENT_AND_BILLING) }
+                        onClick = { onNavigateToCreateTicket(TicketCategory.PAYMENT_AND_BILLING) },
                     )
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     QuickActionCard(
                         modifier = Modifier.weight(1f),
@@ -195,7 +196,7 @@ fun HelpCenterScreen(
                         icon = Icons.Default.MovieCreation,
                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                        onClick = { onNavigateToCreateTicket(TicketCategory.EXPORT_AND_RENDERING) }
+                        onClick = { onNavigateToCreateTicket(TicketCategory.EXPORT_AND_RENDERING) },
                     )
                     QuickActionCard(
                         modifier = Modifier.weight(1f),
@@ -203,7 +204,7 @@ fun HelpCenterScreen(
                         icon = Icons.Default.CloudSync,
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        onClick = onNavigateToServiceStatus
+                        onClick = onNavigateToServiceStatus,
                     )
                 }
             }
@@ -213,17 +214,17 @@ fun HelpCenterScreen(
                 Text(
                     "أقسام المساعدة",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     item {
                         FilterChip(
                             selected = uiState.selectedCategory == null,
                             onClick = { viewModel.selectCategory(null) },
-                            label = { Text("الكل") }
+                            label = { Text("الكل") },
                         )
                     }
                     items(HelpCategory.values()) { category ->
@@ -236,7 +237,7 @@ fun HelpCenterScreen(
                                     viewModel.selectCategory(category)
                                 }
                             },
-                            label = { Text(category.titleAr) }
+                            label = { Text(category.titleAr) },
                         )
                     }
                 }
@@ -246,26 +247,33 @@ fun HelpCenterScreen(
             if (uiState.myTickets.isNotEmpty()) {
                 item {
                     Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(onClick = onNavigateToTicketList),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable(onClick = onNavigateToTicketList),
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            ),
                     ) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.ConfirmationNumber, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
                                     Text("تذاكر الدعم الخاصة بك", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                                    Text("لديك ${uiState.myTickets.size} تذكرة مسجلة", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text(
+                                        "لديك ${uiState.myTickets.size} تذكرة مسجلة",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
                                 }
                             }
                             Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = null)
@@ -279,20 +287,26 @@ fun HelpCenterScreen(
                 Text(
                     "الأسئلة الشائعة والمقالات (${uiState.articles.size})",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
             }
 
             if (uiState.articles.isEmpty()) {
                 item {
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 32.dp),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 32.dp),
+                        contentAlignment = Alignment.Center,
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(Icons.Default.SearchOff, contentDescription = null, modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Icon(
+                                Icons.Default.SearchOff,
+                                contentDescription = null,
+                                modifier = Modifier.size(48.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text("لم نجد نتائج مطابقة لبحثك", style = MaterialTheme.typography.bodyMedium)
                             Spacer(modifier = Modifier.height(12.dp))
@@ -306,7 +320,7 @@ fun HelpCenterScreen(
                 items(uiState.articles) { article ->
                     ArticleCard(
                         article = article,
-                        onClick = { onNavigateToArticle(article.id) }
+                        onClick = { onNavigateToArticle(article.id) },
                     )
                 }
             }
@@ -318,7 +332,7 @@ fun HelpCenterScreen(
                 Spacer(modifier = Modifier.height(12.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
                     TextButton(onClick = onNavigateToPrivacyCenter) {
                         Icon(Icons.Default.PrivacyTip, contentDescription = null, modifier = Modifier.size(16.dp))
@@ -344,22 +358,25 @@ fun QuickActionCard(
     icon: ImageVector,
     containerColor: androidx.compose.ui.graphics.Color,
     contentColor: androidx.compose.ui.graphics.Color,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Card(
-        modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        )
+        modifier =
+            modifier
+                .clip(RoundedCornerShape(12.dp))
+                .clickable(onClick = onClick),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = containerColor,
+                contentColor = contentColor,
+            ),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Icon(icon, contentDescription = null, modifier = Modifier.size(28.dp))
             Spacer(modifier = Modifier.height(6.dp))
@@ -367,7 +384,7 @@ fun QuickActionCard(
                 title,
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
-                maxLines = 1
+                maxLines = 1,
             )
         }
     }
@@ -376,64 +393,75 @@ fun QuickActionCard(
 @Composable
 fun ArticleCard(
     article: HelpArticle,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+            ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Surface(
                     shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.primaryContainer
+                    color = MaterialTheme.colorScheme.primaryContainer,
                 ) {
                     Text(
                         text = article.category.titleAr,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                     )
                 }
                 Text(
                     text = "${article.readTimeMinutes} دقيقة قراءة",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = article.title,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = article.summary,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 2
+                maxLines = 2,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.ThumbUp, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.primary)
+                    Icon(
+                        Icons.Default.ThumbUp,
+                        contentDescription = null,
+                        modifier = Modifier.size(14.dp),
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("${article.helpfulVotes} وجدوه مفيداً", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        "${article.helpfulVotes} وجدوه مفيداً",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = null, modifier = Modifier.size(18.dp))
             }

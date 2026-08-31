@@ -2,14 +2,20 @@ package com.siraj.app.domain.models.review
 
 import java.util.UUID
 
-enum class RiskLevel(val arabicTitle: String, val levelPriority: Int) {
+enum class RiskLevel(
+    val arabicTitle: String,
+    val levelPriority: Int,
+) {
     LOW("منخفض", 1),
     MEDIUM("متوسط", 2),
     HIGH("عالي", 3),
-    CRITICAL("حرج / فائق الخطورة", 4)
+    CRITICAL("حرج / فائق الخطورة", 4),
 }
 
-enum class CriticalTopic(val arabicTitle: String, val description: String) {
+enum class CriticalTopic(
+    val arabicTitle: String,
+    val description: String,
+) {
     TAKFIER("التكفير", "مسائل إخراج المسلم من الملة وأحكام الردة"),
     BLOOD_VIOLENCE("الدماء والقتال", "مسائل الجهاد، الدماء، القصاص، والعنف"),
     DIVORCE("الطلاق والفرقة", "أحكام الطلاق، الفسخ، والخلع والأيمان المتعلقة بها"),
@@ -18,17 +24,19 @@ enum class CriticalTopic(val arabicTitle: String, val description: String) {
     FATWA("الفتاوى الملزمة", "إصدار أحكام فقهية قطعية أو فتاوى نازلة"),
     CREED_DISPUTES("الخلافات العقدية", "مسائل الأسماء والصفات والفرق الكلامية والمذاهب العقدية"),
     SCHOLAR_ATTRIBUTIONS("نسب الأقوال للعلماء", "عزو أقوال أو فتاوى لأكابر العلماء دون سند موثق"),
-    NONE("عام / لا يوجد موضوع حرج", "موضوعات دعوية وتربوية عامة")
+    NONE("عام / لا يوجد موضوع حرج", "موضوعات دعوية وتربوية عامة"),
 }
 
-enum class ShariaReviewStatus(val arabicTitle: String) {
+enum class ShariaReviewStatus(
+    val arabicTitle: String,
+) {
     PENDING("قيد الانتظار"),
     IN_REVIEW("قيد المراجعة الفاحصة"),
     CHANGES_REQUESTED("مطلوب تعديل شرعي"),
     ESCALATED_SECOND_REVIEW("محول لمراجع ثانٍ"),
     DUAL_APPROVAL_PENDING("بانتظار الاعتماد المشترك"),
     APPROVED("معتمد شرعياً"),
-    REJECTED("مرفوض شرعياً")
+    REJECTED("مرفوض شرعياً"),
 }
 
 data class SourceVariation(
@@ -38,7 +46,7 @@ data class SourceVariation(
     val text: String,
     val grade: String,
     val notes: String = "",
-    val url: String = ""
+    val url: String = "",
 )
 
 data class ShariaClaim(
@@ -54,7 +62,7 @@ data class ShariaClaim(
     val hadithNarrator: String? = null, // e.g. "عمر بن الخطاب رضي الله عنه"
     val sourceVariations: List<SourceVariation> = emptyList(),
     val isVerified: Boolean = false,
-    val reviewerComment: String? = null
+    val reviewerComment: String? = null,
 )
 
 data class RevisionHistoryItem(
@@ -63,7 +71,7 @@ data class RevisionHistoryItem(
     val editedBy: String,
     val editedAt: Long = System.currentTimeMillis(),
     val changeSummary: String,
-    val fullTextSnapshot: String
+    val fullTextSnapshot: String,
 )
 
 data class InternalNote(
@@ -71,7 +79,7 @@ data class InternalNote(
     val authorId: String,
     val authorName: String,
     val noteText: String,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
 )
 
 data class ShariaAuditLog(
@@ -81,7 +89,7 @@ data class ShariaAuditLog(
     val reviewerName: String,
     val action: String,
     val details: String,
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
 )
 
 data class ShariaReviewDecision(
@@ -97,7 +105,7 @@ data class ShariaReviewDecision(
     val secondTimestamp: Long? = null,
     val isDualApprovalRequired: Boolean = false,
     val isDualApprovalCompleted: Boolean = false,
-    val scheduledReReviewDate: Long? = null
+    val scheduledReReviewDate: Long? = null,
 )
 
 data class ShariaReviewItem(
@@ -121,7 +129,7 @@ data class ShariaReviewItem(
     val isDualApprovalRequired: Boolean = false,
     val decision: ShariaReviewDecision? = null,
     val submittedAt: Long = System.currentTimeMillis(),
-    val updatedAt: Long = System.currentTimeMillis()
+    val updatedAt: Long = System.currentTimeMillis(),
 )
 
 data class ShariaReviewFilter(
@@ -130,5 +138,5 @@ data class ShariaReviewFilter(
     val status: ShariaReviewStatus? = null,
     val criticalTopic: CriticalTopic? = null,
     val searchQuery: String = "",
-    val sortByDateAscending: Boolean = false
+    val sortByDateAscending: Boolean = false,
 )

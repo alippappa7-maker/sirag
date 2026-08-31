@@ -20,7 +20,7 @@ fun HelpArticleDetailScreen(
     articleId: String,
     viewModel: SupportViewModel,
     onNavigateBack: () -> Unit,
-    onNavigateToCreateTicket: (TicketCategory?) -> Unit
+    onNavigateToCreateTicket: (TicketCategory?) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val article = uiState.articles.find { it.id == articleId } ?: uiState.selectedArticle
@@ -35,9 +35,9 @@ fun HelpArticleDetailScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
                     }
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         if (article == null) {
             Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
@@ -45,22 +45,23 @@ fun HelpArticleDetailScreen(
             }
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 item {
                     Surface(
                         shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.primaryContainer
+                        color = MaterialTheme.colorScheme.primaryContainer,
                     ) {
                         Text(
                             text = article.category.titleAr,
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                             style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
                         )
                     }
                 }
@@ -69,7 +70,7 @@ fun HelpArticleDetailScreen(
                     Text(
                         text = article.title,
                         style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
 
@@ -77,7 +78,7 @@ fun HelpArticleDetailScreen(
                     Text(
                         text = "وقت القراءة المقدر: ${article.readTimeMinutes} دقيقة • التحديث الأخير: معتمد رسمياً",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
 
@@ -89,7 +90,7 @@ fun HelpArticleDetailScreen(
                     Text(
                         text = article.content,
                         style = MaterialTheme.typography.bodyLarge,
-                        lineHeight = MaterialTheme.typography.bodyLarge.lineHeight * 1.3
+                        lineHeight = MaterialTheme.typography.bodyLarge.lineHeight * 1.3,
                     )
                 }
 
@@ -98,12 +99,12 @@ fun HelpArticleDetailScreen(
                     item {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         ) {
                             article.tags.forEach { tag ->
                                 SuggestionChip(
                                     onClick = { },
-                                    label = { Text("#$tag") }
+                                    label = { Text("#$tag") },
                                 )
                             }
                         }
@@ -114,29 +115,30 @@ fun HelpArticleDetailScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            ),
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Text(
                                 "هل كان هذا المقال مفيداً لك؟",
                                 style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             if (!hasVoted) {
                                 Row(
-                                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
                                 ) {
                                     Button(
                                         onClick = {
                                             viewModel.voteArticle(article.id, true)
                                             hasVoted = true
-                                        }
+                                        },
                                     ) {
                                         Icon(Icons.Default.ThumbUp, contentDescription = null, modifier = Modifier.size(18.dp))
                                         Spacer(modifier = Modifier.width(8.dp))
@@ -146,7 +148,7 @@ fun HelpArticleDetailScreen(
                                         onClick = {
                                             viewModel.voteArticle(article.id, false)
                                             hasVoted = true
-                                        }
+                                        },
                                     ) {
                                         Icon(Icons.Default.ThumbDown, contentDescription = null, modifier = Modifier.size(18.dp))
                                         Spacer(modifier = Modifier.width(8.dp))
@@ -158,7 +160,7 @@ fun HelpArticleDetailScreen(
                                     "شكراً لمشاركتنا رأيك!",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
                                 )
                             }
                         }
@@ -170,28 +172,30 @@ fun HelpArticleDetailScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-                        )
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                            ),
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
                                 "لم تجد ما تبحث عنه؟",
                                 style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
                             )
                             Spacer(modifier = Modifier.height(6.dp))
                             Text(
                                 "فريق الدعم الفني وهيئة المراجعة الشرعية متاحون لمساعدتك ومتابعة استفسارك.",
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall,
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             Button(
                                 onClick = { onNavigateToCreateTicket(null) },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.tertiary
-                                )
+                                colors =
+                                    ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.tertiary,
+                                    ),
                             ) {
                                 Icon(Icons.Default.SupportAgent, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))

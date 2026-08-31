@@ -1,11 +1,20 @@
 package com.siraj.app.domain.models
 
 enum class AssetType {
-    IMAGE, VIDEO, AUDIO, MUSIC, FONT, SUBTITLE, QURAN_RECITATION
+    IMAGE,
+    VIDEO,
+    AUDIO,
+    MUSIC,
+    FONT,
+    SUBTITLE,
+    QURAN_RECITATION,
 }
 
 enum class AssetStatus {
-    UPLOADING, READY, ERROR, DELETED
+    UPLOADING,
+    READY,
+    ERROR,
+    DELETED,
 }
 
 enum class RightsStatus {
@@ -16,11 +25,14 @@ enum class RightsStatus {
     ATTRIBUTION_REQUIRED,
     EXPIRED,
     RESTRICTED,
-    REJECTED
+    REJECTED,
 }
 
 data class Asset(
-    val id: String = java.util.UUID.randomUUID().toString(),
+    val id: String =
+        java.util.UUID
+            .randomUUID()
+            .toString(),
     val ownerId: String = "",
     val workspaceId: String = "",
     val projectId: String = "",
@@ -31,7 +43,6 @@ data class Asset(
     val mimeType: String = "",
     val sizeBytes: Long = 0L,
     val durationMs: Long? = null,
-    
     // Rights & License Management Fields
     val sourceUrl: String = "",
     val creatorName: String = "",
@@ -41,13 +52,12 @@ data class Asset(
     val modificationAllowed: Boolean = false,
     val attributionRequired: Boolean = false,
     val attribution: String = "",
-    val proofUrl: String = "", 
+    val proofUrl: String = "",
     val acquiredAt: Long? = null,
     val expiresAt: Long? = null,
     val rightsStatus: RightsStatus = RightsStatus.UNKNOWN,
     val usageRestrictions: String = "",
     val aiMetadata: AiMetadata? = null,
-
     val status: AssetStatus = AssetStatus.READY,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
 )

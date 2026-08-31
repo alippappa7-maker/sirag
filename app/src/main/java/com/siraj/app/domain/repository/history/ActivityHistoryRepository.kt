@@ -11,7 +11,7 @@ interface ActivityHistoryRepository {
         userId: String,
         tab: ActivityTab,
         limit: Int = 20,
-        offset: Int = 0
+        offset: Int = 0,
     ): Flow<List<UserActivityItem>>
 
     fun getRecentResumeItem(userId: String): Flow<UserActivityItem?>
@@ -19,64 +19,48 @@ interface ActivityHistoryRepository {
     suspend fun getLastPosition(
         userId: String,
         entityType: ActivityEntityType,
-        entityId: String
+        entityId: String,
     ): Long?
 
-    suspend fun recordPlaybackPosition(
-        item: UserActivityItem
-    )
+    suspend fun recordPlaybackPosition(item: UserActivityItem)
 
     suspend fun markAsCompleted(
         userId: String,
         entityType: ActivityEntityType,
-        entityId: String
+        entityId: String,
     )
 
     suspend fun toggleWatchLater(
         userId: String,
-        item: UserActivityItem
+        item: UserActivityItem,
     )
 
     suspend fun toggleDownloaded(
         userId: String,
-        item: UserActivityItem
+        item: UserActivityItem,
     )
 
     suspend fun deleteItem(
         userId: String,
-        id: String
+        id: String,
     )
 
-    suspend fun clearAllHistory(
-        userId: String
-    )
+    suspend fun clearAllHistory(userId: String)
 
-    suspend fun clearCompleted(
-        userId: String
-    )
+    suspend fun clearCompleted(userId: String)
 
-    suspend fun clearDownloads(
-        userId: String
-    )
+    suspend fun clearDownloads(userId: String)
 
-    fun observePreferences(
-        userId: String
-    ): Flow<ActivityHistoryPreferences>
+    fun observePreferences(userId: String): Flow<ActivityHistoryPreferences>
 
     suspend fun updatePreferences(
         userId: String,
-        preferences: ActivityHistoryPreferences
+        preferences: ActivityHistoryPreferences,
     )
 
-    suspend fun syncPending(
-        userId: String
-    )
+    suspend fun syncPending(userId: String)
 
-    suspend fun applyRetentionPolicy(
-        userId: String
-    )
+    suspend fun applyRetentionPolicy(userId: String)
 
-    suspend fun purgeUserAllData(
-        userId: String
-    )
+    suspend fun purgeUserAllData(userId: String)
 }

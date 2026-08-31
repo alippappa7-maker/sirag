@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.siraj.app.domain.models.Project
-import com.siraj.app.domain.models.ReviewState
 import com.siraj.app.domain.models.Scene
 import com.siraj.app.features.project.data.repositories.FirebaseProductionJobRepositoryImpl
 import com.siraj.app.features.project.data.services.FirebaseVideoCompositionServiceImpl
@@ -21,9 +20,8 @@ class ProjectExportViewModel(
     val projectId: String,
     private val jobRepository: ProductionJobRepository = FirebaseProductionJobRepositoryImpl(),
     private val compositionService: VideoCompositionService = FirebaseVideoCompositionServiceImpl(),
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
 ) : ViewModel() {
-
     private val _project = MutableStateFlow<Project?>(null)
     val project: StateFlow<Project?> = _project.asStateFlow()
 
@@ -78,22 +76,24 @@ class ProjectExportViewModel(
     private val _activeJob = MutableStateFlow<ProductionJob?>(null)
     val activeJob: StateFlow<ProductionJob?> = _activeJob.asStateFlow()
 
-    val calculatedCost: StateFlow<Long> = combine(
-        _scenes,
-        _selectedQuality,
-        _selectedFps,
-        _isPreviewMode
-    ) { sceneList, quality, fps, isPreview ->
-        val totalSec = (sceneList.sumOf { it.durationMs } / 1000).coerceAtLeast(10)
-        val baseUnits = (totalSec / 5).coerceAtLeast(5)
-        val fpsMultiplier = when (fps) {
-            60 -> 1.4
-            24 -> 0.9
-            else -> 1.0
-        }
-        val previewMultiplier = if (isPreview) 0.4 else 1.0
-        (baseUnits * quality.costMultiplier * fpsMultiplier * previewMultiplier).toLong().coerceAtLeast(2L)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 15L)
+    val calculatedCost: StateFlow<Long> =
+        combine(
+            _scenes,
+            _selectedQuality,
+            _selectedFps,
+            _isPreviewMode,
+        ) { sceneList, quality, fps, isPreview ->
+            val totalSec = (sceneList.sumOf { it.durationMs } / 1000).coerceAtLeast(10)
+            val baseUnits = (totalSec / 5).coerceAtLeast(5)
+            val fpsMultiplier =
+                when (fps) {
+                    60 -> 1.4
+                    24 -> 0.9
+                    else -> 1.0
+                }
+            val previewMultiplier = if (isPreview) 0.4 else 1.0
+            (baseUnits * quality.costMultiplier * fpsMultiplier * previewMultiplier).toLong().coerceAtLeast(2L)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 15L)
 
     init {
         loadProjectData()
@@ -104,7 +104,12 @@ class ProjectExportViewModel(
         viewModelScope.launch {
             try {
                 // Fetch Project
-                val projectDoc = firestore.collection("projects").document(projectId).get().await()
+                val projectDoc =
+                    firestore
+                        .collection("projects")
+                        .document(projectId)
+                        .get()
+                        .await()
                 if (projectDoc.exists()) {
                     val p = projectDoc.toObject(Project::class.java)
                     _project.value = p
@@ -114,20 +119,33 @@ class ProjectExportViewModel(
                 }
 
                 // Fetch Scenes
-                val scenesSnap = firestore.collection("projects").document(projectId)
-                    .collection("scenes").orderBy("orderIndex").get().await()
+                val scenesSnap =
+                    firestore
+                        .collection("projects")
+                        .document(projectId)
+                        .collection("scenes")
+                        .orderBy("orderIndex")
+                        .get()
+                        .await()
                 val sceneList = scenesSnap.documents.mapNotNull { it.toObject(Scene::class.java) }
                 _scenes.value = sceneList
 
                 // Fetch Subtitles
-                val subsSnap = firestore.collection("projects").document(projectId)
-                    .collection("subtitles").orderBy("startMs").get().await()
+                val subsSnap =
+                    firestore
+                        .collection("projects")
+                        .document(projectId)
+                        .collection("subtitles")
+                        .orderBy("startMs")
+                        .get()
+                        .await()
                 val subList = subsSnap.documents.mapNotNull { it.toObject(SubtitleItem::class.java) }
                 _subtitles.value = subList
 
                 // Run Validation
                 runPreExportValidation(sceneList, subList)
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
     }
 
@@ -140,7 +158,10 @@ class ProjectExportViewModel(
         }
     }
 
-    private fun runPreExportValidation(scenes: List<Scene>, subtitles: List<SubtitleItem>) {
+    private fun runPreExportValidation(
+        scenes: List<Scene>,
+        subtitles: List<SubtitleItem>,
+    ) {
         val issues = mutableListOf<PreExportValidationIssue>()
 
         if (scenes.isEmpty()) {
@@ -150,8 +171,8 @@ class ProjectExportViewModel(
                     issueType = ValidationIssueType.INVALID_DURATION,
                     severity = ValidationSeverity.BLOCKER,
                     message = "المشروع خالي من المشاهد. يجب إضافة مشهد واحد على الأقل قبل التصدير.",
-                    fixRecommendation = "انتقل لمحرر المشاهد وأضف نصاً أو صورة."
-                )
+                    fixRecommendation = "انتقل لمحرر المشاهد وأضف نصاً أو صورة.",
+                ),
             )
         }
 
@@ -163,8 +184,8 @@ class ProjectExportViewModel(
                     issueType = ValidationIssueType.SCENE_WITHOUT_MEDIA,
                     severity = ValidationSeverity.WARNING,
                     message = "توجد ${emptyTextScenes.size} مشاهد بدون نص مسموع أو معروض.",
-                    fixRecommendation = "أضف نصاً شرعياً أو توضيحياً للمشهد."
-                )
+                    fixRecommendation = "أضف نصاً شرعياً أو توضيحياً للمشهد.",
+                ),
             )
         }
 
@@ -175,8 +196,8 @@ class ProjectExportViewModel(
                     issueType = ValidationIssueType.TEXT_OVERFLOW,
                     severity = ValidationSeverity.WARNING,
                     message = "لا توجد ترجمة نصية معروضة. سيتم التصدير بدون شريط ترجمة أسفل الشاشة.",
-                    fixRecommendation = "يمكنك إنشاء ترجمة تلقائية من تبويب الترجمة."
-                )
+                    fixRecommendation = "يمكنك إنشاء ترجمة تلقائية من تبويب الترجمة.",
+                ),
             )
         }
 
@@ -220,7 +241,10 @@ class ProjectExportViewModel(
     }
 
     fun requestExport() {
-        if (!com.siraj.app.core.config.FeatureFlagManager.isFeatureEnabled(com.siraj.app.core.config.FeatureFlagManager.FEATURE_VIDEO_EXPORT)) {
+        if (!com.siraj.app.core.config.FeatureFlagManager.isFeatureEnabled(
+                com.siraj.app.core.config.FeatureFlagManager.FEATURE_VIDEO_EXPORT,
+            )
+        ) {
             _userMessage.value = "عذراً، ميزة التصدير معطلة حالياً من قبل الإدارة للصيانة."
             return
         }
@@ -250,90 +274,95 @@ class ProjectExportViewModel(
             val idempotencyKey = UUID.randomUUID().toString()
             val isPreview = _isPreviewMode.value
 
-            val jobRes = jobRepository.createJob(
-                projectId = projectId,
-                workspaceId = _project.value?.workspaceId ?: "default_workspace",
-                quality = _selectedQuality.value,
-                burnSubtitles = _burnSubtitles.value,
-                aspectRatio = _selectedAspectRatio.value,
-                idempotencyKey = idempotencyKey,
-                fps = _selectedFps.value,
-                includeSourceCitation = _includeSourceCitation.value,
-                includeWatermark = _includeWatermark.value,
-                isPreviewOnly = isPreview
-            )
-
-            jobRes.onSuccess { createdJob ->
-                _availableCredits.value -= cost
-                _userMessage.value = "تم بدء عملية التصدير بنجاح! جاري التجميع والتصيير..."
-
-                val manifestRes = compositionService.buildManifest(
+            val jobRes =
+                jobRepository.createJob(
                     projectId = projectId,
+                    workspaceId = _project.value?.workspaceId ?: "default_workspace",
                     quality = _selectedQuality.value,
-                    aspectRatio = _selectedAspectRatio.value,
                     burnSubtitles = _burnSubtitles.value,
+                    aspectRatio = _selectedAspectRatio.value,
+                    idempotencyKey = idempotencyKey,
                     fps = _selectedFps.value,
                     includeSourceCitation = _includeSourceCitation.value,
                     includeWatermark = _includeWatermark.value,
-                    isPreview = isPreview
+                    isPreviewOnly = isPreview,
                 )
 
-                manifestRes.onSuccess { manifest ->
-                    viewModelScope.launch {
-                        compositionService.executeComposition(createdJob, manifest).collect { updatedJob ->
-                            _activeJob.value = updatedJob
+            jobRes
+                .onSuccess { createdJob ->
+                    _availableCredits.value -= cost
+                    _userMessage.value = "تم بدء عملية التصدير بنجاح! جاري التجميع والتصيير..."
+
+                    val manifestRes =
+                        compositionService.buildManifest(
+                            projectId = projectId,
+                            quality = _selectedQuality.value,
+                            aspectRatio = _selectedAspectRatio.value,
+                            burnSubtitles = _burnSubtitles.value,
+                            fps = _selectedFps.value,
+                            includeSourceCitation = _includeSourceCitation.value,
+                            includeWatermark = _includeWatermark.value,
+                            isPreview = isPreview,
+                        )
+
+                    manifestRes
+                        .onSuccess { manifest ->
+                            viewModelScope.launch {
+                                compositionService.executeComposition(createdJob, manifest).collect { updatedJob ->
+                                    _activeJob.value = updatedJob
+                                }
+                            }
+                        }.onFailure { err ->
+                            _userMessage.value = "فشل بناء مخطط التركيب: ${err.message}"
                         }
-                    }
                 }.onFailure { err ->
-                    _userMessage.value = "فشل بناء مخطط التركيب: ${err.message}"
+                    _userMessage.value = "تعذر إنشاء مهمة التصدير: ${err.message}"
                 }
-            }.onFailure { err ->
-                _userMessage.value = "تعذر إنشاء مهمة التصدير: ${err.message}"
-            }
         }
     }
 
     fun cancelJob(jobId: String) {
         viewModelScope.launch {
             val res = jobRepository.cancelJob(jobId)
-            res.onSuccess {
-                _userMessage.value = "تم إلغاء عملية التصدير واسترداد الرصيد المحجوز."
-            }.onFailure { err ->
-                _userMessage.value = err.message ?: "فشل إلغاء المهمة"
-            }
+            res
+                .onSuccess {
+                    _userMessage.value = "تم إلغاء عملية التصدير واسترداد الرصيد المحجوز."
+                }.onFailure { err ->
+                    _userMessage.value = err.message ?: "فشل إلغاء المهمة"
+                }
         }
     }
 
     fun retryJob(jobId: String) {
         viewModelScope.launch {
             val res = jobRepository.retryJob(jobId)
-            res.onSuccess { retriedJob ->
-                _userMessage.value = "تمت إعادة محاولة التصدير."
-                _activeJob.value = retriedJob
-            }.onFailure { err ->
-                _userMessage.value = err.message ?: "فشل إعادة المحاولة"
-            }
+            res
+                .onSuccess { retriedJob ->
+                    _userMessage.value = "تمت إعادة محاولة التصدير."
+                    _activeJob.value = retriedJob
+                }.onFailure { err ->
+                    _userMessage.value = err.message ?: "فشل إعادة المحاولة"
+                }
         }
     }
 
     fun deleteExportedFile(jobId: String) {
         viewModelScope.launch {
             val res = jobRepository.deleteExportedFile(jobId)
-            res.onSuccess {
-                _userMessage.value = "تم حذف الملف الناتج وإخلاء مساحة التخزين."
-                _storageUsedMb.value = (_storageUsedMb.value - 15.0).coerceAtLeast(0.0)
-            }.onFailure { err ->
-                _userMessage.value = err.message ?: "فشل حذف الملف"
-            }
+            res
+                .onSuccess {
+                    _userMessage.value = "تم حذف الملف الناتج وإخلاء مساحة التخزين."
+                    _storageUsedMb.value = (_storageUsedMb.value - 15.0).coerceAtLeast(0.0)
+                }.onFailure { err ->
+                    _userMessage.value = err.message ?: "فشل حذف الملف"
+                }
         }
     }
 }
 
 class ProjectExportViewModelFactory(
-    private val projectId: String
+    private val projectId: String,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return ProjectExportViewModel(projectId) as T
-    }
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = ProjectExportViewModel(projectId) as T
 }

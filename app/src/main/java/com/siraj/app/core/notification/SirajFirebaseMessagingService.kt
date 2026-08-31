@@ -13,23 +13,23 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class SirajFirebaseMessagingService : FirebaseMessagingService() {
-
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val notificationRepository by lazy { FirebaseNotificationRepositoryImpl(applicationContext) }
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         Log.d("SirajFCM", "New FCM Token received: $token")
-        
+
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: "anonymous_user"
         coroutineScope.launch {
-            val tokenInfo = DeviceTokenInfo(
-                token = token,
-                deviceModel = "${Build.MANUFACTURER} ${Build.MODEL}",
-                platform = "ANDROID",
-                lastUpdated = System.currentTimeMillis(),
-                isActive = true
-            )
+            val tokenInfo =
+                DeviceTokenInfo(
+                    token = token,
+                    deviceModel = "${Build.MANUFACTURER} ${Build.MODEL}",
+                    platform = "ANDROID",
+                    lastUpdated = System.currentTimeMillis(),
+                    isActive = true,
+                )
             notificationRepository.registerDeviceToken(currentUserId, tokenInfo)
         }
     }
@@ -44,11 +44,12 @@ class SirajFirebaseMessagingService : FirebaseMessagingService() {
         // Extract or derive notification fields
         val id = data["id"] ?: "fcm_${remoteMessage.messageId ?: System.currentTimeMillis()}"
         val typeStr = data["type"] ?: NotificationType.SYSTEM_MESSAGE.name
-        val type = try {
-            NotificationType.valueOf(typeStr)
-        } catch (_: Exception) {
-            NotificationType.SYSTEM_MESSAGE
-        }
+        val type =
+            try {
+                NotificationType.valueOf(typeStr)
+            } catch (_: Exception) {
+                NotificationType.SYSTEM_MESSAGE
+            }
 
         val title = remoteMessage.notification?.title ?: data["title"] ?: type.titleAr
         val body = remoteMessage.notification?.body ?: data["body"] ?: ""
@@ -57,21 +58,22 @@ class SirajFirebaseMessagingService : FirebaseMessagingService() {
         val isSensitive = data["isSensitive"]?.toBooleanStrictOrNull() ?: false
         val actionUrl = data["actionUrl"]
 
-        val sirajNotification = SirajNotification(
-            id = id,
-            userId = currentUserId,
-            type = type,
-            title = title,
-            body = body,
-            entityType = entityType,
-            entityId = entityId,
-            readAt = null,
-            createdAt = System.currentTimeMillis(),
-            deliveryStatus = DeliveryStatus.DELIVERED,
-            isSensitive = isSensitive,
-            actionUrl = actionUrl,
-            metadata = data
-        )
+        val sirajNotification =
+            SirajNotification(
+                id = id,
+                userId = currentUserId,
+                type = type,
+                title = title,
+                body = body,
+                entityType = entityType,
+                entityId = entityId,
+                readAt = null,
+                createdAt = System.currentTimeMillis(),
+                deliveryStatus = DeliveryStatus.DELIVERED,
+                isSensitive = isSensitive,
+                actionUrl = actionUrl,
+                metadata = data,
+            )
 
         coroutineScope.launch {
             // 1. Fetch user preferences
@@ -84,7 +86,7 @@ class SirajFirebaseMessagingService : FirebaseMessagingService() {
             NotificationHelper.showSystemNotification(
                 context = applicationContext,
                 notification = sirajNotification,
-                preferences = prefs
+                preferences = prefs,
             )
         }
     }

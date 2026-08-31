@@ -33,7 +33,7 @@ import com.siraj.app.features.beta.BetaFeedbackViewModelFactory
 fun BetaFeedbackDialog(
     currentRoute: String = "",
     onDismissRequest: () -> Unit,
-    viewModel: BetaFeedbackViewModel = viewModel(factory = BetaFeedbackViewModelFactory())
+    viewModel: BetaFeedbackViewModel = viewModel(factory = BetaFeedbackViewModelFactory()),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -43,45 +43,47 @@ fun BetaFeedbackDialog(
 
     Dialog(
         onDismissRequest = onDismissRequest,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
+        properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
         Surface(
-            modifier = Modifier
-                .fillMaxWidth(0.95f)
-                .fillMaxHeight(0.88f)
-                .clip(RoundedCornerShape(24.dp)),
+            modifier =
+                Modifier
+                    .fillMaxWidth(0.95f)
+                    .fillMaxHeight(0.88f)
+                    .clip(RoundedCornerShape(24.dp)),
             color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 6.dp
+            tonalElevation = 6.dp,
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(20.dp)
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(20.dp),
             ) {
                 // Header
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Surface(
                             shape = RoundedCornerShape(8.dp),
                             color = MaterialTheme.colorScheme.primaryContainer,
-                            modifier = Modifier.padding(end = 8.dp)
+                            modifier = Modifier.padding(end = 8.dp),
                         ) {
                             Text(
                                 text = "BETA",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                             )
                         }
                         Text(
                             text = "إرسال ملاحظة أو عطل فني",
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                     }
                     IconButton(onClick = onDismissRequest) {
@@ -94,30 +96,31 @@ fun BetaFeedbackDialog(
                 if (uiState.isSuccess) {
                     // Success View
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                        verticalArrangement = Arrangement.Center,
                     ) {
                         Icon(
                             Icons.Default.CheckCircle,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(64.dp)
+                            modifier = Modifier.size(64.dp),
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = uiState.successMessage ?: "تم استلام ملاحظتك بنجاح",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary,
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "شكراً لمساهمتك في تجربة النسخة التجريبية لسراج!",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(modifier = Modifier.height(24.dp))
                         Button(
@@ -125,7 +128,7 @@ fun BetaFeedbackDialog(
                                 viewModel.clearStatus()
                                 onDismissRequest()
                             },
-                            modifier = Modifier.fillMaxWidth(0.6f)
+                            modifier = Modifier.fillMaxWidth(0.6f),
                         ) {
                             Text("إغلاق")
                         }
@@ -133,51 +136,53 @@ fun BetaFeedbackDialog(
                 } else {
                     // Feedback Form
                     LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(14.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(14.dp),
                     ) {
                         // Environment & Device Diagnostics Info Box
                         item {
                             Card(
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
-                                ),
+                                colors =
+                                    CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+                                    ),
                                 shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             ) {
                                 Column(modifier = Modifier.padding(12.dp)) {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.padding(bottom = 4.dp)
+                                        modifier = Modifier.padding(bottom = 4.dp),
                                     ) {
                                         Icon(
                                             Icons.Default.Info,
                                             contentDescription = null,
                                             tint = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.size(16.dp)
+                                            modifier = Modifier.size(16.dp),
                                         )
                                         Spacer(modifier = Modifier.width(6.dp))
                                         Text(
                                             text = "معلومات التشخيص التلقائية",
                                             style = MaterialTheme.typography.labelMedium,
                                             fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.primary
+                                            color = MaterialTheme.colorScheme.primary,
                                         )
                                     }
                                     Text(
                                         text = "النسخة: ${EnvironmentConfig.versionName} (${EnvironmentConfig.currentEnvironment.displayName})",
-                                        style = MaterialTheme.typography.bodySmall
+                                        style = MaterialTheme.typography.bodySmall,
                                     )
                                     Text(
                                         text = "الجهاز: ${uiState.deviceModel} | ${uiState.androidVersion}",
-                                        style = MaterialTheme.typography.bodySmall
+                                        style = MaterialTheme.typography.bodySmall,
                                     )
                                     if (currentRoute.isNotBlank()) {
                                         Text(
                                             text = "الشاشة الحالية: $currentRoute",
-                                            style = MaterialTheme.typography.bodySmall
+                                            style = MaterialTheme.typography.bodySmall,
                                         )
                                     }
                                 }
@@ -189,18 +194,18 @@ fun BetaFeedbackDialog(
                             Text(
                                 text = "نوع الملاحظة:",
                                 style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
                             )
                             Spacer(modifier = Modifier.height(6.dp))
                             LazyRow(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             ) {
                                 items(FeedbackCategory.values()) { category ->
                                     FilterChip(
                                         selected = uiState.category == category,
                                         onClick = { viewModel.updateCategory(category) },
-                                        label = { Text(category.title) }
+                                        label = { Text(category.title) },
                                     )
                                 }
                             }
@@ -211,12 +216,12 @@ fun BetaFeedbackDialog(
                             Text(
                                 text = "مستوى الأهمية:",
                                 style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
                             )
                             Spacer(modifier = Modifier.height(6.dp))
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             ) {
                                 FeedbackSeverity.values().forEach { severity ->
                                     val isSelected = uiState.severity == severity
@@ -225,26 +230,28 @@ fun BetaFeedbackDialog(
                                         shape = RoundedCornerShape(12.dp),
                                         color = if (isSelected) chipColor.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant,
                                         border = if (isSelected) androidx.compose.foundation.BorderStroke(2.dp, chipColor) else null,
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .clip(RoundedCornerShape(12.dp))
-                                            .clickable { viewModel.updateSeverity(severity) }
+                                        modifier =
+                                            Modifier
+                                                .weight(1f)
+                                                .clip(RoundedCornerShape(12.dp))
+                                                .clickable { viewModel.updateSeverity(severity) },
                                     ) {
                                         Column(
                                             modifier = Modifier.padding(vertical = 8.dp),
-                                            horizontalAlignment = Alignment.CenterHorizontally
+                                            horizontalAlignment = Alignment.CenterHorizontally,
                                         ) {
                                             Box(
-                                                modifier = Modifier
-                                                    .size(10.dp)
-                                                    .clip(CircleShape)
-                                                    .background(chipColor)
+                                                modifier =
+                                                    Modifier
+                                                        .size(10.dp)
+                                                        .clip(CircleShape)
+                                                        .background(chipColor),
                                             )
                                             Spacer(modifier = Modifier.height(4.dp))
                                             Text(
                                                 text = severity.label,
                                                 style = MaterialTheme.typography.labelSmall,
-                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                             )
                                         }
                                     }
@@ -260,7 +267,7 @@ fun BetaFeedbackDialog(
                                 label = { Text("عنوان الملاحظة / العطل *") },
                                 placeholder = { Text("مثال: توقف تصدير الفيديو عند المشهد الثاني") },
                                 singleLine = true,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             )
                         }
 
@@ -273,7 +280,7 @@ fun BetaFeedbackDialog(
                                 placeholder = { Text("اشرح بالتفصيل ما الذي كنت تحاول فعله وما هي النتيجة...") },
                                 minLines = 3,
                                 maxLines = 5,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             )
                         }
 
@@ -286,7 +293,7 @@ fun BetaFeedbackDialog(
                                 placeholder = { Text("1. الدخول على محرر المشاهد\n2. النقر على توليد الصوت\n3. ظهور رسالة خطأ") },
                                 minLines = 2,
                                 maxLines = 4,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             )
                         }
 
@@ -296,13 +303,13 @@ fun BetaFeedbackDialog(
                                 Surface(
                                     color = MaterialTheme.colorScheme.errorContainer,
                                     shape = RoundedCornerShape(8.dp),
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
                                 ) {
                                     Text(
                                         text = uiState.errorMessage ?: "",
                                         color = MaterialTheme.colorScheme.onErrorContainer,
                                         style = MaterialTheme.typography.bodySmall,
-                                        modifier = Modifier.padding(10.dp)
+                                        modifier = Modifier.padding(10.dp),
                                     )
                                 }
                             }
@@ -311,28 +318,29 @@ fun BetaFeedbackDialog(
 
                     // Submit Actions
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 12.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(top = 12.dp),
                         horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         TextButton(
                             onClick = onDismissRequest,
-                            enabled = !uiState.isSubmitting
+                            enabled = !uiState.isSubmitting,
                         ) {
                             Text("إلغاء")
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                         Button(
                             onClick = { viewModel.submitFeedback() },
-                            enabled = !uiState.isSubmitting
+                            enabled = !uiState.isSubmitting,
                         ) {
                             if (uiState.isSubmitting) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(18.dp),
                                     color = MaterialTheme.colorScheme.onPrimary,
-                                    strokeWidth = 2.dp
+                                    strokeWidth = 2.dp,
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text("جاري الإرسال...")

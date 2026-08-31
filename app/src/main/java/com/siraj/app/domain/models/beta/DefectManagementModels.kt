@@ -15,61 +15,60 @@ enum class DefectClassification(
     val key: String,
     val titleAr: String,
     val description: String,
-    val isActionableBug: Boolean
+    val isActionableBug: Boolean,
 ) {
     BLOCKER(
         key = "blocker",
         titleAr = "معطل كلي (Blocker)",
         description = "عطل مانع للعمل، انهيار متكرر، أو تعطيل كامل لوظيفة أساسية",
-        isActionableBug = true
+        isActionableBug = true,
     ),
     CRITICAL(
         key = "critical",
         titleAr = "حرج جداً (Critical)",
         description = "خطأ في نص شرعي/قرآني/حديث، خلل في الخصوصية والأمان، أو فقدان بيانات",
-        isActionableBug = true
+        isActionableBug = true,
     ),
     MAJOR(
         key = "major",
         titleAr = "رئيسي (Major)",
         description = "خلل وظيفي كبير يؤثر على تجربة المستخدم بدون بديل مباشر",
-        isActionableBug = true
+        isActionableBug = true,
     ),
     MINOR(
         key = "minor",
         titleAr = "ثانوي (Minor)",
         description = "عيب طفيف في المحاذاة، التباين، الترجمة، أو الحركة الانتقالية",
-        isActionableBug = true
+        isActionableBug = true,
     ),
     ENHANCEMENT(
         key = "enhancement",
         titleAr = "اقتراح تحسين (Enhancement)",
         description = "طلب إضافة ميزة جديدة أو تحسين تدفق عمل حالي",
-        isActionableBug = false
+        isActionableBug = false,
     ),
     DUPLICATE(
         key = "duplicate",
         titleAr = "مكرر (Duplicate)",
         description = "تم الإبلاغ عنه وتوثيقه مسبقاً في تذكرة أخرى",
-        isActionableBug = false
+        isActionableBug = false,
     ),
     NOT_REPRODUCIBLE(
         key = "not_reproducible",
         titleAr = "غير قابل لإعادة الإنتاج (Not Reproducible)",
         description = "تعذر تكرار المشكلة في بيئة الاختبار والمحاكاة",
-        isActionableBug = false
+        isActionableBug = false,
     ),
     EXPECTED_BEHAVIOR(
         key = "expected_behavior",
         titleAr = "سلوك متوقع (Expected Behavior)",
         description = "البرنامج يعمل وفق المواصفات الشرعية والتقنية المصممة",
-        isActionableBug = false
-    );
+        isActionableBug = false,
+    ),
+    ;
 
     companion object {
-        fun fromKey(key: String): DefectClassification {
-            return values().find { it.key.equals(key, ignoreCase = true) } ?: MINOR
-        }
+        fun fromKey(key: String): DefectClassification = values().find { it.key.equals(key, ignoreCase = true) } ?: MINOR
     }
 }
 
@@ -77,37 +76,46 @@ enum class DefectClassification(
  * مجال ومجال الاختصاص للعيب:
  * - SHARIA_CONTENT: يعامل بأعلى درجات الحساسية ويصنف دائماً كـ Critical أو Blocker
  */
-enum class DefectDomain(val titleAr: String, val iconName: String) {
+enum class DefectDomain(
+    val titleAr: String,
+    val iconName: String,
+) {
     SHARIA_CONTENT("المحتوى والنصوص الشرعية", "MenuBook"),
     MEDIA_STUDIO("استوديو إنتاج الفيديو والصوت", "VideoLibrary"),
     AUTH_ACCOUNT("المصادقة والحساب والصلاحيات", "Security"),
     OFFLINE_SYNC("المزامنة وقواعد البيانات المحلية", "CloudSync"),
     UI_ACCESSIBILITY("الواجهة والوصول وقارئات الشاشة", "Accessibility"),
     PERFORMANCE_STABILITY("الأداء والذاكرة واستهلاك البطارية", "Speed"),
-    BILLING_CREDITS("الاشتراكات وحساب الأرصدة", "CreditCard")
+    BILLING_CREDITS("الاشتراكات وحساب الأرصدة", "CreditCard"),
 }
 
 /**
  * مستوى أولوية الإصلاح في قائمة العمل:
  */
-enum class DefectPriority(val code: String, val titleAr: String, val orderWeight: Int) {
+enum class DefectPriority(
+    val code: String,
+    val titleAr: String,
+    val orderWeight: Int,
+) {
     P0_IMMEDIATE("P0", "فوري / طارئ (P0)", 0),
     P1_HIGH("P1", "عالي الأولوية (P1)", 1),
     P2_MEDIUM("P2", "متوسط الأولوية (P2)", 2),
-    P3_LOW("P3", "منخفض الأولوية (P3)", 3)
+    P3_LOW("P3", "منخفض الأولوية (P3)", 3),
 }
 
 /**
  * دورة حياة حالة العيب:
  */
-enum class DefectStatus(val titleAr: String) {
+enum class DefectStatus(
+    val titleAr: String,
+) {
     REPORTED("مسجل جديد"),
     TRIAGED("تم الفرز والتصنيف"),
     IN_PROGRESS("قيد المعالجة والإصلاح"),
     RESOLVED("تم الإصلاح"),
     VERIFIED("تم التحقق وإعادة الاختبار"),
     DEFERRED("مؤجل للإصدار القادم"),
-    CLOSED("مغلق مع التبرير")
+    CLOSED("مغلق مع التبرير"),
 }
 
 /**
@@ -135,7 +143,7 @@ data class BetaDefectRecord(
     val closureReason: String? = null,
     val verificationTest: String? = null,
     val reportedAt: Long = System.currentTimeMillis(),
-    val updatedAt: Long = System.currentTimeMillis()
+    val updatedAt: Long = System.currentTimeMillis(),
 )
 
 /**
@@ -155,5 +163,5 @@ data class DefectTriageSummary(
     val resolvedOrVerifiedCount: Int = 0,
     val deferredCount: Int = 0,
     val closedCount: Int = 0,
-    val shariaDomainCount: Int = 0
+    val shariaDomainCount: Int = 0,
 )

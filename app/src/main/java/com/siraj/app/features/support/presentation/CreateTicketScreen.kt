@@ -1,6 +1,5 @@
 package com.siraj.app.features.support.presentation
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,10 +10,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.siraj.app.core.support.SupportSanitizerEngine
 import com.siraj.app.domain.models.support.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,7 +20,7 @@ fun CreateTicketScreen(
     initialCategory: TicketCategory? = null,
     viewModel: SupportViewModel,
     onNavigateBack: () -> Unit,
-    onTicketCreated: (String) -> Unit
+    onTicketCreated: (String) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -53,26 +50,28 @@ fun CreateTicketScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
                     }
-                }
+                },
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             // Security & Sharia Warning Notice
             item {
                 Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer
-                    ),
-                    shape = RoundedCornerShape(12.dp)
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                        ),
+                    shape = RoundedCornerShape(12.dp),
                 ) {
                     Column(modifier = Modifier.padding(14.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -83,9 +82,9 @@ fun CreateTicketScreen(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             "• لن يطلب منك موظفو سراج كلمة المرور أو مفاتيح API إطلاقاً.\n" +
-                                    "• مركز الدعم ليس جهة إفتاء، والبلاغات الشرعية تُحول مباشرة إلى المراجعين الشرعيين.\n" +
-                                    "• التذاكر المالية تُوجه بشكل مشفر إلى فريق الفوترة المعتمد.",
-                            style = MaterialTheme.typography.bodySmall
+                                "• مركز الدعم ليس جهة إفتاء، والبلاغات الشرعية تُحول مباشرة إلى المراجعين الشرعيين.\n" +
+                                "• التذاكر المالية تُوجه بشكل مشفر إلى فريق الفوترة المعتمد.",
+                            style = MaterialTheme.typography.bodySmall,
                         )
                     }
                 }
@@ -97,15 +96,16 @@ fun CreateTicketScreen(
                 Spacer(modifier = Modifier.height(4.dp))
                 ExposedDropdownMenuBox(
                     expanded = showCategoryDropdown,
-                    onExpandedChange = { showCategoryDropdown = !showCategoryDropdown }
+                    onExpandedChange = { showCategoryDropdown = !showCategoryDropdown },
                 ) {
                     OutlinedTextField(
                         value = uiState.formCategory.titleAr,
                         onValueChange = {},
                         readOnly = true,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .menuAnchor(MenuAnchorType.PrimaryNotEditable),
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showCategoryDropdown) },
                         leadingIcon = {
                             Icon(
@@ -117,13 +117,13 @@ fun CreateTicketScreen(
                                     TicketCategory.APPEAL_AND_POLICY -> Icons.Default.Gavel
                                     else -> Icons.Default.HelpOutline
                                 },
-                                contentDescription = null
+                                contentDescription = null,
                             )
-                        }
+                        },
                     )
                     ExposedDropdownMenu(
                         expanded = showCategoryDropdown,
-                        onDismissRequest = { showCategoryDropdown = false }
+                        onDismissRequest = { showCategoryDropdown = false },
                     ) {
                         TicketCategory.values().forEach { cat ->
                             DropdownMenuItem(
@@ -133,14 +133,14 @@ fun CreateTicketScreen(
                                         Text(
                                             "يتم التوجيه إلى: ${cat.defaultTeam.titleAr}",
                                             style = MaterialTheme.typography.labelSmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         )
                                     }
                                 },
                                 onClick = {
                                     viewModel.setFormCategory(cat)
                                     showCategoryDropdown = false
-                                }
+                                },
                             )
                         }
                     }
@@ -148,22 +148,24 @@ fun CreateTicketScreen(
             }
 
             // Sharia-Specific Field (If Sharia Error selected)
-            if (uiState.formCategory == TicketCategory.SHARIA_CONTENT_ERROR || 
-                uiState.formCategory == TicketCategory.MIHRAB_AND_QURAN || 
-                uiState.formCategory == TicketCategory.SOURCE_CORRECTION) {
+            if (uiState.formCategory == TicketCategory.SHARIA_CONTENT_ERROR ||
+                uiState.formCategory == TicketCategory.MIHRAB_AND_QURAN ||
+                uiState.formCategory == TicketCategory.SOURCE_CORRECTION
+            ) {
                 item {
                     Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer
-                        ),
-                        shape = RoundedCornerShape(12.dp)
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            ),
+                        shape = RoundedCornerShape(12.dp),
                     ) {
                         Column(modifier = Modifier.padding(14.dp)) {
                             Text(
                                 "بيانات النص الشرعي أو القرآني المراد مراجعته",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             OutlinedTextField(
@@ -172,7 +174,7 @@ fun CreateTicketScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 placeholder = { Text("مثال: سورة الكهف الآية 10 / حديث إنما الأعمال بالنيات") },
                                 label = { Text("السورة والآية أو المصدر والحديث") },
-                                singleLine = true
+                                singleLine = true,
                             )
                         }
                     }
@@ -183,17 +185,18 @@ fun CreateTicketScreen(
             if (uiState.formCategory == TicketCategory.PAYMENT_AND_BILLING) {
                 item {
                     Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer
-                        ),
-                        shape = RoundedCornerShape(12.dp)
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            ),
+                        shape = RoundedCornerShape(12.dp),
                     ) {
                         Column(modifier = Modifier.padding(14.dp)) {
                             Text(
                                 "بيانات العملية المالية والاشتراك",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                                color = MaterialTheme.colorScheme.onTertiaryContainer,
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             OutlinedTextField(
@@ -202,7 +205,7 @@ fun CreateTicketScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 placeholder = { Text("مثال: GPA.3481-9281-9012-39210") },
                                 label = { Text("رقم الطلب في متجر Google Play (اختياري)") },
-                                singleLine = true
+                                singleLine = true,
                             )
                         }
                     }
@@ -218,7 +221,7 @@ fun CreateTicketScreen(
                     onValueChange = { viewModel.setFormSubject(it) },
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("ملخص المشكلة باختصار...") },
-                    singleLine = true
+                    singleLine = true,
                 )
             }
 
@@ -228,20 +231,21 @@ fun CreateTicketScreen(
                 Spacer(modifier = Modifier.height(4.dp))
                 ExposedDropdownMenuBox(
                     expanded = showPriorityDropdown,
-                    onExpandedChange = { showPriorityDropdown = !showPriorityDropdown }
+                    onExpandedChange = { showPriorityDropdown = !showPriorityDropdown },
                 ) {
                     OutlinedTextField(
                         value = uiState.formPriority.titleAr,
                         onValueChange = {},
                         readOnly = true,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(MenuAnchorType.PrimaryNotEditable),
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showPriorityDropdown) }
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showPriorityDropdown) },
                     )
                     ExposedDropdownMenu(
                         expanded = showPriorityDropdown,
-                        onDismissRequest = { showPriorityDropdown = false }
+                        onDismissRequest = { showPriorityDropdown = false },
                     ) {
                         TicketPriority.values().forEach { p ->
                             DropdownMenuItem(
@@ -249,7 +253,7 @@ fun CreateTicketScreen(
                                 onClick = {
                                     viewModel.setFormPriority(p)
                                     showPriorityDropdown = false
-                                }
+                                },
                             )
                         }
                     }
@@ -263,11 +267,12 @@ fun CreateTicketScreen(
                 OutlinedTextField(
                     value = uiState.formDescription,
                     onValueChange = { viewModel.setFormDescription(it) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(140.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(140.dp),
                     placeholder = { Text("يرجى كتابة التفاصيل لمساعدتنا في معالجة المشكلة بأسرع وقت...") },
-                    maxLines = 6
+                    maxLines = 6,
                 )
             }
 
@@ -276,35 +281,36 @@ fun CreateTicketScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        ),
                 ) {
                     Column(modifier = Modifier.padding(14.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Row(
                                 modifier = Modifier.weight(1f),
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Checkbox(
                                     checked = uiState.isSafeLogsAttached,
-                                    onCheckedChange = { viewModel.setSafeLogsAttached(it) }
+                                    onCheckedChange = { viewModel.setSafeLogsAttached(it) },
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Column {
                                     Text(
                                         "إرفاق سجلات التشخيص الآمنة",
                                         style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Bold
+                                        fontWeight = FontWeight.Bold,
                                     )
                                     Text(
                                         "معلومات النظام والذاكرة مجردة تماماً من أي أسرار أو بيانات خاصة",
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
                                 }
                             }
@@ -330,10 +336,11 @@ fun CreateTicketScreen(
                             onTicketCreated(created.id)
                         }
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    enabled = !uiState.isLoading && uiState.formSubject.isNotBlank() && uiState.formDescription.isNotBlank()
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                    enabled = !uiState.isLoading && uiState.formSubject.isNotBlank() && uiState.formDescription.isNotBlank(),
                 ) {
                     if (uiState.isLoading) {
                         CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
@@ -368,7 +375,7 @@ fun CreateTicketScreen(
                         Text(
                             "✓ تم التأكد: لا تحتوي هذه السجلات على أي كلمات مرور أو مفاتيح API أو نصوص خاصة.",
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary,
                         )
                     }
                 },
@@ -376,7 +383,7 @@ fun CreateTicketScreen(
                     TextButton(onClick = { showLogsPreviewDialog = false }) {
                         Text("حسناً")
                     }
-                }
+                },
             )
         }
     }

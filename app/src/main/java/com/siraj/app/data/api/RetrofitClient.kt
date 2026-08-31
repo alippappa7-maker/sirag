@@ -9,7 +9,9 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-class RetryInterceptor(private val maxRetries: Int = 3) : Interceptor {
+class RetryInterceptor(
+    private val maxRetries: Int = 3,
+) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         var response: Response? = null
@@ -36,7 +38,7 @@ class RetryInterceptor(private val maxRetries: Int = 3) : Interceptor {
                 backoff *= 2
             }
         }
-        
+
         return response ?: throw exception ?: IOException("Unknown network error")
     }
 }
@@ -44,21 +46,25 @@ class RetryInterceptor(private val maxRetries: Int = 3) : Interceptor {
 object RetrofitClient {
     private const val BASE_URL = "https://api.quran.com/api/v4/"
 
-    private val logging = HttpLoggingInterceptor().apply {
-        // Reduced from BODY to BASIC to prevent logging sensitive user data or large payloads
-        level = HttpLoggingInterceptor.Level.BASIC
-    }
+    private val logging =
+        HttpLoggingInterceptor().apply {
+            // Reduced from BODY to BASIC to prevent logging sensitive user data or large payloads
+            level = HttpLoggingInterceptor.Level.BASIC
+        }
 
-    private val client = OkHttpClient.Builder()
-        .addInterceptor(logging)
-        .addInterceptor(RetryInterceptor())
-        .connectTimeout(15, TimeUnit.SECONDS)
-        .readTimeout(15, TimeUnit.SECONDS)
-        .writeTimeout(15, TimeUnit.SECONDS)
-        .build()
+    private val client =
+        OkHttpClient
+            .Builder()
+            .addInterceptor(logging)
+            .addInterceptor(RetryInterceptor())
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .build()
 
     val quranApi: QuranApi by lazy {
-        Retrofit.Builder()
+        Retrofit
+            .Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create())
             .client(client)

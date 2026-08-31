@@ -19,7 +19,10 @@ interface NotificationRepository {
     /**
      * Marks a specific notification as read.
      */
-    suspend fun markAsRead(userId: String, notificationId: String): Result<Unit>
+    suspend fun markAsRead(
+        userId: String,
+        notificationId: String,
+    ): Result<Unit>
 
     /**
      * Marks all notifications for a user as read.
@@ -29,7 +32,10 @@ interface NotificationRepository {
     /**
      * Deletes a specific notification.
      */
-    suspend fun deleteNotification(userId: String, notificationId: String): Result<Unit>
+    suspend fun deleteNotification(
+        userId: String,
+        notificationId: String,
+    ): Result<Unit>
 
     /**
      * Clears all notifications for the user.
@@ -49,17 +55,26 @@ interface NotificationRepository {
     /**
      * Updates user notification preferences.
      */
-    suspend fun updatePreferences(userId: String, preferences: NotificationPreferences): Result<Unit>
+    suspend fun updatePreferences(
+        userId: String,
+        preferences: NotificationPreferences,
+    ): Result<Unit>
 
     /**
      * Registers or updates device FCM token for push notifications.
      */
-    suspend fun registerDeviceToken(userId: String, tokenInfo: DeviceTokenInfo): Result<Unit>
+    suspend fun registerDeviceToken(
+        userId: String,
+        tokenInfo: DeviceTokenInfo,
+    ): Result<Unit>
 
     /**
      * Unregisters/deactivates device token (e.g. on logout).
      */
-    suspend fun unregisterDeviceToken(userId: String, token: String): Result<Unit>
+    suspend fun unregisterDeviceToken(
+        userId: String,
+        token: String,
+    ): Result<Unit>
 
     /**
      * Cleans up expired notifications and stale device tokens.

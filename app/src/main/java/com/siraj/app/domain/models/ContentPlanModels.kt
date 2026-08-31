@@ -3,7 +3,9 @@ package com.siraj.app.domain.models
 import java.util.UUID
 
 enum class ClaimType { GENERAL, QURAN, HADITH, TAFSIR, FIQH, BIOGRAPHY, QUOTE }
+
 enum class SourceStatus { MISSING, PENDING_VERIFICATION, VERIFIED, REJECTED }
+
 enum class ReviewStatus { DRAFT, PENDING_REVIEW, APPROVED, REJECTED }
 
 data class ContentClaim(
@@ -16,7 +18,7 @@ data class ContentClaim(
     val reviewStatus: ReviewStatus = ReviewStatus.DRAFT,
     val contextNote: String = "",
     val attachedSource: Source? = null,
-    val verificationRecords: List<VerificationRecord> = emptyList()
+    val verificationRecords: List<VerificationRecord> = emptyList(),
 )
 
 data class ContentPlan(
@@ -31,5 +33,5 @@ data class ContentPlan(
     val reviewLevel: RiskLevel = RiskLevel.LOW,
     val warnings: List<String> = emptyList(),
     val version: Int = 1,
-    val lastEditedAt: Long = System.currentTimeMillis()
+    val lastEditedAt: Long = System.currentTimeMillis(),
 )

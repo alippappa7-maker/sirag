@@ -11,14 +11,13 @@ enum class MinorAction {
     USE_AI_GENERATION,
     UPLOAD_VOICE_RECORDING,
     RECEIVE_STRANGER_INVITE,
-    PURCHASE_SUBSCRIPTION
+    PURCHASE_SUBSCRIPTION,
 }
 
 /**
  * محرك سياسات وضوابط حماية القاصرين (Minor Safety Engine - PROMPT 089)
  */
 object MinorSafetyEngine {
-
     /**
      * توليد وإنفاذ سياسة الحماية الصارمة بناء على الفئة العمرية
      */
@@ -26,96 +25,99 @@ object MinorSafetyEngine {
         userId: String,
         ageBracket: UserAgeBracket,
         guardianEmail: String? = null,
-        isParentalConsentVerified: Boolean = false
-    ): MinorSafetyPolicy {
-        return when (ageBracket) {
-            UserAgeBracket.ADULT_18_PLUS -> MinorSafetyPolicy(
-                userId = userId,
-                ageBracket = ageBracket,
-                isMinorProtectionActive = false,
-                isPrivateByDefault = false,
-                blockDirectMessages = true, // معطل لجميع المستخدمين في سراج كأصل لحماية الخصوصية
-                disableFineLocation = true, // منع جمع الموقع الدقيق للجميع
-                disablePersonalizedAds = true, // خلو التطبيق من الإعلانات التتبعية
-                disableModelTrainingOnData = true,
-                blockVoiceCloning = true,
-                blockBiometricDataCollection = true,
-                requireParentalApprovalForPublishing = false,
-                requireParentalConsentForAiFeatures = false,
-                hideFromPublicDiscovery = false,
-                disableIndividualAnalyticsProfiling = false,
-                allowOnlyCuratedEducationalContent = false,
-                parentalGuardianEmail = null,
-                isParentalConsentVerified = false
-            )
-            UserAgeBracket.TEEN_13_TO_17 -> MinorSafetyPolicy(
-                userId = userId,
-                ageBracket = ageBracket,
-                isMinorProtectionActive = true,
-                isPrivateByDefault = true,
-                blockDirectMessages = true,
-                disableFineLocation = true,
-                disablePersonalizedAds = true,
-                disableModelTrainingOnData = true,
-                blockVoiceCloning = true,
-                blockBiometricDataCollection = true,
-                requireParentalApprovalForPublishing = true,
-                requireParentalConsentForAiFeatures = false,
-                hideFromPublicDiscovery = true,
-                disableIndividualAnalyticsProfiling = true,
-                allowOnlyCuratedEducationalContent = false,
-                parentalGuardianEmail = guardianEmail,
-                isParentalConsentVerified = isParentalConsentVerified
-            )
-            UserAgeBracket.CHILD_UNDER_13 -> MinorSafetyPolicy(
-                userId = userId,
-                ageBracket = ageBracket,
-                isMinorProtectionActive = true,
-                isPrivateByDefault = true,
-                blockDirectMessages = true,
-                disableFineLocation = true,
-                disablePersonalizedAds = true,
-                disableModelTrainingOnData = true,
-                blockVoiceCloning = true,
-                blockBiometricDataCollection = true,
-                requireParentalApprovalForPublishing = true,
-                requireParentalConsentForAiFeatures = true,
-                hideFromPublicDiscovery = true,
-                disableIndividualAnalyticsProfiling = true,
-                allowOnlyCuratedEducationalContent = true,
-                parentalGuardianEmail = guardianEmail,
-                isParentalConsentVerified = isParentalConsentVerified
-            )
-            UserAgeBracket.UNSPECIFIED -> MinorSafetyPolicy(
-                userId = userId,
-                ageBracket = ageBracket,
-                isMinorProtectionActive = true,
-                isPrivateByDefault = true,
-                blockDirectMessages = true,
-                disableFineLocation = true,
-                disablePersonalizedAds = true,
-                disableModelTrainingOnData = true,
-                blockVoiceCloning = true,
-                blockBiometricDataCollection = true,
-                requireParentalApprovalForPublishing = true,
-                requireParentalConsentForAiFeatures = true,
-                hideFromPublicDiscovery = true,
-                disableIndividualAnalyticsProfiling = true,
-                allowOnlyCuratedEducationalContent = true,
-                parentalGuardianEmail = null,
-                isParentalConsentVerified = false
-            )
+        isParentalConsentVerified: Boolean = false,
+    ): MinorSafetyPolicy =
+        when (ageBracket) {
+            UserAgeBracket.ADULT_18_PLUS ->
+                MinorSafetyPolicy(
+                    userId = userId,
+                    ageBracket = ageBracket,
+                    isMinorProtectionActive = false,
+                    isPrivateByDefault = false,
+                    blockDirectMessages = true, // معطل لجميع المستخدمين في سراج كأصل لحماية الخصوصية
+                    disableFineLocation = true, // منع جمع الموقع الدقيق للجميع
+                    disablePersonalizedAds = true, // خلو التطبيق من الإعلانات التتبعية
+                    disableModelTrainingOnData = true,
+                    blockVoiceCloning = true,
+                    blockBiometricDataCollection = true,
+                    requireParentalApprovalForPublishing = false,
+                    requireParentalConsentForAiFeatures = false,
+                    hideFromPublicDiscovery = false,
+                    disableIndividualAnalyticsProfiling = false,
+                    allowOnlyCuratedEducationalContent = false,
+                    parentalGuardianEmail = null,
+                    isParentalConsentVerified = false,
+                )
+            UserAgeBracket.TEEN_13_TO_17 ->
+                MinorSafetyPolicy(
+                    userId = userId,
+                    ageBracket = ageBracket,
+                    isMinorProtectionActive = true,
+                    isPrivateByDefault = true,
+                    blockDirectMessages = true,
+                    disableFineLocation = true,
+                    disablePersonalizedAds = true,
+                    disableModelTrainingOnData = true,
+                    blockVoiceCloning = true,
+                    blockBiometricDataCollection = true,
+                    requireParentalApprovalForPublishing = true,
+                    requireParentalConsentForAiFeatures = false,
+                    hideFromPublicDiscovery = true,
+                    disableIndividualAnalyticsProfiling = true,
+                    allowOnlyCuratedEducationalContent = false,
+                    parentalGuardianEmail = guardianEmail,
+                    isParentalConsentVerified = isParentalConsentVerified,
+                )
+            UserAgeBracket.CHILD_UNDER_13 ->
+                MinorSafetyPolicy(
+                    userId = userId,
+                    ageBracket = ageBracket,
+                    isMinorProtectionActive = true,
+                    isPrivateByDefault = true,
+                    blockDirectMessages = true,
+                    disableFineLocation = true,
+                    disablePersonalizedAds = true,
+                    disableModelTrainingOnData = true,
+                    blockVoiceCloning = true,
+                    blockBiometricDataCollection = true,
+                    requireParentalApprovalForPublishing = true,
+                    requireParentalConsentForAiFeatures = true,
+                    hideFromPublicDiscovery = true,
+                    disableIndividualAnalyticsProfiling = true,
+                    allowOnlyCuratedEducationalContent = true,
+                    parentalGuardianEmail = guardianEmail,
+                    isParentalConsentVerified = isParentalConsentVerified,
+                )
+            UserAgeBracket.UNSPECIFIED ->
+                MinorSafetyPolicy(
+                    userId = userId,
+                    ageBracket = ageBracket,
+                    isMinorProtectionActive = true,
+                    isPrivateByDefault = true,
+                    blockDirectMessages = true,
+                    disableFineLocation = true,
+                    disablePersonalizedAds = true,
+                    disableModelTrainingOnData = true,
+                    blockVoiceCloning = true,
+                    blockBiometricDataCollection = true,
+                    requireParentalApprovalForPublishing = true,
+                    requireParentalConsentForAiFeatures = true,
+                    hideFromPublicDiscovery = true,
+                    disableIndividualAnalyticsProfiling = true,
+                    allowOnlyCuratedEducationalContent = true,
+                    parentalGuardianEmail = null,
+                    isParentalConsentVerified = false,
+                )
         }
-    }
 
     /**
      * فحص إمكانية تنفيذ إجراء معين في ظل سياسة الحساب الحالية
      */
     fun canPerformAction(
         policy: MinorSafetyPolicy,
-        action: MinorAction
-    ): Pair<Boolean, String> {
-        return when (action) {
+        action: MinorAction,
+    ): Pair<Boolean, String> =
+        when (action) {
             MinorAction.SEND_DIRECT_MESSAGE -> {
                 Pair(false, "الرسائل الخاصة المباشرة معطلة تماماً لحماية خصوصية وسلامة المستخدمين والقاصرين.")
             }
@@ -162,19 +164,21 @@ object MinorSafetyEngine {
                 }
             }
         }
-    }
 
     /**
      * تصعيد وفرز بلاغات استغلال أو إساءة موجهة للأطفال فوراً
      */
     fun triageAndEscalateIncident(report: ChildSafetyIncidentReport): ChildSafetyIncidentReport {
-        val calculatedUrgency = when (report.incidentType) {
-            ChildSafetyIncidentType.EXPLOITATION_OR_ABUSE,
-            ChildSafetyIncidentType.SUSPICIOUS_CONTACT -> IncidentUrgency.CRITICAL_EMERGENCY
-            ChildSafetyIncidentType.INAPPROPRIATE_CONTENT,
-            ChildSafetyIncidentType.BULLYING_OR_HARASSMENT,
-            ChildSafetyIncidentType.UNAUTHORIZED_DATA_COLLECTION -> IncidentUrgency.HIGH
-        }
+        val calculatedUrgency =
+            when (report.incidentType) {
+                ChildSafetyIncidentType.EXPLOITATION_OR_ABUSE,
+                ChildSafetyIncidentType.SUSPICIOUS_CONTACT,
+                -> IncidentUrgency.CRITICAL_EMERGENCY
+                ChildSafetyIncidentType.INAPPROPRIATE_CONTENT,
+                ChildSafetyIncidentType.BULLYING_OR_HARASSMENT,
+                ChildSafetyIncidentType.UNAUTHORIZED_DATA_COLLECTION,
+                -> IncidentUrgency.HIGH
+            }
 
         val slaDurationMs = calculatedUrgency.maxResponseSlaMinutes * 60 * 1000L
         val now = System.currentTimeMillis()
@@ -183,7 +187,7 @@ object MinorSafetyEngine {
             urgency = calculatedUrgency,
             status = IncidentResolutionStatus.OPEN_ESCALATED,
             slaDeadlineTimestamp = now + slaDurationMs,
-            internalNotes = "[ESCALATION_ENGINE] تم إدراج البلاغ في مسار الطوارئ الفوري لفريق حماية الأطفال والإدارة بمهلة استجابة ${calculatedUrgency.maxResponseSlaMinutes} دقيقة."
+            internalNotes = "[ESCALATION_ENGINE] تم إدراج البلاغ في مسار الطوارئ الفوري لفريق حماية الأطفال والإدارة بمهلة استجابة ${calculatedUrgency.maxResponseSlaMinutes} دقيقة.",
         )
     }
 
@@ -194,11 +198,12 @@ object MinorSafetyEngine {
         contentId: String,
         title: String,
         textSnippet: String,
-        hasInAppPurchasesOrAds: Boolean
+        hasInAppPurchasesOrAds: Boolean,
     ): EducationalContentSafetyCheck {
         val lower = "$title $textSnippet".lowercase()
         val hasViolentKeywords = lower.contains("عنف") || lower.contains("قتل") || lower.contains("سلاح") || lower.contains("رعب")
-        val hasSubscriptionNudges = hasInAppPurchasesOrAds || lower.contains("اشترك الآن") || lower.contains("ادفع") || lower.contains("بطاقة ائتمان")
+        val hasSubscriptionNudges =
+            hasInAppPurchasesOrAds || lower.contains("اشترك الآن") || lower.contains("ادفع") || lower.contains("بطاقة ائتمان")
 
         val isSafe = !hasViolentKeywords && !hasSubscriptionNudges
         val notes = mutableListOf<String>()
@@ -223,7 +228,7 @@ object MinorSafetyEngine {
             hasViolentOrFrighteningElements = hasViolentKeywords,
             isShariaCompliantForMinors = isSafe,
             audioVisualSafetyScore = score,
-            safetyNotes = notes
+            safetyNotes = notes,
         )
     }
 
@@ -233,7 +238,7 @@ object MinorSafetyEngine {
     fun executeMinorDataPurge(
         childUserId: String,
         recordingsCount: Int,
-        projectsCount: Int
+        projectsCount: Int,
     ): MinorDataDeletionSummary {
         val receipt = sha256("PURGE_${childUserId}_${System.currentTimeMillis()}_${UUID.randomUUID()}")
         return MinorDataDeletionSummary(
@@ -244,7 +249,7 @@ object MinorSafetyEngine {
             deletedProjectsCount = projectsCount,
             deletedProfileData = true,
             deletedActivityLogs = true,
-            confirmationReceiptHash = receipt
+            confirmationReceiptHash = receipt,
         )
     }
 

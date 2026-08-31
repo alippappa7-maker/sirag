@@ -20,12 +20,12 @@ import com.siraj.app.domain.models.*
 @Composable
 fun WorkspaceSettingsScreen(
     onNavigateBack: () -> Unit,
-    viewModel: WorkspaceViewModel = viewModel(factory = WorkspaceViewModelFactory())
+    viewModel: WorkspaceViewModel = viewModel(factory = WorkspaceViewModelFactory()),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    
+
     var showCreateDialog by remember { mutableStateOf(false) }
-    
+
     LaunchedEffect(uiState.error) {
         // Here you could show a snackbar for uiState.error if not null
     }
@@ -36,16 +36,21 @@ fun WorkspaceSettingsScreen(
                 title = { Text("مساحات العمل") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.back),
+                        )
                     }
                 },
                 actions = {
                     IconButton(onClick = { showCreateDialog = true }) {
                         Icon(Icons.Filled.Add, contentDescription = "مساحة جديدة")
                     }
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         if (uiState.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -53,10 +58,11 @@ fun WorkspaceSettingsScreen(
             }
         } else {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp)
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(16.dp),
             ) {
                 if (uiState.error != null) {
                     Text(text = uiState.error ?: "", color = MaterialTheme.colorScheme.error)
@@ -64,12 +70,12 @@ fun WorkspaceSettingsScreen(
                     Button(onClick = { viewModel.clearError() }) { Text("حسناً") }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
-                
+
                 // 1. Workspace Selector
                 WorkspaceSelector(uiState = uiState, onSelect = viewModel::setActiveWorkspace)
-                
+
                 Spacer(modifier = Modifier.height(24.dp))
-                
+
                 // 2. Invitations
                 if (uiState.invitations.isNotEmpty()) {
                     Text("الدعوات", style = MaterialTheme.typography.titleMedium)
@@ -86,12 +92,12 @@ fun WorkspaceSettingsScreen(
                 uiState.activeWorkspace?.let { workspace ->
                     Text("إدارة ${workspace.name}", style = MaterialTheme.typography.titleMedium)
                     Text("دورك: ${uiState.currentUserRole?.name ?: ""}", style = MaterialTheme.typography.bodySmall)
-                    
+
                     if (workspace.status == "ARCHIVED") {
                         Text("مساحة العمل هذه مؤرشفة", color = MaterialTheme.colorScheme.error)
                     } else {
                         val canManage = uiState.currentUserRole == WorkspaceRole.OWNER || uiState.currentUserRole == WorkspaceRole.MANAGER
-                        
+
                         if (canManage) {
                             Spacer(modifier = Modifier.height(16.dp))
                             InviteMemberForm(onInvite = viewModel::inviteMember)
@@ -107,7 +113,7 @@ fun WorkspaceSettingsScreen(
                             is Resource.Success -> {
                                 LazyColumn(
                                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.weight(1f),
                                 ) {
                                     items(membersRes.data) { member ->
                                         MemberCard(
@@ -116,13 +122,13 @@ fun WorkspaceSettingsScreen(
                                             currentUser = uiState.currentUser,
                                             onRemove = { viewModel.removeMember(member.userId) },
                                             onUpdateRole = { newRole -> viewModel.updateMemberRole(member.userId, newRole) },
-                                            onTransferOwnership = { viewModel.transferOwnership(member.userId) }
+                                            onTransferOwnership = { viewModel.transferOwnership(member.userId) },
                                         )
                                     }
                                 }
                             }
                         }
-                        
+
                         Spacer(modifier = Modifier.height(16.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             if (uiState.currentUserRole != WorkspaceRole.OWNER) {
@@ -140,26 +146,29 @@ fun WorkspaceSettingsScreen(
             }
         }
     }
-    
+
     if (showCreateDialog) {
         CreateWorkspaceDialog(
             onDismiss = { showCreateDialog = false },
-            onCreate = { name, type -> 
+            onCreate = { name, type ->
                 viewModel.createWorkspace(name, type)
                 showCreateDialog = false
-            }
+            },
         )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WorkspaceSelector(uiState: WorkspaceUiState, onSelect: (String) -> Unit) {
+fun WorkspaceSelector(
+    uiState: WorkspaceUiState,
+    onSelect: (String) -> Unit,
+) {
     var expanded by remember { mutableStateOf(false) }
-    
+
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
+        onExpandedChange = { expanded = !expanded },
     ) {
         OutlinedTextField(
             value = uiState.activeWorkspace?.name ?: "جاري التحميل...",
@@ -168,12 +177,12 @@ fun WorkspaceSelector(uiState: WorkspaceUiState, onSelect: (String) -> Unit) {
             label = { Text("المساحة الحالية") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-            modifier = Modifier.menuAnchor().fillMaxWidth()
+            modifier = Modifier.menuAnchor().fillMaxWidth(),
         )
-        
+
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
         ) {
             uiState.workspaces.forEach { ws ->
                 DropdownMenuItem(
@@ -181,7 +190,7 @@ fun WorkspaceSelector(uiState: WorkspaceUiState, onSelect: (String) -> Unit) {
                     onClick = {
                         onSelect(ws.id)
                         expanded = false
-                    }
+                    },
                 )
             }
         }
@@ -203,7 +212,7 @@ fun InviteMemberForm(onInvite: (String, WorkspaceRole) -> Unit) {
                 onValueChange = { email = it },
                 label = { Text("البريد الإلكتروني") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Box {
@@ -214,19 +223,22 @@ fun InviteMemberForm(onInvite: (String, WorkspaceRole) -> Unit) {
                     WorkspaceRole.values().forEach { r ->
                         DropdownMenuItem(
                             text = { Text(r.name) },
-                            onClick = { role = r; expanded = false }
+                            onClick = {
+                                role = r
+                                expanded = false
+                            },
                         )
                     }
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(
-                onClick = { 
+                onClick = {
                     onInvite(email, role)
                     email = ""
                 },
                 modifier = Modifier.align(Alignment.End),
-                enabled = email.isNotBlank()
+                enabled = email.isNotBlank(),
             ) {
                 Text("إرسال الدعوة")
             }
@@ -236,12 +248,12 @@ fun InviteMemberForm(onInvite: (String, WorkspaceRole) -> Unit) {
 
 @Composable
 fun MemberCard(
-    member: WorkspaceMember, 
+    member: WorkspaceMember,
     currentUserRole: WorkspaceRole?,
     currentUser: UserProfile?,
     onRemove: () -> Unit,
     onUpdateRole: (WorkspaceRole) -> Unit,
-    onTransferOwnership: () -> Unit
+    onTransferOwnership: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val isSelf = member.userId == currentUser?.id
@@ -252,36 +264,50 @@ fun MemberCard(
         Row(
             modifier = Modifier.padding(16.dp).fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("${member.userName} ${if(isSelf) "(أنت)" else ""}", style = MaterialTheme.typography.bodyLarge)
+                Text("${member.userName} ${if (isSelf) "(أنت)" else ""}", style = MaterialTheme.typography.bodyLarge)
                 Text(member.userEmail, style = MaterialTheme.typography.bodyMedium)
                 Text("الدور: ${member.role.name}", style = MaterialTheme.typography.labelSmall)
             }
-            
+
             if (canManageRoles || (currentUserRole == WorkspaceRole.OWNER && !isSelf)) {
                 Box {
                     IconButton(onClick = { expanded = true }) {
-                        Icon(Icons.Filled.MoreVert, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.options))
+                        Icon(
+                            Icons.Filled.MoreVert,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.options),
+                        )
                     }
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                         if (canManageRoles) {
                             WorkspaceRole.values().filter { it != WorkspaceRole.OWNER }.forEach { r ->
                                 DropdownMenuItem(
                                     text = { Text("تعيين كـ ${r.name}") },
-                                    onClick = { onUpdateRole(r); expanded = false }
+                                    onClick = {
+                                        onUpdateRole(r)
+                                        expanded = false
+                                    },
                                 )
                             }
                             DropdownMenuItem(
                                 text = { Text("إزالة العضو", color = MaterialTheme.colorScheme.error) },
-                                onClick = { onRemove(); expanded = false }
+                                onClick = {
+                                    onRemove()
+                                    expanded = false
+                                },
                             )
                         }
                         if (currentUserRole == WorkspaceRole.OWNER && !isSelf) {
                             DropdownMenuItem(
                                 text = { Text("نقل الملكية", color = MaterialTheme.colorScheme.error) },
-                                onClick = { onTransferOwnership(); expanded = false }
+                                onClick = {
+                                    onTransferOwnership()
+                                    expanded = false
+                                },
                             )
                         }
                     }
@@ -292,12 +318,15 @@ fun MemberCard(
 }
 
 @Composable
-fun InvitationCard(invitation: WorkspaceInvitation, onRespond: (String, Boolean) -> Unit) {
+fun InvitationCard(
+    invitation: WorkspaceInvitation,
+    onRespond: (String, Boolean) -> Unit,
+) {
     Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
         Row(
             modifier = Modifier.padding(16.dp).fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text("دعوة للانضمام إلى مساحة عمل", style = MaterialTheme.typography.bodyMedium)
@@ -316,10 +345,13 @@ fun InvitationCard(invitation: WorkspaceInvitation, onRespond: (String, Boolean)
 }
 
 @Composable
-fun CreateWorkspaceDialog(onDismiss: () -> Unit, onCreate: (String, WorkspaceType) -> Unit) {
+fun CreateWorkspaceDialog(
+    onDismiss: () -> Unit,
+    onCreate: (String, WorkspaceType) -> Unit,
+) {
     var name by remember { mutableStateOf("") }
     var type by remember { mutableStateOf(WorkspaceType.TEAM) }
-    
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("إنشاء مساحة عمل") },
@@ -329,19 +361,19 @@ fun CreateWorkspaceDialog(onDismiss: () -> Unit, onCreate: (String, WorkspaceTyp
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("اسم المساحة") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
                         selected = type == WorkspaceType.TEAM,
-                        onClick = { type = WorkspaceType.TEAM }
+                        onClick = { type = WorkspaceType.TEAM },
                     )
                     Text("فريق (Team)")
                     Spacer(modifier = Modifier.width(16.dp))
                     RadioButton(
                         selected = type == WorkspaceType.PERSONAL,
-                        onClick = { type = WorkspaceType.PERSONAL }
+                        onClick = { type = WorkspaceType.PERSONAL },
                     )
                     Text("شخصي (Personal)")
                 }
@@ -350,11 +382,16 @@ fun CreateWorkspaceDialog(onDismiss: () -> Unit, onCreate: (String, WorkspaceTyp
         confirmButton = {
             Button(
                 onClick = { onCreate(name, type) },
-                enabled = name.isNotBlank()
+                enabled = name.isNotBlank(),
             ) { Text("إنشاء") }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel)) }
-        }
+            TextButton(onClick = onDismiss) {
+                Text(
+                    androidx.compose.ui.res
+                        .stringResource(com.siraj.app.R.string.cancel),
+                )
+            }
+        },
     )
 }

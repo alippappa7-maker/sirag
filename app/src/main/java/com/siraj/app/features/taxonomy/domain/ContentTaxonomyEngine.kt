@@ -6,7 +6,6 @@ import com.siraj.app.domain.models.taxonomy.*
  * المحرك المركزي لإدارة وتطبيق قواعد تصنيف المحتوى ومصدره (PROMPT 088)
  */
 object ContentTaxonomyEngine {
-
     /**
      * التحقق الخادمي الصارم من تصنيف المحتوى وضبط قواعد الأمان والمسارات
      */
@@ -28,9 +27,8 @@ object ContentTaxonomyEngine {
         sourceReference: String? = null,
         authorOrScholarName: String? = null,
         licenseAttributionText: String? = null,
-        clientReportedCategory: String? = null
+        clientReportedCategory: String? = null,
     ): ContentTaxonomyMetadata {
-
         // 1. قاعدة النص القرآني (Quran_text): مقفل بالكامل، مستورد من مصحف معتمد، لا يعدل أبداً
         val isQuran = disciplineType == ContentDisciplineType.QURAN_TEXT
         if (isQuran) {
@@ -39,7 +37,7 @@ object ContentTaxonomyEngine {
             val quranAuthor = AuthorType.SYSTEM
             val quranVerification = TaxonomyVerificationStatus.SHARIA_VERIFIED
             val quranPath = ReviewPipelinePath.LOCKED_IMMUTABLE_PASSTHROUGH
-            
+
             return ContentTaxonomyMetadata(
                 originType = ContentOriginType.SYSTEM_CONTENT,
                 disciplineType = ContentDisciplineType.QURAN_TEXT,
@@ -64,7 +62,7 @@ object ContentTaxonomyEngine {
                 reviewPipelinePath = quranPath,
                 allowedRolesToEdit = emptyList(), // لا أحد يستطيع تعديل القرآن
                 clientReportedCategory = clientReportedCategory,
-                serverValidatedAt = System.currentTimeMillis()
+                serverValidatedAt = System.currentTimeMillis(),
             )
         }
 
@@ -103,26 +101,35 @@ object ContentTaxonomyEngine {
         }
 
         // 5. تحديد مسار المراجعة (Review Pipeline Path)
-        val pipelinePath = determineReviewPipeline(
-            origin = validatedOrigin,
-            discipline = disciplineType,
-            generation = generationMethod,
-            verification = validatedVerification
-        )
+        val pipelinePath =
+            determineReviewPipeline(
+                origin = validatedOrigin,
+                discipline = disciplineType,
+                generation = generationMethod,
+                verification = validatedVerification,
+            )
 
         // 6. تحديد صلاحيات التعديل
-        val allowedRoles = determineAllowedRolesToEdit(
-            origin = validatedOrigin,
-            discipline = disciplineType,
-            isLocked = false
-        )
+        val allowedRoles =
+            determineAllowedRolesToEdit(
+                origin = validatedOrigin,
+                discipline = disciplineType,
+                isLocked = false,
+            )
 
         return ContentTaxonomyMetadata(
             originType = validatedOrigin,
             disciplineType = disciplineType,
             mediaType = mediaType,
             authorType = validatedAuthor,
-            generationMethod = if (isAi && generationMethod == GenerationMethod.MANUAL_HUMAN) GenerationMethod.AI_GENERATED else generationMethod,
+            generationMethod =
+                if (isAi &&
+                    generationMethod == GenerationMethod.MANUAL_HUMAN
+                ) {
+                    GenerationMethod.AI_GENERATED
+                } else {
+                    generationMethod
+                },
             verificationStatus = validatedVerification,
             rightsStatus = validatedRights,
             visibility = validatedVisibility,
@@ -141,7 +148,7 @@ object ContentTaxonomyEngine {
             reviewPipelinePath = pipelinePath,
             allowedRolesToEdit = allowedRoles,
             clientReportedCategory = clientReportedCategory,
-            serverValidatedAt = System.currentTimeMillis()
+            serverValidatedAt = System.currentTimeMillis(),
         )
     }
 
@@ -152,11 +159,13 @@ object ContentTaxonomyEngine {
         origin: ContentOriginType,
         discipline: ContentDisciplineType,
         generation: GenerationMethod,
-        verification: TaxonomyVerificationStatus
-    ): ReviewPipelinePath {
-        return when {
+        verification: TaxonomyVerificationStatus,
+    ): ReviewPipelinePath =
+        when {
             discipline == ContentDisciplineType.QURAN_TEXT -> ReviewPipelinePath.LOCKED_IMMUTABLE_PASSTHROUGH
-            discipline == ContentDisciplineType.HADITH || discipline == ContentDisciplineType.FIQH || discipline == ContentDisciplineType.TAFSIR -> {
+            discipline == ContentDisciplineType.HADITH ||
+                discipline == ContentDisciplineType.FIQH ||
+                discipline == ContentDisciplineType.TAFSIR -> {
                 ReviewPipelinePath.SHARIA_SCHOLAR_MANDATORY
             }
             origin == ContentOriginType.EDITORIAL_CONTENT -> ReviewPipelinePath.EDITORIAL_STANDARD
@@ -165,7 +174,6 @@ object ContentTaxonomyEngine {
             }
             else -> ReviewPipelinePath.COMMUNITY_MODERATION
         }
-    }
 
     /**
      * تحديد الأدوار المسموح لها بالتعديل
@@ -173,7 +181,7 @@ object ContentTaxonomyEngine {
     private fun determineAllowedRolesToEdit(
         origin: ContentOriginType,
         discipline: ContentDisciplineType,
-        isLocked: Boolean
+        isLocked: Boolean,
     ): List<String> {
         if (isLocked || discipline == ContentDisciplineType.QURAN_TEXT) {
             return emptyList() // مقفل
@@ -190,12 +198,20 @@ object ContentTaxonomyEngine {
     /**
      * فحص قابلية التعديل للمستخدم المعين
      */
-    fun canEditContent(item: ClassifiedContentItem, userRole: String, userId: String): Pair<Boolean, String> {
+    fun canEditContent(
+        item: ClassifiedContentItem,
+        userRole: String,
+        userId: String,
+    ): Pair<Boolean, String> {
         if (item.metadata.isLockedImmutable || item.metadata.isQuranicText) {
             return Pair(false, "النص القرآني ومحتوى النظام المحمي مقفل وغير قابل للتعديل حفاظاً على الأمانة والنزاهة.")
         }
         if (item.metadata.allowedRolesToEdit.contains(userRole)) {
-            if (item.metadata.originType == ContentOriginType.USER_GENERATED && item.metadata.ownerId != userId && userRole != "ADMIN" && userRole != "OWNER") {
+            if (item.metadata.originType == ContentOriginType.USER_GENERATED &&
+                item.metadata.ownerId != userId &&
+                userRole != "ADMIN" &&
+                userRole != "OWNER"
+            ) {
                 return Pair(false, "لا تملك صلاحية تعديل محتوى مستخدم آخر.")
             }
             return Pair(true, "مسموح بالتعديل وفق الدور والصلاحية.")
@@ -206,8 +222,11 @@ object ContentTaxonomyEngine {
     /**
      * توليد نص العزو التلقائي للحقوق
      */
-    private fun generateDefaultAttribution(rights: TaxonomyRightsStatus, origin: ContentOriginType): String {
-        return when (rights) {
+    private fun generateDefaultAttribution(
+        rights: TaxonomyRightsStatus,
+        origin: ContentOriginType,
+    ): String =
+        when (rights) {
             TaxonomyRightsStatus.PUBLIC_DOMAIN -> "تراث إسلامي / ملك عام"
             TaxonomyRightsStatus.SIRAJ_ORIGINAL -> "منصة سراج - جميع الحقوق محفوظة"
             TaxonomyRightsStatus.LICENSED_CC -> "مرخص بموجب Creative Commons - يلزم ذكر المصدر"
@@ -215,7 +234,6 @@ object ContentTaxonomyEngine {
             TaxonomyRightsStatus.RESTRICTED -> "محتوى خاص ومقيد الاستخدام"
             TaxonomyRightsStatus.UNKNOWN -> "غير محدد - غير مصرح بالنشر العام"
         }
-    }
 
     /**
      * إجراء فحص وتدقيق للمحتوى وإنتاج تقرير التصنيف الشامل
@@ -253,10 +271,11 @@ object ContentTaxonomyEngine {
             }
 
             // فحص هل العنصر مصنف بشكل سليم
-            val isUnclassified = meta.originType == ContentOriginType.SYSTEM_CONTENT && 
-                                 meta.sourceTitle.isNullOrBlank() && 
-                                 !meta.isQuranicText &&
-                                 meta.ownerId.isBlank()
+            val isUnclassified =
+                meta.originType == ContentOriginType.SYSTEM_CONTENT &&
+                    meta.sourceTitle.isNullOrBlank() &&
+                    !meta.isQuranicText &&
+                    meta.ownerId.isBlank()
             if (isUnclassified) {
                 unclassifiedCount++
                 unclassifiedIds.add(item.id)
@@ -281,7 +300,7 @@ object ContentTaxonomyEngine {
             compliancePercentage = compliancePercentage,
             unclassifiedItemIds = unclassifiedIds,
             auditSummary = summary,
-            auditedAt = System.currentTimeMillis()
+            auditedAt = System.currentTimeMillis(),
         )
     }
 
@@ -296,58 +315,71 @@ object ContentTaxonomyEngine {
 
         legacyItems.forEach { legacy ->
             try {
-                val origin = when {
-                    legacy.isQuran -> ContentOriginType.SYSTEM_CONTENT
-                    legacy.isAi -> ContentOriginType.AI_GENERATED
-                    legacy.rawCategory?.contains("editorial", ignoreCase = true) == true -> ContentOriginType.EDITORIAL_CONTENT
-                    legacy.rawCategory?.contains("external", ignoreCase = true) == true -> ContentOriginType.LICENSED_EXTERNAL
-                    else -> ContentOriginType.USER_GENERATED
-                }
+                val origin =
+                    when {
+                        legacy.isQuran -> ContentOriginType.SYSTEM_CONTENT
+                        legacy.isAi -> ContentOriginType.AI_GENERATED
+                        legacy.rawCategory?.contains("editorial", ignoreCase = true) == true -> ContentOriginType.EDITORIAL_CONTENT
+                        legacy.rawCategory?.contains("external", ignoreCase = true) == true -> ContentOriginType.LICENSED_EXTERNAL
+                        else -> ContentOriginType.USER_GENERATED
+                    }
 
-                val discipline = when {
-                    legacy.isQuran -> ContentDisciplineType.QURAN_TEXT
-                    legacy.rawCategory?.contains("tafsir", ignoreCase = true) == true -> ContentDisciplineType.TAFSIR
-                    legacy.rawCategory?.contains("hadith", ignoreCase = true) == true -> ContentDisciplineType.HADITH
-                    legacy.rawCategory?.contains("fiqh", ignoreCase = true) == true -> ContentDisciplineType.FIQH
-                    legacy.rawCategory?.contains("edu", ignoreCase = true) == true -> ContentDisciplineType.EDUCATIONAL
-                    else -> ContentDisciplineType.GENERAL
-                }
+                val discipline =
+                    when {
+                        legacy.isQuran -> ContentDisciplineType.QURAN_TEXT
+                        legacy.rawCategory?.contains("tafsir", ignoreCase = true) == true -> ContentDisciplineType.TAFSIR
+                        legacy.rawCategory?.contains("hadith", ignoreCase = true) == true -> ContentDisciplineType.HADITH
+                        legacy.rawCategory?.contains("fiqh", ignoreCase = true) == true -> ContentDisciplineType.FIQH
+                        legacy.rawCategory?.contains("edu", ignoreCase = true) == true -> ContentDisciplineType.EDUCATIONAL
+                        else -> ContentDisciplineType.GENERAL
+                    }
 
-                val generation = when {
-                    legacy.isQuran -> GenerationMethod.IMPORTED_DATASET
-                    legacy.isAi -> GenerationMethod.AI_GENERATED
-                    else -> GenerationMethod.MANUAL_HUMAN
-                }
+                val generation =
+                    when {
+                        legacy.isQuran -> GenerationMethod.IMPORTED_DATASET
+                        legacy.isAi -> GenerationMethod.AI_GENERATED
+                        else -> GenerationMethod.MANUAL_HUMAN
+                    }
 
-                val rights = when {
-                    legacy.isQuran -> TaxonomyRightsStatus.PUBLIC_DOMAIN
-                    origin == ContentOriginType.EDITORIAL_CONTENT -> TaxonomyRightsStatus.SIRAJ_ORIGINAL
-                    origin == ContentOriginType.LICENSED_EXTERNAL -> TaxonomyRightsStatus.LICENSED_CC
-                    else -> TaxonomyRightsStatus.SIRAJ_ORIGINAL
-                }
+                val rights =
+                    when {
+                        legacy.isQuran -> TaxonomyRightsStatus.PUBLIC_DOMAIN
+                        origin == ContentOriginType.EDITORIAL_CONTENT -> TaxonomyRightsStatus.SIRAJ_ORIGINAL
+                        origin == ContentOriginType.LICENSED_EXTERNAL -> TaxonomyRightsStatus.LICENSED_CC
+                        else -> TaxonomyRightsStatus.SIRAJ_ORIGINAL
+                    }
 
-                val metadata = validateAndEnforceTaxonomy(
-                    originType = origin,
-                    disciplineType = discipline,
-                    mediaType = ContentMediaType.TEXT,
-                    authorType = if (legacy.isQuran) AuthorType.SYSTEM else if (legacy.isAi) AuthorType.AI_ASSISTANT else AuthorType.CREATOR,
-                    generationMethod = generation,
-                    verificationStatus = if (legacy.isQuran) TaxonomyVerificationStatus.SHARIA_VERIFIED else TaxonomyVerificationStatus.UNVERIFIED,
-                    rightsStatus = rights,
-                    visibility = if (legacy.isQuran) TaxonomyVisibility.PUBLIC_APPROVED else TaxonomyVisibility.PRIVATE,
-                    ownerId = legacy.ownerId,
-                    sourceTitle = legacy.rawSource ?: (if (legacy.isQuran) "المصحف الشريف" else "مصدر غير مسجل"),
-                    clientReportedCategory = legacy.rawCategory
-                )
+                val metadata =
+                    validateAndEnforceTaxonomy(
+                        originType = origin,
+                        disciplineType = discipline,
+                        mediaType = ContentMediaType.TEXT,
+                        authorType =
+                            if (legacy.isQuran) {
+                                AuthorType.SYSTEM
+                            } else if (legacy.isAi) {
+                                AuthorType.AI_ASSISTANT
+                            } else {
+                                AuthorType.CREATOR
+                            },
+                        generationMethod = generation,
+                        verificationStatus = if (legacy.isQuran) TaxonomyVerificationStatus.SHARIA_VERIFIED else TaxonomyVerificationStatus.UNVERIFIED,
+                        rightsStatus = rights,
+                        visibility = if (legacy.isQuran) TaxonomyVisibility.PUBLIC_APPROVED else TaxonomyVisibility.PRIVATE,
+                        ownerId = legacy.ownerId,
+                        sourceTitle = legacy.rawSource ?: (if (legacy.isQuran) "المصحف الشريف" else "مصدر غير مسجل"),
+                        clientReportedCategory = legacy.rawCategory,
+                    )
 
-                val classifiedItem = ClassifiedContentItem(
-                    id = legacy.id,
-                    title = legacy.title,
-                    contentSnippet = "تم الترحيل من البنية السابقة: ${legacy.title}",
-                    metadata = metadata,
-                    createdAt = System.currentTimeMillis(),
-                    updatedAt = System.currentTimeMillis()
-                )
+                val classifiedItem =
+                    ClassifiedContentItem(
+                        id = legacy.id,
+                        title = legacy.title,
+                        contentSnippet = "تم الترحيل من البنية السابقة: ${legacy.title}",
+                        metadata = metadata,
+                        createdAt = System.currentTimeMillis(),
+                        updatedAt = System.currentTimeMillis(),
+                    )
 
                 migrated.add(classifiedItem)
                 logs.add("نجاح ترحيل المادة ${legacy.id} إلى تصنيف: ${origin.titleArabic} / ${discipline.titleArabic}")
@@ -364,7 +396,7 @@ object ContentTaxonomyEngine {
             failedCount = failed,
             migratedItems = migrated,
             migrationLog = logs,
-            completedAt = System.currentTimeMillis()
+            completedAt = System.currentTimeMillis(),
         )
     }
 }

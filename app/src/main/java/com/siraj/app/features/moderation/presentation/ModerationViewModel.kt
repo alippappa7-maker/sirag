@@ -20,7 +20,7 @@ data class ModerationStateUI(
     val selectedTab: Int = 0, // 0: Reports, 1: UGC Queue, 2: Appeals, 3: Analytics & SLA
     val filterUgcState: UgcState? = null,
     val error: String? = null,
-    val successMessage: String? = null
+    val successMessage: String? = null,
 ) {
     val totalPendingReports: Int
         get() = reports.count { it.status == ReportStatus.PENDING }
@@ -36,9 +36,8 @@ data class ModerationStateUI(
 }
 
 class ModerationViewModel(
-    private val safetyRepository: SafetyRepository
+    private val safetyRepository: SafetyRepository,
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(ModerationStateUI())
     val state: StateFlow<ModerationStateUI> = _state.asStateFlow()
 
@@ -112,7 +111,13 @@ class ModerationViewModel(
         }
     }
 
-    fun resolveReport(reportId: String, resolverId: String, resolution: String, notes: String, role: String) {
+    fun resolveReport(
+        reportId: String,
+        resolverId: String,
+        resolution: String,
+        notes: String,
+        role: String,
+    ) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
             when (val res = safetyRepository.resolveReport(reportId, resolverId, resolution, notes)) {
@@ -128,7 +133,13 @@ class ModerationViewModel(
         }
     }
 
-    fun takeUgcAction(ugcId: String, moderatorId: String, action: ModeratorAction, notes: String, role: String) {
+    fun takeUgcAction(
+        ugcId: String,
+        moderatorId: String,
+        action: ModeratorAction,
+        notes: String,
+        role: String,
+    ) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
             when (val res = safetyRepository.takeModeratorActionOnUgc(ugcId, moderatorId, action, notes)) {
@@ -144,7 +155,13 @@ class ModerationViewModel(
         }
     }
 
-    fun resolveAppeal(appealId: String, moderatorId: String, isApproved: Boolean, notes: String, role: String) {
+    fun resolveAppeal(
+        appealId: String,
+        moderatorId: String,
+        isApproved: Boolean,
+        notes: String,
+        role: String,
+    ) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
             when (val res = safetyRepository.resolveAppeal(appealId, moderatorId, isApproved, notes)) {
@@ -161,7 +178,13 @@ class ModerationViewModel(
         }
     }
 
-    fun suspendUser(userId: String, moderatorId: String, reason: String, days: Int, role: String) {
+    fun suspendUser(
+        userId: String,
+        moderatorId: String,
+        reason: String,
+        days: Int,
+        role: String,
+    ) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
             when (val res = safetyRepository.suspendUserAccount(userId, moderatorId, reason, days)) {
@@ -183,11 +206,8 @@ class ModerationViewModel(
 }
 
 class ModerationViewModelFactory(
-    private val repository: SafetyRepository
+    private val repository: SafetyRepository,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return ModerationViewModel(repository) as T
-    }
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = ModerationViewModel(repository) as T
 }
-

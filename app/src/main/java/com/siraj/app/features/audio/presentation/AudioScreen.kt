@@ -1,9 +1,7 @@
 package com.siraj.app.features.audio.presentation
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -48,56 +46,72 @@ fun AudioScreen() {
                     DropdownMenu(expanded = showSortMenu, onDismissRequest = { showSortMenu = false }) {
                         DropdownMenuItem(
                             text = { Text("أحدث الإضافات") },
-                            onClick = { viewModel.onSortOptionChanged(AudioSortOption.NEWEST); showSortMenu = false },
-                            trailingIcon = { if (state.sortOption == AudioSortOption.NEWEST) Icon(Icons.Default.Check, null) }
+                            onClick = {
+                                viewModel.onSortOptionChanged(AudioSortOption.NEWEST)
+                                showSortMenu = false
+                            },
+                            trailingIcon = { if (state.sortOption == AudioSortOption.NEWEST) Icon(Icons.Default.Check, null) },
                         )
                         DropdownMenuItem(
                             text = { Text("الأكثر استماعًا") },
-                            onClick = { viewModel.onSortOptionChanged(AudioSortOption.MOST_LISTENED); showSortMenu = false },
-                            trailingIcon = { if (state.sortOption == AudioSortOption.MOST_LISTENED) Icon(Icons.Default.Check, null) }
+                            onClick = {
+                                viewModel.onSortOptionChanged(AudioSortOption.MOST_LISTENED)
+                                showSortMenu = false
+                            },
+                            trailingIcon = { if (state.sortOption == AudioSortOption.MOST_LISTENED) Icon(Icons.Default.Check, null) },
                         )
                         DropdownMenuItem(
                             text = { Text("أبجديًا") },
-                            onClick = { viewModel.onSortOptionChanged(AudioSortOption.ALPHABETICAL); showSortMenu = false },
-                            trailingIcon = { if (state.sortOption == AudioSortOption.ALPHABETICAL) Icon(Icons.Default.Check, null) }
+                            onClick = {
+                                viewModel.onSortOptionChanged(AudioSortOption.ALPHABETICAL)
+                                showSortMenu = false
+                            },
+                            trailingIcon = { if (state.sortOption == AudioSortOption.ALPHABETICAL) Icon(Icons.Default.Check, null) },
                         )
                     }
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             // Search Bar
             OutlinedTextField(
                 value = state.searchQuery,
                 onValueChange = viewModel::onSearchQueryChanged,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = spacing.medium, vertical = spacing.small),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = spacing.medium, vertical = spacing.small),
                 placeholder = { Text("ابحث عن تلاوة، درس، أو محاضرة...") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.tertiary) },
                 trailingIcon = {
                     if (state.searchQuery.isNotEmpty()) {
                         IconButton(onClick = { viewModel.onSearchQueryChanged("") }) {
-                            Icon(Icons.Default.Clear, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.clear))
+                            Icon(
+                                Icons.Default.Clear,
+                                contentDescription =
+                                    androidx.compose.ui.res
+                                        .stringResource(com.siraj.app.R.string.clear),
+                            )
                         }
                     }
                 },
                 shape = RoundedCornerShape(16.dp),
                 singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.tertiary,
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                )
+                colors =
+                    OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.tertiary,
+                        unfocusedBorderColor = Color.Transparent,
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    ),
             )
 
             // Categories
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(horizontal = spacing.medium, vertical = spacing.small),
-                horizontalArrangement = Arrangement.spacedBy(spacing.small)
+                horizontalArrangement = Arrangement.spacedBy(spacing.small),
             ) {
                 items(viewModel.categories) { (id, name) ->
                     FilterChip(
@@ -108,11 +122,12 @@ fun AudioScreen() {
                             if (id == "favorites") Icon(Icons.Default.Favorite, contentDescription = null, modifier = Modifier.size(16.dp))
                             if (id == "downloads") Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(16.dp))
                         },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.tertiary,
-                            selectedLabelColor = MaterialTheme.colorScheme.onTertiary,
-                            selectedLeadingIconColor = MaterialTheme.colorScheme.onTertiary
-                        )
+                        colors =
+                            FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.tertiary,
+                                selectedLabelColor = MaterialTheme.colorScheme.onTertiary,
+                                selectedLeadingIconColor = MaterialTheme.colorScheme.onTertiary,
+                            ),
                     )
                 }
             }
@@ -121,29 +136,48 @@ fun AudioScreen() {
             Box(modifier = Modifier.weight(1f)) {
                 Crossfade(targetState = state.tracksResource, label = "tracks_crossfade") { res ->
                     when (res) {
-                        is Resource.Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = MaterialTheme.colorScheme.tertiary)
-                        is Resource.Error -> Text(res.message, color = MaterialTheme.colorScheme.error, modifier = Modifier.align(Alignment.Center))
+                        is Resource.Loading ->
+                            CircularProgressIndicator(
+                                modifier = Modifier.align(Alignment.Center),
+                                color = MaterialTheme.colorScheme.tertiary,
+                            )
+                        is Resource.Error ->
+                            Text(
+                                res.message,
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.align(Alignment.Center),
+                            )
                         is Resource.Success -> {
                             val tracks = res.data
                             if (tracks.isEmpty()) {
                                 Column(
                                     modifier = Modifier.align(Alignment.Center),
-                                    horizontalAlignment = Alignment.CenterHorizontally
+                                    horizontalAlignment = Alignment.CenterHorizontally,
                                 ) {
-                                    Icon(Icons.Default.LibraryMusic, contentDescription = null, modifier = Modifier.size(64.dp), tint = MaterialTheme.colorScheme.surfaceVariant)
+                                    Icon(
+                                        Icons.Default.LibraryMusic,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(64.dp),
+                                        tint = MaterialTheme.colorScheme.surfaceVariant,
+                                    )
                                     Spacer(modifier = Modifier.height(spacing.medium))
-                                    Text("لا توجد ملفات صوتية مطابقة.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text(
+                                        "لا توجد ملفات صوتية مطابقة.",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
                                 }
                             } else {
                                 LazyColumn(
-                                    contentPadding = PaddingValues(
-                                        start = spacing.medium, 
-                                        end = spacing.medium, 
-                                        top = spacing.medium, 
-                                        bottom = 120.dp
-                                    ),
+                                    contentPadding =
+                                        PaddingValues(
+                                            start = spacing.medium,
+                                            end = spacing.medium,
+                                            top = spacing.medium,
+                                            bottom = 120.dp,
+                                        ),
                                     verticalArrangement = Arrangement.spacedBy(spacing.small),
-                                    modifier = Modifier.fillMaxSize()
+                                    modifier = Modifier.fillMaxSize(),
                                 ) {
                                     items(tracks, key = { it.id }) { track ->
                                         AudioTrackCard(
@@ -151,7 +185,7 @@ fun AudioScreen() {
                                             isActive = track.listenProgressSeconds > 0, // Visual feedback if started
                                             onPlay = { viewModel.playTrack(track) },
                                             onToggleFavorite = { viewModel.toggleFavorite(track.id) },
-                                            onReport = { viewModel.reportTrack(track.id) }
+                                            onReport = { viewModel.reportTrack(track.id) },
                                         )
                                     }
                                 }
@@ -170,32 +204,35 @@ fun AudioTrackCard(
     isActive: Boolean,
     onPlay: () -> Unit,
     onToggleFavorite: () -> Unit,
-    onReport: () -> Unit
+    onReport: () -> Unit,
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
     SirajTechCard(
         isActive = isActive,
         onClick = onPlay,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column {
             Row(
                 modifier = Modifier.padding(12.dp).fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 // Play Icon or Cover Placeholder
                 Box(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(if (isActive) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.surfaceVariant),
-                    contentAlignment = Alignment.Center
+                    modifier =
+                        Modifier
+                            .size(56.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(if (isActive) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.surfaceVariant),
+                    contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         imageVector = if (isActive) Icons.Default.PlayArrow else Icons.Default.PlayArrow,
-                        contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.play),
-                        tint = if (isActive) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onSurfaceVariant
+                        contentDescription =
+                            androidx.compose.ui.res
+                                .stringResource(com.siraj.app.R.string.play),
+                        tint = if (isActive) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
 
@@ -209,23 +246,41 @@ fun AudioTrackCard(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                     Text(
                         text = track.speaker,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Timer, contentDescription = null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Icon(
+                            Icons.Default.Timer,
+                            contentDescription = null,
+                            modifier = Modifier.size(12.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(formatDuration(track.durationSeconds), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        
+                        Text(
+                            formatDuration(track.durationSeconds),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+
                         Spacer(modifier = Modifier.width(12.dp))
-                        
-                        Icon(Icons.Default.Headphones, contentDescription = null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+
+                        Icon(
+                            Icons.Default.Headphones,
+                            contentDescription = null,
+                            modifier = Modifier.size(12.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("${track.playCount}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            "${track.playCount}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                 }
 
@@ -237,23 +292,34 @@ fun AudioTrackCard(
                 DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
                     DropdownMenuItem(
                         text = { Text(if (track.isFavorite) "إزالة من المفضلة" else "إضافة للمفضلة") },
-                        onClick = { onToggleFavorite(); showMenu = false },
-                        leadingIcon = { Icon(if (track.isFavorite) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder, null) }
+                        onClick = {
+                            onToggleFavorite()
+                            showMenu = false
+                        },
+                        leadingIcon = { Icon(if (track.isFavorite) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder, null) },
                     )
                     DropdownMenuItem(
                         text = { Text("إضافة إلى قائمة التشغيل") },
                         onClick = { showMenu = false },
-                        leadingIcon = { Icon(Icons.Default.PlaylistAdd, null) }
+                        leadingIcon = { Icon(Icons.Default.PlaylistAdd, null) },
                     )
                     DropdownMenuItem(
-                        text = { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.share)) },
+                        text = {
+                            Text(
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.share),
+                            )
+                        },
                         onClick = { showMenu = false },
-                        leadingIcon = { Icon(Icons.Default.Share, null) }
+                        leadingIcon = { Icon(Icons.Default.Share, null) },
                     )
                     DropdownMenuItem(
                         text = { Text("إبلاغ عن المحتوى") },
-                        onClick = { onReport(); showMenu = false },
-                        leadingIcon = { Icon(Icons.Default.Report, null) }
+                        onClick = {
+                            onReport()
+                            showMenu = false
+                        },
+                        leadingIcon = { Icon(Icons.Default.Report, null) },
                     )
                 }
             }
@@ -268,22 +334,36 @@ fun AudioTrackCard(
                     trackColor = Color.Transparent,
                 )
             }
-            
+
             // Source & Verification Footer
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
-                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Verified, contentDescription = "موثق", tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(14.dp))
+                    Icon(
+                        Icons.Default.Verified,
+                        contentDescription = "موثق",
+                        tint = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.size(14.dp),
+                    )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("المصدر: ${track.source}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        "المصدر: ${track.source}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
-                Text(track.rights.licenseType, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    track.rights.licenseType,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
     }

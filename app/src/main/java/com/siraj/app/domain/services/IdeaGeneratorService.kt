@@ -6,5 +6,9 @@ import com.siraj.app.domain.models.IdeaGenerationRequest
 
 interface IdeaGeneratorService {
     suspend fun generateIdeas(request: IdeaGenerationRequest): Resource<List<GeneratedIdea>>
-    suspend fun reportIdea(ideaId: String, reason: String): Resource<Unit>
+
+    suspend fun reportIdea(
+        ideaId: String,
+        reason: String,
+    ): Resource<Unit>
 }

@@ -9,14 +9,14 @@ data class PrayerTimes(
     val isha: String,
     val dateHijri: String,
     val dateGregorian: String,
-    val meta: PrayerMeta
+    val meta: PrayerMeta,
 )
 
 data class PrayerMeta(
     val method: String,
     val timezone: String,
     val city: String,
-    val isCached: Boolean = false
+    val isCached: Boolean = false,
 )
 
 data class PrayerSettings(
@@ -34,5 +34,5 @@ data class PrayerSettings(
     val ishaNotificationEnabled: Boolean = true,
     val isQuietTimeEnabled: Boolean = false,
     val quietTimeStart: String = "23:00",
-    val quietTimeEnd: String = "06:00"
+    val quietTimeEnd: String = "06:00",
 )

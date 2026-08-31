@@ -65,7 +65,7 @@ fun SplashScreen(onNavigateToHome: () -> Unit) {
                     launch {
                         pointProgress.animateTo(
                             targetValue = 1f,
-                            animationSpec = tween(durationMillis = 250, easing = LinearOutSlowInEasing)
+                            animationSpec = tween(durationMillis = 250, easing = LinearOutSlowInEasing),
                         )
                     }
 
@@ -74,7 +74,7 @@ fun SplashScreen(onNavigateToHome: () -> Unit) {
                         delay(120)
                         symbolProgress.animateTo(
                             targetValue = 1f,
-                            animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing)
+                            animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing),
                         )
                     }
 
@@ -83,7 +83,7 @@ fun SplashScreen(onNavigateToHome: () -> Unit) {
                         delay(280)
                         glowProgress.animateTo(
                             targetValue = 1f,
-                            animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)
+                            animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing),
                         )
                     }
 
@@ -93,13 +93,13 @@ fun SplashScreen(onNavigateToHome: () -> Unit) {
                         launch {
                             titleAlpha.animateTo(
                                 targetValue = 1f,
-                                animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
+                                animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
                             )
                         }
                         launch {
                             titleOffsetY.animateTo(
                                 targetValue = 0f,
-                                animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
+                                animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
                             )
                         }
                     }
@@ -114,35 +114,38 @@ fun SplashScreen(onNavigateToHome: () -> Unit) {
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(SplashBackground)
-            .testTag("splash_screen_container"),
-        contentAlignment = Alignment.Center
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(SplashBackground)
+                .testTag("splash_screen_container"),
+        contentAlignment = Alignment.Center,
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             SirajAnimatedLogo(
                 pointProgress = pointProgress.value,
                 symbolProgress = symbolProgress.value,
                 glowProgress = glowProgress.value,
-                modifier = Modifier.testTag("splash_logo_canvas")
+                modifier = Modifier.testTag("splash_logo_canvas"),
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
                 text = "سراج",
-                style = MaterialTheme.typography.displayLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 34.sp,
-                    letterSpacing = 0.sp
-                ),
+                style =
+                    MaterialTheme.typography.displayLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 34.sp,
+                        letterSpacing = 0.sp,
+                    ),
                 color = TextWhite.copy(alpha = titleAlpha.value),
-                modifier = Modifier
-                    .offset(y = titleOffsetY.value.dp)
-                    .testTag("splash_app_title")
+                modifier =
+                    Modifier
+                        .offset(y = titleOffsetY.value.dp)
+                        .testTag("splash_app_title"),
             )
         }
     }
@@ -153,11 +156,11 @@ private fun SirajAnimatedLogo(
     pointProgress: Float,
     symbolProgress: Float,
     glowProgress: Float,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier.size(136.dp),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             val canvasWidth = size.width
@@ -169,37 +172,40 @@ private fun SirajAnimatedLogo(
             // 1. Subtle Cyan Ambient Glow Aura
             if (glowProgress > 0f) {
                 drawCircle(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            CyanGlow.copy(alpha = 0.20f * glowProgress),
-                            CyanGlow.copy(alpha = 0.06f * glowProgress),
-                            Color.Transparent
+                    brush =
+                        Brush.radialGradient(
+                            colors =
+                                listOf(
+                                    CyanGlow.copy(alpha = 0.20f * glowProgress),
+                                    CyanGlow.copy(alpha = 0.06f * glowProgress),
+                                    Color.Transparent,
+                                ),
+                            center = Offset(centerX, centerY),
+                            radius = (canvasWidth * 0.48f) * (0.8f + 0.2f * glowProgress),
                         ),
-                        center = Offset(centerX, centerY),
-                        radius = (canvasWidth * 0.48f) * (0.8f + 0.2f * glowProgress)
-                    ),
                     radius = canvasWidth * 0.48f,
-                    center = Offset(centerX, centerY)
+                    center = Offset(centerX, centerY),
                 )
             }
 
             // 2. Initial Focal Point of Light
             if (pointProgress > 0f) {
-                val pointAlpha = if (symbolProgress > 0.6f) {
-                    (1f - (symbolProgress - 0.6f) * 2.5f).coerceIn(0f, 1f)
-                } else {
-                    pointProgress
-                }
+                val pointAlpha =
+                    if (symbolProgress > 0.6f) {
+                        (1f - (symbolProgress - 0.6f) * 2.5f).coerceIn(0f, 1f)
+                    } else {
+                        pointProgress
+                    }
                 if (pointAlpha > 0f) {
                     drawCircle(
                         color = CyanGlow.copy(alpha = 0.55f * pointAlpha),
                         radius = 8f * pointProgress,
-                        center = Offset(centerX, centerY)
+                        center = Offset(centerX, centerY),
                     )
                     drawCircle(
                         color = LightSpark.copy(alpha = pointAlpha),
                         radius = 3.5f * pointProgress,
-                        center = Offset(centerX, centerY)
+                        center = Offset(centerX, centerY),
                     )
                 }
             }
@@ -209,121 +215,131 @@ private fun SirajAnimatedLogo(
                 val alpha = symbolProgress.coerceIn(0f, 1f)
 
                 fun x(coordX: Float): Float = centerX + (coordX - 54f) * (scale / (canvasWidth / 108f))
+
                 fun y(coordY: Float): Float = centerY + (coordY - 54f) * (scale / (canvasHeight / 108f))
 
                 // Lantern Glass Body / Backing
-                val bodyPath = Path().apply {
-                    moveTo(x(45f), y(40f))
-                    lineTo(x(63f), y(40f))
-                    lineTo(x(67f), y(64f))
-                    lineTo(x(41f), y(64f))
-                    close()
-                }
+                val bodyPath =
+                    Path().apply {
+                        moveTo(x(45f), y(40f))
+                        lineTo(x(63f), y(40f))
+                        lineTo(x(67f), y(64f))
+                        lineTo(x(41f), y(64f))
+                        close()
+                    }
                 drawPath(
                     path = bodyPath,
-                    color = EmeraldContainer.copy(alpha = 0.85f * alpha)
+                    color = EmeraldContainer.copy(alpha = 0.85f * alpha),
                 )
                 drawPath(
                     path = bodyPath,
                     color = EmeraldPrimary.copy(alpha = alpha),
-                    style = Stroke(
-                        width = 1.8f * (canvasWidth / 108f),
-                        cap = StrokeCap.Round,
-                        join = StrokeJoin.Round
-                    )
+                    style =
+                        Stroke(
+                            width = 1.8f * (canvasWidth / 108f),
+                            cap = StrokeCap.Round,
+                            join = StrokeJoin.Round,
+                        ),
                 )
 
                 // Lantern Dome (Top)
-                val domePath = Path().apply {
-                    moveTo(x(42f), y(34f))
-                    lineTo(x(66f), y(34f))
-                    lineTo(x(63f), y(40f))
-                    lineTo(x(45f), y(40f))
-                    close()
-                }
+                val domePath =
+                    Path().apply {
+                        moveTo(x(42f), y(34f))
+                        lineTo(x(66f), y(34f))
+                        lineTo(x(63f), y(40f))
+                        lineTo(x(45f), y(40f))
+                        close()
+                    }
                 drawPath(
                     path = domePath,
-                    color = EmeraldPrimary.copy(alpha = alpha)
+                    color = EmeraldPrimary.copy(alpha = alpha),
                 )
 
                 // Top Hook
-                val hookPath = Path().apply {
-                    moveTo(x(47f), y(31f))
-                    cubicTo(x(47f), y(25.5f), x(61f), y(25.5f), x(61f), y(31f))
-                }
+                val hookPath =
+                    Path().apply {
+                        moveTo(x(47f), y(31f))
+                        cubicTo(x(47f), y(25.5f), x(61f), y(25.5f), x(61f), y(31f))
+                    }
                 drawPath(
                     path = hookPath,
                     color = EmeraldPrimary.copy(alpha = alpha),
-                    style = Stroke(width = 2.2f * (canvasWidth / 108f), cap = StrokeCap.Round)
+                    style = Stroke(width = 2.2f * (canvasWidth / 108f), cap = StrokeCap.Round),
                 )
 
                 // Crescent & Star Accent on Top (Gold)
-                val crescentPath = Path().apply {
-                    moveTo(x(54f), y(18f))
-                    cubicTo(x(56.5f), y(18f), x(58.5f), y(19.5f), x(58.5f), y(22f))
-                    cubicTo(x(56.5f), y(21f), x(54.5f), y(21.5f), x(53.5f), y(23.5f))
-                    cubicTo(x(52f), y(22f), x(52.5f), y(19f), x(54f), y(18f))
-                    close()
-                }
+                val crescentPath =
+                    Path().apply {
+                        moveTo(x(54f), y(18f))
+                        cubicTo(x(56.5f), y(18f), x(58.5f), y(19.5f), x(58.5f), y(22f))
+                        cubicTo(x(56.5f), y(21f), x(54.5f), y(21.5f), x(53.5f), y(23.5f))
+                        cubicTo(x(52f), y(22f), x(52.5f), y(19f), x(54f), y(18f))
+                        close()
+                    }
                 drawPath(
                     path = crescentPath,
-                    color = GoldSecondary.copy(alpha = alpha)
+                    color = GoldSecondary.copy(alpha = alpha),
                 )
 
                 // Lantern Base (Emerald with Gold Rim)
-                val basePath = Path().apply {
-                    moveTo(x(40f), y(64f))
-                    lineTo(x(68f), y(64f))
-                    lineTo(x(65f), y(71f))
-                    lineTo(x(43f), y(71f))
-                    close()
-                }
+                val basePath =
+                    Path().apply {
+                        moveTo(x(40f), y(64f))
+                        lineTo(x(68f), y(64f))
+                        lineTo(x(65f), y(71f))
+                        lineTo(x(43f), y(71f))
+                        close()
+                    }
                 drawPath(
                     path = basePath,
-                    color = EmeraldPrimary.copy(alpha = alpha)
+                    color = EmeraldPrimary.copy(alpha = alpha),
                 )
 
                 // Base Gold Trim
-                val rimPath = Path().apply {
-                    moveTo(x(43f), y(71f))
-                    lineTo(x(65f), y(71f))
-                    lineTo(x(63f), y(73.5f))
-                    lineTo(x(45f), y(73.5f))
-                    close()
-                }
+                val rimPath =
+                    Path().apply {
+                        moveTo(x(43f), y(71f))
+                        lineTo(x(65f), y(71f))
+                        lineTo(x(63f), y(73.5f))
+                        lineTo(x(45f), y(73.5f))
+                        close()
+                    }
                 drawPath(
                     path = rimPath,
-                    color = GoldSecondary.copy(alpha = alpha)
+                    color = GoldSecondary.copy(alpha = alpha),
                 )
 
                 // Inner Flame Core (Siraj Light - Gold & Spark)
-                val flamePath = Path().apply {
-                    moveTo(x(54f), y(45f))
-                    cubicTo(x(50f), y(50f), x(51f), y(55f), x(54f), y(58f))
-                    cubicTo(x(57f), y(55f), x(58f), y(50f), x(54f), y(45f))
-                    close()
-                }
+                val flamePath =
+                    Path().apply {
+                        moveTo(x(54f), y(45f))
+                        cubicTo(x(50f), y(50f), x(51f), y(55f), x(54f), y(58f))
+                        cubicTo(x(57f), y(55f), x(58f), y(50f), x(54f), y(45f))
+                        close()
+                    }
                 drawPath(
                     path = flamePath,
-                    color = GoldSecondary.copy(alpha = alpha)
+                    color = GoldSecondary.copy(alpha = alpha),
                 )
 
-                val innerSparkPath = Path().apply {
-                    moveTo(x(54f), y(48f))
-                    cubicTo(x(52.5f), y(51f), x(53f), y(53.5f), x(54f), y(55f))
-                    cubicTo(x(55f), y(53.5f), x(55.5f), y(51f), x(54f), y(48f))
-                    close()
-                }
+                val innerSparkPath =
+                    Path().apply {
+                        moveTo(x(54f), y(48f))
+                        cubicTo(x(52.5f), y(51f), x(53f), y(53.5f), x(54f), y(55f))
+                        cubicTo(x(55f), y(53.5f), x(55.5f), y(51f), x(54f), y(48f))
+                        close()
+                    }
                 drawPath(
                     path = innerSparkPath,
-                    color = LightSpark.copy(alpha = alpha)
+                    color = LightSpark.copy(alpha = alpha),
                 )
 
                 // Subtle Cyan Techno Node Dot
                 drawCircle(
                     color = CyanGlow.copy(alpha = alpha),
                     radius = 2.0f * (canvasWidth / 108f),
-                    center = Offset(x(54f), y(41f))
+                    center = Offset(x(54f), y(41f)),
                 )
             }
         }

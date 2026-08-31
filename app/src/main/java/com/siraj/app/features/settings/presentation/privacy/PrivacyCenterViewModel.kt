@@ -31,7 +31,7 @@ enum class PrivacyDialogType {
     DELETE_ACCOUNT_WARNING,
     DELETE_ACCOUNT_CONFIRM,
     RETENTION_POLICY_DETAILS,
-    TERMS_AND_PRIVACY_VIEWER
+    TERMS_AND_PRIVACY_VIEWER,
 }
 
 data class PrivacyCenterUiState(
@@ -44,14 +44,13 @@ data class PrivacyCenterUiState(
     val exportedFile: File? = null,
     val lastExportChecksum: String? = null,
     val actionMessage: String? = null,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
 )
 
 class PrivacyCenterViewModel(
     application: Application,
-    private val repository: PrivacyRepository = FirebasePrivacyRepositoryImpl(application)
+    private val repository: PrivacyRepository = FirebasePrivacyRepositoryImpl(application),
 ) : AndroidViewModel(application) {
-
     private val _uiState = MutableStateFlow(PrivacyCenterUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -62,7 +61,7 @@ class PrivacyCenterViewModel(
             _uiState.update {
                 it.copy(
                     overview = overview,
-                    isLoading = false
+                    isLoading = false,
                 )
             }
         }
@@ -76,7 +75,10 @@ class PrivacyCenterViewModel(
         _uiState.update { it.copy(activeDialog = PrivacyDialogType.NONE) }
     }
 
-    fun exportUserData(context: Context, userId: String) {
+    fun exportUserData(
+        context: Context,
+        userId: String,
+    ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isExporting = true, actionMessage = null, errorMessage = null) }
             val exportResult = repository.generateUserDataExport(userId)
@@ -91,14 +93,26 @@ class PrivacyCenterViewModel(
                             exportedFile = (fileResult as? Resource.Success)?.data,
                             lastExportChecksum = exportResult.data.sha256Checksum,
                             activeDialog = PrivacyDialogType.EXPORT_SUCCESS,
-                            actionMessage = "تم تجهيز ملف التصدير بنجاح وتأمينه بتشفير SHA-256"
+                            actionMessage = "تم تجهيز ملف التصدير بنجاح وتأمينه بتشفير SHA-256",
                         )
                     }
                 } else {
-                    _uiState.update { it.copy(isExporting = false, errorMessage = (jsonResult as? Resource.Error)?.message ?: "فشل استخراج التصدير") }
+                    _uiState.update {
+                        it.copy(
+                            isExporting = false,
+                            errorMessage =
+                                (jsonResult as? Resource.Error)?.message ?: "فشل استخراج التصدير",
+                        )
+                    }
                 }
             } else {
-                _uiState.update { it.copy(isExporting = false, errorMessage = (exportResult as? Resource.Error)?.message ?: "فشل توليد التصدير") }
+                _uiState.update {
+                    it.copy(
+                        isExporting = false,
+                        errorMessage =
+                            (exportResult as? Resource.Error)?.message ?: "فشل توليد التصدير",
+                    )
+                }
             }
         }
     }
@@ -112,13 +126,14 @@ class PrivacyCenterViewModel(
                     it.copy(
                         isPerformingAction = false,
                         activeDialog = PrivacyDialogType.NONE,
-                        actionMessage = "تم مسح سجل المشاهدة والاستماع بنجاح"
+                        actionMessage = "تم مسح سجل المشاهدة والاستماع بنجاح",
                     )
                 }
                 loadOverview(userId)
             } else {
                 _uiState.update {
-                    it.copy(isPerformingAction = false, errorMessage = (result as? Resource.Error)?.message ?: "فشل مسح السجل") }
+                    it.copy(isPerformingAction = false, errorMessage = (result as? Resource.Error)?.message ?: "فشل مسح السجل")
+                }
             }
         }
     }
@@ -132,12 +147,18 @@ class PrivacyCenterViewModel(
                     it.copy(
                         isPerformingAction = false,
                         activeDialog = PrivacyDialogType.NONE,
-                        actionMessage = "تم حذف كافة المقاطع المحملة محلياً"
+                        actionMessage = "تم حذف كافة المقاطع المحملة محلياً",
                     )
                 }
                 loadOverview(userId)
             } else {
-                _uiState.update { it.copy(isPerformingAction = false, errorMessage = (result as? Resource.Error)?.message ?: "فشل حذف التنزيلات") }
+                _uiState.update {
+                    it.copy(
+                        isPerformingAction = false,
+                        errorMessage =
+                            (result as? Resource.Error)?.message ?: "فشل حذف التنزيلات",
+                    )
+                }
             }
         }
     }
@@ -151,16 +172,25 @@ class PrivacyCenterViewModel(
                     it.copy(
                         isPerformingAction = false,
                         activeDialog = PrivacyDialogType.NONE,
-                        actionMessage = "تم تفريغ الذاكرة المؤقتة بنجاح"
+                        actionMessage = "تم تفريغ الذاكرة المؤقتة بنجاح",
                     )
                 }
             } else {
-                _uiState.update { it.copy(isPerformingAction = false, errorMessage = (result as? Resource.Error)?.message ?: "فشل تفريغ الذاكرة") }
+                _uiState.update {
+                    it.copy(
+                        isPerformingAction = false,
+                        errorMessage =
+                            (result as? Resource.Error)?.message ?: "فشل تفريغ الذاكرة",
+                    )
+                }
             }
         }
     }
 
-    fun deleteProject(projectId: String, userId: String) {
+    fun deleteProject(
+        projectId: String,
+        userId: String,
+    ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isPerformingAction = true) }
             val result = repository.deleteUserProject(projectId)
@@ -168,17 +198,26 @@ class PrivacyCenterViewModel(
                 _uiState.update {
                     it.copy(
                         isPerformingAction = false,
-                        actionMessage = "تم حذف المشروع نهائياً"
+                        actionMessage = "تم حذف المشروع نهائياً",
                     )
                 }
                 loadOverview(userId)
             } else {
-                _uiState.update { it.copy(isPerformingAction = false, errorMessage = (result as? Resource.Error)?.message ?: "فشل حذف المشروع") }
+                _uiState.update {
+                    it.copy(
+                        isPerformingAction = false,
+                        errorMessage =
+                            (result as? Resource.Error)?.message ?: "فشل حذف المشروع",
+                    )
+                }
             }
         }
     }
 
-    fun toggleAnalytics(enabled: Boolean, onUpdatePref: (UserPreferences) -> Unit) {
+    fun toggleAnalytics(
+        enabled: Boolean,
+        onUpdatePref: (UserPreferences) -> Unit,
+    ) {
         AnalyticsManager.setAnalyticsEnabled(enabled)
         onUpdatePref(UserPreferences(analyticsOptIn = enabled))
         _uiState.update {
@@ -186,7 +225,10 @@ class PrivacyCenterViewModel(
         }
     }
 
-    fun toggleCrashReports(enabled: Boolean, onUpdatePref: (UserPreferences) -> Unit) {
+    fun toggleCrashReports(
+        enabled: Boolean,
+        onUpdatePref: (UserPreferences) -> Unit,
+    ) {
         CrashMonitoringManager.setCrashlyticsCollectionEnabled(enabled)
         onUpdatePref(UserPreferences(crashReportsOptIn = enabled))
         _uiState.update {
@@ -194,21 +236,34 @@ class PrivacyCenterViewModel(
         }
     }
 
-    fun togglePersonalization(enabled: Boolean, onUpdatePref: (UserPreferences) -> Unit) {
+    fun togglePersonalization(
+        enabled: Boolean,
+        onUpdatePref: (UserPreferences) -> Unit,
+    ) {
         onUpdatePref(UserPreferences(personalizationOptIn = enabled))
         _uiState.update {
-            it.copy(actionMessage = if (enabled) "تم تفعيل تخصيص المحتوى والتوصيات" else "تم تعطيل التخصيص، سيتم عرض المحتوى زمنيًا ومحرريًا فقط")
+            it.copy(
+                actionMessage = if (enabled) "تم تفعيل تخصيص المحتوى والتوصيات" else "تم تعطيل التخصيص، سيتم عرض المحتوى زمنيًا ومحرريًا فقط",
+            )
         }
     }
 
-    fun toggleLocationOptIn(enabled: Boolean, onUpdatePref: (UserPreferences) -> Unit) {
+    fun toggleLocationOptIn(
+        enabled: Boolean,
+        onUpdatePref: (UserPreferences) -> Unit,
+    ) {
         onUpdatePref(UserPreferences(locationOptIn = enabled))
         _uiState.update {
-            it.copy(actionMessage = if (enabled) "تم تفعيل استخدام الموقع لمواقيت الصلاة والقبلة" else "تم تعطيل استخدام الموقع الجغرافي بالكامل")
+            it.copy(
+                actionMessage = if (enabled) "تم تفعيل استخدام الموقع لمواقيت الصلاة والقبلة" else "تم تعطيل استخدام الموقع الجغرافي بالكامل",
+            )
         }
     }
 
-    fun togglePreciseLocation(enabled: Boolean, onUpdatePref: (UserPreferences) -> Unit) {
+    fun togglePreciseLocation(
+        enabled: Boolean,
+        onUpdatePref: (UserPreferences) -> Unit,
+    ) {
         onUpdatePref(UserPreferences(preciseLocationOptIn = enabled))
         _uiState.update {
             it.copy(actionMessage = if (enabled) "تم تفعيل الموقع الدقيق (GPS)" else "تم تفعيل وضع الموقع التقريبي (حماية الخصوصية)")
@@ -220,28 +275,35 @@ class PrivacyCenterViewModel(
         fieldName: String,
         currentValue: String,
         requestedValue: String,
-        reason: String
+        reason: String,
     ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isPerformingAction = true) }
-            val req = DataCorrectionRequest(
-                userId = userId,
-                fieldName = fieldName,
-                currentValue = currentValue,
-                requestedValue = requestedValue,
-                reason = reason
-            )
+            val req =
+                DataCorrectionRequest(
+                    userId = userId,
+                    fieldName = fieldName,
+                    currentValue = currentValue,
+                    requestedValue = requestedValue,
+                    reason = reason,
+                )
             val result = repository.submitDataCorrection(req)
             if (result is Resource.Success) {
                 _uiState.update {
                     it.copy(
                         isPerformingAction = false,
                         activeDialog = PrivacyDialogType.NONE,
-                        actionMessage = "تم إرسال طلب تصحيح البيانات إلى فريق الخصوصية بنجاح"
+                        actionMessage = "تم إرسال طلب تصحيح البيانات إلى فريق الخصوصية بنجاح",
                     )
                 }
             } else {
-                _uiState.update { it.copy(isPerformingAction = false, errorMessage = (result as? Resource.Error)?.message ?: "فشل تقديم طلب التصحيح") }
+                _uiState.update {
+                    it.copy(
+                        isPerformingAction = false,
+                        errorMessage =
+                            (result as? Resource.Error)?.message ?: "فشل تقديم طلب التصحيح",
+                    )
+                }
             }
         }
     }
@@ -250,7 +312,7 @@ class PrivacyCenterViewModel(
         userId: String,
         reason: String,
         gracePeriodDays: Int = 14,
-        onScheduled: () -> Unit
+        onScheduled: () -> Unit,
     ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isPerformingAction = true) }
@@ -260,13 +322,19 @@ class PrivacyCenterViewModel(
                     it.copy(
                         isPerformingAction = false,
                         activeDialog = PrivacyDialogType.NONE,
-                        actionMessage = "تم تسجيل طلب حذف الحساب. ستبدأ فترة سماح لمدة $gracePeriodDays يوماً قبل الحذف النهائي والتطهير."
+                        actionMessage = "تم تسجيل طلب حذف الحساب. ستبدأ فترة سماح لمدة $gracePeriodDays يوماً قبل الحذف النهائي والتطهير.",
                     )
                 }
                 loadOverview(userId)
                 onScheduled()
             } else {
-                _uiState.update { it.copy(isPerformingAction = false, errorMessage = (result as? Resource.Error)?.message ?: "فشل تقديم طلب الحذف") }
+                _uiState.update {
+                    it.copy(
+                        isPerformingAction = false,
+                        errorMessage =
+                            (result as? Resource.Error)?.message ?: "فشل تقديم طلب الحذف",
+                    )
+                }
             }
         }
     }
@@ -279,12 +347,18 @@ class PrivacyCenterViewModel(
                 _uiState.update {
                     it.copy(
                         isPerformingAction = false,
-                        actionMessage = "تم إلغاء طلب حذف الحساب بنجاح واستعادة الحساب بالكامل."
+                        actionMessage = "تم إلغاء طلب حذف الحساب بنجاح واستعادة الحساب بالكامل.",
                     )
                 }
                 loadOverview(userId)
             } else {
-                _uiState.update { it.copy(isPerformingAction = false, errorMessage = (result as? Resource.Error)?.message ?: "فشل إلغاء طلب الحذف") }
+                _uiState.update {
+                    it.copy(
+                        isPerformingAction = false,
+                        errorMessage =
+                            (result as? Resource.Error)?.message ?: "فشل إلغاء طلب الحذف",
+                    )
+                }
             }
         }
     }
@@ -295,7 +369,7 @@ class PrivacyCenterViewModel(
 }
 
 class PrivacyCenterViewModelFactory(
-    private val application: Application
+    private val application: Application,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

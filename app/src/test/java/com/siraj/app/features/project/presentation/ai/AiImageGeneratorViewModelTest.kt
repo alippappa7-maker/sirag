@@ -8,7 +8,6 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -19,7 +18,6 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AiImageGeneratorViewModelTest {
-
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var aiService: AiImageGeneratorService
     private lateinit var projectRepository: ProjectRepository
@@ -32,9 +30,9 @@ class AiImageGeneratorViewModelTest {
         aiService = mockk(relaxed = true)
         projectRepository = mockk(relaxed = true)
         assetRepository = mockk(relaxed = true)
-        
-        coEvery { projectRepository.getProject(any()) } returns Resource.Success(mockk(relaxed=true))
-        
+
+        coEvery { projectRepository.getProject(any()) } returns Resource.Success(mockk(relaxed = true))
+
         viewModel = AiImageGeneratorViewModel("proj1", null, aiService, projectRepository, assetRepository)
     }
 

@@ -4,7 +4,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class FeatureFlagManagerTest {
-
     @Test
     fun `test feature flags have safe default fallbacks when offline`() {
         // Even without Firebase initialized, feature flag queries must return sensible defaults and not throw

@@ -22,7 +22,7 @@ fun SharedContentRouterScreen(
     onNavigateToProject: (String) -> Unit,
     onNavigateToAudio: (String) -> Unit,
     onNavigateToQuran: () -> Unit,
-    onNavigateHome: () -> Unit
+    onNavigateHome: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -48,17 +48,19 @@ fun SharedContentRouterScreen(
         topBar = {
             TopAppBar(
                 title = { Text("فتح الرابط") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                    ),
             )
-        }
+        },
     ) { padding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+            contentAlignment = Alignment.Center,
         ) {
             when (state) {
                 is SharedContentState.Loading -> {
@@ -68,7 +70,7 @@ fun SharedContentRouterScreen(
                         Text(
                             "جاري التحقق من الرابط...",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -76,26 +78,26 @@ fun SharedContentRouterScreen(
                     val message = (state as SharedContentState.Error).message
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(32.dp)
+                        modifier = Modifier.padding(32.dp),
                     ) {
                         Icon(
                             imageVector = Icons.Default.ErrorOutline,
                             contentDescription = "Error",
                             tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.size(64.dp)
+                            modifier = Modifier.size(64.dp),
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = message,
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurface,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
                         )
                         Spacer(modifier = Modifier.height(32.dp))
                         SirajButton(
                             text = "العودة للرئيسية",
                             onClick = onNavigateHome,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         )
                     }
                 }

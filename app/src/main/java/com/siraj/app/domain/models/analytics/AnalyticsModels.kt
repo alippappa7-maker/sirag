@@ -1,6 +1,8 @@
 package com.siraj.app.domain.models.analytics
 
-enum class AnalyticsEvent(val eventName: String) {
+enum class AnalyticsEvent(
+    val eventName: String,
+) {
     APP_OPENED("app_opened"),
     ONBOARDING_COMPLETED("onboarding_completed"),
     PROJECT_CREATED("project_created"),
@@ -14,7 +16,7 @@ enum class AnalyticsEvent(val eventName: String) {
     VIDEO_STARTED("video_started"),
     SUBSCRIPTION_VIEWED("subscription_viewed"),
     PURCHASE_COMPLETED("purchase_completed"),
-    ERROR_OCCURRED("error_occurred")
+    ERROR_OCCURRED("error_occurred"),
 }
 
 data class AnalyticsLog(
@@ -22,5 +24,5 @@ data class AnalyticsLog(
     val event: String = "",
     val hashedUserId: String? = null,
     val timestamp: Long = System.currentTimeMillis(),
-    val properties: Map<String, String> = emptyMap()
+    val properties: Map<String, String> = emptyMap(),
 )

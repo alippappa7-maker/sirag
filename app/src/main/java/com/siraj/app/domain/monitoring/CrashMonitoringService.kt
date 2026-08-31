@@ -8,7 +8,11 @@ interface CrashMonitoringService {
     /**
      * Initializes crash monitoring with environment configuration and metadata.
      */
-    fun initialize(environment: String, appVersion: String, buildNumber: String)
+    fun initialize(
+        environment: String,
+        appVersion: String,
+        buildNumber: String,
+    )
 
     /**
      * Toggles Crashlytics data collection based on environment and user privacy opt-in.
@@ -28,7 +32,7 @@ interface CrashMonitoringService {
         category: ErrorCategory = ErrorCategory.UNKNOWN,
         severity: ErrorSeverity = ErrorSeverity.ERROR,
         requestId: String? = null,
-        customKeys: Map<String, Any> = emptyMap()
+        customKeys: Map<String, Any> = emptyMap(),
     )
 
     /**
@@ -38,33 +42,48 @@ interface CrashMonitoringService {
     fun logBreadcrumb(
         message: String,
         type: BreadcrumbType = BreadcrumbType.SYSTEM_EVENT,
-        attributes: Map<String, String> = emptyMap()
+        attributes: Map<String, String> = emptyMap(),
     )
 
     /**
      * Sets a custom string key-value pair in Crashlytics.
      */
-    fun setCustomKey(key: String, value: String)
+    fun setCustomKey(
+        key: String,
+        value: String,
+    )
 
     /**
      * Sets a custom boolean key-value pair in Crashlytics.
      */
-    fun setCustomKey(key: String, value: Boolean)
+    fun setCustomKey(
+        key: String,
+        value: Boolean,
+    )
 
     /**
      * Sets a custom integer key-value pair in Crashlytics.
      */
-    fun setCustomKey(key: String, value: Int)
+    fun setCustomKey(
+        key: String,
+        value: Int,
+    )
 
     /**
      * Sets a custom long key-value pair in Crashlytics.
      */
-    fun setCustomKey(key: String, value: Long)
+    fun setCustomKey(
+        key: String,
+        value: Long,
+    )
 
     /**
      * Sets a custom double key-value pair in Crashlytics.
      */
-    fun setCustomKey(key: String, value: Double)
+    fun setCustomKey(
+        key: String,
+        value: Double,
+    )
 
     /**
      * Sets an anonymized / hashed identifier for the user session.

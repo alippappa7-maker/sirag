@@ -1,12 +1,11 @@
 @file:kotlin.OptIn(
     androidx.compose.material3.ExperimentalMaterial3Api::class,
     androidx.media3.common.util.UnstableApi::class,
-    androidx.compose.foundation.ExperimentalFoundationApi::class
+    androidx.compose.foundation.ExperimentalFoundationApi::class,
 )
 
 package com.siraj.app.features.flashes.presentation
 
-import android.content.Context
 import android.net.Uri
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -64,7 +63,7 @@ fun FlashesScreen(
     safetyViewModel: SafetyViewModel,
     currentUserId: String,
     onNavigateBack: () -> Unit,
-    onNavigateToDetails: (String) -> Unit
+    onNavigateToDetails: (String) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     val pagerState = rememberPagerState(pageCount = { state.flashes.size })
@@ -84,7 +83,7 @@ fun FlashesScreen(
         } else if (state.error != null && state.flashes.isEmpty()) {
             ErrorScreen(
                 message = state.error ?: "خطأ",
-                onRetry = { viewModel.loadFlashes(isRefresh = true) }
+                onRetry = { viewModel.loadFlashes(isRefresh = true) },
             )
         } else if (state.flashes.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -94,7 +93,7 @@ fun FlashesScreen(
             VerticalPager(
                 state = pagerState,
                 modifier = Modifier.fillMaxSize(),
-                key = { state.flashes[it].id }
+                key = { state.flashes[it].id },
             ) { page ->
                 val flash = state.flashes[page]
                 val isVisible = pagerState.currentPage == page
@@ -113,24 +112,24 @@ fun FlashesScreen(
                     onReport = { showReportDialog = true },
                     onBlock = { interactionViewModel.blockUser(currentUserId, flash.creatorId) },
                     onHide = { interactionViewModel.hideContent(currentUserId, flash.id) },
-                    onOpenDetails = { onNavigateToDetails(flash.id) }
+                    onOpenDetails = { onNavigateToDetails(flash.id) },
                 )
-                
+
                 ReportDialog(
                     showDialog = showReportDialog,
                     onDismiss = { showReportDialog = false },
-                    onSubmit = { type, desc -> 
+                    onSubmit = { type, desc ->
                         safetyViewModel.submitReport(
                             reporterId = currentUserId,
                             targetType = ReportTargetType.FLASH,
                             targetId = flash.id,
                             targetOwnerId = flash.creatorId,
                             reportType = type,
-                            description = desc
+                            description = desc,
                         )
-                    }
+                    },
                 )
-                
+
                 LaunchedEffect(isVisible) {
                     if (isVisible) {
                         // Debounce view logging to prevent fake views when fast scrolling
@@ -143,11 +142,12 @@ fun FlashesScreen(
 
         // Top Bar
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 48.dp, start = 16.dp, end = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 48.dp, start = 16.dp, end = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = onNavigateBack) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
@@ -156,13 +156,13 @@ fun FlashesScreen(
                 "الومضات",
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
             IconButton(onClick = { viewModel.toggleMute() }) {
                 Icon(
                     imageVector = if (state.isMuted) Icons.Default.VolumeOff else Icons.Default.VolumeUp,
                     contentDescription = "Mute Toggle",
-                    tint = Color.White
+                    tint = Color.White,
                 )
             }
         }
@@ -182,7 +182,7 @@ fun FlashFeedItem(
     onReport: () -> Unit,
     onBlock: () -> Unit,
     onHide: () -> Unit,
-    onOpenDetails: () -> Unit
+    onOpenDetails: () -> Unit,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -193,11 +193,12 @@ fun FlashFeedItem(
 
     // Initialize player
     DisposableEffect(context, flash.videoUrl) {
-        val player = ExoPlayer.Builder(context).build().apply {
-            setMediaItem(MediaItem.fromUri(Uri.parse(flash.videoUrl)))
-            repeatMode = Player.REPEAT_MODE_ONE
-            prepare()
-        }
+        val player =
+            ExoPlayer.Builder(context).build().apply {
+                setMediaItem(MediaItem.fromUri(Uri.parse(flash.videoUrl)))
+                repeatMode = Player.REPEAT_MODE_ONE
+                prepare()
+            }
         exoPlayer = player
 
         onDispose {
@@ -226,15 +227,16 @@ fun FlashFeedItem(
 
     // Lifecycle
     DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_PAUSE) {
-                exoPlayer?.pause()
-                isPlaying = false
-            } else if (event == Lifecycle.Event.ON_RESUME && isVisible) {
-                exoPlayer?.play()
-                isPlaying = true
+        val observer =
+            LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_PAUSE) {
+                    exoPlayer?.pause()
+                    isPlaying = false
+                } else if (event == Lifecycle.Event.ON_RESUME && isVisible) {
+                    exoPlayer?.play()
+                    isPlaying = true
+                }
             }
-        }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
@@ -250,25 +252,27 @@ fun FlashFeedItem(
                         this.player = player
                         useController = false
                         resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-                        layoutParams = FrameLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT
-                        )
+                        layoutParams =
+                            FrameLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                            )
                     }
                 },
-                modifier = Modifier
-                    .matchParentSize()
-                    .clickable {
-                        if (isPlaying) {
-                            player.pause()
-                            isPlaying = false
-                            showPlayIcon = true
-                        } else {
-                            player.play()
-                            isPlaying = true
-                            showPlayIcon = false
-                        }
-                    }
+                modifier =
+                    Modifier
+                        .matchParentSize()
+                        .clickable {
+                            if (isPlaying) {
+                                player.pause()
+                                isPlaying = false
+                                showPlayIcon = true
+                            } else {
+                                player.play()
+                                isPlaying = true
+                                showPlayIcon = false
+                            }
+                        },
             )
         }
 
@@ -278,7 +282,7 @@ fun FlashFeedItem(
                 model = flash.thumbnailUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.matchParentSize()
+                modifier = Modifier.matchParentSize(),
             )
         }
 
@@ -287,51 +291,54 @@ fun FlashFeedItem(
             visible = showPlayIcon,
             enter = fadeIn(),
             exit = fadeOut(),
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier.align(Alignment.Center),
         ) {
             Icon(
                 imageVector = Icons.Default.PlayArrow,
                 contentDescription = "Play",
                 tint = Color.White.copy(alpha = 0.7f),
-                modifier = Modifier.size(72.dp)
+                modifier = Modifier.size(72.dp),
             )
         }
 
         // UI Overlay
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    androidx.compose.ui.graphics.Brush.verticalGradient(
-                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f)),
-                        startY = 500f
-                    )
-                )
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(
+                        androidx.compose.ui.graphics.Brush.verticalGradient(
+                            colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f)),
+                            startY = 500f,
+                        ),
+                    ),
         )
 
         // Bottom Content
         Column(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .fillMaxWidth(0.8f)
-                .padding(16.dp)
-                .padding(bottom = 32.dp)
+            modifier =
+                Modifier
+                    .align(Alignment.BottomStart)
+                    .fillMaxWidth(0.8f)
+                    .padding(16.dp)
+                    .padding(bottom = 32.dp),
         ) {
             // Trust Card
             if (flash.sourceInfo != null && flash.publishingState == FlashPublishingState.APPROVED) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f))
-                        .clickable { onOpenDetails() }
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                    modifier =
+                        Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f))
+                            .clickable { onOpenDetails() }
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
                 ) {
                     Icon(
                         Icons.Default.VerifiedUser,
                         contentDescription = "Verified",
                         tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.size(14.dp)
+                        modifier = Modifier.size(14.dp),
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
@@ -339,7 +346,7 @@ fun FlashFeedItem(
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -349,14 +356,14 @@ fun FlashFeedItem(
                 text = "@${flash.creatorName}",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = flash.title,
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.White,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -364,26 +371,28 @@ fun FlashFeedItem(
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White,
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         }
 
         // Right Actions Bar
         Column(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 16.dp, bottom = 48.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 16.dp, bottom = 48.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             // Profile Image (Mock)
             Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary)
-                    .clickable { /* open profile */ },
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary)
+                        .clickable { /* open profile */ },
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(Icons.Default.Person, contentDescription = "Creator", tint = Color.White)
             }
@@ -392,60 +401,78 @@ fun FlashFeedItem(
                 icon = if (flash.isLikedByMe) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
                 tint = if (flash.isLikedByMe) Color.Red else Color.White,
                 label = flash.metrics.likes.toString(),
-                onClick = onLike
+                onClick = onLike,
             )
 
             ActionItem(
                 icon = if (flash.isSavedByMe) Icons.Default.Bookmark else Icons.Outlined.BookmarkBorder,
                 tint = if (flash.isSavedByMe) MaterialTheme.colorScheme.primary else Color.White,
                 label = flash.metrics.saves.toString(),
-                onClick = onSave
+                onClick = onSave,
             )
 
             ActionItem(
                 icon = Icons.Default.Share,
                 tint = Color.White,
                 label = "مشاركة",
-                onClick = onShare
+                onClick = onShare,
             )
-            
+
             var showOptions by remember { mutableStateOf(false) }
 
             ActionItem(
                 icon = Icons.Default.MoreVert,
                 tint = Color.White,
                 label = "",
-                onClick = { showOptions = true }
+                onClick = { showOptions = true },
             )
 
             if (showOptions) {
                 ModalBottomSheet(
-                    onDismissRequest = { showOptions = false }
+                    onDismissRequest = { showOptions = false },
                 ) {
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
-                        Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.options), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                        
-                        TextButton(onClick = { showOptions = false; onFollow() }, modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            androidx.compose.ui.res
+                                .stringResource(com.siraj.app.R.string.options),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+
+                        TextButton(onClick = {
+                            showOptions = false
+                            onFollow()
+                        }, modifier = Modifier.fillMaxWidth()) {
                             Text("متابعة @${flash.creatorName}")
                         }
-                        
-                        TextButton(onClick = { showOptions = false; onHide() }, modifier = Modifier.fillMaxWidth()) {
+
+                        TextButton(onClick = {
+                            showOptions = false
+                            onHide()
+                        }, modifier = Modifier.fillMaxWidth()) {
                             Text("إخفاء هذا المحتوى")
                         }
-                        
-                        TextButton(onClick = { showOptions = false; onReport() }, modifier = Modifier.fillMaxWidth()) {
+
+                        TextButton(onClick = {
+                            showOptions = false
+                            onReport()
+                        }, modifier = Modifier.fillMaxWidth()) {
                             Text("إبلاغ عن المحتوى", color = MaterialTheme.colorScheme.error)
                         }
-                        
-                        TextButton(onClick = { showOptions = false; onBlock() }, modifier = Modifier.fillMaxWidth()) {
+
+                        TextButton(onClick = {
+                            showOptions = false
+                            onBlock()
+                        }, modifier = Modifier.fillMaxWidth()) {
                             Text("حظر المستخدم", color = MaterialTheme.colorScheme.error)
                         }
-                        
+
                         Spacer(modifier = Modifier.height(32.dp))
                     }
                 }
@@ -459,24 +486,24 @@ fun ActionItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     tint: Color,
     label: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable(onClick = onClick)
+        modifier = Modifier.clickable(onClick = onClick),
     ) {
         Icon(
             imageVector = icon,
             contentDescription = label,
             tint = tint,
-            modifier = Modifier.size(32.dp)
+            modifier = Modifier.size(32.dp),
         )
         if (label.isNotBlank()) {
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelMedium,
-                color = Color.White
+                color = Color.White,
             )
         }
     }

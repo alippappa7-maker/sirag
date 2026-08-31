@@ -9,7 +9,6 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class TesterDistributionUnitTest {
-
     private class FakeTesterDistributionRepository : BetaTesterDistributionRepository {
         var registeredTesterId: String? = null
         var lastCompletedJourney: Pair<String, String>? = null
@@ -23,7 +22,7 @@ class TesterDistributionUnitTest {
             deviceModel: String,
             osVersion: String,
             appVersion: String,
-            buildCode: Int
+            buildCode: Int,
         ): Result<BetaTesterProfile> {
             registeredTesterId = testerId
             return Result.success(
@@ -34,13 +33,13 @@ class TesterDistributionUnitTest {
                     deviceModel = deviceModel,
                     osVersion = osVersion,
                     installedAppVersion = appVersion,
-                    installedBuildCode = buildCode
-                )
+                    installedBuildCode = buildCode,
+                ),
             )
         }
 
-        override fun getTesterProfile(userId: String): Flow<BetaTesterProfile?> {
-            return flowOf(
+        override fun getTesterProfile(userId: String): Flow<BetaTesterProfile?> =
+            flowOf(
                 BetaTesterProfile(
                     testerId = userId,
                     email = "test@siraj.app",
@@ -52,12 +51,14 @@ class TesterDistributionUnitTest {
                     osVersion = "Android 14",
                     installedAppVersion = "1.0.0-beta.1",
                     installedBuildCode = 100,
-                    completedJourneys = listOf("journey_quran_search")
-                )
+                    completedJourneys = listOf("journey_quran_search"),
+                ),
             )
-        }
 
-        override suspend fun recordJourneyCompletion(testerId: String, journeyId: String): Result<Unit> {
+        override suspend fun recordJourneyCompletion(
+            testerId: String,
+            journeyId: String,
+        ): Result<Unit> {
             lastCompletedJourney = Pair(testerId, journeyId)
             return Result.success(Unit)
         }
@@ -67,25 +68,27 @@ class TesterDistributionUnitTest {
             return Result.success(survey.id)
         }
 
-        override suspend fun revokeTesterAccess(testerId: String, reason: String): Result<Unit> {
+        override suspend fun revokeTesterAccess(
+            testerId: String,
+            reason: String,
+        ): Result<Unit> {
             revokedTesterId = testerId
             return Result.success(Unit)
         }
 
-        override fun getCriticalJourneys(): List<CriticalJourney> {
-            return listOf(
+        override fun getCriticalJourneys(): List<CriticalJourney> =
+            listOf(
                 CriticalJourney(
                     id = "journey_ideation_to_video",
                     title = "إنتاج مشهد وسيناريو من الفكرة",
                     description = "توليد فكرة، صياغة سيناريو، وتحويله إلى مشاهد",
                     targetRoute = "studio",
-                    iconName = "VideoLibrary"
-                )
+                    iconName = "VideoLibrary",
+                ),
             )
-        }
 
-        override fun getReleaseNotes(): List<BetaReleaseNote> {
-            return listOf(
+        override fun getReleaseNotes(): List<BetaReleaseNote> =
+            listOf(
                 BetaReleaseNote(
                     versionName = "1.0.0-beta.1",
                     buildCode = 100,
@@ -95,23 +98,21 @@ class TesterDistributionUnitTest {
                     highlights = listOf("إطلاق نسخة Beta"),
                     fixedIssues = listOf("تحسين الأداء"),
                     knownLimitations = listOf("معاينة الفيديو تجريبية"),
-                    targetGroups = listOf(TesterGroup.COMMUNITY_BETA)
-                )
+                    targetGroups = listOf(TesterGroup.COMMUNITY_BETA),
+                ),
             )
-        }
 
-        override fun getDistributionChannels(): List<DistributionChannelInfo> {
-            return listOf(
+        override fun getDistributionChannels(): List<DistributionChannelInfo> =
+            listOf(
                 DistributionChannelInfo(
                     platform = "Android",
                     channelName = "Firebase App Distribution",
                     methodTitle = "تثبيت النسخة التجريبية لأجهزة أندرويد",
                     stepGuide = listOf("قبول الدعوة", "تنزيل App Tester"),
                     updateInstructions = "تصل التحديثات تلقائياً",
-                    supportNote = "تواصل مع فريق التطوير"
-                )
+                    supportNote = "تواصل مع فريق التطوير",
+                ),
             )
-        }
     }
 
     @Test
@@ -133,51 +134,54 @@ class TesterDistributionUnitTest {
     }
 
     @Test
-    fun testRepositoryRegisterAndJourneyTracking() = runTest {
-        val fakeRepo = FakeTesterDistributionRepository()
-        
-        // 1. Register Session
-        val registerResult = fakeRepo.registerTesterSession(
-            testerId = "tester_123",
-            email = "tester@siraj.app",
-            name = "مختبر تجريبي",
-            deviceModel = "Samsung S24",
-            osVersion = "Android 14",
-            appVersion = "1.0.0-beta.1",
-            buildCode = 100
-        )
-        assertTrue(registerResult.isSuccess)
-        assertEquals("tester_123", fakeRepo.registeredTesterId)
+    fun testRepositoryRegisterAndJourneyTracking() =
+        runTest {
+            val fakeRepo = FakeTesterDistributionRepository()
 
-        // 2. Complete a Critical Journey
-        val journeyResult = fakeRepo.recordJourneyCompletion("tester_123", "journey_ideation_to_video")
-        assertTrue(journeyResult.isSuccess)
-        assertEquals(Pair("tester_123", "journey_ideation_to_video"), fakeRepo.lastCompletedJourney)
+            // 1. Register Session
+            val registerResult =
+                fakeRepo.registerTesterSession(
+                    testerId = "tester_123",
+                    email = "tester@siraj.app",
+                    name = "مختبر تجريبي",
+                    deviceModel = "Samsung S24",
+                    osVersion = "Android 14",
+                    appVersion = "1.0.0-beta.1",
+                    buildCode = 100,
+                )
+            assertTrue(registerResult.isSuccess)
+            assertEquals("tester_123", fakeRepo.registeredTesterId)
 
-        // 3. Submit Survey
-        val survey = TesterExperienceSurvey(
-            id = "srv_1",
-            testerId = "tester_123",
-            testerEmail = "tester@siraj.app",
-            overallRating = 5,
-            easeOfUseRating = 5,
-            shariaContentRating = 5,
-            performanceRating = 4,
-            mostValuableFeature = "المحراب والبحث القرآني",
-            biggestPainPoint = "تصدير الفيديو يستغرق وقتاً",
-            generalSuggestions = "إضافة مزيد من أصوات التلاوة"
-        )
-        val surveyResult = fakeRepo.submitExperienceSurvey(survey)
-        assertTrue(surveyResult.isSuccess)
-        assertEquals("srv_1", surveyResult.getOrNull())
-        assertEquals("srv_1", fakeRepo.lastSubmittedSurvey?.id)
-        assertEquals(5, fakeRepo.lastSubmittedSurvey?.overallRating)
+            // 2. Complete a Critical Journey
+            val journeyResult = fakeRepo.recordJourneyCompletion("tester_123", "journey_ideation_to_video")
+            assertTrue(journeyResult.isSuccess)
+            assertEquals(Pair("tester_123", "journey_ideation_to_video"), fakeRepo.lastCompletedJourney)
 
-        // 4. Revoke access
-        val revokeResult = fakeRepo.revokeTesterAccess("tester_123", "User opted out")
-        assertTrue(revokeResult.isSuccess)
-        assertEquals("tester_123", fakeRepo.revokedTesterId)
-    }
+            // 3. Submit Survey
+            val survey =
+                TesterExperienceSurvey(
+                    id = "srv_1",
+                    testerId = "tester_123",
+                    testerEmail = "tester@siraj.app",
+                    overallRating = 5,
+                    easeOfUseRating = 5,
+                    shariaContentRating = 5,
+                    performanceRating = 4,
+                    mostValuableFeature = "المحراب والبحث القرآني",
+                    biggestPainPoint = "تصدير الفيديو يستغرق وقتاً",
+                    generalSuggestions = "إضافة مزيد من أصوات التلاوة",
+                )
+            val surveyResult = fakeRepo.submitExperienceSurvey(survey)
+            assertTrue(surveyResult.isSuccess)
+            assertEquals("srv_1", surveyResult.getOrNull())
+            assertEquals("srv_1", fakeRepo.lastSubmittedSurvey?.id)
+            assertEquals(5, fakeRepo.lastSubmittedSurvey?.overallRating)
+
+            // 4. Revoke access
+            val revokeResult = fakeRepo.revokeTesterAccess("tester_123", "User opted out")
+            assertTrue(revokeResult.isSuccess)
+            assertEquals("tester_123", fakeRepo.revokedTesterId)
+        }
 
     @Test
     fun testDistributionChannelsAndReleaseNotesInvariants() {

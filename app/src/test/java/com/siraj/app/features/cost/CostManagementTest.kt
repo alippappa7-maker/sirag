@@ -55,10 +55,10 @@ class CostManagementTest {
 
         assertTrue(reserve2 is Resource.Success)
         val txn2 = (reserve2 as Resource.Success).data
-        
+
         // Assert we get the same transaction back and metrics only update once
         assertEquals(txn1.transactionId, txn2.transactionId)
-        
+
         val usage = repository.getWorkspaceUsage(workspaceId).first()
         assertEquals(1.0, usage.usage.currentDailyUsage, 0.001)
     } */
@@ -92,7 +92,7 @@ class CostManagementTest {
     fun `test emergency provider switch prevents operations`() = runTest {
         // Disable Gemini
         repository.setProviderEmergencyStatus(CostProvider.GEMINI_API, false, "admin_99")
-        
+
         val estimate = repository.estimateCost(CostProvider.GEMINI_API, OperationType.TEXT_GENERATION, 100.0)
         assertTrue(estimate is Resource.Error)
 

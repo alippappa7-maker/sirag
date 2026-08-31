@@ -13,7 +13,7 @@ fun SirajConfirmationDialog(
     confirmText: String = "تأكيد",
     dismissText: String = "إلغاء",
     onConfirm: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -31,6 +31,6 @@ fun SirajConfirmationDialog(
         },
         containerColor = MaterialTheme.colorScheme.surface,
         titleContentColor = MaterialTheme.colorScheme.onSurface,
-        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }

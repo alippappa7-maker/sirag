@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.siraj.app.core.history.ActivityHistoryManager
 import com.siraj.app.data.repository.FirebaseActivityHistoryRepositoryImpl
-import com.siraj.app.domain.models.history.ActivityEntityType
 import com.siraj.app.domain.models.history.ActivityHistoryPreferences
 import com.siraj.app.domain.models.history.ActivityTab
 import com.siraj.app.domain.models.history.RetentionPolicy
@@ -28,15 +27,14 @@ data class ActivityHistoryUiState(
     val hasMore: Boolean = true,
     val searchQuery: String = "",
     val message: String? = null,
-    val error: String? = null
+    val error: String? = null,
 )
 
 class ActivityHistoryViewModel(
     application: Application,
     private val repository: ActivityHistoryRepository = FirebaseActivityHistoryRepositoryImpl(application),
-    private val userId: String = "user_default"
+    private val userId: String = "user_default",
 ) : AndroidViewModel(application) {
-
     private val _uiState = MutableStateFlow(ActivityHistoryUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -82,18 +80,18 @@ class ActivityHistoryViewModel(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            repository.observeHistory(userId, tab, limit = limit, offset = offset)
+            repository
+                .observeHistory(userId, tab, limit = limit, offset = offset)
                 .catch { err ->
                     _uiState.update { it.copy(isLoading = false, error = "حدث خطأ في تحميل السجل: ${err.message}") }
-                }
-                .collect { list ->
+                }.collect { list ->
                     _uiState.update { state ->
                         val combined = if (reset) list else (state.items + list).distinctBy { it.id }
                         state.copy(
                             items = combined,
                             isLoading = false,
                             currentOffset = if (reset) list.size else state.currentOffset + list.size,
-                            hasMore = list.size >= limit
+                            hasMore = list.size >= limit,
                         )
                     }
                 }
@@ -112,7 +110,7 @@ class ActivityHistoryViewModel(
             _uiState.update {
                 it.copy(
                     preferences = updated,
-                    message = if (enabled) "تم تفعيل حفظ سجل المشاهدة والاستماع" else "تم إيقاف حفظ السجل مؤقتاً"
+                    message = if (enabled) "تم تفعيل حفظ سجل المشاهدة والاستماع" else "تم إيقاف حفظ السجل مؤقتاً",
                 )
             }
         }
@@ -125,7 +123,7 @@ class ActivityHistoryViewModel(
             _uiState.update {
                 it.copy(
                     preferences = updated,
-                    message = if (enabled) "تم تفعيل المزامنة السحابية للسجل" else "تم إيقاف المزامنة السحابية"
+                    message = if (enabled) "تم تفعيل المزامنة السحابية للسجل" else "تم إيقاف المزامنة السحابية",
                 )
             }
         }
@@ -138,7 +136,7 @@ class ActivityHistoryViewModel(
             _uiState.update {
                 it.copy(
                     preferences = updated,
-                    message = "تم تحديث سياسة الاحتفاظ بالسجل: ${policy.titleArabic}"
+                    message = "تم تحديث سياسة الاحتفاظ بالسجل: ${policy.titleArabic}",
                 )
             }
         }
@@ -151,7 +149,7 @@ class ActivityHistoryViewModel(
                 state.copy(
                     items = state.items.filterNot { it.id == item.id },
                     recentResumeItem = if (state.recentResumeItem?.id == item.id) null else state.recentResumeItem,
-                    message = "تم حذف العنصر من السجل"
+                    message = "تم حذف العنصر من السجل",
                 )
             }
         }
@@ -163,10 +161,11 @@ class ActivityHistoryViewModel(
             _uiState.update { state ->
                 val newWatchLaterState = !item.isWatchLater
                 state.copy(
-                    items = state.items.map {
-                        if (it.id == item.id) it.copy(isWatchLater = newWatchLaterState) else it
-                    },
-                    message = if (newWatchLaterState) "تمت الإضافة إلى المتابعة لاحقاً" else "تمت الإزالة من المتابعة لاحقاً"
+                    items =
+                        state.items.map {
+                            if (it.id == item.id) it.copy(isWatchLater = newWatchLaterState) else it
+                        },
+                    message = if (newWatchLaterState) "تمت الإضافة إلى المتابعة لاحقاً" else "تمت الإزالة من المتابعة لاحقاً",
                 )
             }
         }
@@ -178,10 +177,11 @@ class ActivityHistoryViewModel(
             _uiState.update { state ->
                 val newDownloadState = !item.isDownloaded
                 state.copy(
-                    items = state.items.map {
-                        if (it.id == item.id) it.copy(isDownloaded = newDownloadState) else it
-                    },
-                    message = if (newDownloadState) "تمت الإضافة إلى سجل التنزيلات" else "تمت الإزالة من سجل التنزيلات"
+                    items =
+                        state.items.map {
+                            if (it.id == item.id) it.copy(isDownloaded = newDownloadState) else it
+                        },
+                    message = if (newDownloadState) "تمت الإضافة إلى سجل التنزيلات" else "تمت الإزالة من سجل التنزيلات",
                 )
             }
         }
@@ -194,7 +194,7 @@ class ActivityHistoryViewModel(
                 it.copy(
                     items = emptyList(),
                     recentResumeItem = null,
-                    message = "تم مسح سجل النشاط بالكامل بنجاح"
+                    message = "تم مسح سجل النشاط بالكامل بنجاح",
                 )
             }
         }
@@ -233,7 +233,8 @@ class ActivityHistoryViewModel(
         viewModelScope.launch {
             try {
                 repository.applyRetentionPolicy(userId)
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
     }
 
@@ -244,7 +245,7 @@ class ActivityHistoryViewModel(
 
 class ActivityHistoryViewModelFactory(
     private val application: Application,
-    private val userId: String = "user_default"
+    private val userId: String = "user_default",
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

@@ -5,7 +5,6 @@ import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.siraj.app.core.utils.Resource
 import com.siraj.app.core.error.ErrorHandler
-import com.siraj.app.core.error.AppError
 import com.siraj.app.domain.models.UserProfile
 import com.siraj.app.domain.models.UserRole
 import com.siraj.app.domain.models.UserPreferences
@@ -21,81 +20,99 @@ import kotlinx.coroutines.tasks.await
 
 class FirebaseAuthRepositoryImpl(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
 ) : AuthRepository {
+    override val currentUser: Flow<UserProfile?> =
+        callbackFlow {
+            var listenerRegistration: com.google.firebase.firestore.ListenerRegistration? = null
 
-    override val currentUser: Flow<UserProfile?> = callbackFlow {
-        var listenerRegistration: com.google.firebase.firestore.ListenerRegistration? = null
-        
-        val authListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-            val user = firebaseAuth.currentUser
-            if (user != null) {
-                listenerRegistration?.remove()
-                listenerRegistration = firestore.collection("users").document(user.uid)
-                    .addSnapshotListener { snapshot, error ->
-                        if (error != null) {
-                            trySend(null)
-                            return@addSnapshotListener
-                        }
-                        if (snapshot != null && snapshot.exists()) {
-                            val name = snapshot.getString("name") ?: user.displayName ?: "مستخدم"
-                            val email = snapshot.getString("email") ?: user.email ?: ""
-                            val avatarUrl = snapshot.getString("avatarUrl")
-                            val roleStr = snapshot.getString("role") ?: "USER"
-                            val role = try { UserRole.valueOf(roleStr) } catch(e: Exception) { UserRole.USER }
-                            
-                            val prefMap = snapshot.get("preferences") as? Map<String, Any>
-                            val preferences = if (prefMap != null) {
-                                UserPreferences(
-                                    themeMode = ThemeMode.valueOf(prefMap["themeMode"] as? String ?: "SYSTEM"),
-                                    highContrastMode = prefMap["highContrastMode"] as? Boolean ?: false,
-                                    fontScaleMultiplier = (prefMap["fontScaleMultiplier"] as? Number)?.toFloat() ?: 1.0f,
-                                    reduceMotion = prefMap["reduceMotion"] as? Boolean ?: false,
-                                    showCaptions = prefMap["showCaptions"] as? Boolean ?: true,
-                                    showTranscripts = prefMap["showTranscripts"] as? Boolean ?: true,
-                                    screenReaderOptimized = prefMap["screenReaderOptimized"] as? Boolean ?: false,
-                                    soundAlertsWithHaptic = prefMap["soundAlertsWithHaptic"] as? Boolean ?: true,
-                                    language = prefMap["language"] as? String ?: "ar",
-                                    city = prefMap["city"] as? String ?: "",
-                                    prayerNotifications = prefMap["prayerNotifications"] as? Boolean ?: true,
-                                    adhkarNotifications = prefMap["adhkarNotifications"] as? Boolean ?: true,
-                                    calculationMethod = CalculationMethod.valueOf(prefMap["calculationMethod"] as? String ?: "UMM_AL_QURA"),
-                                    madhab = Madhab.valueOf(prefMap["madhab"] as? String ?: "SHAFI"),
-                                    videoQuality = VideoQuality.valueOf(prefMap["videoQuality"] as? String ?: "HIGH"),
-                                    downloadWifiOnly = prefMap["downloadWifiOnly"] as? Boolean ?: true,
-                                    appLockEnabled = prefMap["appLockEnabled"] as? Boolean ?: false,
-                                    activeWorkspaceId = prefMap["activeWorkspaceId"] as? String,
-                                    analyticsOptIn = prefMap["analyticsOptIn"] as? Boolean ?: false,
-                                    crashReportsOptIn = prefMap["crashReportsOptIn"] as? Boolean ?: true,
-                                    personalizationOptIn = prefMap["personalizationOptIn"] as? Boolean ?: false,
-                                    locationOptIn = prefMap["locationOptIn"] as? Boolean ?: true,
-                                    preciseLocationOptIn = prefMap["preciseLocationOptIn"] as? Boolean ?: false,
-                                    accountDeletionStatus = prefMap["accountDeletionStatus"] as? String ?: "NONE",
-                                    accountDeletionScheduledAt = (prefMap["accountDeletionScheduledAt"] as? Number)?.toLong()
-                                )
-                            } else {
-                                UserPreferences()
-                            }
-                            
-                            trySend(UserProfile(user.uid, name, email, avatarUrl, role, preferences))
-                        } else {
-                            trySend(UserProfile(user.uid, user.displayName ?: "مستخدم", user.email ?: ""))
-                        }
+            val authListener =
+                FirebaseAuth.AuthStateListener { firebaseAuth ->
+                    val user = firebaseAuth.currentUser
+                    if (user != null) {
+                        listenerRegistration?.remove()
+                        listenerRegistration =
+                            firestore
+                                .collection("users")
+                                .document(user.uid)
+                                .addSnapshotListener { snapshot, error ->
+                                    if (error != null) {
+                                        trySend(null)
+                                        return@addSnapshotListener
+                                    }
+                                    if (snapshot != null && snapshot.exists()) {
+                                        val name = snapshot.getString("name") ?: user.displayName ?: "مستخدم"
+                                        val email = snapshot.getString("email") ?: user.email ?: ""
+                                        val avatarUrl = snapshot.getString("avatarUrl")
+                                        val roleStr = snapshot.getString("role") ?: "USER"
+                                        val role =
+                                            try {
+                                                UserRole.valueOf(roleStr)
+                                            } catch (e: Exception) {
+                                                UserRole.USER
+                                            }
+
+                                        val prefMap = snapshot.get("preferences") as? Map<String, Any>
+                                        val preferences =
+                                            if (prefMap != null) {
+                                                UserPreferences(
+                                                    themeMode = ThemeMode.valueOf(prefMap["themeMode"] as? String ?: "SYSTEM"),
+                                                    highContrastMode = prefMap["highContrastMode"] as? Boolean ?: false,
+                                                    fontScaleMultiplier = (prefMap["fontScaleMultiplier"] as? Number)?.toFloat() ?: 1.0f,
+                                                    reduceMotion = prefMap["reduceMotion"] as? Boolean ?: false,
+                                                    showCaptions = prefMap["showCaptions"] as? Boolean ?: true,
+                                                    showTranscripts = prefMap["showTranscripts"] as? Boolean ?: true,
+                                                    screenReaderOptimized = prefMap["screenReaderOptimized"] as? Boolean ?: false,
+                                                    soundAlertsWithHaptic = prefMap["soundAlertsWithHaptic"] as? Boolean ?: true,
+                                                    language = prefMap["language"] as? String ?: "ar",
+                                                    city = prefMap["city"] as? String ?: "",
+                                                    prayerNotifications = prefMap["prayerNotifications"] as? Boolean ?: true,
+                                                    adhkarNotifications = prefMap["adhkarNotifications"] as? Boolean ?: true,
+                                                    calculationMethod =
+                                                        CalculationMethod.valueOf(
+                                                            prefMap["calculationMethod"] as? String ?: "UMM_AL_QURA",
+                                                        ),
+                                                    madhab = Madhab.valueOf(prefMap["madhab"] as? String ?: "SHAFI"),
+                                                    videoQuality = VideoQuality.valueOf(prefMap["videoQuality"] as? String ?: "HIGH"),
+                                                    downloadWifiOnly = prefMap["downloadWifiOnly"] as? Boolean ?: true,
+                                                    appLockEnabled = prefMap["appLockEnabled"] as? Boolean ?: false,
+                                                    activeWorkspaceId = prefMap["activeWorkspaceId"] as? String,
+                                                    analyticsOptIn = prefMap["analyticsOptIn"] as? Boolean ?: false,
+                                                    crashReportsOptIn = prefMap["crashReportsOptIn"] as? Boolean ?: true,
+                                                    personalizationOptIn = prefMap["personalizationOptIn"] as? Boolean ?: false,
+                                                    locationOptIn = prefMap["locationOptIn"] as? Boolean ?: true,
+                                                    preciseLocationOptIn = prefMap["preciseLocationOptIn"] as? Boolean ?: false,
+                                                    accountDeletionStatus = prefMap["accountDeletionStatus"] as? String ?: "NONE",
+                                                    accountDeletionScheduledAt =
+                                                        (prefMap["accountDeletionScheduledAt"] as? Number)
+                                                            ?.toLong(),
+                                                )
+                                            } else {
+                                                UserPreferences()
+                                            }
+
+                                        trySend(UserProfile(user.uid, name, email, avatarUrl, role, preferences))
+                                    } else {
+                                        trySend(UserProfile(user.uid, user.displayName ?: "مستخدم", user.email ?: ""))
+                                    }
+                                }
+                    } else {
+                        listenerRegistration?.remove()
+                        trySend(null)
                     }
-            } else {
+                }
+            auth.addAuthStateListener(authListener)
+            awaitClose {
                 listenerRegistration?.remove()
-                trySend(null)
+                auth.removeAuthStateListener(authListener)
             }
         }
-        auth.addAuthStateListener(authListener)
-        awaitClose { 
-            listenerRegistration?.remove()
-            auth.removeAuthStateListener(authListener) 
-        }
-    }
 
-    override suspend fun login(email: String, password: String): Resource<Unit> {
-        return try {
+    override suspend fun login(
+        email: String,
+        password: String,
+    ): Resource<Unit> =
+        try {
             auth.signInWithEmailAndPassword(email, password).await()
             Resource.Success(Unit)
         } catch (e: FirebaseAuthException) {
@@ -104,21 +121,29 @@ class FirebaseAuthRepositoryImpl(
             val error = ErrorHandler.handle(e)
             Resource.Error(error.userMessage, error)
         }
-    }
 
-    override suspend fun register(name: String, email: String, password: String): Resource<Unit> {
-        return try {
+    override suspend fun register(
+        name: String,
+        email: String,
+        password: String,
+    ): Resource<Unit> =
+        try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()
             val user = result.user
             if (user != null) {
-                val userMap = hashMapOf(
-                    "id" to user.uid,
-                    "name" to name,
-                    "email" to email,
-                    "role" to "USER",
-                    "createdAt" to System.currentTimeMillis()
-                )
-                firestore.collection("users").document(user.uid).set(userMap).await()
+                val userMap =
+                    hashMapOf(
+                        "id" to user.uid,
+                        "name" to name,
+                        "email" to email,
+                        "role" to "USER",
+                        "createdAt" to System.currentTimeMillis(),
+                    )
+                firestore
+                    .collection("users")
+                    .document(user.uid)
+                    .set(userMap)
+                    .await()
             }
             Resource.Success(Unit)
         } catch (e: FirebaseAuthException) {
@@ -127,20 +152,18 @@ class FirebaseAuthRepositoryImpl(
             val error = ErrorHandler.handle(e)
             Resource.Error(error.userMessage, error)
         }
-    }
 
-    override suspend fun logout(): Resource<Unit> {
-        return try {
+    override suspend fun logout(): Resource<Unit> =
+        try {
             auth.signOut()
             Resource.Success(Unit)
         } catch (e: Exception) {
             val error = ErrorHandler.handle(e)
             Resource.Error(error.userMessage, error)
         }
-    }
 
-    override suspend fun resetPassword(email: String): Resource<Unit> {
-        return try {
+    override suspend fun resetPassword(email: String): Resource<Unit> =
+        try {
             auth.sendPasswordResetEmail(email).await()
             Resource.Success(Unit)
         } catch (e: FirebaseAuthException) {
@@ -149,20 +172,18 @@ class FirebaseAuthRepositoryImpl(
             val error = ErrorHandler.handle(e)
             Resource.Error(error.userMessage, error)
         }
-    }
 
-    override suspend fun verifyEmail(): Resource<Unit> {
-        return try {
+    override suspend fun verifyEmail(): Resource<Unit> =
+        try {
             auth.currentUser?.sendEmailVerification()?.await()
             Resource.Success(Unit)
         } catch (e: Exception) {
             val error = ErrorHandler.handle(e)
             Resource.Error(error.userMessage, error)
         }
-    }
 
-    override suspend fun deleteAccount(): Resource<Unit> {
-        return try {
+    override suspend fun deleteAccount(): Resource<Unit> =
+        try {
             val user = auth.currentUser
             user?.delete()?.await()
             Resource.Success(Unit)
@@ -170,15 +191,21 @@ class FirebaseAuthRepositoryImpl(
             val error = ErrorHandler.handle(e)
             Resource.Error(error.userMessage, error)
         }
-    }
 
-    override suspend fun updateProfile(name: String, avatarUrl: String?): Resource<Unit> {
+    override suspend fun updateProfile(
+        name: String,
+        avatarUrl: String?,
+    ): Resource<Unit> {
         return try {
             val user = auth.currentUser ?: return Resource.Error("غير مسجل الدخول")
             val updates = mutableMapOf<String, Any>("name" to name)
             if (avatarUrl != null) updates["avatarUrl"] = avatarUrl
-            
-            firestore.collection("users").document(user.uid).update(updates).await()
+
+            firestore
+                .collection("users")
+                .document(user.uid)
+                .update(updates)
+                .await()
             Resource.Success(Unit)
         } catch (e: Exception) {
             val error = ErrorHandler.handle(e)
@@ -189,34 +216,39 @@ class FirebaseAuthRepositoryImpl(
     override suspend fun updatePreferences(preferences: UserPreferences): Resource<Unit> {
         return try {
             val user = auth.currentUser ?: return Resource.Error("غير مسجل الدخول")
-            val prefMap = mapOf(
-                "themeMode" to preferences.themeMode.name,
-                "highContrastMode" to preferences.highContrastMode,
-                "fontScaleMultiplier" to preferences.fontScaleMultiplier,
-                "reduceMotion" to preferences.reduceMotion,
-                "showCaptions" to preferences.showCaptions,
-                "showTranscripts" to preferences.showTranscripts,
-                "screenReaderOptimized" to preferences.screenReaderOptimized,
-                "soundAlertsWithHaptic" to preferences.soundAlertsWithHaptic,
-                "language" to preferences.language,
-                "city" to preferences.city,
-                "prayerNotifications" to preferences.prayerNotifications,
-                "adhkarNotifications" to preferences.adhkarNotifications,
-                "calculationMethod" to preferences.calculationMethod.name,
-                "madhab" to preferences.madhab.name,
-                "videoQuality" to preferences.videoQuality.name,
-                "downloadWifiOnly" to preferences.downloadWifiOnly,
-                "appLockEnabled" to preferences.appLockEnabled,
-                "activeWorkspaceId" to preferences.activeWorkspaceId,
-                "analyticsOptIn" to preferences.analyticsOptIn,
-                "crashReportsOptIn" to preferences.crashReportsOptIn,
-                "personalizationOptIn" to preferences.personalizationOptIn,
-                "locationOptIn" to preferences.locationOptIn,
-                "preciseLocationOptIn" to preferences.preciseLocationOptIn,
-                "accountDeletionStatus" to preferences.accountDeletionStatus,
-                "accountDeletionScheduledAt" to preferences.accountDeletionScheduledAt
-            )
-            firestore.collection("users").document(user.uid).update("preferences", prefMap).await()
+            val prefMap =
+                mapOf(
+                    "themeMode" to preferences.themeMode.name,
+                    "highContrastMode" to preferences.highContrastMode,
+                    "fontScaleMultiplier" to preferences.fontScaleMultiplier,
+                    "reduceMotion" to preferences.reduceMotion,
+                    "showCaptions" to preferences.showCaptions,
+                    "showTranscripts" to preferences.showTranscripts,
+                    "screenReaderOptimized" to preferences.screenReaderOptimized,
+                    "soundAlertsWithHaptic" to preferences.soundAlertsWithHaptic,
+                    "language" to preferences.language,
+                    "city" to preferences.city,
+                    "prayerNotifications" to preferences.prayerNotifications,
+                    "adhkarNotifications" to preferences.adhkarNotifications,
+                    "calculationMethod" to preferences.calculationMethod.name,
+                    "madhab" to preferences.madhab.name,
+                    "videoQuality" to preferences.videoQuality.name,
+                    "downloadWifiOnly" to preferences.downloadWifiOnly,
+                    "appLockEnabled" to preferences.appLockEnabled,
+                    "activeWorkspaceId" to preferences.activeWorkspaceId,
+                    "analyticsOptIn" to preferences.analyticsOptIn,
+                    "crashReportsOptIn" to preferences.crashReportsOptIn,
+                    "personalizationOptIn" to preferences.personalizationOptIn,
+                    "locationOptIn" to preferences.locationOptIn,
+                    "preciseLocationOptIn" to preferences.preciseLocationOptIn,
+                    "accountDeletionStatus" to preferences.accountDeletionStatus,
+                    "accountDeletionScheduledAt" to preferences.accountDeletionScheduledAt,
+                )
+            firestore
+                .collection("users")
+                .document(user.uid)
+                .update("preferences", prefMap)
+                .await()
             Resource.Success(Unit)
         } catch (e: Exception) {
             val error = ErrorHandler.handle(e)
@@ -224,8 +256,8 @@ class FirebaseAuthRepositoryImpl(
         }
     }
 
-    private fun mapFirebaseAuthError(errorCode: String): String {
-        return when (errorCode) {
+    private fun mapFirebaseAuthError(errorCode: String): String =
+        when (errorCode) {
             "ERROR_INVALID_EMAIL", "ERROR_INVALID_CREDENTIAL" -> "البريد الإلكتروني أو كلمة المرور غير صحيحة."
             "ERROR_EMAIL_ALREADY_IN_USE" -> "البريد الإلكتروني مسجل مسبقاً."
             "ERROR_USER_NOT_FOUND" -> "المستخدم غير موجود."
@@ -235,5 +267,4 @@ class FirebaseAuthRepositoryImpl(
             "ERROR_WEAK_PASSWORD" -> "كلمة المرور ضعيفة جداً."
             else -> "حدث خطأ: \$errorCode"
         }
-    }
 }

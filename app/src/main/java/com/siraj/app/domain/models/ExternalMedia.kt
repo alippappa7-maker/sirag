@@ -1,6 +1,7 @@
 package com.siraj.app.domain.models
 
 enum class MediaType { IMAGE, VIDEO }
+
 enum class MediaOrientation { ALL, LANDSCAPE, PORTRAIT, SQUARE }
 
 data class MediaSearchFilter(
@@ -8,7 +9,7 @@ data class MediaSearchFilter(
     val orientation: MediaOrientation = MediaOrientation.ALL,
     val color: String? = null,
     val minDurationMs: Long? = null,
-    val maxDurationMs: Long? = null
+    val maxDurationMs: Long? = null,
 )
 
 data class ExternalMediaItem(
@@ -25,11 +26,11 @@ data class ExternalMediaItem(
     val attributionText: String,
     val width: Int = 0,
     val height: Int = 0,
-    val durationMs: Long? = null
+    val durationMs: Long? = null,
 )
 
 data class MediaSearchResult(
     val items: List<ExternalMediaItem>,
     val nextPageToken: String? = null,
-    val totalResults: Int = 0
+    val totalResults: Int = 0,
 )

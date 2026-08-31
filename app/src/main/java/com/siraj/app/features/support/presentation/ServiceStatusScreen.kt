@@ -11,7 +11,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.siraj.app.ui.theme.statusColors
@@ -21,31 +20,30 @@ data class ServiceHealthItem(
     val description: String,
     val isOperational: Boolean,
     val latencyMs: Long,
-    val uptimePercent: Double = 99.98
+    val uptimePercent: Double = 99.98,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ServiceStatusScreen(
-    onNavigateBack: () -> Unit
-) {
-    val services = remember {
-        listOf(
-            ServiceHealthItem("قاعدة بيانات Firestore", "تخزين المشاريع وبيانات المستخدمين", true, 42),
-            ServiceHealthItem("سحابة تخزين الملفات (Cloud Storage)", "ملفات الفيديو والمشاهد والصوتيات", true, 65),
-            ServiceHealthItem("شبكة توزيع التلاوات (Audio CDN)", "بث تلاوات القرآن الكريم والأذكار", true, 30),
-            ServiceHealthItem("نظام التدقيق والمراجعة الشرعية", "مسارات تدقيق المصادر والاعتماد", true, 80),
-            ServiceHealthItem("خادم معالجة وترميز الفيديو (Cloud Run)", "إنتاج المقاطع والتصدير بجودة عالية", true, 110),
-            ServiceHealthItem("بوابة الفوترة (Google Play Billing)", "معالجة الاشتراكات وتجديد الأرصدة", true, 55),
-            ServiceHealthItem("خدمة الإشعارات (FCM)", "إشعارات اعتماد المشاريع ومواقيت الصلاة", true, 38),
-            ServiceHealthItem("محرك الذكاء الاصطناعي (Gemini Backend)", "مساعد صياغة الأفكار والسيناريوهات الآمن", true, 140),
-            ServiceHealthItem("خدمة المصحف وقواعد التفسير", "نصوص مجمع الملك فهد المعتمدة", true, 25),
-            ServiceHealthItem("محدد القبلة والمواقيت الفلكية", "خوارزميات الحساب المعتمدة", true, 18),
-            ServiceHealthItem("مكتبة الوسائط والتأثيرات الصوتية", "فهرس الأصول المرخصة", true, 48),
-            ServiceHealthItem("مركز حماية البيانات والخصوصية", "تصدير وحذف السجلات بأمان", true, 50),
-            ServiceHealthItem("نظام التذاكر والدعم الفني", "قنوات الاستجابة وتصعيد البلاغات", true, 35)
-        )
-    }
+fun ServiceStatusScreen(onNavigateBack: () -> Unit) {
+    val services =
+        remember {
+            listOf(
+                ServiceHealthItem("قاعدة بيانات Firestore", "تخزين المشاريع وبيانات المستخدمين", true, 42),
+                ServiceHealthItem("سحابة تخزين الملفات (Cloud Storage)", "ملفات الفيديو والمشاهد والصوتيات", true, 65),
+                ServiceHealthItem("شبكة توزيع التلاوات (Audio CDN)", "بث تلاوات القرآن الكريم والأذكار", true, 30),
+                ServiceHealthItem("نظام التدقيق والمراجعة الشرعية", "مسارات تدقيق المصادر والاعتماد", true, 80),
+                ServiceHealthItem("خادم معالجة وترميز الفيديو (Cloud Run)", "إنتاج المقاطع والتصدير بجودة عالية", true, 110),
+                ServiceHealthItem("بوابة الفوترة (Google Play Billing)", "معالجة الاشتراكات وتجديد الأرصدة", true, 55),
+                ServiceHealthItem("خدمة الإشعارات (FCM)", "إشعارات اعتماد المشاريع ومواقيت الصلاة", true, 38),
+                ServiceHealthItem("محرك الذكاء الاصطناعي (Gemini Backend)", "مساعد صياغة الأفكار والسيناريوهات الآمن", true, 140),
+                ServiceHealthItem("خدمة المصحف وقواعد التفسير", "نصوص مجمع الملك فهد المعتمدة", true, 25),
+                ServiceHealthItem("محدد القبلة والمواقيت الفلكية", "خوارزميات الحساب المعتمدة", true, 18),
+                ServiceHealthItem("مكتبة الوسائط والتأثيرات الصوتية", "فهرس الأصول المرخصة", true, 48),
+                ServiceHealthItem("مركز حماية البيانات والخصوصية", "تصدير وحذف السجلات بأمان", true, 50),
+                ServiceHealthItem("نظام التذاكر والدعم الفني", "قنوات الاستجابة وتصعيد البلاغات", true, 35),
+            )
+        }
 
     val allOperational = services.all { it.isOperational }
 
@@ -57,34 +55,36 @@ fun ServiceStatusScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
                     }
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (allOperational) MaterialTheme.statusColors.successBg else MaterialTheme.colorScheme.errorContainer
-                    ),
-                    shape = RoundedCornerShape(12.dp)
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = if (allOperational) MaterialTheme.statusColors.successBg else MaterialTheme.colorScheme.errorContainer,
+                        ),
+                    shape = RoundedCornerShape(12.dp),
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
                             imageVector = if (allOperational) Icons.Default.CheckCircle else Icons.Default.Warning,
                             contentDescription = null,
                             tint = if (allOperational) MaterialTheme.statusColors.successFg else MaterialTheme.colorScheme.error,
-                            modifier = Modifier.size(36.dp)
+                            modifier = Modifier.size(36.dp),
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
@@ -92,12 +92,12 @@ fun ServiceStatusScreen(
                                 if (allOperational) "جميع الخدمات والأنظمة تعمل بكفاءة تامة" else "يوجد بعض التأخير في معالجة الخدمات",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = if (allOperational) MaterialTheme.statusColors.successFg else MaterialTheme.colorScheme.onErrorContainer
+                                color = if (allOperational) MaterialTheme.statusColors.successFg else MaterialTheme.colorScheme.onErrorContainer,
                             )
                             Text(
                                 "نسبة التوفر التشغيلي خلال الـ 30 يوماً الماضية: 99.98%",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = if (allOperational) MaterialTheme.statusColors.successFg else MaterialTheme.colorScheme.onErrorContainer
+                                color = if (allOperational) MaterialTheme.statusColors.successFg else MaterialTheme.colorScheme.onErrorContainer,
                             )
                         }
                     }
@@ -108,7 +108,7 @@ fun ServiceStatusScreen(
                 Text(
                     "الخدمات والأنظمة الأساسية (${services.size})",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
             }
 
@@ -117,32 +117,41 @@ fun ServiceStatusScreen(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     shape = RoundedCornerShape(10.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(14.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(14.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(service.name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                            Text(service.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                service.description,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text("زمن الاستجابة: ${service.latencyMs}ms • الاستقرار: ${service.uptimePercent}%", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                "زمن الاستجابة: ${service.latencyMs}ms • الاستقرار: ${service.uptimePercent}%",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
                         }
 
                         Surface(
                             shape = RoundedCornerShape(8.dp),
-                            color = if (service.isOperational) MaterialTheme.statusColors.successBg else MaterialTheme.colorScheme.errorContainer
+                            color = if (service.isOperational) MaterialTheme.statusColors.successBg else MaterialTheme.colorScheme.errorContainer,
                         ) {
                             Text(
                                 text = if (service.isOperational) "تعمل" else "صيانة",
                                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = if (service.isOperational) MaterialTheme.statusColors.successFg else MaterialTheme.colorScheme.error
+                                color = if (service.isOperational) MaterialTheme.statusColors.successFg else MaterialTheme.colorScheme.error,
                             )
                         }
                     }

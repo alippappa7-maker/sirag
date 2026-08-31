@@ -112,7 +112,7 @@ class FirebaseBackupRepositoryImpl(
         return try {
             val jobId = "restore_dry_${System.currentTimeMillis()}"
             val startTime = System.currentTimeMillis()
-            
+
             // Query tombstones count to simulate exclusion
             val tombstoneCount = getDeletedUsersTombstoneCount()
             val deletedUserIdsSample = listOf("deleted_usr_01", "deleted_usr_02", "deleted_usr_03")

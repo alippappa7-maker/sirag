@@ -1,18 +1,14 @@
 package com.siraj.app.domain.repository.incident
 
 import com.siraj.app.domain.models.incident.EmergencyActionRecord
-import com.siraj.app.domain.models.incident.EmergencyActionType
 import com.siraj.app.domain.models.incident.IncidentContact
 import com.siraj.app.domain.models.incident.IncidentPostMortemReport
 import com.siraj.app.domain.models.incident.IncidentResponseState
 import com.siraj.app.domain.models.incident.IncidentRole
-import com.siraj.app.domain.models.incident.IncidentSeverity
-import com.siraj.app.domain.models.incident.IncidentType
 import com.siraj.app.domain.models.incident.ShariaIncidentCorrection
 import kotlinx.coroutines.flow.Flow
 
 interface IncidentResponseRepository {
-
     /**
      * تدفق حالة الاستجابة للحوادث
      */
@@ -40,7 +36,7 @@ interface IncidentResponseRepository {
         halt: Boolean,
         executedByUserId: String,
         executedByRole: IncidentRole,
-        reasonArabic: String
+        reasonArabic: String,
     ): Result<EmergencyActionRecord>
 
     /**
@@ -49,7 +45,7 @@ interface IncidentResponseRepository {
     suspend fun rotateSecretKey(
         secretIdentifier: String,
         executedByUserId: String,
-        reasonArabic: String
+        reasonArabic: String,
     ): Result<EmergencyActionRecord>
 
     /**
@@ -58,7 +54,7 @@ interface IncidentResponseRepository {
     suspend fun suspendPublishedProject(
         projectId: String,
         executedByUserId: String,
-        reasonArabic: String
+        reasonArabic: String,
     ): Result<EmergencyActionRecord>
 
     /**
@@ -68,20 +64,16 @@ interface IncidentResponseRepository {
         targetUserOrBatchId: String,
         refundAmountCredits: Int,
         executedByUserId: String,
-        reasonArabic: String
+        reasonArabic: String,
     ): Result<EmergencyActionRecord>
 
     /**
      * إجراء وتوثيق تصحيح شرعي معتمد من مراجعين
      */
-    suspend fun submitShariaCorrection(
-        correction: ShariaIncidentCorrection
-    ): Result<ShariaIncidentCorrection>
+    suspend fun submitShariaCorrection(correction: ShariaIncidentCorrection): Result<ShariaIncidentCorrection>
 
     /**
      * إنشاء تقرير حادث شامل (Incident Post-Mortem Report)
      */
-    suspend fun createPostMortemReport(
-        report: IncidentPostMortemReport
-    ): Result<IncidentPostMortemReport>
+    suspend fun createPostMortemReport(report: IncidentPostMortemReport): Result<IncidentPostMortemReport>
 }

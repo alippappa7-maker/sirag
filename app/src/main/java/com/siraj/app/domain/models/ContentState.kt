@@ -6,5 +6,5 @@ enum class ContentState {
     APPROVED,
     REJECTED,
     PUBLISHED,
-    ARCHIVED
+    ARCHIVED,
 }

@@ -1,6 +1,5 @@
 package com.siraj.app.core.monitoring
 
-import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.siraj.app.core.error.AppError
@@ -31,7 +30,11 @@ class FakeCrashMonitoringService : CrashMonitoringService {
     val breadcrumbs = mutableListOf<String>()
     var testCrashTriggered: Boolean = false
 
-    override fun initialize(environment: String, appVersion: String, buildNumber: String) {
+    override fun initialize(
+        environment: String,
+        appVersion: String,
+        buildNumber: String,
+    ) {
         this.recordedEnvironment = environment
         this.recordedAppVersion = appVersion
         this.recordedBuildNumber = buildNumber
@@ -51,7 +54,7 @@ class FakeCrashMonitoringService : CrashMonitoringService {
         category: ErrorCategory,
         severity: ErrorSeverity,
         requestId: String?,
-        customKeys: Map<String, Any>
+        customKeys: Map<String, Any>,
     ) {
         if (!isEnabled) return
         this.lastRecordedException = throwable
@@ -64,38 +67,53 @@ class FakeCrashMonitoringService : CrashMonitoringService {
     override fun logBreadcrumb(
         message: String,
         type: BreadcrumbType,
-        attributes: Map<String, String>
+        attributes: Map<String, String>,
     ) {
         if (!isEnabled) return
         val formatted = "[${type.category.uppercase()}] ${CrashlyticsSanitizer.formatSafeBreadcrumb(message, attributes)}"
         breadcrumbs.add(formatted)
     }
 
-    override fun setCustomKey(key: String, value: String) {
+    override fun setCustomKey(
+        key: String,
+        value: String,
+    ) {
         if (isEnabled && CrashlyticsSanitizer.isKeyAllowed(key)) {
             customKeys[key] = CrashlyticsSanitizer.sanitizeMessage(value)
         }
     }
 
-    override fun setCustomKey(key: String, value: Boolean) {
+    override fun setCustomKey(
+        key: String,
+        value: Boolean,
+    ) {
         if (isEnabled && CrashlyticsSanitizer.isKeyAllowed(key)) {
             customKeys[key] = value
         }
     }
 
-    override fun setCustomKey(key: String, value: Int) {
+    override fun setCustomKey(
+        key: String,
+        value: Int,
+    ) {
         if (isEnabled && CrashlyticsSanitizer.isKeyAllowed(key)) {
             customKeys[key] = value
         }
     }
 
-    override fun setCustomKey(key: String, value: Long) {
+    override fun setCustomKey(
+        key: String,
+        value: Long,
+    ) {
         if (isEnabled && CrashlyticsSanitizer.isKeyAllowed(key)) {
             customKeys[key] = value
         }
     }
 
-    override fun setCustomKey(key: String, value: Double) {
+    override fun setCustomKey(
+        key: String,
+        value: Double,
+    ) {
         if (isEnabled && CrashlyticsSanitizer.isKeyAllowed(key)) {
             customKeys[key] = value
         }
@@ -120,7 +138,7 @@ class FakeCrashMonitoringService : CrashMonitoringService {
             throwable = testEx,
             category = ErrorCategory.SYSTEM,
             severity = ErrorSeverity.WARNING,
-            customKeys = mapOf("test" to true, "reason" to reason)
+            customKeys = mapOf("test" to true, "reason" to reason),
         )
     }
 
@@ -132,7 +150,6 @@ class FakeCrashMonitoringService : CrashMonitoringService {
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
 class CrashMonitoringTest {
-
     private lateinit var fakeService: FakeCrashMonitoringService
 
     @Before
@@ -145,7 +162,7 @@ class CrashMonitoringTest {
     fun sanitizer_masksSensitiveApiKeysAndTokens() {
         val input = "Network error with url https://api.example.com?key=AIzaSyA123456789&token=secret_abc123"
         val sanitized = CrashlyticsSanitizer.sanitizeMessage(input)
-        
+
         assertFalse("API key must be masked", sanitized.contains("AIzaSyA123456789"))
         assertFalse("Token must be masked", sanitized.contains("secret_abc123"))
         assertTrue("Contains masked key indicator", sanitized.contains("key=***"))
@@ -209,7 +226,7 @@ class CrashMonitoringTest {
         CrashMonitoringManager.initialize(
             environment = "PRODUCTION",
             appVersion = "1.0.0",
-            buildNumber = "42"
+            buildNumber = "42",
         )
 
         assertEquals("PRODUCTION", fakeService.recordedEnvironment)
@@ -250,7 +267,7 @@ class CrashMonitoringTest {
         assertTrue(appError.isRetryable)
         assertEquals(ErrorCategory.NETWORK, fakeService.lastCategory)
         assertEquals("REQ-999", fakeService.lastRequestId)
-        
+
         // Assert technical details in breadcrumbs/customKeys are sanitized
         assertFalse(fakeService.customKeys.toString().contains("abc123secret"))
     }

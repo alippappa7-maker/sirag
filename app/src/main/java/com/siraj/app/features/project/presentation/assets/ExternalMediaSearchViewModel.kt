@@ -102,7 +102,7 @@ class ExternalMediaSearchViewModel(
             viewModelScope.launch { _uiMessage.emit("لم يتم تحميل بيانات المشروع بعد") }
             return
         }
-        
+
         viewModelScope.launch {
             val assetType = if (item.type == MediaType.VIDEO) AssetType.VIDEO else AssetType.IMAGE
             val newAsset = Asset(
@@ -114,14 +114,14 @@ class ExternalMediaSearchViewModel(
                 downloadUrl = item.downloadUrl,
                 thumbnailUrl = item.previewUrl,
                 mimeType = if (assetType == AssetType.VIDEO) "video/mp4" else "image/jpeg",
-                sizeBytes = 0L, 
+                sizeBytes = 0L,
                 durationMs = item.durationMs,
                 sourceUrl = item.sourceUrl,
                 license = item.licenseName,
                 attribution = item.attributionText,
                 status = AssetStatus.READY
             )
-            
+
             val res = assetRepository.addAsset(newAsset)
             if (res is Resource.Success) {
                 _uiMessage.emit("تمت إضافة '${item.title}' للمشروع بنجاح")

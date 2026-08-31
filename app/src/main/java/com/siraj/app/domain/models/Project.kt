@@ -1,11 +1,20 @@
 package com.siraj.app.domain.models
 
 enum class ProjectStatus {
-    DRAFT, PROCESSING, READY, EXPORTING, COMPLETED, FAILED, ARCHIVED, DELETED
+    DRAFT,
+    PROCESSING,
+    READY,
+    EXPORTING,
+    COMPLETED,
+    FAILED,
+    ARCHIVED,
+    DELETED,
 }
 
 enum class ProjectVisibility {
-    PRIVATE, SHARED, PUBLIC
+    PRIVATE,
+    SHARED,
+    PUBLIC,
 }
 
 data class Project(
@@ -28,11 +37,13 @@ data class Project(
     val currentVersionId: String? = null,
     val brief: ContentBrief = ContentBrief(),
     val contentPlan: ContentPlan? = null,
-    val scenes: List<Scene> = emptyList()
+    val scenes: List<Scene> = emptyList(),
 )
 
 enum class MemberRole {
-    VIEWER, EDITOR, ADMIN
+    VIEWER,
+    EDITOR,
+    ADMIN,
 }
 
 data class ProjectMember(
@@ -40,7 +51,7 @@ data class ProjectMember(
     val projectId: String = "",
     val userId: String = "",
     val role: MemberRole = MemberRole.VIEWER,
-    val addedAt: Long = System.currentTimeMillis()
+    val addedAt: Long = System.currentTimeMillis(),
 )
 
 data class ProjectVersion(
@@ -49,12 +60,19 @@ data class ProjectVersion(
     val createdBy: String = "",
     val description: String = "",
     val sceneSnapshotIds: List<String> = emptyList(),
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
 )
 
-
 enum class ActivityType {
-    CREATED, EDITED, STATUS_CHANGED, MEMBER_ADDED, ASSET_UPLOADED, VERSION_CREATED, ARCHIVED, RESTORED, DELETED
+    CREATED,
+    EDITED,
+    STATUS_CHANGED,
+    MEMBER_ADDED,
+    ASSET_UPLOADED,
+    VERSION_CREATED,
+    ARCHIVED,
+    RESTORED,
+    DELETED,
 }
 
 data class ProjectActivity(
@@ -63,9 +81,8 @@ data class ProjectActivity(
     val userId: String = "",
     val type: ActivityType = ActivityType.EDITED,
     val details: String = "",
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
 )
-
 
 data class ContentBrief(
     val idea: String = "",
@@ -79,24 +96,39 @@ data class ContentBrief(
     val template: String = "فارغ",
     val hasQuran: Boolean = false,
     val hasHadith: Boolean = false,
-    val hasFatwa: Boolean = false
+    val hasFatwa: Boolean = false,
 )
 
-
 enum class SceneStatus {
-    DRAFT, GENERATED, EDITED, APPROVED, FAILED
+    DRAFT,
+    GENERATED,
+    EDITED,
+    APPROVED,
+    FAILED,
 }
 
 enum class BackgroundType {
-    IMAGE, VIDEO, SOLID_COLOR, GRADIENT, BLUR
+    IMAGE,
+    VIDEO,
+    SOLID_COLOR,
+    GRADIENT,
+    BLUR,
 }
 
 enum class TransitionType {
-    NONE, FADE, SLIDE, WIPE, ZOOM, DISSOLVE
+    NONE,
+    FADE,
+    SLIDE,
+    WIPE,
+    ZOOM,
+    DISSOLVE,
 }
 
 data class Scene(
-    val id: String = java.util.UUID.randomUUID().toString(),
+    val id: String =
+        java.util.UUID
+            .randomUUID()
+            .toString(),
     val projectId: String,
     val versionId: String = "1",
     val orderIndex: Int = 0,
@@ -109,22 +141,28 @@ data class Scene(
     val claimIds: List<String> = emptyList(),
     val assetIds: List<String> = emptyList(),
     val createdAt: Long = System.currentTimeMillis(),
-    val updatedAt: Long = System.currentTimeMillis()
+    val updatedAt: Long = System.currentTimeMillis(),
 )
 
 data class SceneAsset(
-    val id: String = java.util.UUID.randomUUID().toString(),
+    val id: String =
+        java.util.UUID
+            .randomUUID()
+            .toString(),
     val sceneId: String = "",
     val projectId: String = "",
     val type: AssetType = AssetType.IMAGE,
     val url: String = "",
     val durationMs: Long? = null,
     val orderIndex: Int = 0,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
 )
 
 data class SceneText(
-    val id: String = java.util.UUID.randomUUID().toString(),
+    val id: String =
+        java.util.UUID
+            .randomUUID()
+            .toString(),
     val sceneId: String = "",
     val text: String = "",
     val type: String = "caption", // narration, caption, overlay
@@ -137,15 +175,18 @@ data class SceneText(
     val fontColor: String = "#FFFFFF",
     val alignment: String = "Center",
     val position: String = "Bottom",
-    val showSource: Boolean = false
+    val showSource: Boolean = false,
 )
 
 data class SceneAudio(
-    val id: String = java.util.UUID.randomUUID().toString(),
+    val id: String =
+        java.util.UUID
+            .randomUUID()
+            .toString(),
     val sceneId: String = "",
     val url: String = "",
     val type: String = "voiceover", // voiceover, background_music, sfx
     val startTimeMs: Long = 0L,
     val durationMs: Long? = null,
-    val volume: Float = 1.0f
+    val volume: Float = 1.0f,
 )

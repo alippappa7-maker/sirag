@@ -15,13 +15,12 @@ import kotlinx.coroutines.launch
 data class SafetyStateUI(
     val isSubmitting: Boolean = false,
     val error: String? = null,
-    val successMessage: String? = null
+    val successMessage: String? = null,
 )
 
 class SafetyViewModel(
-    private val safetyRepository: SafetyRepository
+    private val safetyRepository: SafetyRepository,
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(SafetyStateUI())
     val state: StateFlow<SafetyStateUI> = _state.asStateFlow()
 
@@ -31,19 +30,26 @@ class SafetyViewModel(
         targetId: String,
         targetOwnerId: String,
         reportType: ReportType,
-        description: String
+        description: String,
     ) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isSubmitting = true, error = null, successMessage = null)
-            val result = safetyRepository.submitReport(
-                reporterId, targetType, targetId, targetOwnerId, reportType, description
-            )
+            val result =
+                safetyRepository.submitReport(
+                    reporterId,
+                    targetType,
+                    targetId,
+                    targetOwnerId,
+                    reportType,
+                    description,
+                )
             when (result) {
                 is Resource.Success -> {
-                    _state.value = _state.value.copy(
-                        isSubmitting = false,
-                        successMessage = "تم إرسال البلاغ بنجاح. سيتم مراجعته في أقرب وقت."
-                    )
+                    _state.value =
+                        _state.value.copy(
+                            isSubmitting = false,
+                            successMessage = "تم إرسال البلاغ بنجاح. سيتم مراجعته في أقرب وقت.",
+                        )
                 }
                 is Resource.Error -> {
                     _state.value = _state.value.copy(isSubmitting = false, error = result.message)
@@ -59,10 +65,8 @@ class SafetyViewModel(
 }
 
 class SafetyViewModelFactory(
-    private val repository: SafetyRepository
+    private val repository: SafetyRepository,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return SafetyViewModel(repository) as T
-    }
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = SafetyViewModel(repository) as T
 }

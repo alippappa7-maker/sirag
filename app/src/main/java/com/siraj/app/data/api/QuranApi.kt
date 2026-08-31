@@ -53,7 +53,7 @@ data class ApiTafsir(
 interface QuranApi {
     @GET("chapters?language=ar")
     suspend fun getChapters(): ChaptersResponse
-    
+
     @GET("verses/by_chapter/{chapter_id}?language=ar&fields=text_uthmani")
     suspend fun getVersesByChapter(
         @Path("chapter_id") chapterId: Int,

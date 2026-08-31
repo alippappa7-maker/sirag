@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.firebase.crashlytics)
     alias(libs.plugins.secrets)
     id("com.google.devtools.ksp")
+    id("com.diffplug.spotless")
 }
 
 val byteBuddyAgent by configurations.creating
@@ -16,10 +17,10 @@ android {
     defaultConfig {
         applicationId = "com.siraj.app"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
+        // Default (debug) values — overridden per build type below.
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "FIREBASE_API_KEY", "\"dummy\"")
         buildConfigField("String", "GOOGLE_PLAY_PACKAGE_NAME", "\"dummy\"")
@@ -30,9 +31,6 @@ android {
         buildConfigField("String", "APP_STORE_ISSUER_ID", "\"dummy\"")
         buildConfigField("String", "APP_STORE_KEY_ID", "\"dummy\"")
         buildConfigField("String", "APP_STORE_PRIVATE_KEY", "\"dummy\"")
-        buildConfigField("String", "ENVIRONMENT", "\"development\"")
-        buildConfigField("Boolean", "IS_BETA", "true")
-        buildConfigField("Boolean", "ALLOW_MOCK_DATA", "true")
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -40,7 +38,7 @@ android {
 
     signingConfigs {
         create("debugConfig") {
-            storeFile = file("${rootDir}/debug.keystore")
+            storeFile = file("$rootDir/debug.keystore")
             storePassword = "android"
             keyAlias = "androiddebugkey"
             keyPassword = "android"
@@ -50,13 +48,19 @@ android {
     buildTypes {
         debug {
             signingConfig = signingConfigs.getByName("debugConfig")
+            buildConfigField("String", "ENVIRONMENT", "\"development\"")
+            buildConfigField("Boolean", "IS_BETA", "true")
+            buildConfigField("Boolean", "ALLOW_MOCK_DATA", "true")
         }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            buildConfigField("String", "ENVIRONMENT", "\"production\"")
+            buildConfigField("Boolean", "IS_BETA", "false")
+            buildConfigField("Boolean", "ALLOW_MOCK_DATA", "false")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -83,7 +87,7 @@ android {
                 testTask.jvmArgs(
                     "-javaagent:$agentJar",
                     "-XX:+EnableDynamicAgentLoading",
-                    "-Xshare:off"
+                    "-Xshare:off",
                 )
             }
         }
@@ -120,18 +124,18 @@ dependencies {
 
     // Coil for image loading
     implementation("io.coil-kt:coil-compose:2.5.0")
-    
+
     // ExoPlayer for Audio/Video
     implementation("androidx.media3:media3-exoplayer:1.2.1")
     implementation("androidx.media3:media3-exoplayer-dash:1.2.1")
     implementation("androidx.media3:media3-ui:1.2.1")
     implementation("androidx.media3:media3-session:1.2.1")
-    
+
     // Lottie
     implementation("com.airbnb.android:lottie-compose:6.3.0")
-    
+
     // Markdown
-    
+
     // Compose Charts (e.g. for studio analytics)
 
     testImplementation(libs.junit)
@@ -141,7 +145,7 @@ dependencies {
     testImplementation("app.cash.turbine:turbine:1.0.0")
     testImplementation("org.robolectric:robolectric:4.11.1")
     testImplementation("androidx.test:core-ktx:1.5.0")
-    
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -170,4 +174,19 @@ dependencies {
 secrets {
     propertiesFileName = ".env"
     defaultPropertiesFileName = ".env.example"
+}
+
+spotless {
+    kotlin {
+        target("**/*.kt")
+        targetExclude("**/build/**", "**/generated/**")
+        trimTrailingWhitespace()
+        endWithNewline()
+        indentWithSpaces(4)
+    }
+    kotlinGradle {
+        target("**/*.gradle.kts")
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }

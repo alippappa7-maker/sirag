@@ -16,12 +16,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.siraj.app.features.project.domain.models.*
 
@@ -32,9 +30,10 @@ fun AudioStudioScreen(
     sceneId: String? = null,
     initialNarrationText: String = "",
     onNavigateBack: () -> Unit,
-    viewModel: AudioStudioViewModel = viewModel(
-        factory = AudioStudioViewModelFactory(projectId, sceneId, initialNarrationText)
-    )
+    viewModel: AudioStudioViewModel =
+        viewModel(
+            factory = AudioStudioViewModelFactory(projectId, sceneId, initialNarrationText),
+        ),
 ) {
     val narrationText by viewModel.narrationText.collectAsState()
     val selectedLanguage by viewModel.selectedLanguage.collectAsState()
@@ -77,124 +76,133 @@ fun AudioStudioScreen(
                         Text(
                             text = if (sceneId != null) "الاستوديو الصوتي للمشهد" else "الاستوديو الصوتي للمشروع",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                         Text(
                             text = "تعليق فصيح • تسجيلات • تمييز شرعي موثق",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.back),
+                        )
                     }
                 },
                 actions = {
                     Surface(
                         shape = RoundedCornerShape(16.dp),
                         color = MaterialTheme.colorScheme.primaryContainer,
-                        modifier = Modifier.padding(end = 8.dp)
+                        modifier = Modifier.padding(end = 8.dp),
                     ) {
                         Row(
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Icon(
                                 Icons.Default.Star,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(16.dp),
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = "$userCredits رصيد",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
                             )
                         }
                     }
-                }
+                },
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding),
         ) {
             // Tab Selector
             TabRow(selectedTabIndex = selectedTabIndex) {
                 Tab(
                     selected = selectedTabIndex == 0,
                     onClick = { selectedTabIndex = 0 },
-                    text = { Text("توليد الذكاء الاصطناعي") }
+                    text = { Text("توليد الذكاء الاصطناعي") },
                 )
                 Tab(
                     selected = selectedTabIndex == 1,
                     onClick = { selectedTabIndex = 1 },
-                    text = { Text("رفع تسجيل / تلاوة") }
+                    text = { Text("رفع تسجيل / تلاوة") },
                 )
                 Tab(
                     selected = selectedTabIndex == 2,
                     onClick = { selectedTabIndex = 2 },
-                    text = { Text("أصوات المشروع (${projectAudios.size})") }
+                    text = { Text("أصوات المشروع (${projectAudios.size})") },
                 )
             }
 
             when (selectedTabIndex) {
-                0 -> AiVoiceGeneratorTab(
-                    narrationText = narrationText,
-                    onTextChange = { viewModel.onTextChange(it) },
-                    selectedLanguage = selectedLanguage,
-                    onLanguageChange = { viewModel.onLanguageChange(it) },
-                    selectedVoiceId = selectedVoiceId,
-                    onVoiceChange = { viewModel.onVoiceChange(it) },
-                    availableVoices = viewModel.availableVoices,
-                    speed = speed,
-                    onSpeedChange = { viewModel.onSpeedChange(it) },
-                    pitch = pitch,
-                    onPitchChange = { viewModel.onPitchChange(it) },
-                    syncDuration = syncDuration,
-                    onSyncDurationChange = { viewModel.onSyncDurationChange(it) },
-                    isSceneContext = sceneId != null,
-                    generationState = generationState,
-                    onGenerate = { viewModel.generateVoiceover() }
-                )
-                1 -> AudioUploadTab(
-                    uploadTitle = uploadTitle,
-                    onTitleChange = { uploadTitle = it },
-                    speakerName = speakerName,
-                    onSpeakerNameChange = { speakerName = it },
-                    isRecitation = isRecitationChecked,
-                    onRecitationChange = { isRecitationChecked = it },
-                    uploadState = uploadState,
-                    onSimulateUpload = {
-                        val mockBytes = ByteArray(1024 * 50) // Mock audio bytes
-                        viewModel.uploadUserRecording(
-                            title = uploadTitle.ifBlank { "تسجيل صوتي خاص" },
-                            fileName = if (isRecitationChecked) "recitation.mp3" else "voice_record.mp3",
-                            fileBytes = mockBytes,
-                            mimeType = "audio/mpeg",
-                            durationMs = 8000L,
-                            speakerName = speakerName.ifBlank { null },
-                            isRecitation = isRecitationChecked
-                        )
-                    }
-                )
-                2 -> ProjectAudioListTab(
-                    audios = projectAudios,
-                    isPlaying = isPlaying,
-                    playingAudioId = playingAudioId,
-                    onPlayPause = { viewModel.playAudio(it) },
-                    onTrim = { viewModel.openTrimDialog(it) },
-                    onAttachToScene = { viewModel.attachToScene(it) },
-                    onDelete = { viewModel.deleteAudio(it) },
-                    isSceneContext = sceneId != null
-                )
+                0 ->
+                    AiVoiceGeneratorTab(
+                        narrationText = narrationText,
+                        onTextChange = { viewModel.onTextChange(it) },
+                        selectedLanguage = selectedLanguage,
+                        onLanguageChange = { viewModel.onLanguageChange(it) },
+                        selectedVoiceId = selectedVoiceId,
+                        onVoiceChange = { viewModel.onVoiceChange(it) },
+                        availableVoices = viewModel.availableVoices,
+                        speed = speed,
+                        onSpeedChange = { viewModel.onSpeedChange(it) },
+                        pitch = pitch,
+                        onPitchChange = { viewModel.onPitchChange(it) },
+                        syncDuration = syncDuration,
+                        onSyncDurationChange = { viewModel.onSyncDurationChange(it) },
+                        isSceneContext = sceneId != null,
+                        generationState = generationState,
+                        onGenerate = { viewModel.generateVoiceover() },
+                    )
+                1 ->
+                    AudioUploadTab(
+                        uploadTitle = uploadTitle,
+                        onTitleChange = { uploadTitle = it },
+                        speakerName = speakerName,
+                        onSpeakerNameChange = { speakerName = it },
+                        isRecitation = isRecitationChecked,
+                        onRecitationChange = { isRecitationChecked = it },
+                        uploadState = uploadState,
+                        onSimulateUpload = {
+                            val mockBytes = ByteArray(1024 * 50) // Mock audio bytes
+                            viewModel.uploadUserRecording(
+                                title = uploadTitle.ifBlank { "تسجيل صوتي خاص" },
+                                fileName = if (isRecitationChecked) "recitation.mp3" else "voice_record.mp3",
+                                fileBytes = mockBytes,
+                                mimeType = "audio/mpeg",
+                                durationMs = 8000L,
+                                speakerName = speakerName.ifBlank { null },
+                                isRecitation = isRecitationChecked,
+                            )
+                        },
+                    )
+                2 ->
+                    ProjectAudioListTab(
+                        audios = projectAudios,
+                        isPlaying = isPlaying,
+                        playingAudioId = playingAudioId,
+                        onPlayPause = { viewModel.playAudio(it) },
+                        onTrim = { viewModel.openTrimDialog(it) },
+                        onAttachToScene = { viewModel.attachToScene(it) },
+                        onDelete = { viewModel.deleteAudio(it) },
+                        isSceneContext = sceneId != null,
+                    )
             }
         }
     }
@@ -216,20 +224,20 @@ fun AudioStudioScreen(
                     Text(
                         text = audio.title,
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "المدة الكلية الأصلية: ${(audio.originalDurationMs / 1000f)} ثانية",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
                         text = "تحديد البداية والنهاية:",
-                        style = MaterialTheme.typography.labelMedium
+                        style = MaterialTheme.typography.labelMedium,
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -239,42 +247,42 @@ fun AudioStudioScreen(
                         onValueChange = { viewModel.onTrimRangeChanged(it) },
                         valueRange = 0f..audio.originalDurationMs.toFloat().coerceAtLeast(1000f),
                         steps = 20,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
                             text = "البداية: ${String.format("%.1f", trimRange.start / 1000f)} ث",
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.labelSmall,
                         )
                         Text(
                             text = "المدة بعد القص: ${String.format("%.1f", (trimRange.endInclusive - trimRange.start) / 1000f)} ث",
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary,
                         )
                         Text(
                             text = "النهاية: ${String.format("%.1f", trimRange.endInclusive / 1000f)} ث",
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.labelSmall,
                         )
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                     ) {
                         Row(
                             modifier = Modifier.padding(10.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = "سيتم تلقائيًا مزامنة وتحديث زمن عرض المشهد ليطابق المدة المقصوصة.",
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall,
                             )
                         }
                     }
@@ -287,9 +295,12 @@ fun AudioStudioScreen(
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.closeTrimDialog() }) {
-                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
+                    Text(
+                        androidx.compose.ui.res
+                            .stringResource(com.siraj.app.R.string.cancel),
+                    )
                 }
-            }
+            },
         )
     }
 }
@@ -311,37 +322,39 @@ fun AiVoiceGeneratorTab(
     onSyncDurationChange: (Boolean) -> Unit,
     isSceneContext: Boolean,
     generationState: AudioGenerationUiState,
-    onGenerate: () -> Unit
+    onGenerate: () -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         // Islamic Safeguard Warning Banner
         item {
             Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
-                ),
-                shape = RoundedCornerShape(12.dp)
+                colors =
+                    CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+                    ),
+                shape = RoundedCornerShape(12.dp),
             ) {
                 Row(
                     modifier = Modifier.padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
                         Icons.Default.CheckCircle,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp),
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = "الضابط الشرعي: الصوت الاصطناعي مخصص للتعليق السردي والشرح والتوضيح فقط، ويُمنع استخدامه كتلاوة للقرآن الكريم أو انتحال أصوات العلماء والقراء دون إذن.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                     )
                 }
             }
@@ -352,17 +365,18 @@ fun AiVoiceGeneratorTab(
             Text(
                 text = "نص التعليق الصوتي المراد توليده:",
                 style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(6.dp))
             OutlinedTextField(
                 value = narrationText,
                 onValueChange = onTextChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 110.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 110.dp),
                 placeholder = { Text("اكتب النص باللغة العربية مع التشكيل لضمان أعلى دقة في النطق الفصيح...") },
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
             )
         }
 
@@ -371,7 +385,7 @@ fun AiVoiceGeneratorTab(
             Text(
                 text = "اللهجة والنمط اللغوي:",
                 style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -380,9 +394,12 @@ fun AiVoiceGeneratorTab(
                         selected = selectedLanguage == lang,
                         onClick = { onLanguageChange(lang) },
                         label = { Text(lang.displayName) },
-                        leadingIcon = if (selectedLanguage == lang) {
-                            { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }
-                        } else null
+                        leadingIcon =
+                            if (selectedLanguage == lang) {
+                                { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                            } else {
+                                null
+                            },
                     )
                 }
             }
@@ -393,37 +410,50 @@ fun AiVoiceGeneratorTab(
             Text(
                 text = "اختيار المعلق الصوتي (Voices):",
                 style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 availableVoices.forEach { voice ->
                     val isSelected = selectedVoiceId == voice.id
                     Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onVoiceChange(voice.id) },
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable { onVoiceChange(voice.id) },
                         shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
-                        ),
-                        border = if (isSelected) androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+                            ),
+                        border =
+                            if (isSelected) {
+                                androidx.compose.foundation.BorderStroke(
+                                    2.dp,
+                                    MaterialTheme.colorScheme.primary,
+                                )
+                            } else {
+                                null
+                            },
                     ) {
                         Row(
                             modifier = Modifier.padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .background(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant),
-                                contentAlignment = Alignment.Center
+                                modifier =
+                                    Modifier
+                                        .size(40.dp)
+                                        .clip(CircleShape)
+                                        .background(
+                                            if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                                        ),
+                                contentAlignment = Alignment.Center,
                             ) {
                                 Icon(
                                     imageVector = if (voice.gender == AudioVoiceGender.MALE) Icons.Default.Face else Icons.Default.Star,
                                     contentDescription = null,
-                                    tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
                             Spacer(modifier = Modifier.width(12.dp))
@@ -431,17 +461,17 @@ fun AiVoiceGeneratorTab(
                                 Text(
                                     text = voice.name,
                                     style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
                                 )
                                 Text(
                                     text = voice.description,
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
                             RadioButton(
                                 selected = isSelected,
-                                onClick = { onVoiceChange(voice.id) }
+                                onClick = { onVoiceChange(voice.id) },
                             )
                         }
                     }
@@ -453,20 +483,20 @@ fun AiVoiceGeneratorTab(
         item {
             Card(
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
             ) {
                 Column(modifier = Modifier.padding(14.dp)) {
                     Text(
                         text = "سرعة الإلقاء: ${speed}x",
                         style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     Slider(
                         value = speed,
                         onValueChange = onSpeedChange,
                         valueRange = 0.7f..1.4f,
                         steps = 6,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -474,14 +504,14 @@ fun AiVoiceGeneratorTab(
                     Text(
                         text = "طبقة النبرة والوقار (Pitch): ${pitch}x",
                         style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     Slider(
                         value = pitch,
                         onValueChange = onPitchChange,
                         valueRange = 0.8f..1.2f,
                         steps = 4,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
             }
@@ -491,21 +521,22 @@ fun AiVoiceGeneratorTab(
         if (isSceneContext) {
             item {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable { onSyncDurationChange(!syncDuration) }
-                        .padding(vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { onSyncDurationChange(!syncDuration) }
+                            .padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Checkbox(
                         checked = syncDuration,
-                        onCheckedChange = { onSyncDurationChange(it) }
+                        onCheckedChange = { onSyncDurationChange(it) },
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "مزامنة مدة عرض المشهد تلقائيًا لتطابق طول التسجيل الصوتي المولد",
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
                     )
                 }
             }
@@ -517,17 +548,18 @@ fun AiVoiceGeneratorTab(
 
             Button(
                 onClick = onGenerate,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
                 shape = RoundedCornerShape(12.dp),
-                enabled = !isGenerating && narrationText.isNotBlank()
+                enabled = !isGenerating && narrationText.isNotBlank(),
             ) {
                 if (isGenerating) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(24.dp),
                         color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.dp
+                        strokeWidth = 2.dp,
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text("جارٍ توليد الصوت الفصيح...")
@@ -554,24 +586,25 @@ fun AudioUploadTab(
     isRecitation: Boolean,
     onRecitationChange: (Boolean) -> Unit,
     uploadState: AudioUploadUiState,
-    onSimulateUpload: () -> Unit
+    onSimulateUpload: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Card(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
         ) {
             Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Notifications, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = "يمكنك رفع تسجيل صوتي مباشر أو تلاوة قرآنية موثقة. الصيغ المدعومة: MP3, WAV, M4A, AAC بحجم يصل حتى 50 ميغابايت.",
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
                 )
             }
         }
@@ -582,7 +615,7 @@ fun AudioUploadTab(
             label = { Text("عنوان التسجيل الصوتي") },
             placeholder = { Text("مثال: تسجيل المقطع الأول بصوت فلان") },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
         )
 
         OutlinedTextField(
@@ -591,35 +624,36 @@ fun AudioUploadTab(
             label = { Text("اسم المتحدث أو القارئ (للتوثيق والنسب)") },
             placeholder = { Text("مثال: الشيخ مشاري العفاسي / اسم المستخدم") },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
         )
 
         Card(
             shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onRecitationChange(!isRecitation) }
-                    .padding(12.dp),
-                verticalAlignment = Alignment.CenterVertically
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { onRecitationChange(!isRecitation) }
+                        .padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Checkbox(
                     checked = isRecitation,
-                    onCheckedChange = { onRecitationChange(it) }
+                    onCheckedChange = { onRecitationChange(it) },
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(
                         text = "تصنيف كـ (تلاوة قرآنية موثقة)",
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     Text(
                         text = "يتم تمييز التلاوات القرآنية وتوثيق القارئ ورواية التلاوة لمنع الخلط مع الأصوات المولدة.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -631,17 +665,18 @@ fun AudioUploadTab(
 
         Button(
             onClick = onSimulateUpload,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
             shape = RoundedCornerShape(12.dp),
-            enabled = !isUploading
+            enabled = !isUploading,
         ) {
             if (isUploading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(24.dp),
                     color = MaterialTheme.colorScheme.onPrimary,
-                    strokeWidth = 2.dp
+                    strokeWidth = 2.dp,
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text("جارٍ رفع وتوثيق الملف الصوتي...")
@@ -663,37 +698,39 @@ fun ProjectAudioListTab(
     onTrim: (AudioItem) -> Unit,
     onAttachToScene: (AudioItem) -> Unit,
     onDelete: (AudioItem) -> Unit,
-    isSceneContext: Boolean
+    isSceneContext: Boolean,
 ) {
     if (audios.isEmpty()) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(32.dp),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(32.dp),
+            contentAlignment = Alignment.Center,
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
                     Icons.Default.Notifications,
                     contentDescription = null,
                     modifier = Modifier.size(64.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "لا توجد ملفات صوتية مولدة أو مرفوعة للمشروع بعد",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
             }
         }
     } else {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             items(audios, key = { it.id }) { audio ->
                 AudioItemCard(
@@ -703,7 +740,7 @@ fun ProjectAudioListTab(
                     onTrim = { onTrim(audio) },
                     onAttachToScene = { onAttachToScene(audio) },
                     onDelete = { onDelete(audio) },
-                    isSceneContext = isSceneContext
+                    isSceneContext = isSceneContext,
                 )
             }
         }
@@ -718,30 +755,31 @@ fun AudioItemCard(
     onTrim: () -> Unit,
     onAttachToScene: () -> Unit,
     onDelete: () -> Unit,
-    isSceneContext: Boolean
+    isSceneContext: Boolean,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 // Play / Pause Button
                 IconButton(
                     onClick = onPlayPause,
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary)
+                    modifier =
+                        Modifier
+                            .size(44.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary),
                 ) {
                     Icon(
                         imageVector = if (isPlaying) Icons.Default.Close else Icons.Default.PlayArrow,
                         contentDescription = if (isPlaying) "إيقاف" else "تشغيل",
-                        tint = MaterialTheme.colorScheme.onPrimary
+                        tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 }
 
@@ -753,7 +791,7 @@ fun AudioItemCard(
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -761,13 +799,13 @@ fun AudioItemCard(
                             text = "${String.format("%.1f", audio.trimmedDurationMs / 1000f)} ثانية",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "• ${audio.voiceName}",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -775,14 +813,23 @@ fun AudioItemCard(
                 // Type Badge
                 Surface(
                     shape = RoundedCornerShape(6.dp),
-                    color = if (audio.isAiGenerated) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer
+                    color = if (audio.isAiGenerated) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer,
                 ) {
                     Text(
-                        text = if (audio.isAiGenerated) "AI-VOICE" else if (audio.sourceType == AudioSourceType.QURAN_RECITATION) "تلاوة" else "تسجيل",
+                        text =
+                            if (audio.isAiGenerated) {
+                                "AI-VOICE"
+                            } else if (audio.sourceType ==
+                                AudioSourceType.QURAN_RECITATION
+                            ) {
+                                "تلاوة"
+                            } else {
+                                "تسجيل"
+                            },
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                         color = if (audio.isAiGenerated) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                     )
                 }
             }
@@ -794,7 +841,7 @@ fun AudioItemCard(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
 
@@ -803,7 +850,7 @@ fun AudioItemCard(
             Text(
                 text = audio.licenseNotice,
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outline
+                color = MaterialTheme.colorScheme.outline,
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -814,14 +861,21 @@ fun AudioItemCard(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(onClick = onTrim, modifier = Modifier.size(36.dp)) {
                     Icon(Icons.Default.Edit, contentDescription = "قص البداية والنهاية", modifier = Modifier.size(18.dp))
                 }
 
                 IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
-                    Icon(Icons.Default.Delete, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.delete), tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription =
+                            androidx.compose.ui.res
+                                .stringResource(com.siraj.app.R.string.delete),
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(18.dp),
+                    )
                 }
 
                 if (isSceneContext) {
@@ -829,7 +883,7 @@ fun AudioItemCard(
                     FilledTonalButton(
                         onClick = onAttachToScene,
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                        modifier = Modifier.height(36.dp)
+                        modifier = Modifier.height(36.dp),
                     ) {
                         Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))

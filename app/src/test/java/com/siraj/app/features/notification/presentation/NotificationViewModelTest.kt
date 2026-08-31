@@ -23,7 +23,6 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NotificationViewModelTest {
-
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var repository: NotificationRepository
     private lateinit var application: Application
@@ -34,20 +33,21 @@ class NotificationViewModelTest {
         Dispatchers.setMain(testDispatcher)
         repository = mockk(relaxed = true)
         application = mockk(relaxed = true)
-        
+
         // Setup mock notifications
-        val mockNotifications = listOf(
-            SirajNotification(
-                id = "notif1",
-                userId = "user1",
-                type = NotificationType.SYSTEM_MESSAGE,
-                title = "Title",
-                body = "Body",
-                readAt = null,
-                createdAt = 1000
+        val mockNotifications =
+            listOf(
+                SirajNotification(
+                    id = "notif1",
+                    userId = "user1",
+                    type = NotificationType.SYSTEM_MESSAGE,
+                    title = "Title",
+                    body = "Body",
+                    readAt = null,
+                    createdAt = 1000,
+                ),
             )
-        )
-        
+
         coEvery { repository.getNotificationsFlow(any()) } returns flowOf(mockNotifications)
         coEvery { repository.getUnreadCountFlow(any()) } returns flowOf(1)
         coEvery { repository.getPreferencesFlow(any()) } returns flowOf(NotificationPreferences())
@@ -59,24 +59,26 @@ class NotificationViewModelTest {
     }
 
     @Test
-    fun `initialization loads notifications correctly`() = runTest {
-        viewModel = NotificationViewModel(application, repository)
-        advanceUntilIdle()
+    fun `initialization loads notifications correctly`() =
+        runTest {
+            viewModel = NotificationViewModel(application, repository)
+            advanceUntilIdle()
 
-        assertEquals(1, viewModel.uiState.value.notifications.size)
-        assertEquals(1, viewModel.uiState.value.filteredNotifications.size)
-        assertEquals(1, viewModel.uiState.value.unreadCount)
-    }
+            assertEquals(1, viewModel.uiState.value.notifications.size)
+            assertEquals(1, viewModel.uiState.value.filteredNotifications.size)
+            assertEquals(1, viewModel.uiState.value.unreadCount)
+        }
 
     @Test
-    fun `setFilter updates filtered list correctly`() = runTest {
-        viewModel = NotificationViewModel(application, repository)
-        advanceUntilIdle()
+    fun `setFilter updates filtered list correctly`() =
+        runTest {
+            viewModel = NotificationViewModel(application, repository)
+            advanceUntilIdle()
 
-        viewModel.setFilter(NotificationFilter.REVIEW) // There are no REVIEW notifications in mock
-        advanceUntilIdle()
+            viewModel.setFilter(NotificationFilter.REVIEW) // There are no REVIEW notifications in mock
+            advanceUntilIdle()
 
-        assertEquals(0, viewModel.uiState.value.filteredNotifications.size)
-        assertEquals(NotificationFilter.REVIEW, viewModel.uiState.value.selectedFilter)
-    }
+            assertEquals(0, viewModel.uiState.value.filteredNotifications.size)
+            assertEquals(NotificationFilter.REVIEW, viewModel.uiState.value.selectedFilter)
+        }
 }

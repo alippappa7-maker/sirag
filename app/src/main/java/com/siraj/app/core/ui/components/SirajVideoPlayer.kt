@@ -1,6 +1,5 @@
 package com.siraj.app.core.ui.components
 
-import android.content.Context
 import android.net.Uri
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -54,7 +53,7 @@ import kotlin.time.Duration.Companion.milliseconds
 data class VideoCaption(
     val startMs: Long,
     val endMs: Long,
-    val text: String
+    val text: String,
 )
 
 @OptIn(UnstableApi::class)
@@ -69,7 +68,7 @@ fun SirajVideoPlayer(
     onDownloadClick: (() -> Unit)? = null,
     onShareClick: (() -> Unit)? = null,
     onFullScreenToggle: (() -> Unit)? = null,
-    aspectRatioMode: Int = AspectRatioFrameLayout.RESIZE_MODE_FIT
+    aspectRatioMode: Int = AspectRatioFrameLayout.RESIZE_MODE_FIT,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -87,44 +86,51 @@ fun SirajVideoPlayer(
     var showThumbnail by remember { mutableStateOf(true) }
     var captionsEnabled by remember { mutableStateOf(a11yConfig.showCaptions) }
 
-    val currentCaption = remember(currentPosition, captions, captionsEnabled) {
-        if (captionsEnabled && captions.isNotEmpty()) {
-            captions.find { currentPosition in it.startMs..it.endMs }?.text
-        } else null
-    }
+    val currentCaption =
+        remember(currentPosition, captions, captionsEnabled) {
+            if (captionsEnabled && captions.isNotEmpty()) {
+                captions.find { currentPosition in it.startMs..it.endMs }?.text
+            } else {
+                null
+            }
+        }
 
     // Initialize player
     DisposableEffect(context, videoUrl) {
-        val player = ExoPlayer.Builder(context).build().apply {
-            setMediaItem(MediaItem.fromUri(Uri.parse(videoUrl)))
-            playWhenReady = autoPlay
-            prepare()
-            addListener(object : Player.Listener {
-                override fun onIsPlayingChanged(isPlayingNow: Boolean) {
-                    isPlaying = isPlayingNow
-                    if (isPlayingNow) {
-                        showThumbnail = false
-                    }
-                }
+        val player =
+            ExoPlayer.Builder(context).build().apply {
+                setMediaItem(MediaItem.fromUri(Uri.parse(videoUrl)))
+                playWhenReady = autoPlay
+                prepare()
+                addListener(
+                    object : Player.Listener {
+                        override fun onIsPlayingChanged(isPlayingNow: Boolean) {
+                            isPlaying = isPlayingNow
+                            if (isPlayingNow) {
+                                showThumbnail = false
+                            }
+                        }
 
-                override fun onPlaybackStateChanged(playbackState: Int) {
-                    isBuffering = playbackState == Player.STATE_BUFFERING
-                    if (playbackState == Player.STATE_READY) {
-                        duration = this@apply.duration.coerceAtLeast(0L)
-                    }
-                }
+                        override fun onPlaybackStateChanged(playbackState: Int) {
+                            isBuffering = playbackState == Player.STATE_BUFFERING
+                            if (playbackState == Player.STATE_READY) {
+                                duration = this@apply.duration.coerceAtLeast(0L)
+                            }
+                        }
 
-                override fun onPlayerError(playbackException: PlaybackException) {
-                    error = if (playbackException.errorCode == PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED) {
-                        "خطأ في الاتصال بالشبكة. يرجى التحقق من اتصالك بالإنترنت."
-                    } else if (playbackException.errorCode == PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS) {
-                        "انتهت صلاحية الرابط أو تم رفض الوصول. يرجى التحديث."
-                    } else {
-                        "خطأ في تشغيل الفيديو: ${playbackException.message}"
-                    }
-                }
-            })
-        }
+                        override fun onPlayerError(playbackException: PlaybackException) {
+                            error =
+                                if (playbackException.errorCode == PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED) {
+                                    "خطأ في الاتصال بالشبكة. يرجى التحقق من اتصالك بالإنترنت."
+                                } else if (playbackException.errorCode == PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS) {
+                                    "انتهت صلاحية الرابط أو تم رفض الوصول. يرجى التحديث."
+                                } else {
+                                    "خطأ في تشغيل الفيديو: ${playbackException.message}"
+                                }
+                        }
+                    },
+                )
+            }
         exoPlayer = player
 
         onDispose {
@@ -135,11 +141,12 @@ fun SirajVideoPlayer(
 
     // Lifecycle handling (pause on background)
     DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_PAUSE || event == Lifecycle.Event.ON_STOP) {
-                exoPlayer?.pause()
+        val observer =
+            LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_PAUSE || event == Lifecycle.Event.ON_STOP) {
+                    exoPlayer?.pause()
+                }
             }
-        }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
@@ -165,11 +172,12 @@ fun SirajVideoPlayer(
     }
 
     Box(
-        modifier = modifier
-            .background(Color.Black)
-            .clickable(
-                onClickLabel = if (showControls) "إخفاء عناصر التحكم بالفيديو" else "إظهار عناصر التحكم بالفيديو"
-            ) { showControls = !showControls }
+        modifier =
+            modifier
+                .background(Color.Black)
+                .clickable(
+                    onClickLabel = if (showControls) "إخفاء عناصر التحكم بالفيديو" else "إظهار عناصر التحكم بالفيديو",
+                ) { showControls = !showControls },
     ) {
         // Video Surface
         exoPlayer?.let { player ->
@@ -179,13 +187,14 @@ fun SirajVideoPlayer(
                         this.player = player
                         useController = false
                         resizeMode = aspectRatioMode
-                        layoutParams = FrameLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT
-                        )
+                        layoutParams =
+                            FrameLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                            )
                     }
                 },
-                modifier = Modifier.matchParentSize()
+                modifier = Modifier.matchParentSize(),
             )
         }
 
@@ -195,20 +204,21 @@ fun SirajVideoPlayer(
                 model = thumbnailUrl,
                 contentDescription = thumbnailAltText,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.matchParentSize()
+                modifier = Modifier.matchParentSize(),
             )
         }
 
         // Closed Captions / Subtitles Overlay (Accessible High-Contrast Subtitle Banner)
         if (!currentCaption.isNullOrBlank()) {
             Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = if (showControls) 80.dp else 24.dp, start = 16.dp, end = 16.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color.Black.copy(alpha = 0.85f))
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .sirajLiveRegion(isAssertive = false)
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = if (showControls) 80.dp else 24.dp, start = 16.dp, end = 16.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color.Black.copy(alpha = 0.85f))
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .sirajLiveRegion(isAssertive = false),
             ) {
                 Text(
                     text = currentCaption,
@@ -216,7 +226,7 @@ fun SirajVideoPlayer(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge,
                 )
             }
         }
@@ -225,33 +235,35 @@ fun SirajVideoPlayer(
         if (isBuffering) {
             CircularProgressIndicator(
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .semantics { contentDescription = "جاري تحميل بيانات الفيديو مؤقتاً" }
+                modifier =
+                    Modifier
+                        .align(Alignment.Center)
+                        .semantics { contentDescription = "جاري تحميل بيانات الفيديو مؤقتاً" },
             )
         }
 
         // Error Message
         if (error != null) {
             Column(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(16.dp)
-                    .sirajLiveRegion(isAssertive = true),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier =
+                    Modifier
+                        .align(Alignment.Center)
+                        .padding(16.dp)
+                        .sirajLiveRegion(isAssertive = true),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Icon(
                     imageVector = Icons.Default.ErrorOutline,
                     contentDescription = "أيقونة تنبيه خطأ التشغيل",
                     tint = Color.White,
-                    modifier = Modifier.size(48.dp)
+                    modifier = Modifier.size(48.dp),
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = error ?: "",
                     color = Color.White,
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
@@ -260,7 +272,7 @@ fun SirajVideoPlayer(
                         exoPlayer?.prepare()
                         exoPlayer?.play()
                     },
-                    modifier = Modifier.sirajTouchTarget()
+                    modifier = Modifier.sirajTouchTarget(),
                 ) {
                     Text("إعادة المحاولة")
                 }
@@ -271,42 +283,44 @@ fun SirajVideoPlayer(
                 visible = showControls,
                 enter = if (a11yConfig.reduceMotion) EnterTransition.None else fadeIn(),
                 exit = if (a11yConfig.reduceMotion) ExitTransition.None else fadeOut(),
-                modifier = Modifier.matchParentSize()
+                modifier = Modifier.matchParentSize(),
             ) {
                 Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .background(Color.Black.copy(alpha = 0.55f))
+                    modifier =
+                        Modifier
+                            .matchParentSize()
+                            .background(Color.Black.copy(alpha = 0.55f)),
                 ) {
                     // Top Bar (Download, Share)
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                            .align(Alignment.TopEnd),
-                        horizontalArrangement = Arrangement.End
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                                .align(Alignment.TopEnd),
+                        horizontalArrangement = Arrangement.End,
                     ) {
                         if (onDownloadClick != null) {
                             IconButton(
                                 onClick = onDownloadClick,
-                                modifier = Modifier.sirajTouchTarget()
+                                modifier = Modifier.sirajTouchTarget(),
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Download,
                                     contentDescription = "تنزيل الفيديو على الجهاز",
-                                    tint = Color.White
+                                    tint = Color.White,
                                 )
                             }
                         }
                         if (onShareClick != null) {
                             IconButton(
                                 onClick = onShareClick,
-                                modifier = Modifier.sirajTouchTarget()
+                                modifier = Modifier.sirajTouchTarget(),
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Share,
                                     contentDescription = "مشاركة الفيديو",
-                                    tint = Color.White
+                                    tint = Color.White,
                                 )
                             }
                         }
@@ -314,45 +328,48 @@ fun SirajVideoPlayer(
 
                     // Play/Pause Center Button
                     Box(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .clip(CircleShape)
-                            .background(Color.Black.copy(alpha = 0.65f))
-                            .clickable(
-                                onClickLabel = if (isPlaying) "إيقاف الفيديو مؤقتاً" else "تشغيل الفيديو",
-                                role = Role.Button
-                            ) {
-                                if (isPlaying) exoPlayer?.pause() else {
-                                    showThumbnail = false
-                                    exoPlayer?.play()
-                                }
-                            }
-                            .padding(16.dp)
-                            .sirajTouchTarget()
+                        modifier =
+                            Modifier
+                                .align(Alignment.Center)
+                                .clip(CircleShape)
+                                .background(Color.Black.copy(alpha = 0.65f))
+                                .clickable(
+                                    onClickLabel = if (isPlaying) "إيقاف الفيديو مؤقتاً" else "تشغيل الفيديو",
+                                    role = Role.Button,
+                                ) {
+                                    if (isPlaying) {
+                                        exoPlayer?.pause()
+                                    } else {
+                                        showThumbnail = false
+                                        exoPlayer?.play()
+                                    }
+                                }.padding(16.dp)
+                                .sirajTouchTarget(),
                     ) {
                         Icon(
                             imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                             contentDescription = if (isPlaying) "إيقاف مؤقت" else "تشغيل",
                             tint = Color.White,
-                            modifier = Modifier.size(48.dp)
+                            modifier = Modifier.size(48.dp),
                         )
                     }
 
                     // Bottom Bar (Progress, Time, Speed, Captions, Fullscreen, Mute)
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.BottomCenter)
-                            .padding(16.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.BottomCenter)
+                                .padding(16.dp),
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
                                 text = formatTime(currentPosition),
                                 color = Color.White,
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall,
                             )
                             Slider(
                                 value = if (duration > 0) currentPosition.toFloat() / duration else 0f,
@@ -361,29 +378,34 @@ fun SirajVideoPlayer(
                                     currentPosition = newPos
                                     exoPlayer?.seekTo(newPos)
                                 },
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(horizontal = 8.dp)
-                                    .semantics {
-                                        contentDescription = "شريط التقدم الزمني، الموقع الحالي ${formatTime(currentPosition)} من إجمالي ${formatTime(duration)}"
-                                    },
-                                colors = SliderDefaults.colors(
-                                    thumbColor = MaterialTheme.colorScheme.primary,
-                                    activeTrackColor = MaterialTheme.colorScheme.primary,
-                                    inactiveTrackColor = Color.White.copy(alpha = 0.5f)
-                                )
+                                modifier =
+                                    Modifier
+                                        .weight(1f)
+                                        .padding(horizontal = 8.dp)
+                                        .semantics {
+                                            contentDescription =
+                                                "شريط التقدم الزمني، الموقع الحالي ${formatTime(
+                                                    currentPosition,
+                                                )} من إجمالي ${formatTime(duration)}"
+                                        },
+                                colors =
+                                    SliderDefaults.colors(
+                                        thumbColor = MaterialTheme.colorScheme.primary,
+                                        activeTrackColor = MaterialTheme.colorScheme.primary,
+                                        inactiveTrackColor = Color.White.copy(alpha = 0.5f),
+                                    ),
                             )
                             Text(
                                 text = formatTime(duration),
                                 color = Color.White,
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall,
                             )
                         }
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             // Left actions (Mute & Speed)
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -392,31 +414,32 @@ fun SirajVideoPlayer(
                                         isMuted = !isMuted
                                         exoPlayer?.volume = if (isMuted) 0f else 1f
                                     },
-                                    modifier = Modifier.sirajTouchTarget()
+                                    modifier = Modifier.sirajTouchTarget(),
                                 ) {
                                     Icon(
                                         imageVector = if (isMuted) Icons.AutoMirrored.Filled.VolumeOff else Icons.AutoMirrored.Filled.VolumeUp,
                                         contentDescription = if (isMuted) "إلغاء كتم الصوت" else "كتم الصوت",
-                                        tint = Color.White
+                                        tint = Color.White,
                                     )
                                 }
                                 TextButton(
                                     onClick = {
-                                        playbackSpeed = when (playbackSpeed) {
-                                            1.0f -> 1.25f
-                                            1.25f -> 1.5f
-                                            1.5f -> 2.0f
-                                            2.0f -> 0.75f
-                                            else -> 1.0f
-                                        }
+                                        playbackSpeed =
+                                            when (playbackSpeed) {
+                                                1.0f -> 1.25f
+                                                1.25f -> 1.5f
+                                                1.5f -> 2.0f
+                                                2.0f -> 0.75f
+                                                else -> 1.0f
+                                            }
                                         exoPlayer?.setPlaybackSpeed(playbackSpeed)
                                     },
-                                    modifier = Modifier.sirajTouchTarget()
+                                    modifier = Modifier.sirajTouchTarget(),
                                 ) {
                                     Text(
                                         text = "${playbackSpeed}x",
                                         color = Color.White,
-                                        style = MaterialTheme.typography.labelLarge
+                                        style = MaterialTheme.typography.labelLarge,
                                     )
                                 }
                             }
@@ -426,12 +449,12 @@ fun SirajVideoPlayer(
                                 if (captions.isNotEmpty()) {
                                     IconButton(
                                         onClick = { captionsEnabled = !captionsEnabled },
-                                        modifier = Modifier.sirajTouchTarget()
+                                        modifier = Modifier.sirajTouchTarget(),
                                     ) {
                                         Icon(
                                             imageVector = if (captionsEnabled) Icons.Default.ClosedCaption else Icons.Default.ClosedCaptionDisabled,
                                             contentDescription = if (captionsEnabled) "إخفاء الترجمة والنصوص التوضيحية" else "إظهار الترجمة والنصوص التوضيحية",
-                                            tint = if (captionsEnabled) MaterialTheme.colorScheme.primary else Color.White
+                                            tint = if (captionsEnabled) MaterialTheme.colorScheme.primary else Color.White,
                                         )
                                     }
                                 }
@@ -439,12 +462,12 @@ fun SirajVideoPlayer(
                                 if (onFullScreenToggle != null) {
                                     IconButton(
                                         onClick = onFullScreenToggle,
-                                        modifier = Modifier.sirajTouchTarget()
+                                        modifier = Modifier.sirajTouchTarget(),
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Fullscreen,
                                             contentDescription = "تبديل وضع ملء الشاشة",
-                                            tint = Color.White
+                                            tint = Color.White,
                                         )
                                     }
                                 }

@@ -1,7 +1,6 @@
 package com.siraj.app.features.project.presentation.assets
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -37,7 +36,7 @@ fun AssetLibraryScreen(
     onNavigateToAiGenerator: () -> Unit = {},
     onNavigateToAudioStudio: () -> Unit = {},
     onNavigateToSoundtracks: () -> Unit = {},
-    viewModel: AssetLibraryViewModel = viewModel(factory = AssetLibraryViewModelFactory(projectId))
+    viewModel: AssetLibraryViewModel = viewModel(factory = AssetLibraryViewModelFactory(projectId)),
 ) {
     val assetsState by viewModel.assetsState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -62,19 +61,24 @@ fun AssetLibraryScreen(
                     IconButton(onClick = onNavigateToAudioStudio) { Icon(Icons.Default.Notifications, "الاستوديو الصوتي") }
                     IconButton(onClick = onNavigateToAiGenerator) { Icon(Icons.Default.Add, "توليد بالذكاء الاصطناعي") }
                     IconButton(onClick = onNavigateToSearch) { Icon(Icons.Default.Search, "بحث عن وسائط خارجية") }
-                }
+                },
             )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { showUploadDialog = true }) {
                 Icon(Icons.Default.Add, "إضافة أصل")
             }
-        }
+        },
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
             when (val state = assetsState) {
                 is Resource.Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                is Resource.Error -> Text(state.message, color = MaterialTheme.colorScheme.error, modifier = Modifier.align(Alignment.Center))
+                is Resource.Error ->
+                    Text(
+                        state.message,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.align(Alignment.Center),
+                    )
                 is Resource.Success -> {
                     val assets = state.data
                     if (assets.isEmpty()) {
@@ -84,13 +88,13 @@ fun AssetLibraryScreen(
                             columns = GridCells.Adaptive(150.dp),
                             contentPadding = PaddingValues(16.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
                         ) {
                             items(assets) { asset ->
                                 AssetCard(
                                     asset = asset,
                                     onDelete = { viewModel.deleteAsset(asset) },
-                                    onEdit = { /* Placeholder for edit metadata */ }
+                                    onEdit = { /* Placeholder for edit metadata */ },
                                 )
                             }
                         }
@@ -105,7 +109,7 @@ fun AssetLibraryScreen(
                 onUpload = { name, type, source, license, attr ->
                     viewModel.uploadMockAsset(name, type, source, license, attr)
                     showUploadDialog = false
-                }
+                },
             )
         }
     }
@@ -115,38 +119,44 @@ fun AssetLibraryScreen(
 fun AssetCard(
     asset: Asset,
     onDelete: () -> Unit,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier.weight(1f).fillMaxWidth().background(Color.DarkGray),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
-                val icon = when (asset.type) {
-                    AssetType.IMAGE -> Icons.Default.Face
-                    AssetType.VIDEO -> Icons.Default.PlayArrow
-                    AssetType.AUDIO -> Icons.Default.Notifications
-                    else -> Icons.Default.Face
-                }
+                val icon =
+                    when (asset.type) {
+                        AssetType.IMAGE -> Icons.Default.Face
+                        AssetType.VIDEO -> Icons.Default.PlayArrow
+                        AssetType.AUDIO -> Icons.Default.Notifications
+                        else -> Icons.Default.Face
+                    }
                 Icon(icon, contentDescription = null, modifier = Modifier.size(48.dp), tint = Color.White)
             }
             Row(
                 modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text("نوع: ${asset.type.name}", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
                     Text(if (asset.sizeBytes > 0) "${asset.sizeBytes / 1024} KB" else "", style = MaterialTheme.typography.labelSmall)
                 }
                 Row {
-                    IconButton(onClick = onEdit, modifier = Modifier.size(24.dp)) { Icon(Icons.Default.Edit, "تعديل", modifier = Modifier.size(16.dp)) }
+                    IconButton(
+                        onClick = onEdit,
+                        modifier = Modifier.size(24.dp),
+                    ) { Icon(Icons.Default.Edit, "تعديل", modifier = Modifier.size(16.dp)) }
                     Spacer(modifier = Modifier.width(8.dp))
-                    IconButton(onClick = onDelete, modifier = Modifier.size(24.dp)) { Icon(Icons.Default.Delete, "حذف", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(16.dp)) }
+                    IconButton(onClick = onDelete, modifier = Modifier.size(24.dp)) {
+                        Icon(Icons.Default.Delete, "حذف", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(16.dp))
+                    }
                 }
             }
         }
@@ -156,33 +166,51 @@ fun AssetCard(
 @Composable
 fun UploadAssetDialog(
     onDismiss: () -> Unit,
-    onUpload: (name: String, type: AssetType, source: String, license: String, attribution: String) -> Unit
+    onUpload: (name: String, type: AssetType, source: String, license: String, attribution: String) -> Unit,
 ) {
     var name by remember { mutableStateOf("") }
     var type by remember { mutableStateOf(AssetType.IMAGE) }
     var source by remember { mutableStateOf("") }
     var license by remember { mutableStateOf("") }
     var attribution by remember { mutableStateOf("") }
-    
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("رفع وسائط جديدة") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("اسم الملف (للمحاكاة)") })
-                
+
                 // Type selection (Simple row of chips for brevity)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(selected = type == AssetType.IMAGE, onClick = { type = AssetType.IMAGE }, label = { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.image)) })
-                    FilterChip(selected = type == AssetType.VIDEO, onClick = { type = AssetType.VIDEO }, label = { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.video)) })
+                    FilterChip(selected = type == AssetType.IMAGE, onClick = {
+                        type = AssetType.IMAGE
+                    }, label = {
+                        Text(
+                            androidx.compose.ui.res
+                                .stringResource(com.siraj.app.R.string.image),
+                        )
+                    })
+                    FilterChip(selected = type == AssetType.VIDEO, onClick = {
+                        type = AssetType.VIDEO
+                    }, label = {
+                        Text(
+                            androidx.compose.ui.res
+                                .stringResource(com.siraj.app.R.string.video),
+                        )
+                    })
                     FilterChip(selected = type == AssetType.AUDIO, onClick = { type = AssetType.AUDIO }, label = { Text("صوت") })
                 }
-                
+
                 OutlinedTextField(value = source, onValueChange = { source = it }, label = { Text("المصدر (رابط/اسم)") })
                 OutlinedTextField(value = license, onValueChange = { license = it }, label = { Text("الترخيص (مثال: CC-BY, مرخص)") })
                 OutlinedTextField(value = attribution, onValueChange = { attribution = it }, label = { Text("نص النسبة (Attribution)") })
-                
-                Text("سيتم التحقق من الحجم والنوع برمجياً", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error)
+
+                Text(
+                    "سيتم التحقق من الحجم والنوع برمجياً",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
             }
         },
         confirmButton = {
@@ -191,7 +219,12 @@ fun UploadAssetDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel)) }
-        }
+            TextButton(onClick = onDismiss) {
+                Text(
+                    androidx.compose.ui.res
+                        .stringResource(com.siraj.app.R.string.cancel),
+                )
+            }
+        },
     )
 }

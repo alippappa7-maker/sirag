@@ -5,7 +5,10 @@ import java.util.UUID
 /**
  * Service identification for health checking and telemetry.
  */
-enum class MonitoredService(val displayNameArabic: String, val category: ServiceCategory) {
+enum class MonitoredService(
+    val displayNameArabic: String,
+    val category: ServiceCategory,
+) {
     AUTHENTICATION("المصادقة (Auth)", ServiceCategory.CORE_FIREBASE),
     FIRESTORE("قاعدة البيانات (Firestore)", ServiceCategory.CORE_FIREBASE),
     STORAGE("التخزين السحابي (Cloud Storage)", ServiceCategory.CORE_FIREBASE),
@@ -18,40 +21,50 @@ enum class MonitoredService(val displayNameArabic: String, val category: Service
     VIDEO_RENDERING_QUEUE("طابور معالجة وتصيير الفيديو", ServiceCategory.MEDIA_SERVICES),
     FCM_NOTIFICATIONS("الإشعارات السحابية (FCM)", ServiceCategory.MESSAGING),
     GOOGLE_PLAY_BILLING("التحقق من مشتريات Google Play", ServiceCategory.STORE_VERIFICATION),
-    APPLE_APP_STORE_BILLING("التحقق من مشتريات Apple StoreKit", ServiceCategory.STORE_VERIFICATION)
+    APPLE_APP_STORE_BILLING("التحقق من مشتريات Apple StoreKit", ServiceCategory.STORE_VERIFICATION),
 }
 
-enum class ServiceCategory(val displayNameArabic: String) {
+enum class ServiceCategory(
+    val displayNameArabic: String,
+) {
     CORE_FIREBASE("خدمات Firebase الأساسية"),
     BACKEND_COMPUTE("خدمات المعالجة والـ Backend"),
     AI_PROVIDERS("مزودو الذكاء الاصطناعي"),
     EXTERNAL_APIS("الواجهات الخارجية والقرآنية"),
     MEDIA_SERVICES("خدمات الصوت والوسائط والفيديو"),
     MESSAGING("المراسلة والإشعارات"),
-    STORE_VERIFICATION("التحقق من اشتراكات المتاجر")
+    STORE_VERIFICATION("التحقق من اشتراكات المتاجر"),
 }
 
-enum class ServiceHealthStatus(val displayNameArabic: String, val severityLevel: Int) {
+enum class ServiceHealthStatus(
+    val displayNameArabic: String,
+    val severityLevel: Int,
+) {
     HEALTHY("سليمة وتعمل بكفاءة", 0),
     DEGRADED("أداء منخفض / تأخير استجابة", 1),
     UNAVAILABLE("معطلة / انقطاع في الخدمة", 2),
     MAINTENANCE("تحت الصيانة المجدولة", 3),
-    CIRCUIT_BROKEN_DISABLED("معطلة احترازياً (Circuit Broken)", 4)
+    CIRCUIT_BROKEN_DISABLED("معطلة احترازياً (Circuit Broken)", 4),
 }
 
-enum class IncidentSeverity(val displayNameArabic: String, val level: Int) {
+enum class IncidentSeverity(
+    val displayNameArabic: String,
+    val level: Int,
+) {
     P0_CRITICAL("حرجة جداً (P0) - انقطاع شامل", 0),
     P1_HIGH("عالية (P1) - تأثر وظيفة محورية", 1),
     P2_MEDIUM("متوسطة (P2) - انخفاض أداء أو مزود بديل متاح", 2),
-    P3_LOW("منخفضة (P3) - عطل طفيف أو غير مؤثر على المستخدمين", 3)
+    P3_LOW("منخفضة (P3) - عطل طفيف أو غير مؤثر على المستخدمين", 3),
 }
 
-enum class IncidentState(val displayNameArabic: String) {
+enum class IncidentState(
+    val displayNameArabic: String,
+) {
     INVESTIGATING("قيد التحقيق والفحص"),
     IDENTIFIED("تم تحديد سبب العطل"),
     MITIGATING("جارٍ التخفيف والتحويل للمزود البديل"),
     RESOLVED("تم حل العطل واكتمال الفحص"),
-    MONITORING("مرحلة المراقبة بعد الإصلاح")
+    MONITORING("مرحلة المراقبة بعد الإصلاح"),
 }
 
 data class ServiceHealthCheck(
@@ -69,7 +82,7 @@ data class ServiceHealthCheck(
     val storageUsageGb: Double = 0.0,
     val failedPaymentsCountLastHour: Int = 0,
     val statusMessageArabic: String = "الخدمة تعمل ضمن الحدود التشغيلية الطبيعية",
-    val runbookKey: String = service.name.lowercase()
+    val runbookKey: String = service.name.lowercase(),
 )
 
 data class ServiceIncident(
@@ -85,7 +98,7 @@ data class ServiceIncident(
     val mitigationActionArabic: String? = null,
     val runbookUrl: String = "INCIDENT_RUNBOOK.md#${service.name.lowercase()}",
     val affectedUsersEstimate: Int = 0,
-    val timelineEvents: List<IncidentTimelineEvent> = emptyList()
+    val timelineEvents: List<IncidentTimelineEvent> = emptyList(),
 )
 
 data class IncidentTimelineEvent(
@@ -93,7 +106,7 @@ data class IncidentTimelineEvent(
     val timestamp: Long = System.currentTimeMillis(),
     val state: IncidentState,
     val notesArabic: String,
-    val updatedBy: String = "Automated Health Probe"
+    val updatedBy: String = "Automated Health Probe",
 )
 
 data class MonitoringAlert(
@@ -105,7 +118,7 @@ data class MonitoringAlert(
     val timestamp: Long = System.currentTimeMillis(),
     val incidentId: String? = null,
     val isAcknowledged: Boolean = false,
-    val deduplicationKey: String = "${service.name}_${severity.name}"
+    val deduplicationKey: String = "${service.name}_${severity.name}",
 )
 
 data class SystemTelemetryOverview(
@@ -121,5 +134,5 @@ data class SystemTelemetryOverview(
     val totalStorageUsageTb: Double = 1.48,
     val failedPurchasesLast24h: Int = 0,
     val activeIncidentsCount: Int = 0,
-    val lastProbeTimestamp: Long = System.currentTimeMillis()
+    val lastProbeTimestamp: Long = System.currentTimeMillis(),
 )

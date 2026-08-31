@@ -23,7 +23,7 @@ class AdminSecurityViewModel(
 
     private val _activeSessions = MutableStateFlow<List<AdminSession>>(emptyList())
     val activeSessions: StateFlow<List<AdminSession>> = _activeSessions.asStateFlow()
-    
+
     private val _auditLogs = MutableStateFlow<List<SecurityAuditLog>>(emptyList())
     val auditLogs: StateFlow<List<SecurityAuditLog>> = _auditLogs.asStateFlow()
 
@@ -37,19 +37,19 @@ class AdminSecurityViewModel(
             if (configRes is Resource.Success) {
                 _config.value = configRes.data
             }
-            
+
             repository.getActiveSessions(currentAdminId).collect { sessions ->
                 _activeSessions.value = sessions
             }
         }
-        
+
         viewModelScope.launch {
             repository.getAuditLogs().collect { logs ->
                 _auditLogs.value = logs
             }
         }
     }
-    
+
     fun revokeSession(sessionId: String) {
         viewModelScope.launch {
             repository.revokeSession(sessionId, currentAdminId)

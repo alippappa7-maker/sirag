@@ -5,5 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface BetaFeedbackRepository {
     suspend fun submitFeedback(feedback: BetaFeedback): Result<String>
+
     fun getMyFeedback(userId: String): Flow<List<BetaFeedback>>
 }

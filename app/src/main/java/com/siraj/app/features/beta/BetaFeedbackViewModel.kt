@@ -33,14 +33,13 @@ data class BetaFeedbackUiState(
     val deviceModel: String = "${Build.MANUFACTURER} ${Build.MODEL}",
     val androidVersion: String = "Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})",
     val appVersion: String = EnvironmentConfig.versionName,
-    val currentRoute: String = ""
+    val currentRoute: String = "",
 )
 
 class BetaFeedbackViewModel(
     private val feedbackRepository: BetaFeedbackRepository = FirebaseBetaFeedbackRepositoryImpl(),
-    private val authRepository: AuthRepository = FirebaseAuthRepositoryImpl()
+    private val authRepository: AuthRepository = FirebaseAuthRepositoryImpl(),
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(BetaFeedbackUiState())
     val uiState: StateFlow<BetaFeedbackUiState> = _uiState.asStateFlow()
 
@@ -105,21 +104,22 @@ class BetaFeedbackViewModel(
             val userEmail = user?.email ?: "guest@tester.siraj.app"
             val userName = user?.name ?: "مختبر تجريبي"
 
-            val feedback = BetaFeedback(
-                userId = userId,
-                userEmail = userEmail,
-                userName = userName,
-                category = state.category,
-                severity = state.severity,
-                title = state.title.trim(),
-                description = state.description.trim(),
-                stepsToReproduce = state.stepsToReproduce.trim(),
-                currentRoute = state.currentRoute,
-                appVersion = state.appVersion,
-                deviceModel = state.deviceModel,
-                androidOsVersion = state.androidVersion,
-                timestamp = System.currentTimeMillis()
-            )
+            val feedback =
+                BetaFeedback(
+                    userId = userId,
+                    userEmail = userEmail,
+                    userName = userName,
+                    category = state.category,
+                    severity = state.severity,
+                    title = state.title.trim(),
+                    description = state.description.trim(),
+                    stepsToReproduce = state.stepsToReproduce.trim(),
+                    currentRoute = state.currentRoute,
+                    appVersion = state.appVersion,
+                    deviceModel = state.deviceModel,
+                    androidOsVersion = state.androidVersion,
+                    timestamp = System.currentTimeMillis(),
+                )
 
             val result = feedbackRepository.submitFeedback(feedback)
             if (result.isSuccess) {
@@ -130,7 +130,7 @@ class BetaFeedbackViewModel(
                         successMessage = "تم إرسال ملاحظتك بنجاح لفريق التطوير. جزاك الله خيراً!",
                         title = "",
                         description = "",
-                        stepsToReproduce = ""
+                        stepsToReproduce = "",
                     )
                 }
                 onComplete()
@@ -139,7 +139,7 @@ class BetaFeedbackViewModel(
                     it.copy(
                         isSubmitting = false,
                         isSuccess = false,
-                        errorMessage = "تعذر إرسال الملاحظة: ${result.exceptionOrNull()?.localizedMessage ?: "خطأ غير معروف"}"
+                        errorMessage = "تعذر إرسال الملاحظة: ${result.exceptionOrNull()?.localizedMessage ?: "خطأ غير معروف"}",
                     )
                 }
             }
@@ -149,10 +149,8 @@ class BetaFeedbackViewModel(
 
 class BetaFeedbackViewModelFactory(
     private val feedbackRepository: BetaFeedbackRepository = FirebaseBetaFeedbackRepositoryImpl(),
-    private val authRepository: AuthRepository = FirebaseAuthRepositoryImpl()
+    private val authRepository: AuthRepository = FirebaseAuthRepositoryImpl(),
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return BetaFeedbackViewModel(feedbackRepository, authRepository) as T
-    }
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = BetaFeedbackViewModel(feedbackRepository, authRepository) as T
 }

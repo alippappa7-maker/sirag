@@ -20,13 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.siraj.app.domain.models.Source
-import com.siraj.app.domain.models.SourceType
-import com.siraj.app.domain.models.SourceVerificationStatus
 import com.siraj.app.domain.models.correction.*
 import com.siraj.app.domain.models.review.ShariaClaim
 import com.siraj.app.domain.models.review.ShariaReviewStatus
@@ -39,7 +36,7 @@ import com.siraj.app.ui.theme.statusColors
 fun ContentCorrectionHistoryScreen(
     viewModel: ContentCorrectionViewModel,
     onNavigateBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var selectedTab by remember { mutableIntStateOf(0) }
@@ -67,12 +64,12 @@ fun ContentCorrectionHistoryScreen(
                         Text(
                             text = "نظام التصحيح والإصدارات الشرعية",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                         Text(
                             text = "سجل التعديلات الثابت ومتابعة الأثر والمصادر",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 },
@@ -80,7 +77,7 @@ fun ContentCorrectionHistoryScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "الرجوع"
+                            contentDescription = "الرجوع",
                         )
                     }
                 },
@@ -89,13 +86,14 @@ fun ContentCorrectionHistoryScreen(
                         Icon(
                             imageVector = Icons.Default.AddCircleOutline,
                             contentDescription = "طلب تصحيح جديد",
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                    ),
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -105,14 +103,15 @@ fun ContentCorrectionHistoryScreen(
                 icon = { Icon(Icons.Default.EditNote, contentDescription = null) },
                 text = { Text("طلب تصحيح وإصدار جديد") },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             )
-        }
+        },
     ) { paddingValues ->
         Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+            modifier =
+                modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
         ) {
             // Tabs
             PrimaryTabRow(selectedTabIndex = selectedTab) {
@@ -120,25 +119,25 @@ fun ContentCorrectionHistoryScreen(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
                     text = { Text("الإصدارات (${uiState.versions.size})") },
-                    icon = { Icon(Icons.Default.History, contentDescription = null) }
+                    icon = { Icon(Icons.Default.History, contentDescription = null) },
                 )
                 Tab(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
                     text = { Text("إشعارات التصحيح (${uiState.notices.size})") },
-                    icon = { Icon(Icons.Default.NotificationsActive, contentDescription = null) }
+                    icon = { Icon(Icons.Default.NotificationsActive, contentDescription = null) },
                 )
                 Tab(
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
                     text = { Text("مقارنة المصادر (${uiState.sourceRevisions.size})") },
-                    icon = { Icon(Icons.Default.MenuBook, contentDescription = null) }
+                    icon = { Icon(Icons.Default.MenuBook, contentDescription = null) },
                 )
                 Tab(
                     selected = selectedTab == 3,
                     onClick = { selectedTab = 3 },
                     text = { Text("المحتوى المتأثر (${uiState.affectedAssets.size})") },
-                    icon = { Icon(Icons.Default.AutoFixHigh, contentDescription = null) }
+                    icon = { Icon(Icons.Default.AutoFixHigh, contentDescription = null) },
                 )
             }
 
@@ -148,25 +147,29 @@ fun ContentCorrectionHistoryScreen(
 
             // Content per tab
             when (selectedTab) {
-                0 -> VersionsTimelineView(
-                    versions = uiState.versions,
-                    selectedVersion = uiState.selectedVersion,
-                    onSelectVersion = { viewModel.selectVersion(it) }
-                )
-                1 -> CorrectionNoticesView(
-                    notices = uiState.notices,
-                    selectedNotice = uiState.selectedNotice,
-                    onSelectNotice = { viewModel.selectNotice(it) },
-                    onReviewNotice = { showReviewDialogForNotice = it },
-                    onGenerateReport = { viewModel.generateImpactReport(it.id) }
-                )
-                2 -> SourceRevisionsView(
-                    sourceRevisions = uiState.sourceRevisions
-                )
-                3 -> AffectedAssetsView(
-                    affectedAssets = uiState.affectedAssets,
-                    onUpdateStatus = { id, status -> viewModel.updateAssetStatus(id, status) }
-                )
+                0 ->
+                    VersionsTimelineView(
+                        versions = uiState.versions,
+                        selectedVersion = uiState.selectedVersion,
+                        onSelectVersion = { viewModel.selectVersion(it) },
+                    )
+                1 ->
+                    CorrectionNoticesView(
+                        notices = uiState.notices,
+                        selectedNotice = uiState.selectedNotice,
+                        onSelectNotice = { viewModel.selectNotice(it) },
+                        onReviewNotice = { showReviewDialogForNotice = it },
+                        onGenerateReport = { viewModel.generateImpactReport(it.id) },
+                    )
+                2 ->
+                    SourceRevisionsView(
+                        sourceRevisions = uiState.sourceRevisions,
+                    )
+                3 ->
+                    AffectedAssetsView(
+                        affectedAssets = uiState.affectedAssets,
+                        onUpdateStatus = { id, status -> viewModel.updateAssetStatus(id, status) },
+                    )
             }
         }
     }
@@ -176,7 +179,22 @@ fun ContentCorrectionHistoryScreen(
         NewCorrectionDialog(
             currentVersion = uiState.versions.maxByOrNull { it.versionNumber },
             onDismiss = { showNewCorrectionDialog = false },
-            onConfirm = { type, reason, explanation, discoverer, discType, title, text, claims, sources, sourceRevs, assets, summary, noticeText, forceSuspend ->
+            onConfirm = {
+                    type,
+                    reason,
+                    explanation,
+                    discoverer,
+                    discType,
+                    title,
+                    text,
+                    claims,
+                    sources,
+                    sourceRevs,
+                    assets,
+                    summary,
+                    noticeText,
+                    forceSuspend,
+                ->
                 viewModel.createCorrection(
                     correctionType = type,
                     reason = reason,
@@ -193,10 +211,10 @@ fun ContentCorrectionHistoryScreen(
                     createdByName = "فريق تحرير سراج",
                     changeSummary = summary,
                     publicNoticeText = noticeText,
-                    forceImmediateSuspension = forceSuspend
+                    forceImmediateSuspension = forceSuspend,
                 )
                 showNewCorrectionDialog = false
-            }
+            },
         )
     }
 
@@ -212,17 +230,17 @@ fun ContentCorrectionHistoryScreen(
                     reviewerName = reviewerName,
                     reviewerSpecialty = "الحديث الشريف وتخريجه",
                     notes = notes,
-                    shariaEvidences = evidences
+                    shariaEvidences = evidences,
                 )
                 showReviewDialogForNotice = null
-            }
+            },
         )
     }
 
     uiState.impactReport?.let { report ->
         ImpactReportDialog(
             report = report,
-            onDismiss = { viewModel.clearImpactReport() }
+            onDismiss = { viewModel.clearImpactReport() },
         )
     }
 }
@@ -234,7 +252,7 @@ fun ContentCorrectionHistoryScreen(
 private fun VersionsTimelineView(
     versions: List<ContentVersion>,
     selectedVersion: ContentVersion?,
-    onSelectVersion: (ContentVersion) -> Unit
+    onSelectVersion: (ContentVersion) -> Unit,
 ) {
     if (versions.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -244,16 +262,17 @@ private fun VersionsTimelineView(
     }
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(versions) { version ->
             VersionItemCard(
                 version = version,
                 isSelected = selectedVersion?.id == version.id,
-                onClick = { onSelectVersion(version) }
+                onClick = { onSelectVersion(version) },
             )
         }
     }
@@ -263,66 +282,69 @@ private fun VersionsTimelineView(
 private fun VersionItemCard(
     version: ContentVersion,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val dateFormat = remember { SimpleDateFormat("yyyy/MM/dd - HH:mm", Locale("ar")) }
     val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
 
-    val (statusBg, statusFg) = when (version.status) {
-        VersionStatus.ACTIVE_PUBLISHED -> MaterialTheme.statusColors.successBg to MaterialTheme.statusColors.successFg
-        VersionStatus.SUPERSEDED -> MaterialTheme.statusColors.neutralBg to MaterialTheme.statusColors.neutralFg
-        VersionStatus.RESTRICTED_SUSPENDED -> MaterialTheme.statusColors.errorBg to MaterialTheme.statusColors.errorFg
-        VersionStatus.IN_REVIEW -> MaterialTheme.statusColors.warningBg to MaterialTheme.statusColors.warningFg
-        VersionStatus.DRAFT -> MaterialTheme.statusColors.draftBg to MaterialTheme.statusColors.draftFg
-        VersionStatus.ARCHIVED -> MaterialTheme.statusColors.neutralBg to MaterialTheme.statusColors.neutralFg
-    }
+    val (statusBg, statusFg) =
+        when (version.status) {
+            VersionStatus.ACTIVE_PUBLISHED -> MaterialTheme.statusColors.successBg to MaterialTheme.statusColors.successFg
+            VersionStatus.SUPERSEDED -> MaterialTheme.statusColors.neutralBg to MaterialTheme.statusColors.neutralFg
+            VersionStatus.RESTRICTED_SUSPENDED -> MaterialTheme.statusColors.errorBg to MaterialTheme.statusColors.errorFg
+            VersionStatus.IN_REVIEW -> MaterialTheme.statusColors.warningBg to MaterialTheme.statusColors.warningFg
+            VersionStatus.DRAFT -> MaterialTheme.statusColors.draftBg to MaterialTheme.statusColors.draftFg
+            VersionStatus.ARCHIVED -> MaterialTheme.statusColors.neutralBg to MaterialTheme.statusColors.neutralFg
+        }
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(if (isSelected) 2.dp else 1.dp, borderColor, RoundedCornerShape(12.dp))
-            .clickable { onClick() },
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .border(if (isSelected) 2.dp else 1.dp, borderColor, RoundedCornerShape(12.dp))
+                .clickable { onClick() },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary)
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                        modifier =
+                            Modifier
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primary)
+                                .padding(horizontal = 10.dp, vertical = 4.dp),
                     ) {
                         Text(
                             text = "الإصدار v${version.versionNumber}",
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp
+                            fontSize = 13.sp,
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = version.title,
                         style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
 
                 Surface(
                     shape = RoundedCornerShape(16.dp),
                     color = statusBg,
-                    contentColor = statusFg
+                    contentColor = statusFg,
                 ) {
                     Text(
                         text = version.status.arabicTitle,
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                         style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
             }
@@ -332,20 +354,20 @@ private fun VersionItemCard(
             Text(
                 text = version.fullContentText,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
 
             if (version.changeSummary.isNotBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Surface(
                     shape = RoundedCornerShape(6.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                 ) {
                     Text(
                         text = "ملخص التعديل: ${version.changeSummary}",
                         modifier = Modifier.padding(8.dp),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -354,13 +376,13 @@ private fun VersionItemCard(
                 Spacer(modifier = Modifier.height(8.dp))
                 Surface(
                     shape = RoundedCornerShape(6.dp),
-                    color = MaterialTheme.statusColors.errorBg
+                    color = MaterialTheme.statusColors.errorBg,
                 ) {
                     Text(
                         text = "⚠️ قيد مفروض: ${version.restrictionReason}",
                         modifier = Modifier.padding(8.dp),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.statusColors.errorFg
+                        color = MaterialTheme.statusColors.errorFg,
                     )
                 }
             }
@@ -371,18 +393,18 @@ private fun VersionItemCard(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
                     text = "أنشأه: ${version.createdByName} • ${dateFormat.format(Date(version.createdAt))}",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 if (version.immutableHash.isNotBlank()) {
                     Text(
                         text = "بصمة: ${version.immutableHash.take(8)}...",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 }
             }
@@ -399,7 +421,7 @@ private fun CorrectionNoticesView(
     selectedNotice: CorrectionNotice?,
     onSelectNotice: (CorrectionNotice) -> Unit,
     onReviewNotice: (CorrectionNotice) -> Unit,
-    onGenerateReport: (CorrectionNotice) -> Unit
+    onGenerateReport: (CorrectionNotice) -> Unit,
 ) {
     if (notices.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -409,10 +431,11 @@ private fun CorrectionNoticesView(
     }
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(notices) { notice ->
             CorrectionNoticeCard(
@@ -420,7 +443,7 @@ private fun CorrectionNoticesView(
                 isSelected = selectedNotice?.id == notice.id,
                 onClick = { onSelectNotice(notice) },
                 onReview = { onReviewNotice(notice) },
-                onGenerateReport = { onGenerateReport(notice) }
+                onGenerateReport = { onGenerateReport(notice) },
             )
         }
     }
@@ -432,38 +455,38 @@ private fun CorrectionNoticeCard(
     isSelected: Boolean,
     onClick: () -> Unit,
     onReview: () -> Unit,
-    onGenerateReport: () -> Unit
+    onGenerateReport: () -> Unit,
 ) {
     val dateFormat = remember { SimpleDateFormat("yyyy/MM/dd - HH:mm", Locale("ar")) }
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(
-                if (isSelected) 2.dp else 1.dp,
-                if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
-                RoundedCornerShape(12.dp)
-            )
-            .clickable { onClick() },
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .border(
+                    if (isSelected) 2.dp else 1.dp,
+                    if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                    RoundedCornerShape(12.dp),
+                ).clickable { onClick() },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Surface(
                     shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.errorContainer
+                    color = MaterialTheme.colorScheme.errorContainer,
                 ) {
                     Text(
                         text = notice.correctionType.arabicTitle,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onErrorContainer,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
 
@@ -471,7 +494,7 @@ private fun CorrectionNoticeCard(
                     text = "من v${notice.fromVersionNumber} إلى v${notice.toVersionNumber}",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
 
@@ -480,7 +503,7 @@ private fun CorrectionNoticeCard(
             Text(
                 text = "السبب: ${notice.reason}",
                 style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
 
             Spacer(modifier = Modifier.height(6.dp))
@@ -488,30 +511,30 @@ private fun CorrectionNoticeCard(
             Text(
                 text = notice.detailedExplanation,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             if (notice.publicNoticeText.isNotBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Surface(
                     shape = RoundedCornerShape(6.dp),
-                    color = MaterialTheme.statusColors.warningBg
+                    color = MaterialTheme.statusColors.warningBg,
                 ) {
                     Row(
                         modifier = Modifier.padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
                             Icons.Default.Campaign,
                             contentDescription = null,
                             tint = MaterialTheme.statusColors.warningFg,
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(18.dp),
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "الإفصاح العام للمستخدمين: ${notice.publicNoticeText}",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.statusColors.warningFg
+                            color = MaterialTheme.statusColors.warningFg,
                         )
                     }
                 }
@@ -520,9 +543,11 @@ private fun CorrectionNoticeCard(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "اكتشفه: ${notice.discoveredBy} (${notice.discoveredByType.arabicTitle}) • ${dateFormat.format(Date(notice.reportedAt))}",
+                text = "اكتشفه: ${notice.discoveredBy} (${notice.discoveredByType.arabicTitle}) • ${dateFormat.format(
+                    Date(notice.reportedAt),
+                )}",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -532,11 +557,11 @@ private fun CorrectionNoticeCard(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 OutlinedButton(
                     onClick = onGenerateReport,
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                 ) {
                     Icon(Icons.Default.Assessment, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
@@ -546,7 +571,7 @@ private fun CorrectionNoticeCard(
                 if (notice.status == ShariaReviewStatus.PENDING) {
                     Button(
                         onClick = onReview,
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                     ) {
                         Icon(Icons.Default.FactCheck, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
@@ -555,14 +580,28 @@ private fun CorrectionNoticeCard(
                 } else {
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = if (notice.status == ShariaReviewStatus.APPROVED) MaterialTheme.statusColors.successBg else MaterialTheme.statusColors.errorBg
+                        color =
+                            if (notice.status ==
+                                ShariaReviewStatus.APPROVED
+                            ) {
+                                MaterialTheme.statusColors.successBg
+                            } else {
+                                MaterialTheme.statusColors.errorBg
+                            },
                     ) {
                         Text(
                             text = notice.status.arabicTitle,
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                             style = MaterialTheme.typography.labelSmall,
-                            color = if (notice.status == ShariaReviewStatus.APPROVED) MaterialTheme.statusColors.successFg else MaterialTheme.statusColors.errorFg,
-                            fontWeight = FontWeight.Bold
+                            color =
+                                if (notice.status ==
+                                    ShariaReviewStatus.APPROVED
+                                ) {
+                                    MaterialTheme.statusColors.successFg
+                                } else {
+                                    MaterialTheme.statusColors.errorFg
+                                },
+                            fontWeight = FontWeight.Bold,
                         )
                     }
                 }
@@ -575,9 +614,7 @@ private fun CorrectionNoticeCard(
 // 3. Source Revisions View
 // -------------------------------------------------------------
 @Composable
-private fun SourceRevisionsView(
-    sourceRevisions: List<SourceRevision>
-) {
+private fun SourceRevisionsView(sourceRevisions: List<SourceRevision>) {
     if (sourceRevisions.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("لا توجد استدراكات مصادر مرتبطة بالإشعار الحالي", color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -586,10 +623,11 @@ private fun SourceRevisionsView(
     }
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(sourceRevisions) { rev ->
             SourceRevisionCard(revision = rev)
@@ -603,14 +641,14 @@ private fun SourceRevisionCard(revision: SourceRevision) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(2.dp)
+        elevation = CardDefaults.cardElevation(2.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "سبب التعديل: ${revision.correctionReason}",
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -619,35 +657,36 @@ private fun SourceRevisionCard(revision: SourceRevision) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 // Original Box
                 Surface(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 4.dp),
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .padding(end = 4.dp),
                     shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.statusColors.errorBg
+                    color = MaterialTheme.statusColors.errorBg,
                 ) {
                     Column(modifier = Modifier.padding(10.dp)) {
                         Text(
                             text = "❌ المصدر السابق",
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.statusColors.errorFg,
-                            fontSize = 12.sp
+                            fontSize = 12.sp,
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = revision.originalSourceTitle,
                             fontWeight = FontWeight.SemiBold,
-                            fontSize = 13.sp
+                            fontSize = 13.sp,
                         )
                         Text(
                             text = revision.originalReference,
                             fontSize = 11.sp,
-                            color = Color.DarkGray
+                            color = Color.DarkGray,
                         )
                         if (revision.originalGrade != null) {
                             Text(
                                 text = "الدرجة: ${revision.originalGrade}",
                                 fontSize = 11.sp,
-                                color = Color.DarkGray
+                                color = Color.DarkGray,
                             )
                         }
                     }
@@ -655,35 +694,36 @@ private fun SourceRevisionCard(revision: SourceRevision) {
 
                 // Corrected Box
                 Surface(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 4.dp),
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .padding(start = 4.dp),
                     shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.statusColors.successBg
+                    color = MaterialTheme.statusColors.successBg,
                 ) {
                     Column(modifier = Modifier.padding(10.dp)) {
                         Text(
                             text = "✅ المصدر المصحح",
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.statusColors.successFg,
-                            fontSize = 12.sp
+                            fontSize = 12.sp,
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = revision.correctedSourceTitle,
                             fontWeight = FontWeight.SemiBold,
-                            fontSize = 13.sp
+                            fontSize = 13.sp,
                         )
                         Text(
                             text = revision.correctedReference,
                             fontSize = 11.sp,
-                            color = Color.DarkGray
+                            color = Color.DarkGray,
                         )
                         if (revision.correctedGrade != null) {
                             Text(
                                 text = "الدرجة: ${revision.correctedGrade}",
                                 fontSize = 11.sp,
-                                color = Color.DarkGray
+                                color = Color.DarkGray,
                             )
                         }
                     }
@@ -694,12 +734,12 @@ private fun SourceRevisionCard(revision: SourceRevision) {
 
             Surface(
                 shape = RoundedCornerShape(6.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant
+                color = MaterialTheme.colorScheme.surfaceVariant,
             ) {
                 Text(
                     text = "النص المصحح: ${revision.correctedText}",
                     modifier = Modifier.padding(8.dp),
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
                 )
             }
         }
@@ -712,7 +752,7 @@ private fun SourceRevisionCard(revision: SourceRevision) {
 @Composable
 private fun AffectedAssetsView(
     affectedAssets: List<AffectedAsset>,
-    onUpdateStatus: (String, AssetImpactStatus) -> Unit
+    onUpdateStatus: (String, AssetImpactStatus) -> Unit,
 ) {
     if (affectedAssets.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -722,15 +762,16 @@ private fun AffectedAssetsView(
     }
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         items(affectedAssets) { asset ->
             AffectedAssetCard(
                 asset = asset,
-                onUpdateStatus = { newStatus -> onUpdateStatus(asset.id, newStatus) }
+                onUpdateStatus = { newStatus -> onUpdateStatus(asset.id, newStatus) },
             )
         }
     }
@@ -739,48 +780,51 @@ private fun AffectedAssetsView(
 @Composable
 private fun AffectedAssetCard(
     asset: AffectedAsset,
-    onUpdateStatus: (AssetImpactStatus) -> Unit
+    onUpdateStatus: (AssetImpactStatus) -> Unit,
 ) {
-    val (statusColor, statusBg) = when (asset.status) {
-        AssetImpactStatus.REQUIRES_RE_RENDER -> MaterialTheme.statusColors.warningFg to MaterialTheme.statusColors.warningBg
-        AssetImpactStatus.SUSPENDED -> MaterialTheme.statusColors.errorFg to MaterialTheme.statusColors.errorBg
-        AssetImpactStatus.UPDATED -> MaterialTheme.statusColors.successFg to MaterialTheme.statusColors.successBg
-        AssetImpactStatus.DEPRECATED -> MaterialTheme.statusColors.neutralFg to MaterialTheme.statusColors.neutralBg
-    }
+    val (statusColor, statusBg) =
+        when (asset.status) {
+            AssetImpactStatus.REQUIRES_RE_RENDER -> MaterialTheme.statusColors.warningFg to MaterialTheme.statusColors.warningBg
+            AssetImpactStatus.SUSPENDED -> MaterialTheme.statusColors.errorFg to MaterialTheme.statusColors.errorBg
+            AssetImpactStatus.UPDATED -> MaterialTheme.statusColors.successFg to MaterialTheme.statusColors.successBg
+            AssetImpactStatus.DEPRECATED -> MaterialTheme.statusColors.neutralFg to MaterialTheme.statusColors.neutralBg
+        }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(1.dp)
+        elevation = CardDefaults.cardElevation(1.dp),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = when (asset.assetType) {
-                            AffectedAssetType.SCENE -> Icons.Default.Movie
-                            AffectedAssetType.VIDEO_RENDER -> Icons.Default.VideoLibrary
-                            AffectedAssetType.AUDIO_TRACK -> Icons.Default.Audiotrack
-                            AffectedAssetType.SUBTITLE -> Icons.Default.Subtitles
-                            AffectedAssetType.PUBLISHED_FLASH -> Icons.Default.Bolt
-                            AffectedAssetType.PROJECT -> Icons.Default.Folder
-                        },
+                        imageVector =
+                            when (asset.assetType) {
+                                AffectedAssetType.SCENE -> Icons.Default.Movie
+                                AffectedAssetType.VIDEO_RENDER -> Icons.Default.VideoLibrary
+                                AffectedAssetType.AUDIO_TRACK -> Icons.Default.Audiotrack
+                                AffectedAssetType.SUBTITLE -> Icons.Default.Subtitles
+                                AffectedAssetType.PUBLISHED_FLASH -> Icons.Default.Bolt
+                                AffectedAssetType.PROJECT -> Icons.Default.Folder
+                            },
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.colorScheme.primary,
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = asset.assetName,
                         fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
 
@@ -788,21 +832,21 @@ private fun AffectedAssetCard(
                 Text(
                     text = "${asset.projectTitle} • ${asset.impactDescription}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
             Column(horizontalAlignment = Alignment.End) {
                 Surface(
                     shape = RoundedCornerShape(6.dp),
-                    color = statusBg
+                    color = statusBg,
                 ) {
                     Text(
                         text = asset.status.arabicTitle,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         style = MaterialTheme.typography.labelSmall,
                         color = statusColor,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
 
@@ -810,7 +854,7 @@ private fun AffectedAssetCard(
                     Spacer(modifier = Modifier.height(6.dp))
                     TextButton(
                         onClick = { onUpdateStatus(AssetImpactStatus.UPDATED) },
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
                     ) {
                         Text("تعليم كمحدث", fontSize = 11.sp)
                     }
@@ -842,8 +886,8 @@ private fun NewCorrectionDialog(
         List<AffectedAsset>,
         String,
         String,
-        Boolean
-    ) -> Unit
+        Boolean,
+    ) -> Unit,
 ) {
     var selectedType by remember { mutableStateOf(CorrectionType.SOURCE_ERROR) }
     var reason by remember { mutableStateOf("") }
@@ -866,25 +910,27 @@ private fun NewCorrectionDialog(
         Surface(
             shape = RoundedCornerShape(16.dp),
             color = MaterialTheme.colorScheme.surface,
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.9f)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.9f),
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(20.dp)
-                    .verticalScroll(rememberScrollState())
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(20.dp)
+                        .verticalScroll(rememberScrollState()),
             ) {
                 Text(
                     text = "طلب تصحيح وإصدار نسخة جديدة",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
                 Text(
                     text = "سيتم إنشاء إصدار جديد (v${(currentVersion?.versionNumber ?: 0) + 1}) مع الحفاظ على السجل القديم كاملاً",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -897,7 +943,7 @@ private fun NewCorrectionDialog(
                         FilterChip(
                             selected = selectedType == type,
                             onClick = { selectedType = type },
-                            label = { Text(type.arabicTitle, fontSize = 12.sp) }
+                            label = { Text(type.arabicTitle, fontSize = 12.sp) },
                         )
                     }
                 }
@@ -908,7 +954,7 @@ private fun NewCorrectionDialog(
                     value = reason,
                     onValueChange = { reason = it },
                     label = { Text("سبب التصحيح الرئيسي") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -918,7 +964,7 @@ private fun NewCorrectionDialog(
                     onValueChange = { explanation = it },
                     label = { Text("الشرح التفصيلي لمسوغات التصحيح") },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 2
+                    minLines = 2,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -927,7 +973,7 @@ private fun NewCorrectionDialog(
                     value = discoverer,
                     onValueChange = { discoverer = it },
                     label = { Text("الجهة المكتشفة للخطأ") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -937,7 +983,7 @@ private fun NewCorrectionDialog(
                     onValueChange = { correctedText = it },
                     label = { Text("النص الكامل بعد التصحيح") },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 3
+                    minLines = 3,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -946,7 +992,7 @@ private fun NewCorrectionDialog(
                     value = changeSummary,
                     onValueChange = { changeSummary = it },
                     label = { Text("ملخص التعديلات في النسخة الجديدة") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -955,17 +1001,17 @@ private fun NewCorrectionDialog(
                     value = publicNoticeText,
                     onValueChange = { publicNoticeText = it },
                     label = { Text("نص الإفصاح والتنبيه للمستخدمين") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Checkbox(
                         checked = forceSuspend,
-                        onCheckedChange = { forceSuspend = it }
+                        onCheckedChange = { forceSuspend = it },
                     )
                     Text("تعليق وإيقاف النسخة القديمة فورياً لحين المراجعة", fontSize = 12.sp)
                 }
@@ -974,7 +1020,7 @@ private fun NewCorrectionDialog(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.End,
                 ) {
                     TextButton(onClick = onDismiss) {
                         Text("إلغاء")
@@ -983,28 +1029,30 @@ private fun NewCorrectionDialog(
                     Button(
                         onClick = {
                             if (reason.isNotBlank() && explanation.isNotBlank() && discoverer.isNotBlank()) {
-                                val sampleSourceRev = SourceRevision(
-                                    correctionNoticeId = "",
-                                    originalSourceId = "src_old",
-                                    originalSourceTitle = oldSourceTitle,
-                                    originalReference = "رقم غير دقيق",
-                                    originalText = currentVersion?.fullContentText ?: "",
-                                    correctedSourceTitle = correctedSourceTitle,
-                                    correctedReference = correctedRef,
-                                    correctedText = correctedText,
-                                    correctedGrade = correctedGrade,
-                                    correctionReason = reason
-                                )
-                                val sampleAffectedAsset = AffectedAsset(
-                                    contentId = currentVersion?.contentId ?: "",
-                                    correctionNoticeId = "",
-                                    projectId = "proj_siraj_101",
-                                    projectTitle = currentVersion?.title ?: "مشروع سراج",
-                                    assetType = AffectedAssetType.SCENE,
-                                    assetName = "المشهد 1 - الركيزة النصية",
-                                    impactDescription = "يتضمن اللفظ المراد استدراكه",
-                                    remediationAction = "تحديث بطاقة النص وإعادة الرندرة"
-                                )
+                                val sampleSourceRev =
+                                    SourceRevision(
+                                        correctionNoticeId = "",
+                                        originalSourceId = "src_old",
+                                        originalSourceTitle = oldSourceTitle,
+                                        originalReference = "رقم غير دقيق",
+                                        originalText = currentVersion?.fullContentText ?: "",
+                                        correctedSourceTitle = correctedSourceTitle,
+                                        correctedReference = correctedRef,
+                                        correctedText = correctedText,
+                                        correctedGrade = correctedGrade,
+                                        correctionReason = reason,
+                                    )
+                                val sampleAffectedAsset =
+                                    AffectedAsset(
+                                        contentId = currentVersion?.contentId ?: "",
+                                        correctionNoticeId = "",
+                                        projectId = "proj_siraj_101",
+                                        projectTitle = currentVersion?.title ?: "مشروع سراج",
+                                        assetType = AffectedAssetType.SCENE,
+                                        assetName = "المشهد 1 - الركيزة النصية",
+                                        impactDescription = "يتضمن اللفظ المراد استدراكه",
+                                        remediationAction = "تحديث بطاقة النص وإعادة الرندرة",
+                                    )
 
                                 onConfirm(
                                     selectedType,
@@ -1020,10 +1068,10 @@ private fun NewCorrectionDialog(
                                     listOf(sampleAffectedAsset),
                                     changeSummary,
                                     publicNoticeText,
-                                    forceSuspend
+                                    forceSuspend,
                                 )
                             }
-                        }
+                        },
                     ) {
                         Text("إنشاء وإرسال للمراجعة")
                     }
@@ -1040,7 +1088,7 @@ private fun NewCorrectionDialog(
 private fun ReviewCorrectionDialog(
     notice: CorrectionNotice,
     onDismiss: () -> Unit,
-    onConfirm: (Boolean, String, String, List<String>) -> Unit
+    onConfirm: (Boolean, String, String, List<String>) -> Unit,
 ) {
     var isApproved by remember { mutableStateOf(true) }
     var reviewerName by remember { mutableStateOf("د. عبد العزيز المقرن") }
@@ -1051,22 +1099,23 @@ private fun ReviewCorrectionDialog(
         Surface(
             shape = RoundedCornerShape(16.dp),
             color = MaterialTheme.colorScheme.surface,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Column(
-                modifier = Modifier
-                    .padding(20.dp)
-                    .verticalScroll(rememberScrollState())
+                modifier =
+                    Modifier
+                        .padding(20.dp)
+                        .verticalScroll(rememberScrollState()),
             ) {
                 Text(
                     text = "المراجعة والاعتماد الشرعي للتصحيح",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
                 Text(
                     text = "إشعار من v${notice.fromVersionNumber} إلى v${notice.toVersionNumber} (${notice.reason})",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -1074,7 +1123,7 @@ private fun ReviewCorrectionDialog(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
                         selected = isApproved,
-                        onClick = { isApproved = true }
+                        onClick = { isApproved = true },
                     )
                     Text("اعتماد ونشر النسخة المصححة", fontWeight = FontWeight.SemiBold)
                 }
@@ -1082,7 +1131,7 @@ private fun ReviewCorrectionDialog(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
                         selected = !isApproved,
-                        onClick = { isApproved = false }
+                        onClick = { isApproved = false },
                     )
                     Text("رفض التصحيح وطلب تعديل إضافي", fontWeight = FontWeight.SemiBold)
                 }
@@ -1093,7 +1142,7 @@ private fun ReviewCorrectionDialog(
                     value = reviewerName,
                     onValueChange = { reviewerName = it },
                     label = { Text("اسم المراجع الشرعي") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -1103,7 +1152,7 @@ private fun ReviewCorrectionDialog(
                     onValueChange = { notes = it },
                     label = { Text("ملاحظات المراجع الشرعي") },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 2
+                    minLines = 2,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -1112,14 +1161,14 @@ private fun ReviewCorrectionDialog(
                     value = evidences,
                     onValueChange = { evidences = it },
                     label = { Text("الأدلة والمراجع المعتمدة (مفصولة بفواصل)") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.End,
                 ) {
                     TextButton(onClick = onDismiss) {
                         Text("إلغاء")
@@ -1129,7 +1178,7 @@ private fun ReviewCorrectionDialog(
                         onClick = {
                             val evidenceList = evidences.split("،", ",").map { it.trim() }.filter { it.isNotBlank() }
                             onConfirm(isApproved, reviewerName, notes, evidenceList)
-                        }
+                        },
                     ) {
                         Text("حفظ القرار الشرعي")
                     }
@@ -1145,36 +1194,37 @@ private fun ReviewCorrectionDialog(
 @Composable
 private fun ImpactReportDialog(
     report: ImpactReport,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(16.dp),
             color = MaterialTheme.colorScheme.surface,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Column(
-                modifier = Modifier
-                    .padding(20.dp)
-                    .verticalScroll(rememberScrollState())
+                modifier =
+                    Modifier
+                        .padding(20.dp)
+                        .verticalScroll(rememberScrollState()),
             ) {
                 Text(
                     text = "📊 تقرير حصر الأثر للمحتوى المتأثر",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Surface(
                     shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.primaryContainer
+                    color = MaterialTheme.colorScheme.primaryContainer,
                 ) {
                     Text(
                         text = report.summary,
                         modifier = Modifier.padding(12.dp),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                     )
                 }
 
@@ -1183,7 +1233,7 @@ private fun ImpactReportDialog(
                 Text(
                     text = "إحصائيات الأثر:",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp
+                    fontSize = 13.sp,
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text("• إجمالي المواد المتأثرة: ${report.totalAffectedAssetsCount}")
@@ -1196,7 +1246,7 @@ private fun ImpactReportDialog(
 
                 Button(
                     onClick = onDismiss,
-                    modifier = Modifier.align(Alignment.End)
+                    modifier = Modifier.align(Alignment.End),
                 ) {
                     Text("إغلاق")
                 }

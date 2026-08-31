@@ -8,8 +8,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface AdhkarRepository {
     suspend fun getCategories(): Resource<List<DhikrCategory>>
+
     suspend fun getAdhkarByCategory(categoryId: String): Resource<List<DhikrItem>>
-    
+
     fun getSettings(): Flow<AdhkarSettings>
+
     suspend fun updateSettings(settings: AdhkarSettings)
 }

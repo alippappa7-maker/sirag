@@ -7,10 +7,11 @@ import androidx.compose.ui.unit.dp
 /**
  * Siraj Modern Shapes — slightly more rounded for a friendly, modern tech feel.
  */
-val SirajShapes = Shapes(
-    extraSmall = RoundedCornerShape(6.dp),
-    small = RoundedCornerShape(12.dp),
-    medium = RoundedCornerShape(16.dp),
-    large = RoundedCornerShape(20.dp),
-    extraLarge = RoundedCornerShape(28.dp)
-)
+val SirajShapes =
+    Shapes(
+        extraSmall = RoundedCornerShape(6.dp),
+        small = RoundedCornerShape(12.dp),
+        medium = RoundedCornerShape(16.dp),
+        large = RoundedCornerShape(20.dp),
+        extraLarge = RoundedCornerShape(28.dp),
+    )

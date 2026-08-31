@@ -1,6 +1,5 @@
 package com.siraj.app.core.privacy
 
-import android.content.Context
 import com.siraj.app.domain.models.privacy.StoredDataCategory
 import com.siraj.app.domain.models.privacy.UserDataExportPackage
 import org.json.JSONArray
@@ -12,23 +11,35 @@ import java.util.Date
 import java.util.Locale
 
 object PrivacyManager {
-
-    private val FORBIDDEN_EXPORT_KEYS = setOf(
-        "password", "passwordHash", "token", "rawPurchaseToken", "purchaseToken",
-        "apiKey", "apiSecret", "privateKey", "secretKey", "authCredential",
-        "refreshToken", "accessToken", "creditCardNumber", "cvv"
-    )
+    private val FORBIDDEN_EXPORT_KEYS =
+        setOf(
+            "password",
+            "passwordHash",
+            "token",
+            "rawPurchaseToken",
+            "purchaseToken",
+            "apiKey",
+            "apiSecret",
+            "privateKey",
+            "secretKey",
+            "authCredential",
+            "refreshToken",
+            "accessToken",
+            "creditCardNumber",
+            "cvv",
+        )
 
     fun calculateDirectorySizeBytes(dir: File?): Long {
         if (dir == null || !dir.exists()) return 0L
         var size = 0L
         val files = dir.listFiles() ?: return 0L
         for (file in files) {
-            size += if (file.isDirectory) {
-                calculateDirectorySizeBytes(file)
-            } else {
-                file.length()
-            }
+            size +=
+                if (file.isDirectory) {
+                    calculateDirectorySizeBytes(file)
+                } else {
+                    file.length()
+                }
         }
         return size
     }
@@ -58,12 +69,15 @@ object PrivacyManager {
                     sanitized[k] = sanitizeDataMap(v as Map<String, Any?>)
                 }
                 is List<*> -> {
-                    sanitized[k] = v.map { item ->
-                        if (item is Map<*, *>) {
-                            @Suppress("UNCHECKED_CAST")
-                            sanitizeDataMap(item as Map<String, Any?>)
-                        } else item
-                    }
+                    sanitized[k] =
+                        v.map { item ->
+                            if (item is Map<*, *>) {
+                                @Suppress("UNCHECKED_CAST")
+                                sanitizeDataMap(item as Map<String, Any?>)
+                            } else {
+                                item
+                            }
+                        }
                 }
                 else -> sanitized[k] = v
             }
@@ -71,15 +85,14 @@ object PrivacyManager {
         return sanitized
     }
 
-    fun calculateSha256(content: String): String {
-        return try {
+    fun calculateSha256(content: String): String =
+        try {
             val digest = MessageDigest.getInstance("SHA-256")
             val hashBytes = digest.digest(content.toByteArray(Charsets.UTF_8))
             hashBytes.joinToString("") { "%02x".format(it) }
         } catch (_: Exception) {
             "checksum_error"
         }
-    }
 
     fun buildExportJsonString(exportPackage: UserDataExportPackage): String {
         val root = JSONObject()
@@ -136,8 +149,8 @@ object PrivacyManager {
         return sdf.format(Date(timestamp))
     }
 
-    fun getStandardRetentionPolicies(): List<StoredDataCategory> {
-        return listOf(
+    fun getStandardRetentionPolicies(): List<StoredDataCategory> =
+        listOf(
             StoredDataCategory(
                 id = "account_profile",
                 title = "بيانات الحساب الشخصي والملف التعريفي",
@@ -145,7 +158,7 @@ object PrivacyManager {
                 storageLocation = "قاعدة بيانات Firestore (مجموعة users) و Firebase Auth المشفرة.",
                 retentionPolicy = "يتم الاحتفاظ بها طوال فترة نشاط الحساب، وتُمسح بالكامل عند إتمام طلب حذف الحساب.",
                 isPersonal = true,
-                isLegalRequired = false
+                isLegalRequired = false,
             ),
             StoredDataCategory(
                 id = "projects_content",
@@ -154,7 +167,7 @@ object PrivacyManager {
                 storageLocation = "قاعدة بيانات Firestore (مجموعة projects) وملفات الوسائط في Cloud Storage.",
                 retentionPolicy = "حتى يقرر المستخدم حذف المشروع يدوياً، أو تُمسح فوراً عند اكتمال حذف الحساب.",
                 isPersonal = true,
-                isLegalRequired = false
+                isLegalRequired = false,
             ),
             StoredDataCategory(
                 id = "activity_history",
@@ -163,7 +176,7 @@ object PrivacyManager {
                 storageLocation = "تخزين محلي مؤقت مشفر وقاعدة بيانات Firestore المشتركة (إذا تم تفعيل المزامنة).",
                 retentionPolicy = "يمكن للمستخدم مسحها فوراً بضغطة زر، أو تُحذف تلقائياً حسب سياسة الاحتفاظ (30 / 90 / 365 يوماً).",
                 isPersonal = true,
-                isLegalRequired = false
+                isLegalRequired = false,
             ),
             StoredDataCategory(
                 id = "cached_downloads",
@@ -172,7 +185,7 @@ object PrivacyManager {
                 storageLocation = "ذاكرة الجهاز المحلية فقط (App Private Storage).",
                 retentionPolicy = "يتم التحكم بها محلياً ويمكن تفريغها بضغطة زر في أي وقت دون التأثير على البيانات السحابية.",
                 isPersonal = false,
-                isLegalRequired = false
+                isLegalRequired = false,
             ),
             StoredDataCategory(
                 id = "location_data",
@@ -181,7 +194,7 @@ object PrivacyManager {
                 storageLocation = "محلياً على جهاز المستخدم (لا يتم حفظ إحداثيات دقيقة في الخوادم إطلاقاً).",
                 retentionPolicy = "لا يتم الاحتفاظ بالموقع الدقيق، ولا تُرسل الإحداثيات إلى أي جهة خارجية أو إعلانية.",
                 isPersonal = true,
-                isLegalRequired = false
+                isLegalRequired = false,
             ),
             StoredDataCategory(
                 id = "analytics_telemetry",
@@ -190,7 +203,7 @@ object PrivacyManager {
                 storageLocation = "Firebase Analytics (مع تعطيل جمع معرّفات الإعلانات وتطهير كافة المدخلات).",
                 retentionPolicy = "فترة احتفاظ 90 يوماً فقط بصيغة إحصائية مجمعة، وتتوقف فوراً عند قيام المستخدم بتعطيلها من الإعدادات.",
                 isPersonal = false,
-                isLegalRequired = false
+                isLegalRequired = false,
             ),
             StoredDataCategory(
                 id = "financial_records",
@@ -199,8 +212,7 @@ object PrivacyManager {
                 storageLocation = "سجلات الفوترة المشفرة في Firestore و Google Play Billing.",
                 retentionPolicy = "فترة احتفاظ قانونية (5 سنوات) وفق قوانين الضرائب والامتثال المالي والتجارة الإلكترونية، وتُحفظ بصيغة مجهولة الهوية (Anonymized) بعد حذف الحساب.",
                 isPersonal = false,
-                isLegalRequired = true
-            )
+                isLegalRequired = true,
+            ),
         )
-    }
 }

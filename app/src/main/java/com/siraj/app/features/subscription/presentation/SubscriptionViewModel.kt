@@ -1,7 +1,6 @@
 package com.siraj.app.features.subscription.presentation
 
 import android.app.Activity
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.ProductDetails
@@ -27,14 +26,13 @@ data class SubscriptionState(
     val transactions: List<com.siraj.app.domain.models.subscription.CreditTransaction> = emptyList(),
     val storeProducts: List<ProductDetails> = emptyList(),
     val isBillingConnected: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
 )
 
 class SubscriptionViewModel(
     private val repository: SubscriptionRepository,
-    private val billingManager: GooglePlayBillingManager
+    private val billingManager: GooglePlayBillingManager,
 ) : ViewModel() {
-
     private val _state = MutableStateFlow(SubscriptionState(isLoading = true))
     val state: StateFlow<SubscriptionState> = _state.asStateFlow()
 
@@ -84,7 +82,7 @@ class SubscriptionViewModel(
             },
             onError = {
                 _state.update { it.copy(error = "فشل الاتصال بمتجر Google Play") }
-            }
+            },
         )
 
         viewModelScope.launch {
@@ -127,7 +125,10 @@ class SubscriptionViewModel(
         syncActivePurchases()
     }
 
-    fun initiatePurchase(activity: Activity, plan: Plan) {
+    fun initiatePurchase(
+        activity: Activity,
+        plan: Plan,
+    ) {
         val platformId = plan.platformProductIds["android"]
         if (platformId != null) {
             val product = _state.value.storeProducts.find { it.productId == platformId }
@@ -146,7 +147,7 @@ class SubscriptionViewModel(
                 _state.update { it.copy(error = "المنتج غير متوفر في المتجر حالياً") }
             }
         } else {
-             _state.update { it.copy(error = "هذه الخطة غير متاحة على أندرويد") }
+            _state.update { it.copy(error = "هذه الخطة غير متاحة على أندرويد") }
         }
     }
 

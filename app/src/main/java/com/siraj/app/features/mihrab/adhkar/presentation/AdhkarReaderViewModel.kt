@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 data class DhikrState(
     val item: DhikrItem,
     val currentCount: Int = 0,
-    val isCompleted: Boolean = false
+    val isCompleted: Boolean = false,
 )
 
 class AdhkarReaderViewModel : ViewModel() {
@@ -55,15 +55,16 @@ class AdhkarReaderViewModel : ViewModel() {
     fun incrementCount(dhikrId: String) {
         val currentStates = _adhkarStates.value
         if (currentStates is Resource.Success) {
-            val updatedList = currentStates.data.map { state ->
-                if (state.item.id == dhikrId && !state.isCompleted) {
-                    val newCount = state.currentCount + 1
-                    val isCompleted = newCount >= state.item.requiredCount
-                    state.copy(currentCount = newCount, isCompleted = isCompleted)
-                } else {
-                    state
+            val updatedList =
+                currentStates.data.map { state ->
+                    if (state.item.id == dhikrId && !state.isCompleted) {
+                        val newCount = state.currentCount + 1
+                        val isCompleted = newCount >= state.item.requiredCount
+                        state.copy(currentCount = newCount, isCompleted = isCompleted)
+                    } else {
+                        state
+                    }
                 }
-            }
             _adhkarStates.value = Resource.Success(updatedList)
         }
     }
@@ -71,9 +72,10 @@ class AdhkarReaderViewModel : ViewModel() {
     fun resetProgress() {
         val currentStates = _adhkarStates.value
         if (currentStates is Resource.Success) {
-            val updatedList = currentStates.data.map { state ->
-                state.copy(currentCount = 0, isCompleted = false)
-            }
+            val updatedList =
+                currentStates.data.map { state ->
+                    state.copy(currentCount = 0, isCompleted = false)
+                }
             _adhkarStates.value = Resource.Success(updatedList)
         }
     }

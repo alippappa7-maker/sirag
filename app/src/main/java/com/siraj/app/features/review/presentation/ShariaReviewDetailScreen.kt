@@ -15,7 +15,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -34,7 +33,7 @@ fun ShariaReviewDetailScreen(
     currentUserRole: String,
     currentUserId: String,
     currentUserName: String,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -78,12 +77,17 @@ fun ShariaReviewDetailScreen(
                     Text(
                         text = "تفاصيل التدقيق الشرعي",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack, modifier = Modifier.testTag("btn_back_detail")) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.back),
+                        )
                     }
                 },
                 actions = {
@@ -91,17 +95,17 @@ fun ShariaReviewDetailScreen(
                         Icon(
                             Icons.Default.Lock,
                             contentDescription = "ملاحظة داخلية",
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     }
                     IconButton(onClick = { showScheduleReReviewDialog = true }) {
                         Icon(
                             Icons.Default.EventRepeat,
                             contentDescription = "جدولة إعادة المراجعة",
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     }
-                }
+                },
             )
         },
         bottomBar = {
@@ -109,14 +113,15 @@ fun ShariaReviewDetailScreen(
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shadowElevation = 8.dp,
-                    color = MaterialTheme.colorScheme.surface
+                    color = MaterialTheme.colorScheme.surface,
                 ) {
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .navigationBarsPadding()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .navigationBarsPadding()
+                                .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         // Check if creator is the current reviewer -> Disallow self-review actions
                         val isCreatorSelf = item.creatorId == currentUserId
@@ -125,23 +130,23 @@ fun ShariaReviewDetailScreen(
                             Surface(
                                 color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f),
                                 shape = RoundedCornerShape(8.dp),
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
                             ) {
                                 Row(
                                     modifier = Modifier.padding(10.dp),
-                                    verticalAlignment = Alignment.CenterVertically
+                                    verticalAlignment = Alignment.CenterVertically,
                                 ) {
                                     Icon(
                                         Icons.Default.Block,
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.error,
-                                        modifier = Modifier.size(16.dp)
+                                        modifier = Modifier.size(16.dp),
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
                                         text = "أنت صانع هذا المحتوى. لا يحق لك مراجعة أو اعتماد محتواك الخاص درءاً لتعارض المصالح.",
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onErrorContainer
+                                        color = MaterialTheme.colorScheme.onErrorContainer,
                                     )
                                 }
                             }
@@ -152,10 +157,11 @@ fun ShariaReviewDetailScreen(
                                         onClick = {
                                             viewModel.claimReview(item.id, currentUserId, currentUserName)
                                         },
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .testTag("btn_claim_review"),
-                                        shape = RoundedCornerShape(10.dp)
+                                        modifier =
+                                            Modifier
+                                                .fillMaxWidth()
+                                                .testTag("btn_claim_review"),
+                                        shape = RoundedCornerShape(10.dp),
                                     ) {
                                         Icon(Icons.Default.AssignmentInd, contentDescription = null)
                                         Spacer(modifier = Modifier.width(8.dp))
@@ -166,15 +172,16 @@ fun ShariaReviewDetailScreen(
                                 ShariaReviewStatus.IN_REVIEW, ShariaReviewStatus.ESCALATED_SECOND_REVIEW -> {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                                     ) {
                                         Button(
                                             onClick = { showApproveDialog = true },
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .testTag("btn_action_approve"),
+                                            modifier =
+                                                Modifier
+                                                    .weight(1f)
+                                                    .testTag("btn_action_approve"),
                                             shape = RoundedCornerShape(10.dp),
-                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.statusColors.successFg)
+                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.statusColors.successFg),
                                         ) {
                                             Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(16.dp))
                                             Spacer(modifier = Modifier.width(4.dp))
@@ -183,11 +190,12 @@ fun ShariaReviewDetailScreen(
 
                                         Button(
                                             onClick = { showRequestChangesDialog = true },
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .testTag("btn_action_request_changes"),
+                                            modifier =
+                                                Modifier
+                                                    .weight(1f)
+                                                    .testTag("btn_action_request_changes"),
                                             shape = RoundedCornerShape(10.dp),
-                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.statusColors.warningFg)
+                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.statusColors.warningFg),
                                         ) {
                                             Icon(Icons.Default.EditNote, contentDescription = null, modifier = Modifier.size(16.dp))
                                             Spacer(modifier = Modifier.width(4.dp))
@@ -196,10 +204,11 @@ fun ShariaReviewDetailScreen(
 
                                         OutlinedButton(
                                             onClick = { showEscalateDialog = true },
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .testTag("btn_action_escalate"),
-                                            shape = RoundedCornerShape(10.dp)
+                                            modifier =
+                                                Modifier
+                                                    .weight(1f)
+                                                    .testTag("btn_action_escalate"),
+                                            shape = RoundedCornerShape(10.dp),
                                         ) {
                                             Icon(Icons.Default.GroupAdd, contentDescription = null, modifier = Modifier.size(16.dp))
                                             Spacer(modifier = Modifier.width(4.dp))
@@ -209,11 +218,12 @@ fun ShariaReviewDetailScreen(
 
                                     OutlinedButton(
                                         onClick = { showRejectDialog = true },
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .testTag("btn_action_reject"),
+                                        modifier =
+                                            Modifier
+                                                .fillMaxWidth()
+                                                .testTag("btn_action_reject"),
                                         shape = RoundedCornerShape(10.dp),
-                                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
                                     ) {
                                         Icon(Icons.Default.Cancel, contentDescription = null, modifier = Modifier.size(16.dp))
                                         Spacer(modifier = Modifier.width(6.dp))
@@ -228,23 +238,24 @@ fun ShariaReviewDetailScreen(
                                         Surface(
                                             color = MaterialTheme.colorScheme.secondaryContainer,
                                             shape = RoundedCornerShape(8.dp),
-                                            modifier = Modifier.fillMaxWidth()
+                                            modifier = Modifier.fillMaxWidth(),
                                         ) {
                                             Text(
                                                 text = "لقد قمت بالاعتماد الأولي. بانتظار اعتماد المراجع الثاني المؤهل لإتمام التوقيع المشترك.",
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                                modifier = Modifier.padding(10.dp)
+                                                modifier = Modifier.padding(10.dp),
                                             )
                                         }
                                     } else {
                                         Button(
                                             onClick = { showDualApprovalDialog = true },
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .testTag("btn_action_dual_approve"),
+                                            modifier =
+                                                Modifier
+                                                    .fillMaxWidth()
+                                                    .testTag("btn_action_dual_approve"),
                                             shape = RoundedCornerShape(10.dp),
-                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                         ) {
                                             Icon(Icons.Default.VerifiedUser, contentDescription = null)
                                             Spacer(modifier = Modifier.width(8.dp))
@@ -257,7 +268,7 @@ fun ShariaReviewDetailScreen(
                                     // Approved or Rejected or Changes Requested
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Center
+                                        horizontalArrangement = Arrangement.Center,
                                     ) {
                                         StatusBadge(status = item.status)
                                     }
@@ -268,7 +279,7 @@ fun ShariaReviewDetailScreen(
                 }
             }
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { paddingValues ->
         if (state.isLoading && item == null) {
             Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
@@ -280,23 +291,25 @@ fun ShariaReviewDetailScreen(
             }
         } else {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
             ) {
                 // Header info card
                 Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
                 ) {
                     Column(modifier = Modifier.padding(14.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             StatusBadge(status = item.status)
                             RiskBadge(riskLevel = item.riskLevel)
@@ -307,24 +320,24 @@ fun ShariaReviewDetailScreen(
                         Text(
                             text = item.contentTitle,
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
 
                         Spacer(modifier = Modifier.height(6.dp))
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Text(
                                 text = "المنشئ: ${item.creatorName} | القسم: ${item.category}",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.outline
+                                color = MaterialTheme.colorScheme.outline,
                             )
                             Text(
                                 text = dateFormat.format(Date(item.submittedAt)),
                                 style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.outline
+                                color = MaterialTheme.colorScheme.outline,
                             )
                         }
 
@@ -332,7 +345,7 @@ fun ShariaReviewDetailScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
                             ) {
                                 item.criticalTopics.filter { it != CriticalTopic.NONE }.forEach { topic ->
                                     CriticalTopicChip(topic = topic)
@@ -346,7 +359,7 @@ fun ShariaReviewDetailScreen(
                 ScrollableTabRow(
                     selectedTabIndex = selectedTab,
                     edgePadding = 16.dp,
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = MaterialTheme.colorScheme.surface,
                 ) {
                     tabTitles.forEachIndexed { index, title ->
                         Tab(
@@ -356,18 +369,19 @@ fun ShariaReviewDetailScreen(
                                 Text(
                                     text = title,
                                     fontSize = 12.sp,
-                                    fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal
+                                    fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal,
                                 )
-                            }
+                            },
                         )
                     }
                 }
 
                 // Tab Content Body
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f)
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .weight(1f),
                 ) {
                     when (selectedTab) {
                         0 -> {
@@ -375,26 +389,26 @@ fun ShariaReviewDetailScreen(
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize(),
                                 contentPadding = PaddingValues(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(14.dp)
+                                verticalArrangement = Arrangement.spacedBy(14.dp),
                             ) {
                                 item {
                                     Card(
                                         shape = RoundedCornerShape(10.dp),
                                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                                        border = CardDefaults.outlinedCardBorder()
+                                        border = CardDefaults.outlinedCardBorder(),
                                     ) {
                                         Column(modifier = Modifier.padding(14.dp)) {
                                             Text(
                                                 text = "النص الكامل للمحتوى المعروض في الفيديو/المقطع:",
                                                 style = MaterialTheme.typography.labelMedium,
                                                 color = MaterialTheme.colorScheme.primary,
-                                                fontWeight = FontWeight.Bold
+                                                fontWeight = FontWeight.Bold,
                                             )
                                             Spacer(modifier = Modifier.height(8.dp))
                                             Text(
                                                 text = item.fullContentText,
                                                 style = MaterialTheme.typography.bodyMedium,
-                                                lineHeight = 24.sp
+                                                lineHeight = 24.sp,
                                             )
                                         }
                                     }
@@ -405,7 +419,7 @@ fun ShariaReviewDetailScreen(
                                         text = "المواضع المرتبطة بمصادر شرعية (${item.claims.size} مواضع):",
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.primary
+                                        color = MaterialTheme.colorScheme.primary,
                                     )
                                 }
 
@@ -413,24 +427,24 @@ fun ShariaReviewDetailScreen(
                                     Surface(
                                         shape = RoundedCornerShape(8.dp),
                                         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                                        modifier = Modifier.fillMaxWidth()
+                                        modifier = Modifier.fillMaxWidth(),
                                     ) {
                                         Column(modifier = Modifier.padding(12.dp)) {
                                             Text(
                                                 text = claim.positionContext,
                                                 style = MaterialTheme.typography.labelSmall,
                                                 fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.primary
+                                                color = MaterialTheme.colorScheme.primary,
                                             )
                                             Text(
                                                 text = "« ${claim.claimText} »",
                                                 style = MaterialTheme.typography.bodySmall,
-                                                fontWeight = FontWeight.Medium
+                                                fontWeight = FontWeight.Medium,
                                             )
                                             Text(
                                                 text = "المرجع: ${claim.sourceTitle} (${claim.hadithGrade ?: "موثق"})",
                                                 style = MaterialTheme.typography.labelSmall,
-                                                color = MaterialTheme.colorScheme.outline
+                                                color = MaterialTheme.colorScheme.outline,
                                             )
                                         }
                                     }
@@ -443,12 +457,12 @@ fun ShariaReviewDetailScreen(
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize(),
                                 contentPadding = PaddingValues(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                                verticalArrangement = Arrangement.spacedBy(12.dp),
                             ) {
                                 items(item.claims, key = { it.id }) { claim ->
                                     ClaimReviewCard(
                                         claim = claim,
-                                        onAddCommentClick = { selectedClaimForComment = it }
+                                        onAddCommentClick = { selectedClaimForComment = it },
                                     )
                                 }
                             }
@@ -459,7 +473,7 @@ fun ShariaReviewDetailScreen(
                             val allVariations = item.claims.flatMap { it.sourceVariations }
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize(),
-                                contentPadding = PaddingValues(16.dp)
+                                contentPadding = PaddingValues(16.dp),
                             ) {
                                 item {
                                     SourceVariationViewer(variations = allVariations)
@@ -471,7 +485,7 @@ fun ShariaReviewDetailScreen(
                             // Tab 3: Revision History
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize(),
-                                contentPadding = PaddingValues(16.dp)
+                                contentPadding = PaddingValues(16.dp),
                             ) {
                                 item {
                                     RevisionHistoryViewer(revisions = item.revisions)
@@ -484,19 +498,19 @@ fun ShariaReviewDetailScreen(
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize(),
                                 contentPadding = PaddingValues(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(14.dp)
+                                verticalArrangement = Arrangement.spacedBy(14.dp),
                             ) {
                                 item {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
+                                        verticalAlignment = Alignment.CenterVertically,
                                     ) {
                                         Text(
                                             text = "الملاحظات الداخلية للمراجعين (${item.internalNotes.size}):",
                                             style = MaterialTheme.typography.titleSmall,
                                             fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.primary
+                                            color = MaterialTheme.colorScheme.primary,
                                         )
                                         TextButton(onClick = { showInternalNoteDialog = true }) {
                                             Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
@@ -511,7 +525,7 @@ fun ShariaReviewDetailScreen(
                                         Text(
                                             text = "لا توجد ملاحظات داخلية سرية حتى الآن.",
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.outline
+                                            color = MaterialTheme.colorScheme.outline,
                                         )
                                     }
                                 } else {
@@ -519,28 +533,28 @@ fun ShariaReviewDetailScreen(
                                         Surface(
                                             color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f),
                                             shape = RoundedCornerShape(8.dp),
-                                            modifier = Modifier.fillMaxWidth()
+                                            modifier = Modifier.fillMaxWidth(),
                                         ) {
                                             Column(modifier = Modifier.padding(10.dp)) {
                                                 Row(
                                                     modifier = Modifier.fillMaxWidth(),
-                                                    horizontalArrangement = Arrangement.SpaceBetween
+                                                    horizontalArrangement = Arrangement.SpaceBetween,
                                                 ) {
                                                     Text(
                                                         text = note.authorName,
                                                         style = MaterialTheme.typography.labelSmall,
-                                                        fontWeight = FontWeight.Bold
+                                                        fontWeight = FontWeight.Bold,
                                                     )
                                                     Text(
                                                         text = dateFormat.format(Date(note.createdAt)),
                                                         style = MaterialTheme.typography.labelSmall,
-                                                        color = MaterialTheme.colorScheme.outline
+                                                        color = MaterialTheme.colorScheme.outline,
                                                     )
                                                 }
                                                 Spacer(modifier = Modifier.height(4.dp))
                                                 Text(
                                                     text = note.noteText,
-                                                    style = MaterialTheme.typography.bodySmall
+                                                    style = MaterialTheme.typography.bodySmall,
                                                 )
                                             }
                                         }
@@ -553,7 +567,7 @@ fun ShariaReviewDetailScreen(
                                         text = "سجل التدقيق غير القابل للتعديل (${item.auditLogs.size} إجراءات مسجلة):",
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.primary
+                                        color = MaterialTheme.colorScheme.primary,
                                     )
                                 }
 
@@ -562,41 +576,42 @@ fun ShariaReviewDetailScreen(
                                         color = MaterialTheme.colorScheme.surface,
                                         shape = RoundedCornerShape(8.dp),
                                         border = CardDefaults.outlinedCardBorder(),
-                                        modifier = Modifier.fillMaxWidth()
+                                        modifier = Modifier.fillMaxWidth(),
                                     ) {
                                         Row(
                                             modifier = Modifier.padding(10.dp),
-                                            verticalAlignment = Alignment.Top
+                                            verticalAlignment = Alignment.Top,
                                         ) {
                                             Box(
-                                                modifier = Modifier
-                                                    .size(8.dp)
-                                                    .padding(top = 4.dp)
-                                                    .clip(CircleShape)
-                                                    .background(MaterialTheme.colorScheme.primary)
+                                                modifier =
+                                                    Modifier
+                                                        .size(8.dp)
+                                                        .padding(top = 4.dp)
+                                                        .clip(CircleShape)
+                                                        .background(MaterialTheme.colorScheme.primary),
                                             )
                                             Spacer(modifier = Modifier.width(8.dp))
                                             Column {
                                                 Row(
                                                     modifier = Modifier.fillMaxWidth(),
-                                                    horizontalArrangement = Arrangement.SpaceBetween
+                                                    horizontalArrangement = Arrangement.SpaceBetween,
                                                 ) {
                                                     Text(
                                                         text = "${log.reviewerName} • ${log.action}",
                                                         style = MaterialTheme.typography.labelSmall,
-                                                        fontWeight = FontWeight.Bold
+                                                        fontWeight = FontWeight.Bold,
                                                     )
                                                     Text(
                                                         text = dateFormat.format(Date(log.timestamp)),
                                                         style = MaterialTheme.typography.labelSmall,
-                                                        color = MaterialTheme.colorScheme.outline
+                                                        color = MaterialTheme.colorScheme.outline,
                                                     )
                                                 }
                                                 Spacer(modifier = Modifier.height(2.dp))
                                                 Text(
                                                     text = log.details,
                                                     style = MaterialTheme.typography.bodySmall,
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                 )
                                             }
                                         }
@@ -618,7 +633,7 @@ fun ShariaReviewDetailScreen(
                 viewModel.approveItem(item.id, currentUserId, currentUserName, reason, reReviewDate)
                 showApproveDialog = false
             },
-            onDismiss = { showApproveDialog = false }
+            onDismiss = { showApproveDialog = false },
         )
     }
 
@@ -628,7 +643,7 @@ fun ShariaReviewDetailScreen(
                 viewModel.rejectItem(item.id, currentUserId, currentUserName, reason)
                 showRejectDialog = false
             },
-            onDismiss = { showRejectDialog = false }
+            onDismiss = { showRejectDialog = false },
         )
     }
 
@@ -638,7 +653,7 @@ fun ShariaReviewDetailScreen(
                 viewModel.requestChanges(item.id, currentUserId, currentUserName, changes)
                 showRequestChangesDialog = false
             },
-            onDismiss = { showRequestChangesDialog = false }
+            onDismiss = { showRequestChangesDialog = false },
         )
     }
 
@@ -648,7 +663,7 @@ fun ShariaReviewDetailScreen(
                 viewModel.escalateToSecondReviewer(item.id, currentUserId, currentUserName, targetId, targetName, reason)
                 showEscalateDialog = false
             },
-            onDismiss = { showEscalateDialog = false }
+            onDismiss = { showEscalateDialog = false },
         )
     }
 
@@ -659,7 +674,7 @@ fun ShariaReviewDetailScreen(
                 viewModel.submitSecondReviewDecision(item.id, currentUserId, currentUserName, approve, reason)
                 showDualApprovalDialog = false
             },
-            onDismiss = { showDualApprovalDialog = false }
+            onDismiss = { showDualApprovalDialog = false },
         )
     }
 
@@ -669,7 +684,7 @@ fun ShariaReviewDetailScreen(
                 viewModel.addInternalNote(item.id, currentUserId, currentUserName, note)
                 showInternalNoteDialog = false
             },
-            onDismiss = { showInternalNoteDialog = false }
+            onDismiss = { showInternalNoteDialog = false },
         )
     }
 
@@ -680,7 +695,7 @@ fun ShariaReviewDetailScreen(
                 viewModel.addClaimComment(item.id, selectedClaimForComment!!.id, currentUserId, currentUserName, comment)
                 selectedClaimForComment = null
             },
-            onDismiss = { selectedClaimForComment = null }
+            onDismiss = { selectedClaimForComment = null },
         )
     }
 
@@ -690,7 +705,7 @@ fun ShariaReviewDetailScreen(
                 viewModel.scheduleReReview(item.id, currentUserId, currentUserName, timestamp)
                 showScheduleReReviewDialog = false
             },
-            onDismiss = { showScheduleReReviewDialog = false }
+            onDismiss = { showScheduleReReviewDialog = false },
         )
     }
 }

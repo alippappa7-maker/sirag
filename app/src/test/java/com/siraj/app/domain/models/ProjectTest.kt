@@ -6,16 +6,16 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ProjectTest {
-
     @Test
     fun `default project initialization`() {
-        val project = Project(
-            id = "test-id",
-            workspaceId = "workspace-id",
-            ownerId = "owner-id",
-            title = "Test Project"
-        )
-        
+        val project =
+            Project(
+                id = "test-id",
+                workspaceId = "workspace-id",
+                ownerId = "owner-id",
+                title = "Test Project",
+            )
+
         assertEquals("test-id", project.id)
         assertEquals(ProjectStatus.DRAFT, project.status)
         assertEquals(emptyList<Scene>(), project.scenes)
@@ -25,18 +25,20 @@ class ProjectTest {
 
     @Test
     fun `copy project modifies ID and times`() {
-        val project = Project(
-            id = "test-id",
-            workspaceId = "workspace-id",
-            ownerId = "owner-id",
-            title = "Test Project"
-        )
-        
-        val copiedProject = project.copy(
-            id = "new-id",
-            title = "Test Project (Copy)"
-        )
-        
+        val project =
+            Project(
+                id = "test-id",
+                workspaceId = "workspace-id",
+                ownerId = "owner-id",
+                title = "Test Project",
+            )
+
+        val copiedProject =
+            project.copy(
+                id = "new-id",
+                title = "Test Project (Copy)",
+            )
+
         assertNotEquals(project.id, copiedProject.id)
         assertEquals("Test Project (Copy)", copiedProject.title)
     }

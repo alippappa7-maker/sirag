@@ -14,15 +14,16 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 @Composable
 fun MainShellScreen(
     navController: NavHostController,
-    content: @Composable (PaddingValues) -> Unit
+    content: @Composable (PaddingValues) -> Unit,
 ) {
-    val items = listOf(
-        NavItem.Home,
-        NavItem.Studio,
-        NavItem.Flashes,
-        NavItem.Library,
-        NavItem.Mihrab
-    )
+    val items =
+        listOf(
+            NavItem.Home,
+            NavItem.Studio,
+            NavItem.Flashes,
+            NavItem.Library,
+            NavItem.Mihrab,
+        )
 
     // A simple responsive layout using BoxWithConstraints
     BoxWithConstraints {
@@ -47,7 +48,7 @@ fun MainShellScreen(
                                     launchSingleTop = true
                                     restoreState = true
                                 }
-                            }
+                            },
                         )
                     }
                 }
@@ -75,11 +76,11 @@ fun MainShellScreen(
                                         launchSingleTop = true
                                         restoreState = true
                                     }
-                                }
+                                },
                             )
                         }
                     }
-                }
+                },
             ) { innerPadding ->
                 content(innerPadding)
             }

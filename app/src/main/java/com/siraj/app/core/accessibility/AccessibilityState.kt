@@ -14,20 +14,19 @@ data class AccessibilityConfig(
     val showCaptions: Boolean = true,
     val showTranscripts: Boolean = true,
     val screenReaderOptimized: Boolean = false,
-    val soundAlertsWithHaptic: Boolean = true
+    val soundAlertsWithHaptic: Boolean = true,
 ) {
     companion object {
-        fun fromPreferences(preferences: UserPreferences): AccessibilityConfig {
-            return AccessibilityConfig(
+        fun fromPreferences(preferences: UserPreferences): AccessibilityConfig =
+            AccessibilityConfig(
                 highContrastMode = preferences.highContrastMode,
                 fontScaleMultiplier = preferences.fontScaleMultiplier.coerceIn(0.85f, 2.0f),
                 reduceMotion = preferences.reduceMotion,
                 showCaptions = preferences.showCaptions,
                 showTranscripts = preferences.showTranscripts,
                 screenReaderOptimized = preferences.screenReaderOptimized,
-                soundAlertsWithHaptic = preferences.soundAlertsWithHaptic
+                soundAlertsWithHaptic = preferences.soundAlertsWithHaptic,
             )
-        }
     }
 }
 
@@ -36,10 +35,10 @@ val LocalAccessibilityConfig = staticCompositionLocalOf { AccessibilityConfig() 
 @Composable
 fun ProvideAccessibilityConfig(
     config: AccessibilityConfig,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     CompositionLocalProvider(
         LocalAccessibilityConfig provides config,
-        content = content
+        content = content,
     )
 }

@@ -17,7 +17,7 @@ interface VideoCompositionService {
         fps: Int = 30,
         includeSourceCitation: Boolean = true,
         includeWatermark: Boolean = true,
-        isPreview: Boolean = false
+        isPreview: Boolean = false,
     ): Result<VideoCompositionManifest>
 
     /**
@@ -25,6 +25,6 @@ interface VideoCompositionService {
      */
     fun executeComposition(
         job: ProductionJob,
-        manifest: VideoCompositionManifest
+        manifest: VideoCompositionManifest,
     ): Flow<ProductionJob>
 }

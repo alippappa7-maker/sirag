@@ -25,19 +25,19 @@ data class QuranNoteEntity(
 interface QuranDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBookmark(bookmark: QuranBookmarkEntity)
-    
+
     @Delete
     suspend fun deleteBookmark(bookmark: QuranBookmarkEntity)
-    
+
     @Query("SELECT * FROM quran_bookmarks")
     fun getAllBookmarks(): Flow<List<QuranBookmarkEntity>>
-    
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNote(note: QuranNoteEntity)
-    
+
     @Query("SELECT * FROM quran_notes WHERE verseKey = :verseKey")
     suspend fun getNote(verseKey: String): QuranNoteEntity?
-    
+
     @Query("SELECT * FROM quran_notes")
     fun getAllNotes(): Flow<List<QuranNoteEntity>>
 }
@@ -45,11 +45,11 @@ interface QuranDao {
 @Database(entities = [QuranBookmarkEntity::class, QuranNoteEntity::class], version = 1, exportSchema = false)
 abstract class QuranDatabase : RoomDatabase() {
     abstract fun quranDao(): QuranDao
-    
+
     companion object {
         @Volatile
         private var INSTANCE: QuranDatabase? = null
-        
+
         fun getDatabase(context: Context): QuranDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(

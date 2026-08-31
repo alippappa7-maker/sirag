@@ -19,9 +19,8 @@ class AudioStudioViewModel(
     private val initialText: String = "",
     private val audioRepository: AudioRepository = FirebaseAudioRepositoryImpl(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
 ) : ViewModel() {
-
     // Inputs
     var narrationText = MutableStateFlow(initialText)
         private set
@@ -80,7 +79,9 @@ class AudioStudioViewModel(
 
     private fun loadUserBalance() {
         val uid = auth.currentUser?.uid ?: return
-        firestore.collection("users").document(uid)
+        firestore
+            .collection("users")
+            .document(uid)
             .addSnapshotListener { snap, _ ->
                 if (snap != null && snap.exists()) {
                     val bal = snap.getLong("balance")?.toInt() ?: 25
@@ -142,28 +143,30 @@ class AudioStudioViewModel(
         viewModelScope.launch {
             _generationState.value = AudioGenerationUiState.Generating("جارٍ توليد الصوت العربي الفصيح عبر خادم سراج...")
 
-            val request = GenerateAudioRequest(
-                projectId = projectId,
-                sceneId = sceneId,
-                text = text,
-                language = selectedLanguage.value.code,
-                voiceId = selectedVoiceId.value,
-                speed = speed.value,
-                pitch = pitch.value,
-                costUnits = 1
-            )
+            val request =
+                GenerateAudioRequest(
+                    projectId = projectId,
+                    sceneId = sceneId,
+                    text = text,
+                    language = selectedLanguage.value.code,
+                    voiceId = selectedVoiceId.value,
+                    speed = speed.value,
+                    pitch = pitch.value,
+                    costUnits = 1,
+                )
 
             val result = audioRepository.generateVoiceover(request)
-            result.onSuccess { item ->
-                _generationState.value = AudioGenerationUiState.Success(item)
-                _userMessage.value = "تم توليد التعليق الصوتي بنجاح"
-                // Auto attach if sceneId is provided
-                if (!sceneId.isNullOrBlank()) {
-                    audioRepository.attachAudioToScene(projectId, sceneId, item, syncDurationWithScene.value)
+            result
+                .onSuccess { item ->
+                    _generationState.value = AudioGenerationUiState.Success(item)
+                    _userMessage.value = "تم توليد التعليق الصوتي بنجاح"
+                    // Auto attach if sceneId is provided
+                    if (!sceneId.isNullOrBlank()) {
+                        audioRepository.attachAudioToScene(projectId, sceneId, item, syncDurationWithScene.value)
+                    }
+                }.onFailure { err ->
+                    _generationState.value = AudioGenerationUiState.Error(err.message ?: "فشل في توليد الصوت")
                 }
-            }.onFailure { err ->
-                _generationState.value = AudioGenerationUiState.Error(err.message ?: "فشل في توليد الصوت")
-            }
         }
     }
 
@@ -174,32 +177,34 @@ class AudioStudioViewModel(
         mimeType: String,
         durationMs: Long,
         speakerName: String?,
-        isRecitation: Boolean
+        isRecitation: Boolean,
     ) {
         viewModelScope.launch {
             _uploadState.value = AudioUploadUiState.Uploading(0.3f)
 
-            val result = audioRepository.uploadUserAudio(
-                projectId = projectId,
-                sceneId = sceneId,
-                title = title,
-                fileName = fileName,
-                fileBytes = fileBytes,
-                mimeType = mimeType,
-                durationMs = durationMs,
-                reciterOrSpeakerName = speakerName,
-                isRecitation = isRecitation
-            )
+            val result =
+                audioRepository.uploadUserAudio(
+                    projectId = projectId,
+                    sceneId = sceneId,
+                    title = title,
+                    fileName = fileName,
+                    fileBytes = fileBytes,
+                    mimeType = mimeType,
+                    durationMs = durationMs,
+                    reciterOrSpeakerName = speakerName,
+                    isRecitation = isRecitation,
+                )
 
-            result.onSuccess { item ->
-                _uploadState.value = AudioUploadUiState.Success(item)
-                _userMessage.value = "تم رفع الملف الصوتي وربط بيانات الترخيص بنجاح"
-                if (!sceneId.isNullOrBlank()) {
-                    audioRepository.attachAudioToScene(projectId, sceneId, item, syncDurationWithScene.value)
+            result
+                .onSuccess { item ->
+                    _uploadState.value = AudioUploadUiState.Success(item)
+                    _userMessage.value = "تم رفع الملف الصوتي وربط بيانات الترخيص بنجاح"
+                    if (!sceneId.isNullOrBlank()) {
+                        audioRepository.attachAudioToScene(projectId, sceneId, item, syncDurationWithScene.value)
+                    }
+                }.onFailure { err ->
+                    _uploadState.value = AudioUploadUiState.Error(err.message ?: "فشل في رفع الملف الصوتي")
                 }
-            }.onFailure { err ->
-                _uploadState.value = AudioUploadUiState.Error(err.message ?: "فشل في رفع الملف الصوتي")
-            }
         }
     }
 
@@ -212,33 +217,35 @@ class AudioStudioViewModel(
 
         try {
             mediaPlayer?.release()
-            mediaPlayer = MediaPlayer().apply {
-                setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .build()
-                )
-                setDataSource(audioItem.audioUrl)
-                prepareAsync()
-                setOnPreparedListener { mp ->
-                    if (audioItem.startTrimMs > 0) {
-                        mp.seekTo(audioItem.startTrimMs.toInt())
+            mediaPlayer =
+                MediaPlayer().apply {
+                    setAudioAttributes(
+                        AudioAttributes
+                            .Builder()
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                            .build(),
+                    )
+                    setDataSource(audioItem.audioUrl)
+                    prepareAsync()
+                    setOnPreparedListener { mp ->
+                        if (audioItem.startTrimMs > 0) {
+                            mp.seekTo(audioItem.startTrimMs.toInt())
+                        }
+                        mp.start()
+                        _isPlaying.value = true
+                        _currentlyPlayingId.value = audioItem.id
                     }
-                    mp.start()
-                    _isPlaying.value = true
-                    _currentlyPlayingId.value = audioItem.id
+                    setOnCompletionListener {
+                        _isPlaying.value = false
+                        _currentlyPlayingId.value = null
+                    }
+                    setOnErrorListener { _, _, _ ->
+                        _isPlaying.value = false
+                        _currentlyPlayingId.value = null
+                        true
+                    }
                 }
-                setOnCompletionListener {
-                    _isPlaying.value = false
-                    _currentlyPlayingId.value = null
-                }
-                setOnErrorListener { _, _, _ ->
-                    _isPlaying.value = false
-                    _currentlyPlayingId.value = null
-                    true
-                }
-            }
         } catch (e: Exception) {
             _userMessage.value = "تعذر تشغيل الصوت: ${e.message}"
         }
@@ -270,18 +277,20 @@ class AudioStudioViewModel(
         val range = _trimRange.value
 
         viewModelScope.launch {
-            val result = audioRepository.trimAudio(
-                audioId = audio.id,
-                startTrimMs = range.start.toLong(),
-                endTrimMs = range.endInclusive.toLong()
-            )
+            val result =
+                audioRepository.trimAudio(
+                    audioId = audio.id,
+                    startTrimMs = range.start.toLong(),
+                    endTrimMs = range.endInclusive.toLong(),
+                )
 
-            result.onSuccess {
-                _userMessage.value = "تم قص الملف الصوتي وتحديث مدة المشهد"
-                closeTrimDialog()
-            }.onFailure { err ->
-                _userMessage.value = "فشل القص: ${err.message}"
-            }
+            result
+                .onSuccess {
+                    _userMessage.value = "تم قص الملف الصوتي وتحديث مدة المشهد"
+                    closeTrimDialog()
+                }.onFailure { err ->
+                    _userMessage.value = "فشل القص: ${err.message}"
+                }
         }
     }
 
@@ -292,18 +301,20 @@ class AudioStudioViewModel(
         }
 
         viewModelScope.launch {
-            val result = audioRepository.attachAudioToScene(
-                projectId = projectId,
-                sceneId = sceneId,
-                audioItem = audioItem,
-                syncSceneDuration = syncDurationWithScene.value
-            )
+            val result =
+                audioRepository.attachAudioToScene(
+                    projectId = projectId,
+                    sceneId = sceneId,
+                    audioItem = audioItem,
+                    syncSceneDuration = syncDurationWithScene.value,
+                )
 
-            result.onSuccess {
-                _userMessage.value = "تم ربط الصوت بالمشهد وتحديث مدة العرض"
-            }.onFailure { err ->
-                _userMessage.value = "فشل في ربط الصوت بالمشهد: ${err.message}"
-            }
+            result
+                .onSuccess {
+                    _userMessage.value = "تم ربط الصوت بالمشهد وتحديث مدة العرض"
+                }.onFailure { err ->
+                    _userMessage.value = "فشل في ربط الصوت بالمشهد: ${err.message}"
+                }
         }
     }
 
@@ -328,7 +339,7 @@ class AudioStudioViewModel(
 class AudioStudioViewModelFactory(
     private val projectId: String,
     private val sceneId: String? = null,
-    private val initialText: String = ""
+    private val initialText: String = "",
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AudioStudioViewModel::class.java)) {

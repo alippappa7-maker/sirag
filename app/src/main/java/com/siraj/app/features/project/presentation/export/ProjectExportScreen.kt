@@ -8,7 +8,6 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -38,7 +37,7 @@ import com.siraj.app.ui.theme.statusColors
 fun ProjectExportScreen(
     projectId: String,
     onNavigateBack: () -> Unit,
-    viewModel: ProjectExportViewModel = viewModel(factory = ProjectExportViewModelFactory(projectId))
+    viewModel: ProjectExportViewModel = viewModel(factory = ProjectExportViewModelFactory(projectId)),
 ) {
     val context = LocalContext.current
     val project by viewModel.project.collectAsState()
@@ -77,40 +76,46 @@ fun ProjectExportScreen(
                         Text(
                             text = "تصدير الفيديو والإنتاج النهائي",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                         Text(
                             text = project?.title ?: "مشروع بدون عنوان",
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.back),
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                    ),
             )
-        }
+        },
     ) { paddingValues ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(vertical = 16.dp)
+            contentPadding = PaddingValues(vertical = 16.dp),
         ) {
-
             // 1. Pre-Export Validation & Review Status Banner
             item {
                 PreExportValidationBanner(
                     report = validationReport,
-                    reviewState = project?.reviewState ?: ReviewState.DRAFT
+                    reviewState = project?.reviewState ?: ReviewState.DRAFT,
                 )
             }
 
@@ -120,7 +125,7 @@ fun ProjectExportScreen(
                     Text(
                         text = "حالة عملية التصدير الحالية:",
                         style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     ActiveJobCard(
@@ -132,11 +137,12 @@ fun ProjectExportScreen(
                             context.startActivity(intent)
                         },
                         onShare = { url ->
-                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                                type = "text/plain"
-                                putExtra(Intent.EXTRA_SUBJECT, project?.title ?: "فيديو منصة سراج")
-                                putExtra(Intent.EXTRA_TEXT, "شاهد فيديو سراج الموثق: $url")
-                            }
+                            val shareIntent =
+                                Intent(Intent.ACTION_SEND).apply {
+                                    type = "text/plain"
+                                    putExtra(Intent.EXTRA_SUBJECT, project?.title ?: "فيديو منصة سراج")
+                                    putExtra(Intent.EXTRA_TEXT, "شاهد فيديو سراج الموثق: $url")
+                                }
                             context.startActivity(Intent.createChooser(shareIntent, "مشاركة الفيديو عبر"))
                         },
                         onCopyUrl = { url ->
@@ -145,7 +151,7 @@ fun ProjectExportScreen(
                             clipboard.setPrimaryClip(clip)
                             Toast.makeText(context, "تم نسخ الرابط المؤقت (صالح لمدة 7 أيام) 📋", Toast.LENGTH_SHORT).show()
                         },
-                        onDelete = { showDeleteConfirmJobId = job.jobId }
+                        onDelete = { showDeleteConfirmJobId = job.jobId },
                     )
                 }
             }
@@ -155,11 +161,11 @@ fun ProjectExportScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
                 ) {
                     Column(
                         modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.Tune, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
@@ -176,31 +182,35 @@ fun ProjectExportScreen(
                                     selected = !isPreviewMode,
                                     onClick = { viewModel.setIsPreviewMode(false) },
                                     label = { Text("إنتاج نهائي كامل") },
-                                    leadingIcon = { Icon(Icons.Default.Movie, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                                    leadingIcon = { Icon(Icons.Default.Movie, contentDescription = null, modifier = Modifier.size(16.dp)) },
                                 )
                                 FilterChip(
                                     selected = isPreviewMode,
                                     onClick = { viewModel.setIsPreviewMode(true) },
                                     label = { Text("معاينة سريعة (10 ثوانٍ)") },
-                                    leadingIcon = { Icon(Icons.Default.Speed, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                                    leadingIcon = { Icon(Icons.Default.Speed, contentDescription = null, modifier = Modifier.size(16.dp)) },
                                 )
                             }
                         }
 
                         // Aspect Ratio
                         Column {
-                            Text("أبعاد الإطار (Aspect Ratio):", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Medium)
+                            Text(
+                                "أبعاد الإطار (Aspect Ratio):",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Medium,
+                            )
                             Spacer(modifier = Modifier.height(6.dp))
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 listOf(
                                     "9:16" to "رأسي (Reels/Shorts)",
                                     "1:1" to "مربع (Instagram)",
-                                    "16:9" to "عريض (YouTube)"
+                                    "16:9" to "عريض (YouTube)",
                                 ).forEach { (ratio, label) ->
                                     FilterChip(
                                         selected = selectedAspectRatio == ratio,
                                         onClick = { viewModel.setAspectRatio(ratio) },
-                                        label = { Text(label, fontSize = 12.sp) }
+                                        label = { Text(label, fontSize = 12.sp) },
                                     )
                                 }
                             }
@@ -215,7 +225,7 @@ fun ProjectExportScreen(
                                     FilterChip(
                                         selected = selectedQuality == quality,
                                         onClick = { viewModel.setQuality(quality) },
-                                        label = { Text(quality.label, fontSize = 12.sp) }
+                                        label = { Text(quality.label, fontSize = 12.sp) },
                                     )
                                 }
                             }
@@ -229,12 +239,12 @@ fun ProjectExportScreen(
                                 listOf(
                                     24 to "24 fps (سينمائي)",
                                     30 to "30 fps (قياسي)",
-                                    60 to "60 fps (سلس جداً)"
+                                    60 to "60 fps (سلس جداً)",
                                 ).forEach { (fps, label) ->
                                     FilterChip(
                                         selected = selectedFps == fps,
                                         onClick = { viewModel.setFps(fps) },
-                                        label = { Text(label, fontSize = 12.sp) }
+                                        label = { Text(label, fontSize = 12.sp) },
                                     )
                                 }
                             }
@@ -249,7 +259,7 @@ fun ProjectExportScreen(
                                 description = "حرق أسطر الترجمة أسفل الشاشة مباشرة أثناء التصيير",
                                 checked = burnSubtitles,
                                 onCheckedChange = { viewModel.setBurnSubtitles(it) },
-                                icon = Icons.Default.Subtitles
+                                icon = Icons.Default.Subtitles,
                             )
 
                             ToggleOptionRow(
@@ -257,7 +267,7 @@ fun ProjectExportScreen(
                                 description = "تضمين شارة 'محتوى معتمد وموثق' والمصدر الشرعي للآيات والتفاسير",
                                 checked = includeSourceCitation,
                                 onCheckedChange = { viewModel.setIncludeSourceCitation(it) },
-                                icon = Icons.Default.Verified
+                                icon = Icons.Default.Verified,
                             )
 
                             ToggleOptionRow(
@@ -265,7 +275,7 @@ fun ProjectExportScreen(
                                 description = "وضع شعار سراج الهادئ في الزاوية علامة للإنتاج الإسلامي",
                                 checked = includeWatermark,
                                 onCheckedChange = { viewModel.setIncludeWatermark(it) },
-                                icon = Icons.Default.BrandingWatermark
+                                icon = Icons.Default.BrandingWatermark,
                             )
                         }
                     }
@@ -277,36 +287,44 @@ fun ProjectExportScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
                 ) {
                     Column(
                         modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.MonetizationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("تكلفة التصدير برصيد النقاط:", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                                Text(
+                                    "تكلفة التصدير برصيد النقاط:",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                )
                             }
                             Text(
                                 text = "$calculatedCost نقطة",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.colorScheme.primary,
                             )
                         }
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text("رصيد الحساب المتاح:", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                "رصيد الحساب المتاح:",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
                             Text("$availableCredits نقطة", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
                         }
 
@@ -316,20 +334,29 @@ fun ProjectExportScreen(
                         Column {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                horizontalArrangement = Arrangement.SpaceBetween,
                             ) {
-                                Text("مساحة التخزين المستهلكة في المساحة:", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                Text("${storageUsedMb.toInt()} MB / ${storageLimitMb.toInt()} MB", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                                Text(
+                                    "مساحة التخزين المستهلكة في المساحة:",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                                Text(
+                                    "${storageUsedMb.toInt()} MB / ${storageLimitMb.toInt()} MB",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                )
                             }
                             Spacer(modifier = Modifier.height(4.dp))
                             LinearProgressIndicator(
                                 progress = { (storageUsedMb / storageLimitMb).toFloat().coerceIn(0f, 1f) },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(6.dp)
-                                    .clip(RoundedCornerShape(3.dp)),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(6.dp)
+                                        .clip(RoundedCornerShape(3.dp)),
                                 color = MaterialTheme.colorScheme.primary,
-                                trackColor = MaterialTheme.colorScheme.surfaceVariant
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant,
                             )
                         }
                     }
@@ -343,17 +370,23 @@ fun ProjectExportScreen(
 
                 Button(
                     onClick = { viewModel.requestExport() },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(54.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(54.dp),
                     enabled = isExportAllowed && !isJobRunning,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (validationReport.hasWarnings) Color(0xFFF59E0B) else MaterialTheme.colorScheme.primary
-                    ),
-                    shape = RoundedCornerShape(12.dp)
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = if (validationReport.hasWarnings) Color(0xFFF59E0B) else MaterialTheme.colorScheme.primary,
+                        ),
+                    shape = RoundedCornerShape(12.dp),
                 ) {
                     if (isJobRunning) {
-                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary, strokeWidth = 2.dp)
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp,
+                        )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text("جاري معالجة وتصيير الفيديو...", fontWeight = FontWeight.Bold)
                     } else {
@@ -362,7 +395,7 @@ fun ProjectExportScreen(
                         Text(
                             text = if (validationReport.hasWarnings) "بدء التصدير (يوجد تنبيهات)" else "بدء تصدير الفيديو الآن",
                             fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
+                            fontSize = 16.sp,
                         )
                     }
                 }
@@ -372,7 +405,7 @@ fun ProjectExportScreen(
                         text = "⚠️ لا يمكن التصدير لوجود موانع حرجة في المشروع. يرجى مراجعة التقرير أعلاه.",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(top = 6.dp)
+                        modifier = Modifier.padding(top = 6.dp),
                     )
                 }
             }
@@ -384,7 +417,7 @@ fun ProjectExportScreen(
                     Text(
                         text = "سجل عمليات الإنتاج والتصدير السابقة:",
                         style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
 
@@ -392,7 +425,7 @@ fun ProjectExportScreen(
                     HistoricalJobRow(
                         job = job,
                         onDownload = { url -> context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) },
-                        onDelete = { showDeleteConfirmJobId = job.jobId }
+                        onDelete = { showDeleteConfirmJobId = job.jobId },
                     )
                 }
             }
@@ -413,18 +446,26 @@ fun ProjectExportScreen(
                             Text("• ", fontWeight = FontWeight.Bold, color = Color(0xFFF59E0B))
                             Column {
                                 Text(issue.issueType.title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
-                                Text(issue.message, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(
+                                    issue.message,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
                             }
                         }
                     }
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text("هل ترغب في متابعة التصدير وتجاهل التنبيهات؟", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                    Text(
+                        "هل ترغب في متابعة التصدير وتجاهل التنبيهات؟",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
                 }
             },
             confirmButton = {
                 Button(
                     onClick = { viewModel.executeExport() },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF59E0B))
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF59E0B)),
                 ) {
                     Text("متابعة التصدير على أي حال")
                 }
@@ -433,7 +474,7 @@ fun ProjectExportScreen(
                 TextButton(onClick = { viewModel.toggleWarningDialog(false) }) {
                     Text("تراجع وتعديل")
                 }
-            }
+            },
         )
     }
 
@@ -443,23 +484,30 @@ fun ProjectExportScreen(
             onDismissRequest = { showDeleteConfirmJobId = null },
             icon = { Icon(Icons.Default.DeleteForever, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
             title = { Text("تأكيد حذف الملف النهائي") },
-            text = { Text("سيتم حذف ملف الفيديو والصورة المصغرة من التخزين السحابي نهائياً وإخلاء المساحة. لن تؤثر العملية على مشاهد أو نصوص المشروع الأصلي.") },
+            text = {
+                Text(
+                    "سيتم حذف ملف الفيديو والصورة المصغرة من التخزين السحابي نهائياً وإخلاء المساحة. لن تؤثر العملية على مشاهد أو نصوص المشروع الأصلي.",
+                )
+            },
             confirmButton = {
                 Button(
                     onClick = {
                         viewModel.deleteExportedFile(jobId)
                         showDeleteConfirmJobId = null
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                 ) {
                     Text("حذف الملف النهائي")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirmJobId = null }) {
-                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
+                    Text(
+                        androidx.compose.ui.res
+                            .stringResource(com.siraj.app.R.string.cancel),
+                    )
                 }
-            }
+            },
         )
     }
 }
@@ -467,55 +515,57 @@ fun ProjectExportScreen(
 @Composable
 private fun PreExportValidationBanner(
     report: PreExportReport,
-    reviewState: ReviewState
+    reviewState: ReviewState,
 ) {
     val isApproved = reviewState == ReviewState.APPROVED
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = when {
-                !report.isExportAllowed -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
-                report.hasWarnings -> MaterialTheme.statusColors.warningBg
-                else -> Color(0xFFD1FAE5)
-            }
-        ),
-        shape = RoundedCornerShape(12.dp)
+        colors =
+            CardDefaults.cardColors(
+                containerColor =
+                    when {
+                        !report.isExportAllowed -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
+                        report.hasWarnings -> MaterialTheme.statusColors.warningBg
+                        else -> Color(0xFFD1FAE5)
+                    },
+            ),
+        shape = RoundedCornerShape(12.dp),
     ) {
         Column(
             modifier = Modifier.padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = if (report.isExportAllowed) Icons.Default.CheckCircle else Icons.Default.Error,
                         contentDescription = null,
-                        tint = if (report.isExportAllowed) Color(0xFF059669) else MaterialTheme.colorScheme.error
+                        tint = if (report.isExportAllowed) Color(0xFF059669) else MaterialTheme.colorScheme.error,
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = if (report.isExportAllowed) "حالة جاهزية التصدير: مكتمل" else "حالة التصدير: محظور لوجود موانع",
                         fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
 
                 if (isApproved) {
                     Surface(
                         shape = RoundedCornerShape(6.dp),
-                        color = Color(0xFF10B981)
+                        color = Color(0xFF10B981),
                     ) {
                         Text(
                             text = "معتمد شرعياً ✅",
                             color = Color.White,
                             style = MaterialTheme.typography.labelSmall,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                     }
                 }
@@ -525,15 +575,19 @@ private fun PreExportValidationBanner(
                 report.issues.forEach { issue ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = if (issue.severity == ValidationSeverity.BLOCKER) "❌ " else "⚠️ ",
-                            fontSize = 12.sp
+                            fontSize = 12.sp,
                         )
                         Column {
                             Text(issue.issueType.title, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
-                            Text(issue.message, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                issue.message,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
                         }
                     }
                 }
@@ -550,48 +604,50 @@ private fun ActiveJobCard(
     onDownload: (String) -> Unit,
     onShare: (String) -> Unit,
     onCopyUrl: (String) -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
 ) {
-    val statusColor = when (job.status) {
-        ProductionJobStatus.QUEUED -> MaterialTheme.colorScheme.tertiary
-        ProductionJobStatus.PROCESSING -> MaterialTheme.colorScheme.secondary
-        ProductionJobStatus.COMPOSING -> Color(0xFF8B5CF6)
-        ProductionJobStatus.ENCODING -> Color(0xFFF59E0B)
-        ProductionJobStatus.RENDERING -> MaterialTheme.colorScheme.primary
-        ProductionJobStatus.UPLOADING -> Color(0xFF06B6D4)
-        ProductionJobStatus.COMPLETED -> Color(0xFF10B981)
-        ProductionJobStatus.FAILED -> MaterialTheme.colorScheme.error
-        ProductionJobStatus.CANCELLED -> MaterialTheme.colorScheme.outline
-    }
+    val statusColor =
+        when (job.status) {
+            ProductionJobStatus.QUEUED -> MaterialTheme.colorScheme.tertiary
+            ProductionJobStatus.PROCESSING -> MaterialTheme.colorScheme.secondary
+            ProductionJobStatus.COMPOSING -> Color(0xFF8B5CF6)
+            ProductionJobStatus.ENCODING -> Color(0xFFF59E0B)
+            ProductionJobStatus.RENDERING -> MaterialTheme.colorScheme.primary
+            ProductionJobStatus.UPLOADING -> Color(0xFF06B6D4)
+            ProductionJobStatus.COMPLETED -> Color(0xFF10B981)
+            ProductionJobStatus.FAILED -> MaterialTheme.colorScheme.error
+            ProductionJobStatus.CANCELLED -> MaterialTheme.colorScheme.outline
+        }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
     ) {
         Column(
             modifier = Modifier.padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
-                        modifier = Modifier
-                            .size(10.dp)
-                            .clip(RoundedCornerShape(5.dp))
-                            .background(statusColor)
+                        modifier =
+                            Modifier
+                                .size(10.dp)
+                                .clip(RoundedCornerShape(5.dp))
+                                .background(statusColor),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = job.status.labelArabic,
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
-                        color = statusColor
+                        color = statusColor,
                     )
                 }
 
@@ -599,19 +655,20 @@ private fun ActiveJobCard(
                     text = "${job.progress}%",
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    color = statusColor
+                    color = statusColor,
                 )
             }
 
             // Live Progress Bar
             LinearProgressIndicator(
                 progress = { job.progress / 100f },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp)
-                    .clip(RoundedCornerShape(4.dp)),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(8.dp)
+                        .clip(RoundedCornerShape(4.dp)),
                 color = statusColor,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
             )
 
             // Latest Log Message
@@ -619,7 +676,7 @@ private fun ActiveJobCard(
                 Text(
                     text = "📋 $lastLog",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
@@ -627,13 +684,14 @@ private fun ActiveJobCard(
             if (job.status == ProductionJobStatus.COMPLETED) {
                 Surface(
                     shape = RoundedCornerShape(8.dp),
-                    color = Color(0xFFECFDF5)
+                    color = Color(0xFFECFDF5),
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(Icons.Default.LockClock, contentDescription = null, tint = Color(0xFF059669), modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
@@ -641,7 +699,7 @@ private fun ActiveJobCard(
                             text = "رابط موقع ومؤقت صالح لمدة 7 أيام للتحميل والمشاركة لحماية الخصوصية",
                             style = MaterialTheme.typography.labelSmall,
                             color = Color(0xFF065F46),
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
                         )
                     }
                 }
@@ -650,13 +708,13 @@ private fun ActiveJobCard(
             // Action Buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 if (!job.isTerminal) {
                     OutlinedButton(
                         onClick = onCancel,
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     ) {
                         Icon(Icons.Default.Cancel, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
@@ -666,18 +724,21 @@ private fun ActiveJobCard(
                     Button(
                         onClick = onRetry,
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     ) {
                         Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.retry))
+                        Text(
+                            androidx.compose.ui.res
+                                .stringResource(com.siraj.app.R.string.retry),
+                        )
                     }
                 } else if (job.status == ProductionJobStatus.COMPLETED && !job.outputVideoUrl.isNullOrBlank()) {
                     val url = job.outputVideoUrl
                     Button(
                         onClick = { onDownload(url) },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     ) {
                         Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
@@ -686,11 +747,14 @@ private fun ActiveJobCard(
 
                     OutlinedButton(
                         onClick = { onShare(url) },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     ) {
                         Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.share))
+                        Text(
+                            androidx.compose.ui.res
+                                .stringResource(com.siraj.app.R.string.share),
+                        )
                     }
 
                     IconButton(onClick = { onCopyUrl(url) }) {
@@ -710,7 +774,7 @@ private fun ActiveJobCard(
 private fun HistoricalJobRow(
     job: ProductionJob,
     onDownload: (String) -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
 ) {
     val formatter = remember { SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()) }
     val dateStr = formatter.format(Date(job.createdAt))
@@ -718,33 +782,38 @@ private fun HistoricalJobRow(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
-        shape = RoundedCornerShape(10.dp)
+        shape = RoundedCornerShape(10.dp),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "${job.quality.label} (${job.aspectRatio})",
                         style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     if (job.isPreviewOnly) {
                         Spacer(modifier = Modifier.width(6.dp))
                         Surface(shape = RoundedCornerShape(4.dp), color = MaterialTheme.colorScheme.secondaryContainer) {
-                            Text("معاينة", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
+                            Text(
+                                "معاينة",
+                                style = MaterialTheme.typography.labelSmall,
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+                            )
                         }
                     }
                 }
                 Text(
                     text = "$dateStr • ${job.status.labelArabic}",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
@@ -754,7 +823,14 @@ private fun HistoricalJobRow(
                         Icon(Icons.Default.Download, contentDescription = "تنزيل", modifier = Modifier.size(20.dp))
                     }
                     IconButton(onClick = onDelete) {
-                        Icon(Icons.Default.Delete, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.delete), tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.delete),
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(20.dp),
+                        )
                     }
                 }
             }
@@ -768,16 +844,16 @@ private fun ToggleOptionRow(
     description: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    icon: androidx.compose.ui.graphics.vector.ImageVector
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
             modifier = Modifier.weight(1f),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
             Spacer(modifier = Modifier.width(8.dp))
@@ -789,7 +865,7 @@ private fun ToggleOptionRow(
         Spacer(modifier = Modifier.width(8.dp))
         Switch(
             checked = checked,
-            onCheckedChange = onCheckedChange
+            onCheckedChange = onCheckedChange,
         )
     }
 }

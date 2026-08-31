@@ -1,7 +1,6 @@
 package com.siraj.app.features.review.presentation.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -26,117 +25,153 @@ import java.util.*
 import com.siraj.app.ui.theme.statusColors
 
 @Composable
-fun RiskBadge(riskLevel: RiskLevel, modifier: Modifier = Modifier) {
-    val (bgColor, textColor, icon) = when (riskLevel) {
-        RiskLevel.LOW -> Triple(
-            MaterialTheme.statusColors.successBg,
-            MaterialTheme.statusColors.successFg,
-            Icons.Default.CheckCircle
-        )
-        RiskLevel.MEDIUM -> Triple(
-            MaterialTheme.statusColors.warningBg,
-            MaterialTheme.statusColors.warningFg,
-            Icons.Default.Info
-        )
-        RiskLevel.HIGH -> Triple(
-            Color(0xFFFFE0B2),
-            MaterialTheme.statusColors.warningFg,
-            Icons.Default.Warning
-        )
-        RiskLevel.CRITICAL -> Triple(
-            MaterialTheme.statusColors.errorBg,
-            MaterialTheme.statusColors.errorFg,
-            Icons.Default.ReportProblem
-        )
-    }
+fun RiskBadge(
+    riskLevel: RiskLevel,
+    modifier: Modifier = Modifier,
+) {
+    val (bgColor, textColor, icon) =
+        when (riskLevel) {
+            RiskLevel.LOW ->
+                Triple(
+                    MaterialTheme.statusColors.successBg,
+                    MaterialTheme.statusColors.successFg,
+                    Icons.Default.CheckCircle,
+                )
+            RiskLevel.MEDIUM ->
+                Triple(
+                    MaterialTheme.statusColors.warningBg,
+                    MaterialTheme.statusColors.warningFg,
+                    Icons.Default.Info,
+                )
+            RiskLevel.HIGH ->
+                Triple(
+                    Color(0xFFFFE0B2),
+                    MaterialTheme.statusColors.warningFg,
+                    Icons.Default.Warning,
+                )
+            RiskLevel.CRITICAL ->
+                Triple(
+                    MaterialTheme.statusColors.errorBg,
+                    MaterialTheme.statusColors.errorFg,
+                    Icons.Default.ReportProblem,
+                )
+        }
 
     Surface(
         color = bgColor,
         shape = RoundedCornerShape(8.dp),
-        modifier = modifier
+        modifier = modifier,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
                 tint = textColor,
-                modifier = Modifier.size(14.dp)
+                modifier = Modifier.size(14.dp),
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = riskLevel.arabicTitle,
                 color = textColor,
                 fontSize = 11.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
         }
     }
 }
 
 @Composable
-fun StatusBadge(status: ShariaReviewStatus, modifier: Modifier = Modifier) {
-    val (bgColor, textColor, icon) = when (status) {
-        ShariaReviewStatus.PENDING -> Triple(MaterialTheme.statusColors.neutralBg, Color(0xFF455A64), Icons.Default.HourglassEmpty)
-        ShariaReviewStatus.IN_REVIEW -> Triple(Color(0xFFE3F2FD), Color(0xFF1565C0), Icons.Default.RateReview)
-        ShariaReviewStatus.CHANGES_REQUESTED -> Triple(MaterialTheme.statusColors.warningBg, MaterialTheme.statusColors.warningFg, Icons.Default.EditNote)
-        ShariaReviewStatus.ESCALATED_SECOND_REVIEW -> Triple(Color(0xFFF3E5F5), Color(0xFF7B1FA2), Icons.Default.SupervisorAccount)
-        ShariaReviewStatus.DUAL_APPROVAL_PENDING -> Triple(MaterialTheme.statusColors.draftBg, MaterialTheme.statusColors.draftFg, Icons.Default.HowToReg)
-        ShariaReviewStatus.APPROVED -> Triple(MaterialTheme.statusColors.successBg, MaterialTheme.statusColors.successFg, Icons.Default.CheckCircle)
-        ShariaReviewStatus.REJECTED -> Triple(MaterialTheme.statusColors.errorBg, MaterialTheme.statusColors.errorFg, Icons.Default.Cancel)
-    }
+fun StatusBadge(
+    status: ShariaReviewStatus,
+    modifier: Modifier = Modifier,
+) {
+    val (bgColor, textColor, icon) =
+        when (status) {
+            ShariaReviewStatus.PENDING -> Triple(MaterialTheme.statusColors.neutralBg, Color(0xFF455A64), Icons.Default.HourglassEmpty)
+            ShariaReviewStatus.IN_REVIEW -> Triple(Color(0xFFE3F2FD), Color(0xFF1565C0), Icons.Default.RateReview)
+            ShariaReviewStatus.CHANGES_REQUESTED ->
+                Triple(
+                    MaterialTheme.statusColors.warningBg,
+                    MaterialTheme.statusColors.warningFg,
+                    Icons.Default.EditNote,
+                )
+            ShariaReviewStatus.ESCALATED_SECOND_REVIEW -> Triple(Color(0xFFF3E5F5), Color(0xFF7B1FA2), Icons.Default.SupervisorAccount)
+            ShariaReviewStatus.DUAL_APPROVAL_PENDING ->
+                Triple(
+                    MaterialTheme.statusColors.draftBg,
+                    MaterialTheme.statusColors.draftFg,
+                    Icons.Default.HowToReg,
+                )
+            ShariaReviewStatus.APPROVED ->
+                Triple(
+                    MaterialTheme.statusColors.successBg,
+                    MaterialTheme.statusColors.successFg,
+                    Icons.Default.CheckCircle,
+                )
+            ShariaReviewStatus.REJECTED ->
+                Triple(
+                    MaterialTheme.statusColors.errorBg,
+                    MaterialTheme.statusColors.errorFg,
+                    Icons.Default.Cancel,
+                )
+        }
 
     Surface(
         color = bgColor,
         shape = RoundedCornerShape(8.dp),
-        modifier = modifier
+        modifier = modifier,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
                 tint = textColor,
-                modifier = Modifier.size(14.dp)
+                modifier = Modifier.size(14.dp),
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = status.arabicTitle,
                 color = textColor,
                 fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
             )
         }
     }
 }
 
 @Composable
-fun CriticalTopicChip(topic: CriticalTopic, modifier: Modifier = Modifier) {
+fun CriticalTopicChip(
+    topic: CriticalTopic,
+    modifier: Modifier = Modifier,
+) {
     Surface(
         color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.7f),
         shape = RoundedCornerShape(6.dp),
-        modifier = modifier
+        modifier = modifier,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
         ) {
             Box(
-                modifier = Modifier
-                    .size(6.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.error)
+                modifier =
+                    Modifier
+                        .size(6.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.error),
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = topic.arabicTitle,
                 color = MaterialTheme.colorScheme.onErrorContainer,
                 fontSize = 10.sp,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
             )
         }
     }
@@ -146,32 +181,35 @@ fun CriticalTopicChip(topic: CriticalTopic, modifier: Modifier = Modifier) {
 fun ReviewQueueItemCard(
     item: ShariaReviewItem,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale("ar"))
     val formattedDate = dateFormat.format(Date(item.submittedAt))
 
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .testTag("review_queue_card_${item.id}"),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable { onClick() }
+                .testTag("review_queue_card_${item.id}"),
         shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f),
+            ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
         ) {
             // Header Row: Status and Risk Level
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 StatusBadge(status = item.status)
                 RiskBadge(riskLevel = item.riskLevel)
@@ -185,7 +223,7 @@ fun ReviewQueueItemCard(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
 
             Spacer(modifier = Modifier.height(6.dp))
@@ -196,7 +234,7 @@ fun ReviewQueueItemCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
 
             // Critical Topics Tags if any
@@ -204,7 +242,7 @@ fun ReviewQueueItemCard(
                 Spacer(modifier = Modifier.height(10.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     item.criticalTopics.filter { it != CriticalTopic.NONE }.forEach { topic ->
                         CriticalTopicChip(topic = topic)
@@ -220,7 +258,7 @@ fun ReviewQueueItemCard(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -228,26 +266,26 @@ fun ReviewQueueItemCard(
                             Icons.Default.Person,
                             contentDescription = null,
                             modifier = Modifier.size(14.dp),
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = item.creatorName,
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.onSurface,
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = "• ${item.category}",
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.outline
+                            color = MaterialTheme.colorScheme.outline,
                         )
                     }
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = "$formattedDate (${item.claims.size} مراجع موثقة)",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.outline
+                        color = MaterialTheme.colorScheme.outline,
                     )
                 }
 
@@ -256,14 +294,14 @@ fun ReviewQueueItemCard(
                         text = "فحص وتدقيق",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.colorScheme.primary,
                     )
                 }
             }

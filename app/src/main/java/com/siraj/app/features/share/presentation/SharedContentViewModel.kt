@@ -13,18 +13,26 @@ import kotlinx.coroutines.launch
 
 sealed class SharedContentState {
     object Loading : SharedContentState()
-    data class Success(val shareLink: ShareLink) : SharedContentState()
-    data class Error(val message: String) : SharedContentState()
+
+    data class Success(
+        val shareLink: ShareLink,
+    ) : SharedContentState()
+
+    data class Error(
+        val message: String,
+    ) : SharedContentState()
 }
 
 class SharedContentViewModel(
-    private val repository: ShareRepository
+    private val repository: ShareRepository,
 ) : ViewModel() {
-
     private val _state = MutableStateFlow<SharedContentState>(SharedContentState.Loading)
     val state: StateFlow<SharedContentState> = _state.asStateFlow()
 
-    fun validateLink(linkId: String, token: String?) {
+    fun validateLink(
+        linkId: String,
+        token: String?,
+    ) {
         viewModelScope.launch {
             _state.value = SharedContentState.Loading
             when (val result = repository.getAndValidateShareLink(linkId, token)) {
@@ -43,7 +51,7 @@ class SharedContentViewModel(
 }
 
 class SharedContentViewModelFactory(
-    private val repository: ShareRepository
+    private val repository: ShareRepository,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

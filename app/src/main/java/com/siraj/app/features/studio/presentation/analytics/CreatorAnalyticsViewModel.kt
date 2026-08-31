@@ -15,15 +15,20 @@ import kotlinx.coroutines.launch
 
 sealed class CreatorAnalyticsUiState {
     object Loading : CreatorAnalyticsUiState()
-    data class Success(val dashboard: CreatorAnalyticsDashboard) : CreatorAnalyticsUiState()
-    data class Error(val message: String) : CreatorAnalyticsUiState()
+
+    data class Success(
+        val dashboard: CreatorAnalyticsDashboard,
+    ) : CreatorAnalyticsUiState()
+
+    data class Error(
+        val message: String,
+    ) : CreatorAnalyticsUiState()
 }
 
 class CreatorAnalyticsViewModel(
     private val repository: CreatorAnalyticsRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow<CreatorAnalyticsUiState>(CreatorAnalyticsUiState.Loading)
     val uiState: StateFlow<CreatorAnalyticsUiState> = _uiState.asStateFlow()
 
@@ -48,11 +53,11 @@ class CreatorAnalyticsViewModel(
                 return@launch
             }
 
-            repository.getCreatorDashboard(user.id, _timeFilter.value)
+            repository
+                .getCreatorDashboard(user.id, _timeFilter.value)
                 .catch { e ->
                     _uiState.value = CreatorAnalyticsUiState.Error(e.message ?: "حدث خطأ غير معروف")
-                }
-                .collect { dashboard ->
+                }.collect { dashboard ->
                     _uiState.value = CreatorAnalyticsUiState.Success(dashboard)
                 }
         }

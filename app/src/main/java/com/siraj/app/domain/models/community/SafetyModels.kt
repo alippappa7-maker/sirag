@@ -145,4 +145,3 @@ data class ModerationDecisionLog(
     val newState: String? = null,
     val timestamp: Long = System.currentTimeMillis()
 )
-

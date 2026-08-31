@@ -2,10 +2,8 @@ package com.siraj.app.features.subscription.presentation
 
 import android.app.Activity
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -20,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,7 +31,7 @@ import com.siraj.app.domain.models.subscription.UsageLimit
 @Composable
 fun SubscriptionScreen(
     viewModel: SubscriptionViewModel,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
@@ -45,7 +42,12 @@ fun SubscriptionScreen(
                 title = { Text("باقات سراج") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.back),
+                        )
                     }
                 },
                 actions = {
@@ -54,9 +56,9 @@ fun SubscriptionScreen(
                         Spacer(modifier = Modifier.width(4.dp))
                         Text("استعادة المشتريات")
                     }
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         if (state.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -64,31 +66,31 @@ fun SubscriptionScreen(
             }
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(padding),
                 contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
+                verticalArrangement = Arrangement.spacedBy(24.dp),
             ) {
-                
                 // Header
                 item {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(
                             text = "ارتقِ بإنتاجك الإسلامي",
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "اختر الباقة التي تناسب احتياجاتك. القرآن الكريم ومواقيت الصلاة ستظل دائماً مجانية.",
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
                         )
                     }
                 }
@@ -108,7 +110,7 @@ fun SubscriptionScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodySmall,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         )
                     }
                 }
@@ -118,27 +120,27 @@ fun SubscriptionScreen(
                     if (state.subscription != null) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
+                                    verticalAlignment = Alignment.CenterVertically,
                                 ) {
                                     Column {
                                         Text("باقتك الحالية", style = MaterialTheme.typography.labelMedium)
                                         Text(
                                             state.availablePlans.find { it.id == state.subscription?.planId }?.name ?: "غير معروف",
                                             style = MaterialTheme.typography.titleLarge,
-                                            fontWeight = FontWeight.Bold
+                                            fontWeight = FontWeight.Bold,
                                         )
                                     }
-                                    Badge(containerColor = MaterialTheme.colorScheme.primary) { 
+                                    Badge(containerColor = MaterialTheme.colorScheme.primary) {
                                         Text(state.subscription?.status?.name ?: "")
                                     }
                                 }
-                                
+
                                 state.entitlement?.let { entitlement ->
                                     Spacer(modifier = Modifier.height(16.dp))
                                     HorizontalDivider()
@@ -167,7 +169,7 @@ fun SubscriptionScreen(
                             plan = plan,
                             storeProduct = null,
                             isCurrentPlan = state.subscription?.planId == plan.id,
-                            onPurchaseClick = {}
+                            onPurchaseClick = {},
                         )
                     }
                 }
@@ -178,7 +180,7 @@ fun SubscriptionScreen(
                         Text("الخطط الاحترافية", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                     }
                 }
-                
+
                 proMonthly?.let { plan ->
                     item {
                         PlanCard(
@@ -187,7 +189,7 @@ fun SubscriptionScreen(
                             isCurrentPlan = state.subscription?.planId == plan.id,
                             onPurchaseClick = {
                                 if (context is Activity) viewModel.initiatePurchase(context, plan)
-                            }
+                            },
                         )
                     }
                 }
@@ -201,7 +203,7 @@ fun SubscriptionScreen(
                             isPopular = true,
                             onPurchaseClick = {
                                 if (context is Activity) viewModel.initiatePurchase(context, plan)
-                            }
+                            },
                         )
                     }
                 }
@@ -218,7 +220,7 @@ fun SubscriptionScreen(
                             isCurrentPlan = state.subscription?.planId == plan.id,
                             onPurchaseClick = {
                                 if (context is Activity) viewModel.initiatePurchase(context, plan)
-                            }
+                            },
                         )
                     }
                 }
@@ -227,7 +229,7 @@ fun SubscriptionScreen(
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
                     ) {
                         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.Top) {
                             Icon(Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -237,17 +239,17 @@ fun SubscriptionScreen(
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     "• يتم تجديد الاشتراك تلقائياً ما لم يتم الإلغاء قبل 24 ساعة من نهاية الفترة الحالية.\n" +
-                                    "• سيتم الخصم من حسابك في متجر Play عند تأكيد الشراء.\n" +
-                                    "• يمكنك إدارة اشتراكك أو إلغاؤه في أي وقت من إعدادات حساب Google Play.\n" +
-                                    "• الأسعار المعروضة قد تختلف حسب دولتك وتتضمن الضرائب المطبقة.",
+                                        "• سيتم الخصم من حسابك في متجر Play عند تأكيد الشراء.\n" +
+                                        "• يمكنك إدارة اشتراكك أو إلغاؤه في أي وقت من إعدادات حساب Google Play.\n" +
+                                        "• الأسعار المعروضة قد تختلف حسب دولتك وتتضمن الضرائب المطبقة.",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
                         }
                     }
                 }
-                
+
                 item {
                     Spacer(modifier = Modifier.height(32.dp))
                 }
@@ -258,27 +260,33 @@ fun SubscriptionScreen(
 
 @Composable
 fun UsageLimitItem(limit: UsageLimit) {
-    val title = when (limit.featureKey) {
-        "AI_IMAGE_GENERATION" -> "توليد الصور بالذكاء الاصطناعي"
-        "AUDIO_GENERATION" -> "التوليد الصوتي"
-        else -> limit.featureKey
-    }
-    
+    val title =
+        when (limit.featureKey) {
+            "AI_IMAGE_GENERATION" -> "توليد الصور بالذكاء الاصطناعي"
+            "AUDIO_GENERATION" -> "التوليد الصوتي"
+            else -> limit.featureKey
+        }
+
     Column(modifier = Modifier.padding(vertical = 8.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(title, style = MaterialTheme.typography.bodyMedium)
-            Text("${limit.currentUsage} / ${if(limit.maxLimit > 0) limit.maxLimit else "غير محدود"}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+            Text(
+                "${limit.currentUsage} / ${if (limit.maxLimit > 0) limit.maxLimit else "غير محدود"}",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+            )
         }
         if (limit.maxLimit > 0) {
             val progress = (limit.currentUsage.toFloat() / limit.maxLimit).coerceIn(0f, 1f)
             LinearProgressIndicator(
                 progress = { progress },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-                    .height(6.dp)
-                    .clip(RoundedCornerShape(3.dp)),
-                color = if (progress >= 1f) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                        .height(6.dp)
+                        .clip(RoundedCornerShape(3.dp)),
+                color = if (progress >= 1f) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
             )
         }
     }
@@ -290,34 +298,42 @@ fun PlanCard(
     storeProduct: ProductDetails?,
     isCurrentPlan: Boolean,
     isPopular: Boolean = false,
-    onPurchaseClick: () -> Unit
+    onPurchaseClick: () -> Unit,
 ) {
-    val displayPrice = if (plan.price == 0.0) {
-        "مجاناً"
-    } else if (storeProduct != null) {
-        storeProduct.subscriptionOfferDetails?.firstOrNull()?.pricingPhases?.pricingPhaseList?.firstOrNull()?.formattedPrice ?: "${plan.price} ${plan.currency}"
-    } else {
-        "${plan.price} ${plan.currency}"
-    }
+    val displayPrice =
+        if (plan.price == 0.0) {
+            "مجاناً"
+        } else if (storeProduct != null) {
+            storeProduct.subscriptionOfferDetails
+                ?.firstOrNull()
+                ?.pricingPhases
+                ?.pricingPhaseList
+                ?.firstOrNull()
+                ?.formattedPrice
+                ?: "${plan.price} ${plan.currency}"
+        } else {
+            "${plan.price} ${plan.currency}"
+        }
 
-    val period = when (plan.interval) {
-        BillingInterval.MONTHLY -> "شهرياً"
-        BillingInterval.YEARLY -> "سنوياً"
-        else -> ""
-    }
+    val period =
+        when (plan.interval) {
+            BillingInterval.MONTHLY -> "شهرياً"
+            BillingInterval.YEARLY -> "سنوياً"
+            else -> ""
+        }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         border = if (isCurrentPlan || isPopular) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             if (isPopular && !isCurrentPlan) {
                 Badge(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.padding(bottom = 12.dp)
-                ) { 
+                    modifier = Modifier.padding(bottom = 12.dp),
+                ) {
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)) {
                         Icon(Icons.Default.Star, contentDescription = null, modifier = Modifier.size(12.dp))
                         Spacer(modifier = Modifier.width(4.dp))
@@ -325,44 +341,63 @@ fun PlanCard(
                     }
                 }
             }
-            
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text(plan.name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 if (isCurrentPlan) {
                     Badge(containerColor = MaterialTheme.colorScheme.primary) { Text("الخطة الحالية", modifier = Modifier.padding(4.dp)) }
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             Row(verticalAlignment = Alignment.Bottom) {
-                Text(displayPrice, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                Text(
+                    displayPrice,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                )
                 if (plan.price > 0.0) {
-                    Text(" / $period", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 4.dp))
+                    Text(
+                        " / $period",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 4.dp),
+                    )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(4.dp))
             Text(plan.description, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            
+
             Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             plan.features.forEach { feature ->
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
-                    Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                    Icon(
+                        Icons.Default.CheckCircle,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp),
+                    )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(feature, style = MaterialTheme.typography.bodyMedium)
                 }
             }
-            
+
             if (!isCurrentPlan) {
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(
-                    onClick = onPurchaseClick, 
+                    onClick = onPurchaseClick,
                     modifier = Modifier.fillMaxWidth().height(50.dp),
-                    enabled = plan.price > 0.0 // Free plan cannot be "purchased" again
+                    enabled = plan.price > 0.0, // Free plan cannot be "purchased" again
                 ) {
                     Text(if (plan.price == 0.0) "أنت على هذه الخطة" else "اختر الباقة", style = MaterialTheme.typography.titleSmall)
                 }

@@ -19,12 +19,12 @@ fun DetailsScreen(id: String) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         item {
             Text(
                 text = "تفاصيل المصادر (المحتوى: $id)",
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
             )
             Spacer(modifier = Modifier.height(16.dp))
         }

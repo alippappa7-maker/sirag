@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface BetaTesterDistributionRepository {
     fun getTesterProfile(userId: String): Flow<BetaTesterProfile?>
+
     suspend fun registerTesterSession(
         testerId: String,
         email: String,
@@ -16,12 +17,24 @@ interface BetaTesterDistributionRepository {
         deviceModel: String,
         osVersion: String,
         appVersion: String,
-        buildCode: Int
+        buildCode: Int,
     ): Result<BetaTesterProfile>
-    suspend fun recordJourneyCompletion(testerId: String, journeyId: String): Result<Unit>
+
+    suspend fun recordJourneyCompletion(
+        testerId: String,
+        journeyId: String,
+    ): Result<Unit>
+
     suspend fun submitExperienceSurvey(survey: TesterExperienceSurvey): Result<String>
-    suspend fun revokeTesterAccess(testerId: String, reason: String): Result<Unit>
+
+    suspend fun revokeTesterAccess(
+        testerId: String,
+        reason: String,
+    ): Result<Unit>
+
     fun getReleaseNotes(): List<BetaReleaseNote>
+
     fun getDistributionChannels(): List<DistributionChannelInfo>
+
     fun getCriticalJourneys(): List<CriticalJourney>
 }

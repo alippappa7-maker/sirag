@@ -23,7 +23,7 @@ fun SearchFilterBottomSheet(
     currentFilter: SearchFilter,
     onApplyFilter: (SearchFilter) -> Unit,
     onResetFilter: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     var selectedLanguage by remember { mutableStateOf(currentFilter.language) }
     var selectedContentType by remember { mutableStateOf(currentFilter.contentType) }
@@ -35,35 +35,41 @@ fun SearchFilterBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         dragHandle = { BottomSheetDefaults.DragHandle() },
-        modifier = Modifier.testTag("search_filter_bottom_sheet")
+        modifier = Modifier.testTag("search_filter_bottom_sheet"),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 8.dp)
-                .verticalScroll(rememberScrollState())
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 8.dp)
+                    .verticalScroll(rememberScrollState()),
         ) {
             // Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.FilterList,
                         contentDescription = "خيارات التصفية",
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.colorScheme.primary,
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
                         text = "تصفية وفرز نتائج البحث",
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
                 IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.close))
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription =
+                            androidx.compose.ui.res
+                                .stringResource(com.siraj.app.R.string.close),
+                    )
                 }
             }
 
@@ -74,21 +80,24 @@ fun SearchFilterBottomSheet(
                 text = "ترتيب النتائج حسب:",
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
             Spacer(Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 SearchSortOption.values().forEach { sort ->
                     FilterChip(
                         selected = selectedSortOption == sort,
                         onClick = { selectedSortOption = sort },
                         label = { Text(sort.titleArabic) },
-                        leadingIcon = if (selectedSortOption == sort) {
-                            { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }
-                        } else null
+                        leadingIcon =
+                            if (selectedSortOption == sort) {
+                                { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                            } else {
+                                null
+                            },
                     )
                 }
             }
@@ -100,23 +109,23 @@ fun SearchFilterBottomSheet(
                 text = "اللغة:",
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
             Spacer(Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 listOf(
                     SearchLanguage.ALL,
                     SearchLanguage.ARABIC,
                     SearchLanguage.ENGLISH,
-                    SearchLanguage.URDU
+                    SearchLanguage.URDU,
                 ).forEach { lang ->
                     FilterChip(
                         selected = selectedLanguage == lang,
                         onClick = { selectedLanguage = lang },
-                        label = { Text(lang.titleArabic) }
+                        label = { Text(lang.titleArabic) },
                     )
                 }
             }
@@ -128,18 +137,18 @@ fun SearchFilterBottomSheet(
                 text = "حالة الاعتماد والتوثيق:",
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
             Spacer(Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 SearchVerificationFilter.values().forEach { ver ->
                     FilterChip(
                         selected = selectedVerification == ver,
                         onClick = { selectedVerification = ver },
-                        label = { Text(ver.titleArabic) }
+                        label = { Text(ver.titleArabic) },
                     )
                 }
             }
@@ -151,7 +160,7 @@ fun SearchFilterBottomSheet(
                 text = "نوع المحتوى:",
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
             Spacer(Modifier.height(8.dp))
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -161,17 +170,17 @@ fun SearchFilterBottomSheet(
                     SearchContentType.AUDIO,
                     SearchContentType.VIDEO,
                     SearchContentType.TEMPLATE,
-                    SearchContentType.REFERENCE
+                    SearchContentType.REFERENCE,
                 ).chunked(3).forEach { rowList ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         rowList.forEach { cType ->
                             FilterChip(
                                 selected = selectedContentType == cType,
                                 onClick = { selectedContentType = cType },
-                                label = { Text(cType.titleArabic) }
+                                label = { Text(cType.titleArabic) },
                             )
                         }
                     }
@@ -183,30 +192,31 @@ fun SearchFilterBottomSheet(
             // 5. Private Projects Only Switch
             SirajTechCard(
                 isActive = onlyPrivateProjects,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "البحث في مشاريعي الخاصة فقط",
                             style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                         Text(
                             text = "قصر نتائج البحث على مشاريعك وسيناريوهاتك في مساحة العمل",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                     Switch(
                         checked = onlyPrivateProjects,
-                        onCheckedChange = { onlyPrivateProjects = it }
+                        onCheckedChange = { onlyPrivateProjects = it },
                     )
                 }
             }
@@ -215,36 +225,40 @@ fun SearchFilterBottomSheet(
 
             // Action Buttons
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 24.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 OutlinedButton(
                     onClick = {
                         onResetFilter()
                     },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(50.dp)
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .height(50.dp),
                 ) {
                     Text("إعادة ضبط")
                 }
 
                 Button(
                     onClick = {
-                        val newFilter = currentFilter.copy(
-                            language = selectedLanguage,
-                            contentType = selectedContentType,
-                            verificationFilter = selectedVerification,
-                            sortOption = selectedSortOption,
-                            onlyPrivateProjects = onlyPrivateProjects
-                        )
+                        val newFilter =
+                            currentFilter.copy(
+                                language = selectedLanguage,
+                                contentType = selectedContentType,
+                                verificationFilter = selectedVerification,
+                                sortOption = selectedSortOption,
+                                onlyPrivateProjects = onlyPrivateProjects,
+                            )
                         onApplyFilter(newFilter)
                     },
-                    modifier = Modifier
-                        .weight(1.5f)
-                        .height(50.dp)
+                    modifier =
+                        Modifier
+                            .weight(1.5f)
+                            .height(50.dp),
                 ) {
                     Text("تطبيق الفلاتر")
                 }

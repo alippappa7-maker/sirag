@@ -16,26 +16,33 @@ import kotlinx.coroutines.launch
 
 sealed class SaveState {
     object Idle : SaveState()
+
     object Saving : SaveState()
+
     object Saved : SaveState()
-    data class Error(val message: String) : SaveState()
+
+    data class Error(
+        val message: String,
+    ) : SaveState()
 }
 
 @OptIn(FlowPreview::class)
 class ProjectEditorViewModel(
     private val projectId: String,
     private val projectRepository: ProjectRepository = FirebaseProjectRepositoryImpl(),
-    private val templateRepository: TemplateRepository = com.siraj.app.data.repository.FirebaseTemplateRepositoryImpl(),
-    private val authRepository: com.siraj.app.domain.repository.AuthRepository = com.siraj.app.data.repository.FirebaseAuthRepositoryImpl()
+    private val templateRepository: TemplateRepository =
+        com.siraj.app.data.repository
+            .FirebaseTemplateRepositoryImpl(),
+    private val authRepository: com.siraj.app.domain.repository.AuthRepository =
+        com.siraj.app.data.repository
+            .FirebaseAuthRepositoryImpl(),
 ) : ViewModel() {
-
     private val _projectState = MutableStateFlow<Resource<Project>>(Resource.Loading)
     val projectState: StateFlow<Resource<Project>> = _projectState.asStateFlow()
 
     private val _saveState = MutableStateFlow<SaveState>(SaveState.Idle)
     val saveState: StateFlow<SaveState> = _saveState.asStateFlow()
 
-    
     private val _templates = MutableStateFlow<Resource<List<ContentTemplate>>>(Resource.Loading)
     val templates: StateFlow<Resource<List<ContentTemplate>>> = _templates.asStateFlow()
 
@@ -47,7 +54,7 @@ class ProjectEditorViewModel(
     init {
         loadProject()
         loadTemplates()
-        
+
         viewModelScope.launch {
             pendingUpdates
                 .debounce(1500L) // Auto-save after 1.5s
@@ -78,7 +85,7 @@ class ProjectEditorViewModel(
             viewModelScope.launch { pendingUpdates.emit(updated) }
         }
     }
-    
+
     fun updateDescription(newDescription: String) {
         val current = _projectState.value
         if (current is Resource.Success) {
@@ -97,21 +104,20 @@ class ProjectEditorViewModel(
             viewModelScope.launch { pendingUpdates.emit(updatedProject) }
         }
     }
-    
+
     fun generatePlan(onGenerated: () -> Unit) {
         // Will connect to Gemini later, for now we just change project status to PROCESSING
         val current = _projectState.value
         if (current is Resource.Success) {
             val updated = current.data.copy(status = ProjectStatus.PROCESSING)
             _projectState.value = Resource.Success(updated)
-            viewModelScope.launch { 
-                projectRepository.updateProject(updated) 
+            viewModelScope.launch {
+                projectRepository.updateProject(updated)
                 onGenerated()
             }
         }
     }
 
-    
     private fun loadTemplates() {
         viewModelScope.launch {
             templateRepository.getActiveTemplates().collect { res ->
@@ -138,16 +144,17 @@ class ProjectEditorViewModel(
     fun applyTemplate(template: ContentTemplate) {
         val current = _projectState.value
         if (current is Resource.Success) {
-            val updatedBrief = current.data.brief.copy(
-                template = template.name,
-                targetAudience = template.targetAudience,
-                platform = template.recommendedPlatform,
-                duration = template.recommendedDuration,
-                visualStyle = template.sceneStyle,
-                hasQuran = template.hasQuran,
-                hasHadith = template.hasHadith,
-                hasFatwa = template.hasFatwa
-            )
+            val updatedBrief =
+                current.data.brief.copy(
+                    template = template.name,
+                    targetAudience = template.targetAudience,
+                    platform = template.recommendedPlatform,
+                    duration = template.recommendedDuration,
+                    visualStyle = template.sceneStyle,
+                    hasQuran = template.hasQuran,
+                    hasHadith = template.hasHadith,
+                    hasFatwa = template.hasFatwa,
+                )
             val updatedProject = current.data.copy(brief = updatedBrief)
             _projectState.value = Resource.Success(updatedProject)
             viewModelScope.launch { pendingUpdates.emit(updatedProject) }
@@ -173,7 +180,9 @@ class ProjectEditorViewModel(
     }
 }
 
-class ProjectEditorViewModelFactory(private val projectId: String) : ViewModelProvider.Factory {
+class ProjectEditorViewModelFactory(
+    private val projectId: String,
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProjectEditorViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

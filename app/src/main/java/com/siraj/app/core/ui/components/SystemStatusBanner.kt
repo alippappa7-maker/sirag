@@ -21,13 +21,13 @@ import androidx.compose.ui.unit.dp
 fun SystemStatusBanner(
     isMaintenanceMode: Boolean,
     isReadOnlyMode: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     AnimatedVisibility(
         visible = isMaintenanceMode || isReadOnlyMode,
         enter = expandVertically(),
         exit = shrinkVertically(),
-        modifier = modifier
+        modifier = modifier,
     ) {
         val backgroundColor = if (isMaintenanceMode) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.tertiaryContainer
         val contentColor = if (isMaintenanceMode) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onTertiaryContainer
@@ -35,30 +35,31 @@ fun SystemStatusBanner(
         val description = if (isMaintenanceMode) "النظام حالياً في وضع الصيانة المغلق. بعض الخدمات قد تكون غير متاحة أو معطلة تماماً." else "نظام الإنتاج والتوليد معلق حالياً لأغراض الطوارئ، يمكنك فقط استعراض البيانات والمشاريع."
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(backgroundColor)
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .background(backgroundColor)
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Icon(
                 imageVector = Icons.Filled.WarningAmber,
                 contentDescription = "تحذير النظام",
-                tint = contentColor
+                tint = contentColor,
             )
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleSmall,
                     color = contentColor,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodySmall,
                     color = contentColor,
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Start,
                 )
             }
         }

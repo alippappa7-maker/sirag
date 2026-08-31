@@ -33,7 +33,7 @@ class ScenesViewModel(
             _projectState.value = Resource.Loading
             val projResult = projectRepository.getProject(projectId)
             _projectState.value = projResult
-            
+
             // Auto-calculate duration on load
             if (projResult is Resource.Success) {
                 calculateAndUpdateTotalDuration(projResult.data)
@@ -75,14 +75,14 @@ class ScenesViewModel(
         if (current is Resource.Success) {
             val project = current.data
             val scene = project.scenes.find { it.id == sceneId }
-            
+
             if (scene?.status == SceneStatus.APPROVED) {
                 viewModelScope.launch {
                     _uiMessage.emit("لا يمكن حذف مشهد معتمد. الرجاء إعادة مراجعة المشروع أولاً.")
                 }
                 return
             }
-            
+
             val updatedScenes = project.scenes.filter { it.id != sceneId }
             saveProject(project.copy(scenes = updatedScenes))
         }
@@ -98,7 +98,7 @@ class ScenesViewModel(
             } else {
                 updatedScene.copy(updatedAt = System.currentTimeMillis())
             }
-            
+
             val updatedScenes = project.scenes.map { if (it.id == updatedScene.id) sceneToUpdate else it }
             saveProject(project.copy(scenes = updatedScenes))
         }
@@ -133,7 +133,7 @@ class ScenesViewModel(
         if (current is Resource.Success) {
             val project = current.data
             if (project.scenes.isNotEmpty()) return // Already generated
-            
+
             val plan = project.contentPlan ?: return
             val newScenes = plan.claims.mapIndexed { index, claim ->
                 Scene(
@@ -155,18 +155,18 @@ class ScenesViewModel(
         if (stack.isNotEmpty()) {
             val previousProject = stack.removeLast()
             _undoStack.value = stack
-            
+
             // Note: Recalculate duration before restoring just in case
             val totalMs = previousProject.scenes.sumOf { it.durationMs }
             val projectToRestore = previousProject.copy(durationMs = totalMs)
-            
+
             _projectState.value = Resource.Success(projectToRestore)
             viewModelScope.launch {
                 projectRepository.updateProject(projectToRestore)
             }
         }
     }
-    
+
     private fun calculateAndUpdateTotalDuration(project: Project) {
         val totalMs = project.scenes.sumOf { it.durationMs }
         if (totalMs != project.durationMs) {
@@ -186,10 +186,10 @@ class ScenesViewModel(
                 _undoStack.value = _undoStack.value + current.data
             }
         }
-        
+
         val totalMs = project.scenes.sumOf { it.durationMs }
         val updatedProject = project.copy(durationMs = totalMs)
-        
+
         _projectState.value = Resource.Success(updatedProject)
         viewModelScope.launch {
             projectRepository.updateProject(updatedProject)

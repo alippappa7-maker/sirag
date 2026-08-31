@@ -12,14 +12,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.siraj.app.domain.models.*
 import com.siraj.app.ui.theme.statusColors
 
 @Composable
-fun SirajProjectCard(project: ProjectPreview, modifier: Modifier = Modifier) {
+fun SirajProjectCard(
+    project: ProjectPreview,
+    modifier: Modifier = Modifier,
+) {
     SirajCard(modifier = modifier) {
         Column {
             Text(
@@ -27,7 +29,7 @@ fun SirajProjectCard(project: ProjectPreview, modifier: Modifier = Modifier) {
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -35,33 +37,37 @@ fun SirajProjectCard(project: ProjectPreview, modifier: Modifier = Modifier) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "آخر تعديل: ${project.lastModified}",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
             )
         }
     }
 }
 
 @Composable
-fun SirajVideoCard(video: VideoPreview, modifier: Modifier = Modifier) {
+fun SirajVideoCard(
+    video: VideoPreview,
+    modifier: Modifier = Modifier,
+) {
     SirajCard(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .size(64.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
                     contentDescription = "تشغيل",
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
@@ -70,13 +76,13 @@ fun SirajVideoCard(video: VideoPreview, modifier: Modifier = Modifier) {
                     text = video.title,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "المدة: ${video.duration}",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -84,29 +90,32 @@ fun SirajVideoCard(video: VideoPreview, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SirajAudioCard(audio: AudioItem, modifier: Modifier = Modifier) {
+fun SirajAudioCard(
+    audio: AudioItem,
+    modifier: Modifier = Modifier,
+) {
     SirajCard(modifier = modifier) {
         Column {
             Text(
                 text = audio.title,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
             Spacer(modifier = Modifier.height(4.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
                     text = audio.reciter,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     text = audio.duration,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
         }
@@ -114,19 +123,22 @@ fun SirajAudioCard(audio: AudioItem, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SirajSourceCard(source: SourcePreview, modifier: Modifier = Modifier) {
+fun SirajSourceCard(
+    source: SourcePreview,
+    modifier: Modifier = Modifier,
+) {
     SirajCard(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
+            verticalAlignment = Alignment.Top,
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = source.title,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -134,7 +146,7 @@ fun SirajSourceCard(source: SourcePreview, modifier: Modifier = Modifier) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
@@ -144,51 +156,59 @@ fun SirajSourceCard(source: SourcePreview, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun VerificationStatusBadge(status: VerificationStatus, modifier: Modifier = Modifier) {
+fun VerificationStatusBadge(
+    status: VerificationStatus,
+    modifier: Modifier = Modifier,
+) {
     val statusColors = MaterialTheme.statusColors
-    val (backgroundColor, textColor) = when (status) {
-        VerificationStatus.VERIFIED -> statusColors.successBg to statusColors.successFg
-        VerificationStatus.PENDING -> statusColors.warningBg to statusColors.warningFg
-        VerificationStatus.REJECTED -> statusColors.errorBg to statusColors.errorFg
-    }
+    val (backgroundColor, textColor) =
+        when (status) {
+            VerificationStatus.VERIFIED -> statusColors.successBg to statusColors.successFg
+            VerificationStatus.PENDING -> statusColors.warningBg to statusColors.warningFg
+            VerificationStatus.REJECTED -> statusColors.errorBg to statusColors.errorFg
+        }
 
     Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(4.dp))
-            .background(backgroundColor)
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+        modifier =
+            modifier
+                .clip(RoundedCornerShape(4.dp))
+                .background(backgroundColor)
+                .padding(horizontal = 8.dp, vertical = 4.dp),
     ) {
         Text(
             text = status.label,
             style = MaterialTheme.typography.labelSmall,
-            color = textColor
+            color = textColor,
         )
     }
 }
 
 @Composable
-fun SirajFlashCard(flash: FlashItem, modifier: Modifier = Modifier) {
+fun SirajFlashCard(
+    flash: FlashItem,
+    modifier: Modifier = Modifier,
+) {
     SirajCard(modifier = modifier) {
         Column {
             Text(
                 text = flash.content,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
                     text = flash.author,
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
                 Text(
                     text = flash.timestamp,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }

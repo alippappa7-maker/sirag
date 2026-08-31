@@ -8,41 +8,74 @@ import java.security.MessageDigest
  * are leaked to Crashlytics logs or custom keys.
  */
 object CrashlyticsSanitizer {
+    private val SENSITIVE_PATTERNS =
+        listOf(
+            // API Keys & Tokens
+            Regex("(?i)(api[_-]?key|apikey|secret|client[_-]?secret|private[_-]?key)\\s*[:=]\\s*[\"']?([a-zA-Z0-9_\\-\\.]+)[\"']?"),
+            Regex("(?i)Bearer\\s+[A-Za-z0-9\\-\\._~\\+\\/]+=*"),
+            Regex("(?i)(token|access_token|refresh_token|auth_token)\\s*[:=]\\s*[\"']?([a-zA-Z0-9_\\-\\.]+)[\"']?"),
+            // Passwords & Credentials
+            Regex("(?i)(password|passwd|pwd|credentials?)\\s*[:=]\\s*[\"']?([^\"'\\s&,]+)[\"']?"),
+            // Purchase Tokens & Billing Secrets
+            Regex(
+                "(?i)(purchase[_-]?token|order[_-]?id|credit[_-]?card|cvv|billing[_-]?token)\\s*[:=]\\s*[\"']?([a-zA-Z0-9_\\-\\.]+)[\"']?",
+            ),
+            // Emails
+            Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}"),
+        )
 
-    private val SENSITIVE_PATTERNS = listOf(
-        // API Keys & Tokens
-        Regex("(?i)(api[_-]?key|apikey|secret|client[_-]?secret|private[_-]?key)\\s*[:=]\\s*[\"']?([a-zA-Z0-9_\\-\\.]+)[\"']?"),
-        Regex("(?i)Bearer\\s+[A-Za-z0-9\\-\\._~\\+\\/]+=*"),
-        Regex("(?i)(token|access_token|refresh_token|auth_token)\\s*[:=]\\s*[\"']?([a-zA-Z0-9_\\-\\.]+)[\"']?"),
-        // Passwords & Credentials
-        Regex("(?i)(password|passwd|pwd|credentials?)\\s*[:=]\\s*[\"']?([^\"'\\s&,]+)[\"']?"),
-        // Purchase Tokens & Billing Secrets
-        Regex("(?i)(purchase[_-]?token|order[_-]?id|credit[_-]?card|cvv|billing[_-]?token)\\s*[:=]\\s*[\"']?([a-zA-Z0-9_\\-\\.]+)[\"']?"),
-        // Emails
-        Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}")
-    )
+    private val BLOCKED_KEY_KEYWORDS =
+        listOf(
+            "password",
+            "token",
+            "auth",
+            "secret",
+            "apikey",
+            "purchase",
+            "credit",
+            "card",
+            "cvv",
+            "quran",
+            "ayah",
+            "hadith",
+            "script",
+            "prompt",
+            "draft",
+            "email",
+            "phone",
+            "nationalid",
+            "ssn",
+        )
 
-    private val BLOCKED_KEY_KEYWORDS = listOf(
-        "password", "token", "auth", "secret", "apikey",
-        "purchase", "credit", "card", "cvv",
-        "quran", "ayah", "hadith", "script", "prompt", "draft",
-        "email", "phone", "nationalid", "ssn"
-    )
-
-    private val SAFE_TECHNICAL_KEYS = setOf(
-        "environment", "appversion", "buildnumber", "screenname", "errorcategory",
-        "errorseverity", "requestid", "statuscode", "action", "destination",
-        "from", "test", "reason", "authenticated", "userrole", "threadname", "fatal"
-    )
+    private val SAFE_TECHNICAL_KEYS =
+        setOf(
+            "environment",
+            "appversion",
+            "buildnumber",
+            "screenname",
+            "errorcategory",
+            "errorseverity",
+            "requestid",
+            "statuscode",
+            "action",
+            "destination",
+            "from",
+            "test",
+            "reason",
+            "authenticated",
+            "userrole",
+            "threadname",
+            "fatal",
+        )
 
     /**
      * Sanitizes raw error messages and exception messages by masking sensitive substrings.
      */
     fun sanitizeMessage(message: String?): String {
         if (message.isNullOrBlank()) return ""
-        
+
         var sanitized = message
-        
+
         // 1. Mask known sensitive patterns
         sanitized = sanitized.replace(Regex("(?i)Bearer\\s+[A-Za-z0-9\\-\\._~\\+\\/]+=*"), "Bearer ***")
         sanitized = sanitized.replace(Regex("(?i)(key|api_key|token|auth)=[^&\\s,]+"), "$1=***")
@@ -91,15 +124,16 @@ object CrashlyticsSanitizer {
      */
     fun formatSafeBreadcrumb(
         message: String,
-        attributes: Map<String, String> = emptyMap()
+        attributes: Map<String, String> = emptyMap(),
     ): String {
         val cleanMsg = sanitizeMessage(message)
         if (attributes.isEmpty()) return cleanMsg
 
-        val cleanAttrs = attributes
-            .filter { (k, _) -> isKeyAllowed(k) }
-            .map { (k, v) -> "$k=${sanitizeMessage(v)}" }
-            .joinToString(", ")
+        val cleanAttrs =
+            attributes
+                .filter { (k, _) -> isKeyAllowed(k) }
+                .map { (k, v) -> "$k=${sanitizeMessage(v)}" }
+                .joinToString(", ")
 
         return "$cleanMsg | [$cleanAttrs]"
     }

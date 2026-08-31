@@ -9,26 +9,28 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class PrivacyManagerTest {
-
     @Test
     fun `sanitizeDataMap strips forbidden security keys`() {
-        val rawData = mapOf(
-            "userId" to "user_123",
-            "name" to "أحمد علي",
-            "password" to "super_secret_password",
-            "passwordHash" to "sha256_hash_value",
-            "token" to "oauth_bearer_token",
-            "rawPurchaseToken" to "play_store_token_123",
-            "apiKey" to "AIzaSySecretApiKey",
-            "nested" to mapOf(
-                "publicInfo" to "عام",
-                "secretKey" to "hidden_secret"
-            ),
-            "listItems" to listOf(
-                mapOf("title" to "مشروع 1", "accessToken" to "token_val"),
-                mapOf("title" to "مشروع 2", "safeField" to "قيمة آمنة")
+        val rawData =
+            mapOf(
+                "userId" to "user_123",
+                "name" to "أحمد علي",
+                "password" to "super_secret_password",
+                "passwordHash" to "sha256_hash_value",
+                "token" to "oauth_bearer_token",
+                "rawPurchaseToken" to "play_store_token_123",
+                "apiKey" to "AIzaSySecretApiKey",
+                "nested" to
+                    mapOf(
+                        "publicInfo" to "عام",
+                        "secretKey" to "hidden_secret",
+                    ),
+                "listItems" to
+                    listOf(
+                        mapOf("title" to "مشروع 1", "accessToken" to "token_val"),
+                        mapOf("title" to "مشروع 2", "safeField" to "قيمة آمنة"),
+                    ),
             )
-        )
 
         val sanitized = PrivacyManager.sanitizeDataMap(rawData)
 
@@ -67,18 +69,19 @@ class PrivacyManagerTest {
 
     @Test
     fun `buildExportJsonString produces valid JSON structure`() {
-        val exportPackage = UserDataExportPackage(
-            exportId = "SIRAJ-EXP-TEST1",
-            userId = "user_456",
-            exportTimestamp = 1700000000000L,
-            exportDateFormatted = "2023-11-14 22:13",
-            accountInfo = mapOf("name" to "محمد", "email" to "m@example.com"),
-            projects = listOf(mapOf("title" to "فيديو آية الكرسي", "status" to "APPROVED")),
-            activityHistory = listOf(mapOf("type" to "QURAN_LISTEN", "surah" to 1)),
-            preferences = mapOf("themeMode" to "DARK"),
-            anonymizedInvoicesSummary = listOf(mapOf("invoiceId" to "INV-123***", "amount" to 10)),
-            sha256Checksum = "sample_sha256"
-        )
+        val exportPackage =
+            UserDataExportPackage(
+                exportId = "SIRAJ-EXP-TEST1",
+                userId = "user_456",
+                exportTimestamp = 1700000000000L,
+                exportDateFormatted = "2023-11-14 22:13",
+                accountInfo = mapOf("name" to "محمد", "email" to "m@example.com"),
+                projects = listOf(mapOf("title" to "فيديو آية الكرسي", "status" to "APPROVED")),
+                activityHistory = listOf(mapOf("type" to "QURAN_LISTEN", "surah" to 1)),
+                preferences = mapOf("themeMode" to "DARK"),
+                anonymizedInvoicesSummary = listOf(mapOf("invoiceId" to "INV-123***", "amount" to 10)),
+                sha256Checksum = "sample_sha256",
+            )
 
         val json = PrivacyManager.buildExportJsonString(exportPackage)
 

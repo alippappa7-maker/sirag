@@ -6,7 +6,6 @@ import com.siraj.app.domain.models.SourceType
 import com.siraj.app.domain.models.SourceVerificationStatus
 import com.siraj.app.domain.models.correction.*
 import com.siraj.app.domain.models.review.ShariaClaim
-import com.siraj.app.domain.models.review.ShariaReviewStatus
 import com.siraj.app.domain.repository.review.ContentCorrectionRepository
 import com.siraj.app.features.review.domain.ContentCorrectionEngine
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.map
 import java.util.concurrent.ConcurrentHashMap
 
 class ContentCorrectionRepositoryImpl : ContentCorrectionRepository {
-
     private val versionsMap = ConcurrentHashMap<String, MutableStateFlow<List<ContentVersion>>>()
     private val noticesMap = ConcurrentHashMap<String, MutableStateFlow<List<CorrectionNotice>>>()
     private val sourceRevisionsMap = ConcurrentHashMap<String, MutableStateFlow<List<SourceRevision>>>()
@@ -28,52 +26,56 @@ class ContentCorrectionRepositoryImpl : ContentCorrectionRepository {
 
     private fun seedSampleData() {
         val sampleContentId = "proj_siraj_101"
-        
+
         // Initial Version 1
-        val v1 = ContentVersion(
-            id = "ver_101_v1",
-            contentId = sampleContentId,
-            versionNumber = 1,
-            title = "فضل طلب العلم وسلوك طريقه إلى الجنة",
-            fullContentText = "من سلك طريقاً يلتمس فيه علماً سهّل الله له به طريقاً إلى الجنة، وإن الملائكة لتضع أجنحتها رضاً لطالب العلم.",
-            claims = listOf(
-                ShariaClaim(
-                    id = "claim_1",
-                    claimText = "من سلك طريقاً يلتمس فيه علماً سهّل الله له به طريقاً إلى الجنة",
-                    positionContext = "المشهد 1 (00:00 - 00:20)",
-                    sourceType = "HADITH",
-                    sourceTitle = "صحيح مسلم",
-                    sourceReference = "كتاب الذكر والدعاء والتوبة، باب فضل الاجتماع على تلاوة القرآن، رقم 2699",
-                    originalSourceText = "من سلك طريقا يلتمس فيه علما سهل الله له به طريقا إلى الجنة",
-                    hadithGrade = "صحيح",
-                    hadithNarrator = "أبو هريرة رضي الله عنه",
-                    isVerified = true
-                )
-            ),
-            sources = listOf(
-                Source(
-                    id = "src_1",
-                    type = SourceType.HADITH,
-                    title = "صحيح مسلم",
-                    authorOrNarrator = "أبو هريرة رضي الله عنه",
-                    originalText = "من سلك طريقا يلتمس فيه علما سهل الله له به طريقا إلى الجنة",
-                    reference = "رقم 2699",
-                    reviewStatus = SourceVerificationStatus.VERIFIED
-                )
-            ),
-            status = VersionStatus.ACTIVE_PUBLISHED,
-            createdBy = "creator_ahmed",
-            createdByName = "أحمد المنصور",
-            createdAt = System.currentTimeMillis() - 7 * 24 * 3600 * 1000L,
-            publishedAt = System.currentTimeMillis() - 6 * 24 * 3600 * 1000L,
-            immutableHash = ContentCorrectionEngine.computeHash(
+        val v1 =
+            ContentVersion(
+                id = "ver_101_v1",
                 contentId = sampleContentId,
-                version = 1,
-                text = "من سلك طريقاً يلتمس فيه علماً سهّل الله له به طريقاً إلى الجنة",
-                timestamp = System.currentTimeMillis() - 7 * 24 * 3600 * 1000L
-            ),
-            changeSummary = "الإصدار التأسيسي الأول المعتمد"
-        )
+                versionNumber = 1,
+                title = "فضل طلب العلم وسلوك طريقه إلى الجنة",
+                fullContentText = "من سلك طريقاً يلتمس فيه علماً سهّل الله له به طريقاً إلى الجنة، وإن الملائكة لتضع أجنحتها رضاً لطالب العلم.",
+                claims =
+                    listOf(
+                        ShariaClaim(
+                            id = "claim_1",
+                            claimText = "من سلك طريقاً يلتمس فيه علماً سهّل الله له به طريقاً إلى الجنة",
+                            positionContext = "المشهد 1 (00:00 - 00:20)",
+                            sourceType = "HADITH",
+                            sourceTitle = "صحيح مسلم",
+                            sourceReference = "كتاب الذكر والدعاء والتوبة، باب فضل الاجتماع على تلاوة القرآن، رقم 2699",
+                            originalSourceText = "من سلك طريقا يلتمس فيه علما سهل الله له به طريقا إلى الجنة",
+                            hadithGrade = "صحيح",
+                            hadithNarrator = "أبو هريرة رضي الله عنه",
+                            isVerified = true,
+                        ),
+                    ),
+                sources =
+                    listOf(
+                        Source(
+                            id = "src_1",
+                            type = SourceType.HADITH,
+                            title = "صحيح مسلم",
+                            authorOrNarrator = "أبو هريرة رضي الله عنه",
+                            originalText = "من سلك طريقا يلتمس فيه علما سهل الله له به طريقا إلى الجنة",
+                            reference = "رقم 2699",
+                            reviewStatus = SourceVerificationStatus.VERIFIED,
+                        ),
+                    ),
+                status = VersionStatus.ACTIVE_PUBLISHED,
+                createdBy = "creator_ahmed",
+                createdByName = "أحمد المنصور",
+                createdAt = System.currentTimeMillis() - 7 * 24 * 3600 * 1000L,
+                publishedAt = System.currentTimeMillis() - 6 * 24 * 3600 * 1000L,
+                immutableHash =
+                    ContentCorrectionEngine.computeHash(
+                        contentId = sampleContentId,
+                        version = 1,
+                        text = "من سلك طريقاً يلتمس فيه علماً سهّل الله له به طريقاً إلى الجنة",
+                        timestamp = System.currentTimeMillis() - 7 * 24 * 3600 * 1000L,
+                    ),
+                changeSummary = "الإصدار التأسيسي الأول المعتمد",
+            )
 
         val versionsList = MutableStateFlow(listOf(v1))
         versionsMap[sampleContentId] = versionsList
@@ -85,7 +87,10 @@ class ContentCorrectionRepositoryImpl : ContentCorrectionRepository {
         return flow.map { list -> list.sortedByDescending { it.versionNumber } }
     }
 
-    override fun getVersionByNumber(contentId: String, versionNumber: Int): Flow<ContentVersion?> {
+    override fun getVersionByNumber(
+        contentId: String,
+        versionNumber: Int,
+    ): Flow<ContentVersion?> {
         val flow = versionsMap.getOrPut(contentId) { MutableStateFlow(emptyList()) }
         return flow.map { list -> list.find { it.versionNumber == versionNumber } }
     }
@@ -108,27 +113,30 @@ class ContentCorrectionRepositoryImpl : ContentCorrectionRepository {
         return allNoticesFlow
     }
 
-    override fun getSourceRevisions(noticeId: String): Flow<List<SourceRevision>> {
-        return sourceRevisionsMap.getOrPut(noticeId) { MutableStateFlow(emptyList()) }
-    }
+    override fun getSourceRevisions(noticeId: String): Flow<List<SourceRevision>> =
+        sourceRevisionsMap.getOrPut(noticeId) {
+            MutableStateFlow(emptyList())
+        }
 
-    override fun getAffectedAssets(noticeId: String): Flow<List<AffectedAsset>> {
-        return affectedAssetsMap.getOrPut(noticeId) { MutableStateFlow(emptyList()) }
-    }
+    override fun getAffectedAssets(noticeId: String): Flow<List<AffectedAsset>> =
+        affectedAssetsMap.getOrPut(noticeId) {
+            MutableStateFlow(emptyList())
+        }
 
-    override fun getCorrectionReviews(noticeId: String): Flow<List<CorrectionReview>> {
-        return reviewsMap.getOrPut(noticeId) { MutableStateFlow(emptyList()) }
-    }
+    override fun getCorrectionReviews(noticeId: String): Flow<List<CorrectionReview>> =
+        reviewsMap.getOrPut(noticeId) {
+            MutableStateFlow(emptyList())
+        }
 
-    override suspend fun createCorrection(draftResult: ContentCorrectionEngine.CorrectionDraftResult): Resource<String> {
-        return try {
+    override suspend fun createCorrection(draftResult: ContentCorrectionEngine.CorrectionDraftResult): Resource<String> =
+        try {
             val contentId = draftResult.newVersion.contentId
             val noticeId = draftResult.correctionNotice.id
 
             // 1. Save or update versions list
             val versionsFlow = versionsMap.getOrPut(contentId) { MutableStateFlow(emptyList()) }
             val currentList = versionsFlow.value.toMutableList()
-            
+
             // Update previous version if it was modified (e.g. suspended)
             val prevIndex = currentList.indexOfFirst { it.versionNumber == draftResult.updatedPreviousVersion.versionNumber }
             if (prevIndex >= 0) {
@@ -158,9 +166,11 @@ class ContentCorrectionRepositoryImpl : ContentCorrectionRepository {
         } catch (e: Exception) {
             Resource.Error("فشل في إنشاء مسودة التصحيح: ${e.localizedMessage}")
         }
-    }
 
-    override suspend fun submitReview(noticeId: String, review: CorrectionReview): Resource<Unit> {
+    override suspend fun submitReview(
+        noticeId: String,
+        review: CorrectionReview,
+    ): Resource<Unit> {
         return try {
             // Find notice
             var foundContentId: String? = null
@@ -193,54 +203,60 @@ class ContentCorrectionRepositoryImpl : ContentCorrectionRepository {
             }
 
             if (review.isApproved) {
-                val approvalResult = ContentCorrectionEngine.approveAndPublishCorrection(
-                    notice = foundNotice,
-                    draftVersion = draftVersion,
-                    previousVersion = prevVersion,
-                    review = review,
-                    affectedAssets = assetsFlow.value
-                )
+                val approvalResult =
+                    ContentCorrectionEngine.approveAndPublishCorrection(
+                        notice = foundNotice,
+                        draftVersion = draftVersion,
+                        previousVersion = prevVersion,
+                        review = review,
+                        affectedAssets = assetsFlow.value,
+                    )
 
                 // Update versions
-                val updatedVersionsList = currentVersions.map { ver ->
-                    when (ver.versionNumber) {
-                        approvalResult.newPublishedVersion.versionNumber -> approvalResult.newPublishedVersion
-                        approvalResult.supersededPreviousVersion.versionNumber -> approvalResult.supersededPreviousVersion
-                        else -> ver
+                val updatedVersionsList =
+                    currentVersions.map { ver ->
+                        when (ver.versionNumber) {
+                            approvalResult.newPublishedVersion.versionNumber -> approvalResult.newPublishedVersion
+                            approvalResult.supersededPreviousVersion.versionNumber -> approvalResult.supersededPreviousVersion
+                            else -> ver
+                        }
                     }
-                }
                 versionsFlow.value = updatedVersionsList
 
                 // Update notice
                 val noticesFlow = noticesMap.getOrPut(foundContentId) { MutableStateFlow(emptyList()) }
-                noticesFlow.value = noticesFlow.value.map {
-                    if (it.id == noticeId) approvalResult.approvedNotice else it
-                }
+                noticesFlow.value =
+                    noticesFlow.value.map {
+                        if (it.id == noticeId) approvalResult.approvedNotice else it
+                    }
 
                 // Update assets
                 assetsFlow.value = approvalResult.updatedAssets
             } else {
-                val rejectionResult = ContentCorrectionEngine.rejectCorrection(
-                    notice = foundNotice,
-                    draftVersion = draftVersion,
-                    review = review
-                )
+                val rejectionResult =
+                    ContentCorrectionEngine.rejectCorrection(
+                        notice = foundNotice,
+                        draftVersion = draftVersion,
+                        review = review,
+                    )
 
                 // Update versions
-                val updatedVersionsList = currentVersions.map { ver ->
-                    if (ver.versionNumber == rejectionResult.rejectedDraftVersion.versionNumber) {
-                        rejectionResult.rejectedDraftVersion
-                    } else {
-                        ver
+                val updatedVersionsList =
+                    currentVersions.map { ver ->
+                        if (ver.versionNumber == rejectionResult.rejectedDraftVersion.versionNumber) {
+                            rejectionResult.rejectedDraftVersion
+                        } else {
+                            ver
+                        }
                     }
-                }
                 versionsFlow.value = updatedVersionsList
 
                 // Update notice
                 val noticesFlow = noticesMap.getOrPut(foundContentId) { MutableStateFlow(emptyList()) }
-                noticesFlow.value = noticesFlow.value.map {
-                    if (it.id == noticeId) rejectionResult.rejectedNotice else it
-                }
+                noticesFlow.value =
+                    noticesFlow.value.map {
+                        if (it.id == noticeId) rejectionResult.rejectedNotice else it
+                    }
             }
 
             Resource.Success(Unit)
@@ -249,15 +265,19 @@ class ContentCorrectionRepositoryImpl : ContentCorrectionRepository {
         }
     }
 
-    override suspend fun updateAssetStatus(assetId: String, newStatus: AssetImpactStatus): Resource<Unit> {
+    override suspend fun updateAssetStatus(
+        assetId: String,
+        newStatus: AssetImpactStatus,
+    ): Resource<Unit> {
         return try {
             for ((_, flow) in affectedAssetsMap) {
                 val list = flow.value
                 val item = list.find { it.id == assetId }
                 if (item != null) {
-                    flow.value = list.map {
-                        if (it.id == assetId) it.copy(status = newStatus, updatedAt = System.currentTimeMillis()) else it
-                    }
+                    flow.value =
+                        list.map {
+                            if (it.id == assetId) it.copy(status = newStatus, updatedAt = System.currentTimeMillis()) else it
+                        }
                     return Resource.Success(Unit)
                 }
             }
@@ -290,8 +310,8 @@ class ContentCorrectionRepositoryImpl : ContentCorrectionRepository {
         }
     }
 
-    override suspend fun initializeDefaultVersion(version: ContentVersion): Resource<Unit> {
-        return try {
+    override suspend fun initializeDefaultVersion(version: ContentVersion): Resource<Unit> =
+        try {
             val flow = versionsMap.getOrPut(version.contentId) { MutableStateFlow(emptyList()) }
             if (flow.value.none { it.versionNumber == version.versionNumber }) {
                 flow.value = flow.value + version
@@ -300,5 +320,4 @@ class ContentCorrectionRepositoryImpl : ContentCorrectionRepository {
         } catch (e: Exception) {
             Resource.Error("فشل في تهيئة الإصدار: ${e.localizedMessage}")
         }
-    }
 }

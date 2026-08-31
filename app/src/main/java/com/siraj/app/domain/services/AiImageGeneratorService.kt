@@ -7,7 +7,18 @@ import kotlinx.coroutines.flow.Flow
 
 interface AiImageGeneratorService {
     fun generateImage(request: AiImageGenerationRequest): Flow<Resource<List<GeneratedImageItem>>>
+
     suspend fun cancelGeneration(requestId: String): Resource<Unit>
-    suspend fun deleteGeneratedImage(projectId: String, imageId: String): Resource<Unit>
-    suspend fun attachImageToScene(projectId: String, sceneId: String, image: GeneratedImageItem, asBackground: Boolean): Resource<Unit>
+
+    suspend fun deleteGeneratedImage(
+        projectId: String,
+        imageId: String,
+    ): Resource<Unit>
+
+    suspend fun attachImageToScene(
+        projectId: String,
+        sceneId: String,
+        image: GeneratedImageItem,
+        asBackground: Boolean,
+    ): Resource<Unit>
 }

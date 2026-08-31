@@ -99,7 +99,7 @@ class AiImageGeneratorViewModel(
 
     fun generateImages(isRegenerate: Boolean = false) {
         val currentPrompt = _prompt.value.trim()
-        
+
         // 0. Check Feature Flag
         if (!com.siraj.app.core.config.FeatureFlagManager.isFeatureEnabled(com.siraj.app.core.config.FeatureFlagManager.FEATURE_AI_GENERATION)) {
             viewModelScope.launch { _uiMessage.emit("عذراً، ميزة التوليد بالذكاء الاصطناعي معطلة حالياً للصيانة.") }

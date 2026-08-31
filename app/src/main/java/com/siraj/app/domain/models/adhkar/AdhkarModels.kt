@@ -1,13 +1,15 @@
 package com.siraj.app.domain.models.adhkar
 
 enum class VerificationStatus {
-    APPROVED, PENDING_REVIEW, REJECTED
+    APPROVED,
+    PENDING_REVIEW,
+    REJECTED,
 }
 
 data class DhikrCategory(
     val id: String,
     val name: String,
-    val iconName: String
+    val iconName: String,
 )
 
 data class DhikrItem(
@@ -18,16 +20,16 @@ data class DhikrItem(
     val source: String,
     val narrator: String? = null,
     val grade: String? = null,
-    val verificationStatus: VerificationStatus = VerificationStatus.PENDING_REVIEW
+    val verificationStatus: VerificationStatus = VerificationStatus.PENDING_REVIEW,
 )
 
 data class DhikrProgress(
     val dhikrId: String,
     val currentCount: Int,
     val date: String,
-    val isCompleted: Boolean
+    val isCompleted: Boolean,
 )
 
 data class AdhkarSettings(
-    val quietMode: Boolean = false
+    val quietMode: Boolean = false,
 )

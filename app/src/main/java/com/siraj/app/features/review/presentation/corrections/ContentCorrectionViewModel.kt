@@ -24,13 +24,12 @@ data class ContentCorrectionUiState(
     val impactReport: ImpactReport? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val successMessage: String? = null
+    val successMessage: String? = null,
 )
 
 class ContentCorrectionViewModel(
-    private val repository: ContentCorrectionRepository
+    private val repository: ContentCorrectionRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(ContentCorrectionUiState())
     val uiState: StateFlow<ContentCorrectionUiState> = _uiState.asStateFlow()
 
@@ -40,14 +39,14 @@ class ContentCorrectionViewModel(
 
     fun loadContent(contentId: String) {
         _uiState.update { it.copy(contentId = contentId, isLoading = true) }
-        
+
         viewModelScope.launch {
             repository.getContentVersions(contentId).collect { versions ->
                 _uiState.update { state ->
                     state.copy(
                         versions = versions,
                         selectedVersion = state.selectedVersion ?: versions.firstOrNull(),
-                        isLoading = false
+                        isLoading = false,
                     )
                 }
             }
@@ -59,7 +58,7 @@ class ContentCorrectionViewModel(
                     val selNotice = state.selectedNotice ?: notices.firstOrNull()
                     state.copy(
                         notices = notices,
-                        selectedNotice = selNotice
+                        selectedNotice = selNotice,
                     )
                 }
                 if (notices.isNotEmpty()) {
@@ -112,7 +111,7 @@ class ContentCorrectionViewModel(
         createdByName: String,
         changeSummary: String,
         publicNoticeText: String = "",
-        forceImmediateSuspension: Boolean = false
+        forceImmediateSuspension: Boolean = false,
     ) {
         val currentVer = _uiState.value.versions.maxByOrNull { it.versionNumber }
         if (currentVer == null) {
@@ -123,25 +122,26 @@ class ContentCorrectionViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                val draftResult = ContentCorrectionEngine.createCorrectionDraft(
-                    currentVersion = currentVer,
-                    correctionType = correctionType,
-                    reason = reason,
-                    detailedExplanation = detailedExplanation,
-                    discoveredBy = discoveredBy,
-                    discoveredByType = discoveredByType,
-                    correctedTitle = correctedTitle,
-                    correctedFullContentText = correctedFullContentText,
-                    correctedClaims = correctedClaims,
-                    correctedSources = correctedSources,
-                    sourceRevisions = sourceRevisions,
-                    affectedAssets = affectedAssets,
-                    createdBy = createdBy,
-                    createdByName = createdByName,
-                    changeSummary = changeSummary,
-                    publicNoticeText = publicNoticeText,
-                    forceImmediateSuspension = forceImmediateSuspension
-                )
+                val draftResult =
+                    ContentCorrectionEngine.createCorrectionDraft(
+                        currentVersion = currentVer,
+                        correctionType = correctionType,
+                        reason = reason,
+                        detailedExplanation = detailedExplanation,
+                        discoveredBy = discoveredBy,
+                        discoveredByType = discoveredByType,
+                        correctedTitle = correctedTitle,
+                        correctedFullContentText = correctedFullContentText,
+                        correctedClaims = correctedClaims,
+                        correctedSources = correctedSources,
+                        sourceRevisions = sourceRevisions,
+                        affectedAssets = affectedAssets,
+                        createdBy = createdBy,
+                        createdByName = createdByName,
+                        changeSummary = changeSummary,
+                        publicNoticeText = publicNoticeText,
+                        forceImmediateSuspension = forceImmediateSuspension,
+                    )
 
                 val result = repository.createCorrection(draftResult)
                 when (result) {
@@ -149,7 +149,7 @@ class ContentCorrectionViewModel(
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
-                                successMessage = "تم إنشاء مسودة التصحيح رقم (${draftResult.newVersion.versionNumber}) وربط الأصول المتأثرة بنجاح"
+                                successMessage = "تم إنشاء مسودة التصحيح رقم (${draftResult.newVersion.versionNumber}) وربط الأصول المتأثرة بنجاح",
                             )
                         }
                         selectNotice(draftResult.correctionNotice)
@@ -172,25 +172,26 @@ class ContentCorrectionViewModel(
         reviewerName: String,
         reviewerSpecialty: String,
         notes: String,
-        shariaEvidences: List<String>
+        shariaEvidences: List<String>,
     ) {
         val notice = _uiState.value.notices.find { it.id == noticeId } ?: return
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            val review = CorrectionReview(
-                correctionNoticeId = noticeId,
-                fromVersionNumber = notice.fromVersionNumber,
-                toVersionNumber = notice.toVersionNumber,
-                reviewerId = reviewerId,
-                reviewerName = reviewerName,
-                reviewerSpecialty = reviewerSpecialty,
-                status = if (isApproved) ShariaReviewStatus.APPROVED else ShariaReviewStatus.REJECTED,
-                reviewerNotes = notes,
-                shariaEvidences = shariaEvidences,
-                reviewedAt = System.currentTimeMillis(),
-                isApproved = isApproved
-            )
+            val review =
+                CorrectionReview(
+                    correctionNoticeId = noticeId,
+                    fromVersionNumber = notice.fromVersionNumber,
+                    toVersionNumber = notice.toVersionNumber,
+                    reviewerId = reviewerId,
+                    reviewerName = reviewerName,
+                    reviewerSpecialty = reviewerSpecialty,
+                    status = if (isApproved) ShariaReviewStatus.APPROVED else ShariaReviewStatus.REJECTED,
+                    reviewerNotes = notes,
+                    shariaEvidences = shariaEvidences,
+                    reviewedAt = System.currentTimeMillis(),
+                    isApproved = isApproved,
+                )
 
             val result = repository.submitReview(noticeId, review)
             when (result) {
@@ -198,11 +199,12 @@ class ContentCorrectionViewModel(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            successMessage = if (isApproved) {
-                                "تم اعتماد التصحيح شرعياً وترقية الإصدار رقم (${notice.toVersionNumber}) إلى نسخة منشورة"
-                            } else {
-                                "تم رفض مسودة التصحيح وتسجيل ملاحظات المراجع الشرعي"
-                            }
+                            successMessage =
+                                if (isApproved) {
+                                    "تم اعتماد التصحيح شرعياً وترقية الإصدار رقم (${notice.toVersionNumber}) إلى نسخة منشورة"
+                                } else {
+                                    "تم رفض مسودة التصحيح وتسجيل ملاحظات المراجع الشرعي"
+                                },
                         )
                     }
                 }
@@ -214,7 +216,10 @@ class ContentCorrectionViewModel(
         }
     }
 
-    fun updateAssetStatus(assetId: String, newStatus: AssetImpactStatus) {
+    fun updateAssetStatus(
+        assetId: String,
+        newStatus: AssetImpactStatus,
+    ) {
         viewModelScope.launch {
             val result = repository.updateAssetStatus(assetId, newStatus)
             if (result is Resource.Error) {

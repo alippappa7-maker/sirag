@@ -3,7 +3,6 @@ package com.siraj.app.features.notification.presentation
 import android.app.Application
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -24,7 +23,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.siraj.app.core.ui.components.SirajTechCard
 import com.siraj.app.domain.models.notification.NotificationFilter
@@ -42,9 +40,10 @@ fun NotificationCenterScreen(
     onNavigateToAudio: (String) -> Unit = {},
     onNavigateToFlashes: () -> Unit = {},
     onNavigateToMihrab: () -> Unit = {},
-    viewModel: NotificationViewModel = viewModel(
-        factory = NotificationViewModelFactory(LocalContext.current.applicationContext as Application)
-    )
+    viewModel: NotificationViewModel =
+        viewModel(
+            factory = NotificationViewModelFactory(LocalContext.current.applicationContext as Application),
+        ),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -68,16 +67,19 @@ fun NotificationCenterScreen(
                         viewModel.clearAllNotifications()
                         showClearConfirmDialog = false
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                 ) {
                     Text("مسح الكل")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showClearConfirmDialog = false }) {
-                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
+                    Text(
+                        androidx.compose.ui.res
+                            .stringResource(com.siraj.app.R.string.cancel),
+                    )
                 }
-            }
+            },
         )
     }
 
@@ -88,21 +90,21 @@ fun NotificationCenterScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = "مركز الإشعارات",
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                         if (uiState.unreadCount > 0) {
                             Spacer(modifier = Modifier.width(8.dp))
                             Surface(
                                 shape = CircleShape,
                                 color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.padding(2.dp)
+                                modifier = Modifier.padding(2.dp),
                             ) {
                                 Text(
                                     text = "${uiState.unreadCount}",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onPrimary,
                                     fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                                 )
                             }
                         }
@@ -110,45 +112,52 @@ fun NotificationCenterScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.back),
+                        )
                     }
                 },
                 actions = {
                     if (uiState.unreadCount > 0) {
                         IconButton(
-                            onClick = { viewModel.markAllAsRead() }
+                            onClick = { viewModel.markAllAsRead() },
                         ) {
                             Icon(Icons.Default.DoneAll, contentDescription = "تحديد الكل كمقروء")
                         }
                     }
                     if (uiState.notifications.isNotEmpty()) {
                         IconButton(
-                            onClick = { showClearConfirmDialog = true }
+                            onClick = { showClearConfirmDialog = true },
                         ) {
                             Icon(Icons.Default.DeleteSweep, contentDescription = "مسح الكل")
                         }
                     }
                     IconButton(
-                        onClick = onNavigateToSettings
+                        onClick = onNavigateToSettings,
                     ) {
                         Icon(Icons.Default.Settings, contentDescription = "إعدادات الإشعارات")
                     }
-                }
+                },
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding),
         ) {
             // Category Filter Row
             LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp, horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp, horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(NotificationFilter.entries) { filter ->
                     FilterChip(
@@ -157,18 +166,21 @@ fun NotificationCenterScreen(
                         label = {
                             Text(
                                 text = filter.titleAr,
-                                fontWeight = if (uiState.selectedFilter == filter) FontWeight.Bold else FontWeight.Normal
+                                fontWeight = if (uiState.selectedFilter == filter) FontWeight.Bold else FontWeight.Normal,
                             )
                         },
-                        leadingIcon = if (uiState.selectedFilter == filter) {
-                            {
-                                Icon(
-                                    Icons.Default.Check,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            }
-                        } else null
+                        leadingIcon =
+                            if (uiState.selectedFilter == filter) {
+                                {
+                                    Icon(
+                                        Icons.Default.Check,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp),
+                                    )
+                                }
+                            } else {
+                                null
+                            },
                     )
                 }
             }
@@ -178,7 +190,7 @@ fun NotificationCenterScreen(
             // Notifications List
             Crossfade(
                 targetState = Triple(uiState.isLoading, uiState.filteredNotifications.isEmpty(), uiState.filteredNotifications),
-                label = "NotificationsCrossfade"
+                label = "NotificationsCrossfade",
             ) { (isLoading, isEmpty, notifications) ->
                 if (isLoading) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -190,11 +202,11 @@ fun NotificationCenterScreen(
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         items(
                             items = notifications,
-                            key = { it.id }
+                            key = { it.id },
                         ) { notification ->
                             NotificationCard(
                                 notification = notification,
@@ -207,7 +219,7 @@ fun NotificationCenterScreen(
                                         onNavigateToAudio = onNavigateToAudio,
                                         onNavigateToFlashes = onNavigateToFlashes,
                                         onNavigateToMihrab = onNavigateToMihrab,
-                                        onNavigateToSettings = onNavigateToSettings
+                                        onNavigateToSettings = onNavigateToSettings,
                                     )
                                 },
                                 onDeleteClick = {
@@ -215,7 +227,7 @@ fun NotificationCenterScreen(
                                 },
                                 onMarkAsReadClick = {
                                     viewModel.markAsRead(notification.id)
-                                }
+                                },
                             )
                         }
                     }
@@ -230,7 +242,7 @@ fun NotificationCard(
     notification: SirajNotification,
     onNotificationClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    onMarkAsReadClick: () -> Unit
+    onMarkAsReadClick: () -> Unit,
 ) {
     val isUnread = !notification.isRead
     val icon = getNotificationIcon(notification.type)
@@ -239,27 +251,29 @@ fun NotificationCard(
     SirajTechCard(
         isActive = isUnread,
         onClick = onNotificationClick,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.Top
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            verticalAlignment = Alignment.Top,
         ) {
             // Category Icon Badge
             Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(iconColor.copy(alpha = 0.15f)),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .size(44.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(iconColor.copy(alpha = 0.15f)),
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
                     tint = iconColor,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                 )
             }
 
@@ -270,18 +284,18 @@ fun NotificationCard(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = notification.type.categoryAr,
                         style = MaterialTheme.typography.labelSmall,
                         color = iconColor,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                     Text(
                         text = formatRelativeTime(notification.createdAt),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
                     )
                 }
 
@@ -289,21 +303,22 @@ fun NotificationCard(
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     if (isUnread) {
                         Box(
-                            modifier = Modifier
-                                .size(8.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primary)
+                            modifier =
+                                Modifier
+                                    .size(8.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.primary),
                         )
                     }
                     Text(
                         text = notification.title,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = if (isUnread) FontWeight.Bold else FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                 }
 
@@ -314,7 +329,7 @@ fun NotificationCard(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 3,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
 
                 if (notification.isSensitive) {
@@ -324,13 +339,13 @@ fun NotificationCard(
                             Icons.Default.Lock,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.tertiary,
-                            modifier = Modifier.size(14.dp)
+                            modifier = Modifier.size(14.dp),
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = "محتوى شرعي حساس (محمي في شاشة القفل)",
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.tertiary
+                            color = MaterialTheme.colorScheme.tertiary,
                         )
                     }
                 }
@@ -339,29 +354,29 @@ fun NotificationCard(
             // Actions (Mark Read / Delete)
             Column(
                 horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 IconButton(
                     onClick = onDeleteClick,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(32.dp),
                 ) {
                     Icon(
                         Icons.Default.Close,
                         contentDescription = "حذف الإشعار",
                         modifier = Modifier.size(18.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
                 if (isUnread) {
                     IconButton(
                         onClick = onMarkAsReadClick,
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(32.dp),
                     ) {
                         Icon(
                             Icons.Default.CheckCircleOutline,
                             contentDescription = "تحديد كمقروء",
                             modifier = Modifier.size(18.dp),
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     }
                 }
@@ -373,49 +388,57 @@ fun NotificationCard(
 @Composable
 fun EmptyNotificationsView(selectedFilter: NotificationFilter) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        contentAlignment = Alignment.Center
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(32.dp),
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Surface(
                 shape = CircleShape,
                 color = MaterialTheme.colorScheme.surfaceVariant,
-                modifier = Modifier.size(88.dp)
+                modifier = Modifier.size(88.dp),
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = Icons.Default.NotificationsNone,
                         contentDescription = null,
                         modifier = Modifier.size(44.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = if (selectedFilter == NotificationFilter.ALL) "لا توجد إشعارات حالياً" else "لا توجد إشعارات في قسم ${selectedFilter.titleAr}",
+                text =
+                    if (selectedFilter ==
+                        NotificationFilter.ALL
+                    ) {
+                        "لا توجد إشعارات حالياً"
+                    } else {
+                        "لا توجد إشعارات في قسم ${selectedFilter.titleAr}"
+                    },
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "ستصلك التنبيهات هنا فور اكتمال معالجة مشاريعك، مراجعة المحتوى، أو مواقيت الصلاة.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             )
         }
     }
 }
 
-private fun getNotificationIcon(type: NotificationType): ImageVector {
-    return when (type) {
+private fun getNotificationIcon(type: NotificationType): ImageVector =
+    when (type) {
         NotificationType.VIDEO_GENERATION_COMPLETED -> Icons.Default.VideoLibrary
         NotificationType.EXPORT_FAILED -> Icons.Default.ErrorOutline
         NotificationType.REVIEW_REQUESTED -> Icons.Default.RateReview
@@ -428,11 +451,10 @@ private fun getNotificationIcon(type: NotificationType): ImageVector {
         NotificationType.SUBSCRIPTION_BILLING -> Icons.Default.CreditCard
         NotificationType.SYSTEM_MESSAGE -> Icons.Default.Info
     }
-}
 
 @Composable
-private fun getNotificationColor(type: NotificationType): Color {
-    return when (type) {
+private fun getNotificationColor(type: NotificationType): Color =
+    when (type) {
         NotificationType.VIDEO_GENERATION_COMPLETED -> MaterialTheme.colorScheme.primary
         NotificationType.EXPORT_FAILED -> MaterialTheme.colorScheme.error
         NotificationType.REVIEW_REQUESTED -> MaterialTheme.colorScheme.tertiary
@@ -445,7 +467,6 @@ private fun getNotificationColor(type: NotificationType): Color {
         NotificationType.SUBSCRIPTION_BILLING -> Color(0xFF673AB7)
         NotificationType.SYSTEM_MESSAGE -> MaterialTheme.colorScheme.outline
     }
-}
 
 private fun formatRelativeTime(timestamp: Long): String {
     val diffMillis = System.currentTimeMillis() - timestamp
@@ -474,17 +495,19 @@ private fun handleNotificationNavigation(
     onNavigateToAudio: (String) -> Unit,
     onNavigateToFlashes: () -> Unit,
     onNavigateToMihrab: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
 ) {
     val entityId = notification.entityId ?: ""
     when (notification.type) {
         NotificationType.VIDEO_GENERATION_COMPLETED,
         NotificationType.EXPORT_FAILED,
-        NotificationType.PROJECT_COMMENT_UPDATE -> {
+        NotificationType.PROJECT_COMMENT_UPDATE,
+        -> {
             if (entityId.isNotBlank()) onNavigateToProject(entityId) else onNavigateToProject("sample_project_1")
         }
         NotificationType.REVIEW_REQUESTED,
-        NotificationType.REVIEW_RESULT -> {
+        NotificationType.REVIEW_RESULT,
+        -> {
             if (entityId.isNotBlank()) onNavigateToReview(entityId) else onNavigateToReview("sample_review_1")
         }
         NotificationType.NEW_AUDIO_CONTENT -> {
@@ -494,11 +517,13 @@ private fun handleNotificationNavigation(
             onNavigateToFlashes()
         }
         NotificationType.PRAYER_REMINDER,
-        NotificationType.MORNING_EVENING_ADHKAR -> {
+        NotificationType.MORNING_EVENING_ADHKAR,
+        -> {
             onNavigateToMihrab()
         }
         NotificationType.SUBSCRIPTION_BILLING,
-        NotificationType.SYSTEM_MESSAGE -> {
+        NotificationType.SYSTEM_MESSAGE,
+        -> {
             onNavigateToSettings()
         }
     }

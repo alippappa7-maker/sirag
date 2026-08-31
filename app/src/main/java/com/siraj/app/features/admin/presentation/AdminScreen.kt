@@ -34,23 +34,23 @@ fun AdminScreen(onNavigateBack: () -> Unit = {}) {
                 Tab(
                     selected = selectedTabIndex == index,
                     onClick = { selectedTabIndex = index },
-                    text = { Text(title) }
+                    text = { Text(title) },
                 )
             }
         }
-        
+
         when (selectedTabIndex) {
             0 -> {
                 val repository = remember { FirebaseContentManagementRepositoryImpl() }
                 val viewModel = remember { ContentManagementViewModel(repository) }
                 ContentManagementScreen(
                     viewModel = viewModel,
-                    onNavigateBack = onNavigateBack
+                    onNavigateBack = onNavigateBack,
                 )
             }
             1 -> {
                 AnalyticsDashboardScreen(
-                    onNavigateBack = onNavigateBack
+                    onNavigateBack = onNavigateBack,
                 )
             }
             2 -> {
@@ -58,7 +58,7 @@ fun AdminScreen(onNavigateBack: () -> Unit = {}) {
                 val backupViewModel = remember { BackupRecoveryViewModel(backupRepo) }
                 BackupRecoveryScreen(
                     viewModel = backupViewModel,
-                    onNavigateBack = onNavigateBack
+                    onNavigateBack = onNavigateBack,
                 )
             }
             3 -> {
@@ -66,7 +66,7 @@ fun AdminScreen(onNavigateBack: () -> Unit = {}) {
                 val monitoringViewModel = remember { MonitoringDashboardViewModel(monitoringRepo) }
                 MonitoringDashboardScreen(
                     viewModel = monitoringViewModel,
-                    onNavigateBack = onNavigateBack
+                    onNavigateBack = onNavigateBack,
                 )
             }
             4 -> {
@@ -74,10 +74,9 @@ fun AdminScreen(onNavigateBack: () -> Unit = {}) {
                 val incidentViewModel = remember { IncidentResponseViewModel(incidentRepo) }
                 IncidentResponseScreen(
                     viewModel = incidentViewModel,
-                    onNavigateBack = onNavigateBack
+                    onNavigateBack = onNavigateBack,
                 )
             }
         }
     }
 }
-

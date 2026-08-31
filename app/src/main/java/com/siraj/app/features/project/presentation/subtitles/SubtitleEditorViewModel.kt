@@ -16,9 +16,8 @@ class SubtitleEditorViewModel(
     private val sceneId: String,
     private val initialSceneText: String = "",
     private val subtitleRepository: SubtitleRepository = FirebaseSubtitleRepositoryImpl(),
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
 ) : ViewModel() {
-
     private val _subtitles = MutableStateFlow<List<SubtitleItem>>(emptyList())
     val subtitles: StateFlow<List<SubtitleItem>> = _subtitles.asStateFlow()
 
@@ -65,15 +64,22 @@ class SubtitleEditorViewModel(
     private fun loadSceneMetadata() {
         viewModelScope.launch {
             try {
-                val doc = firestore.collection("projects").document(projectId)
-                    .collection("scenes").document(sceneId).get().await()
+                val doc =
+                    firestore
+                        .collection("projects")
+                        .document(projectId)
+                        .collection("scenes")
+                        .document(sceneId)
+                        .get()
+                        .await()
                 if (doc.exists()) {
                     val text = doc.getString("narrationText") ?: initialSceneText
                     val dur = doc.getLong("durationMs") ?: 5000L
                     _sceneNarration.value = text
                     _sceneDurationMs.value = dur
                 }
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
     }
 
@@ -104,17 +110,19 @@ class SubtitleEditorViewModel(
                 return@launch
             }
 
-            val result = subtitleRepository.generateSubtitlesFromScene(
-                projectId = projectId,
-                sceneId = sceneId,
-                sceneText = text,
-                sceneDurationMs = _sceneDurationMs.value
-            )
-            result.onSuccess {
-                _userMessage.value = "تم إنشاء الترجمة ومزامنة التوقيت بنجاح"
-            }.onFailure {
-                _userMessage.value = "فشل في إنشاء الترجمة: ${it.message}"
-            }
+            val result =
+                subtitleRepository.generateSubtitlesFromScene(
+                    projectId = projectId,
+                    sceneId = sceneId,
+                    sceneText = text,
+                    sceneDurationMs = _sceneDurationMs.value,
+                )
+            result
+                .onSuccess {
+                    _userMessage.value = "تم إنشاء الترجمة ومزامنة التوقيت بنجاح"
+                }.onFailure {
+                    _userMessage.value = "فشل في إنشاء الترجمة: ${it.message}"
+                }
             _isLoading.value = false
         }
     }
@@ -130,12 +138,13 @@ class SubtitleEditorViewModel(
             }
 
             val result = subtitleRepository.autoTranslateToEnglish(projectId, sceneId, arabicSubs)
-            result.onSuccess {
-                _selectedLanguage.value = "en"
-                _userMessage.value = "تم إنشاء مسودة الترجمة الإنجليزية للمراجعة"
-            }.onFailure {
-                _userMessage.value = "فشل في الترجمة: ${it.message}"
-            }
+            result
+                .onSuccess {
+                    _selectedLanguage.value = "en"
+                    _userMessage.value = "تم إنشاء مسودة الترجمة الإنجليزية للمراجعة"
+                }.onFailure {
+                    _userMessage.value = "فشل في الترجمة: ${it.message}"
+                }
             _isLoading.value = false
         }
     }
@@ -151,10 +160,10 @@ class SubtitleEditorViewModel(
     fun onUpdateSubtitle(
         newText: String,
         newStartMs: Long,
-        newEndMs: Long
+        newEndMs: Long,
     ) {
         val current = _editingSubtitle.value ?: return
-        
+
         // Strict Islamic Rule Check: Prevent editing locked Quranic texts casually
         if (current.locked) {
             _userMessage.value = "تنبيه: هذا النص القرآني/الحديث مقفل شرعياً وموثق بالمصدر، لا يمكن تعديل صياغته."
@@ -166,12 +175,13 @@ class SubtitleEditorViewModel(
         val safeStart = newStartMs.coerceAtLeast(0L)
         val safeEnd = newEndMs.coerceAtMost(maxDuration).coerceAtLeast(safeStart + 500L)
 
-        val updated = current.copy(
-            text = newText,
-            startMs = safeStart,
-            endMs = safeEnd,
-            style = _currentStyle.value
-        )
+        val updated =
+            current.copy(
+                text = newText,
+                startMs = safeStart,
+                endMs = safeEnd,
+                style = _currentStyle.value,
+            )
 
         viewModelScope.launch {
             subtitleRepository.saveSubtitle(updated)
@@ -195,19 +205,20 @@ class SubtitleEditorViewModel(
         val nextStart = (_subtitles.value.maxOfOrNull { it.endMs } ?: 0L).coerceAtMost(_sceneDurationMs.value)
         val nextEnd = (nextStart + 2000L).coerceAtMost(_sceneDurationMs.value)
 
-        val newSub = SubtitleItem(
-            id = "sub_${System.currentTimeMillis()}",
-            projectId = projectId,
-            sceneId = sceneId,
-            language = _selectedLanguage.value,
-            text = "سطر ترجمة جديد",
-            startMs = nextStart,
-            endMs = nextEnd,
-            style = _currentStyle.value,
-            sourceType = SubtitleSourceType.MANUAL_USER,
-            locked = false,
-            reviewStatus = SubtitleReviewStatus.NOT_REQUIRED
-        )
+        val newSub =
+            SubtitleItem(
+                id = "sub_${System.currentTimeMillis()}",
+                projectId = projectId,
+                sceneId = sceneId,
+                language = _selectedLanguage.value,
+                text = "سطر ترجمة جديد",
+                startMs = nextStart,
+                endMs = nextEnd,
+                style = _currentStyle.value,
+                sourceType = SubtitleSourceType.MANUAL_USER,
+                locked = false,
+                reviewStatus = SubtitleReviewStatus.NOT_REQUIRED,
+            )
 
         viewModelScope.launch {
             subtitleRepository.saveSubtitle(newSub)
@@ -221,17 +232,18 @@ class SubtitleEditorViewModel(
         textColorHex: String? = null,
         backgroundColorHex: String? = null,
         position: SubtitlePosition? = null,
-        burnIntoVideo: Boolean? = null
+        burnIntoVideo: Boolean? = null,
     ) {
         val s = _currentStyle.value
-        val newStyle = s.copy(
-            fontFamily = fontFamily ?: s.fontFamily,
-            fontSizeSp = fontSizeSp ?: s.fontSizeSp,
-            textColorHex = textColorHex ?: s.textColorHex,
-            backgroundColorHex = backgroundColorHex ?: s.backgroundColorHex,
-            position = position ?: s.position,
-            burnIntoVideo = burnIntoVideo ?: s.burnIntoVideo
-        )
+        val newStyle =
+            s.copy(
+                fontFamily = fontFamily ?: s.fontFamily,
+                fontSizeSp = fontSizeSp ?: s.fontSizeSp,
+                textColorHex = textColorHex ?: s.textColorHex,
+                backgroundColorHex = backgroundColorHex ?: s.backgroundColorHex,
+                position = position ?: s.position,
+                burnIntoVideo = burnIntoVideo ?: s.burnIntoVideo,
+            )
         _currentStyle.value = newStyle
 
         viewModelScope.launch {
@@ -270,7 +282,7 @@ class SubtitleEditorViewModel(
 class SubtitleEditorViewModelFactory(
     private val projectId: String,
     private val sceneId: String,
-    private val initialSceneText: String = ""
+    private val initialSceneText: String = "",
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SubtitleEditorViewModel::class.java)) {

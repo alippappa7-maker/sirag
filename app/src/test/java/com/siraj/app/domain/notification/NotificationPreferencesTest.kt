@@ -7,7 +7,6 @@ import org.junit.Test
 import java.util.*
 
 class NotificationPreferencesTest {
-
     @Test
     fun defaultPreferences_marketingIsDisabledByDefault() {
         val prefs = NotificationPreferences()
@@ -38,13 +37,14 @@ class NotificationPreferencesTest {
     @Test
     fun quietHours_wrappingAroundMidnight() {
         // 22:00 to 07:00
-        val prefs = NotificationPreferences(
-            quietHoursEnabled = true,
-            quietHoursStartHour = 22,
-            quietHoursStartMinute = 0,
-            quietHoursEndHour = 7,
-            quietHoursEndMinute = 0
-        )
+        val prefs =
+            NotificationPreferences(
+                quietHoursEnabled = true,
+                quietHoursStartHour = 22,
+                quietHoursStartMinute = 0,
+                quietHoursEndHour = 7,
+                quietHoursEndMinute = 0,
+            )
         assertTrue(prefs.quietHoursStartHour > prefs.quietHoursEndHour)
     }
 }

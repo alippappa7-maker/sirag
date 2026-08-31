@@ -7,122 +7,148 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 
 class FirebaseSubscriptionRepositoryImpl : SubscriptionRepository {
-
-    private val mockPlans = MutableStateFlow(
-        listOf(
-                        Plan(
-                id = "plan_free",
-                name = "مجاني",
-                description = "ميزات سراج الأساسية، القرآن دائماً مجاني",
-                interval = BillingInterval.MONTHLY,
-                price = 0.0,
-                currency = "USD",
-                features = listOf("تلاوة القرآن وقراءته", "مواقيت الصلاة والأذكار", "توليد صور بالذكاء الاصطناعي (محدود)"),
-                limits = listOf(
-                    UsageLimit("AI_IMAGE_GENERATION", 5, 0, null),
-                    UsageLimit("AUDIO_GENERATION", 2, 0, null)
+    private val mockPlans =
+        MutableStateFlow(
+            listOf(
+                Plan(
+                    id = "plan_free",
+                    name = "مجاني",
+                    description = "ميزات سراج الأساسية، القرآن دائماً مجاني",
+                    interval = BillingInterval.MONTHLY,
+                    price = 0.0,
+                    currency = "USD",
+                    features = listOf("تلاوة القرآن وقراءته", "مواقيت الصلاة والأذكار", "توليد صور بالذكاء الاصطناعي (محدود)"),
+                    limits =
+                        listOf(
+                            UsageLimit("AI_IMAGE_GENERATION", 5, 0, null),
+                            UsageLimit("AUDIO_GENERATION", 2, 0, null),
+                        ),
+                    active = true,
+                    platformProductIds = emptyMap(),
                 ),
-                active = true,
-                platformProductIds = emptyMap()
-            ),
-            Plan(
-                id = "plan_pro_monthly",
-                name = "سراج برو (شهري)",
-                description = "لمنشئي المحتوى المتقدمين",
-                interval = BillingInterval.MONTHLY,
-                price = 9.99,
-                currency = "USD",
-                features = listOf("كل ميزات المجاني", "تصدير متقدم بدون علامة مائية", "دعم فني أسرع", "توليد مشاهد متقدمة"),
-                limits = listOf(
-                    UsageLimit("AI_IMAGE_GENERATION", 100, 0, null),
-                    UsageLimit("AUDIO_GENERATION", 50, 0, null)
+                Plan(
+                    id = "plan_pro_monthly",
+                    name = "سراج برو (شهري)",
+                    description = "لمنشئي المحتوى المتقدمين",
+                    interval = BillingInterval.MONTHLY,
+                    price = 9.99,
+                    currency = "USD",
+                    features = listOf("كل ميزات المجاني", "تصدير متقدم بدون علامة مائية", "دعم فني أسرع", "توليد مشاهد متقدمة"),
+                    limits =
+                        listOf(
+                            UsageLimit("AI_IMAGE_GENERATION", 100, 0, null),
+                            UsageLimit("AUDIO_GENERATION", 50, 0, null),
+                        ),
+                    active = true,
+                    platformProductIds = mapOf("android" to "siraj_pro_monthly", "ios" to "siraj_pro_monthly"),
                 ),
-                active = true,
-                platformProductIds = mapOf("android" to "siraj_pro_monthly", "ios" to "siraj_pro_monthly")
-            ),
-            Plan(
-                id = "plan_pro_yearly",
-                name = "سراج برو (سنوي)",
-                description = "توفير أكبر لمنشئي المحتوى",
-                interval = BillingInterval.YEARLY,
-                price = 99.99,
-                currency = "USD",
-                features = listOf("كل ميزات المجاني", "تصدير متقدم بدون علامة مائية", "دعم فني أسرع", "توليد مشاهد متقدمة"),
-                limits = listOf(
-                    UsageLimit("AI_IMAGE_GENERATION", 1200, 0, null),
-                    UsageLimit("AUDIO_GENERATION", 600, 0, null)
+                Plan(
+                    id = "plan_pro_yearly",
+                    name = "سراج برو (سنوي)",
+                    description = "توفير أكبر لمنشئي المحتوى",
+                    interval = BillingInterval.YEARLY,
+                    price = 99.99,
+                    currency = "USD",
+                    features = listOf("كل ميزات المجاني", "تصدير متقدم بدون علامة مائية", "دعم فني أسرع", "توليد مشاهد متقدمة"),
+                    limits =
+                        listOf(
+                            UsageLimit("AI_IMAGE_GENERATION", 1200, 0, null),
+                            UsageLimit("AUDIO_GENERATION", 600, 0, null),
+                        ),
+                    active = true,
+                    platformProductIds = mapOf("android" to "siraj_pro_yearly", "ios" to "siraj_pro_yearly"),
                 ),
-                active = true,
-                platformProductIds = mapOf("android" to "siraj_pro_yearly", "ios" to "siraj_pro_yearly")
+                Plan(
+                    id = "plan_enterprise",
+                    name = "المؤسسات (Workspace)",
+                    description = "للفرق والمؤسسات الإعلامية والدعوية",
+                    interval = BillingInterval.MONTHLY,
+                    price = 49.99,
+                    currency = "USD",
+                    features =
+                        listOf(
+                            "كل ميزات برو",
+                            "إدارة الفريق والأعضاء",
+                            "مساحة تخزين مشتركة",
+                            "دعم فني مخصص 24/7",
+                            "حدود مفتوحة للذكاء الاصطناعي",
+                        ),
+                    limits = emptyList(),
+                    active = true,
+                    platformProductIds = mapOf("android" to "siraj_enterprise_monthly", "ios" to "siraj_enterprise_monthly"),
+                ),
             ),
-            Plan(
-                id = "plan_enterprise",
-                name = "المؤسسات (Workspace)",
-                description = "للفرق والمؤسسات الإعلامية والدعوية",
-                interval = BillingInterval.MONTHLY,
-                price = 49.99,
-                currency = "USD",
-                features = listOf("كل ميزات برو", "إدارة الفريق والأعضاء", "مساحة تخزين مشتركة", "دعم فني مخصص 24/7", "حدود مفتوحة للذكاء الاصطناعي"),
-                limits = emptyList(),
-                active = true,
-                platformProductIds = mapOf("android" to "siraj_enterprise_monthly", "ios" to "siraj_enterprise_monthly")
-            )
         )
-    )
 
-    private val mockSub = MutableStateFlow<Subscription?>(
-        Subscription(
-            id = "sub_123",
-            userId = "current_user",
-            workspaceId = null,
-            planId = "plan_free",
-            platform = "system",
-            productId = "free",
-            status = SubscriptionStatus.ACTIVE,
-            purchaseTokenHash = "hash_12345",
-            startedAt = System.currentTimeMillis(),
-            renewsAt = null,
-            expiresAt = null,
-            cancelledAt = null,
-            createdAt = System.currentTimeMillis(),
-            updatedAt = System.currentTimeMillis()
+    private val mockSub =
+        MutableStateFlow<Subscription?>(
+            Subscription(
+                id = "sub_123",
+                userId = "current_user",
+                workspaceId = null,
+                planId = "plan_free",
+                platform = "system",
+                productId = "free",
+                status = SubscriptionStatus.ACTIVE,
+                purchaseTokenHash = "hash_12345",
+                startedAt = System.currentTimeMillis(),
+                renewsAt = null,
+                expiresAt = null,
+                cancelledAt = null,
+                createdAt = System.currentTimeMillis(),
+                updatedAt = System.currentTimeMillis(),
+            ),
         )
-    )
 
     override fun getAvailablePlans(): Flow<List<Plan>> = mockPlans
 
-    override fun getCurrentSubscription(userId: String, workspaceId: String?): Flow<Subscription?> = mockSub
+    override fun getCurrentSubscription(
+        userId: String,
+        workspaceId: String?,
+    ): Flow<Subscription?> = mockSub
 
-    override fun getCurrentEntitlement(userId: String, workspaceId: String?): Flow<Entitlement?> {
-        return mockSub.map { sub ->
+    override fun getCurrentEntitlement(
+        userId: String,
+        workspaceId: String?,
+    ): Flow<Entitlement?> =
+        mockSub.map { sub ->
             if (sub != null && (sub.status == SubscriptionStatus.ACTIVE || sub.status == SubscriptionStatus.TRIAL)) {
                 val plan = mockPlans.value.find { it.id == sub.planId }
                 if (plan != null) {
                     Entitlement(
                         id = "ent_${sub.id}",
                         features = plan.features,
-                        limits = plan.limits
+                        limits = plan.limits,
                     )
-                } else null
-            } else null
+                } else {
+                    null
+                }
+            } else {
+                null
+            }
         }
-    }
 
-    override fun getCreditBalance(userId: String, workspaceId: String?): Flow<CreditBalance?> {
-        return MutableStateFlow(
+    override fun getCreditBalance(
+        userId: String,
+        workspaceId: String?,
+    ): Flow<CreditBalance?> =
+        MutableStateFlow(
             CreditBalance(
                 userId = userId,
                 workspaceId = workspaceId,
                 availableCredits = 50,
                 totalPurchased = 100,
                 totalUsed = 50,
-                lastUpdated = System.currentTimeMillis()
-            )
+                lastUpdated = System.currentTimeMillis(),
+            ),
         )
-    }
 
-    override fun getCreditTransactions(userId: String, workspaceId: String?, limit: Int): Flow<List<CreditTransaction>> {
-        return MutableStateFlow(
+    override fun getCreditTransactions(
+        userId: String,
+        workspaceId: String?,
+        limit: Int,
+    ): Flow<List<CreditTransaction>> =
+        MutableStateFlow(
             listOf(
                 CreditTransaction(
                     id = "tx_1",
@@ -136,7 +162,7 @@ class FirebaseSubscriptionRepositoryImpl : SubscriptionRepository {
                     type = TransactionType.DEBIT,
                     status = TransactionStatus.COMPLETED,
                     reason = "AI Image Generation",
-                    timestamp = System.currentTimeMillis() - 86400000
+                    timestamp = System.currentTimeMillis() - 86400000,
                 ),
                 CreditTransaction(
                     id = "tx_2",
@@ -150,13 +176,18 @@ class FirebaseSubscriptionRepositoryImpl : SubscriptionRepository {
                     type = TransactionType.CREDIT,
                     status = TransactionStatus.COMPLETED,
                     reason = "Purchase 100 Credits",
-                    timestamp = System.currentTimeMillis() - 172800000
-                )
-            )
+                    timestamp = System.currentTimeMillis() - 172800000,
+                ),
+            ),
         )
-    }
 
-    override suspend fun reserveCredits(userId: String, workspaceId: String?, jobId: String, operationType: String, amount: Int): Result<CreditTransaction> {
+    override suspend fun reserveCredits(
+        userId: String,
+        workspaceId: String?,
+        jobId: String,
+        operationType: String,
+        amount: Int,
+    ): Result<CreditTransaction> {
         // Real implementation should call a Cloud Function or perform a Firestore Transaction
         // to atomically check balance, decrement it, and write a RESERVED transaction.
         return Result.success(
@@ -172,8 +203,8 @@ class FirebaseSubscriptionRepositoryImpl : SubscriptionRepository {
                 type = TransactionType.DEBIT,
                 status = TransactionStatus.RESERVED,
                 reason = "Reserving credits for $operationType",
-                timestamp = System.currentTimeMillis()
-            )
+                timestamp = System.currentTimeMillis(),
+            ),
         )
     }
 
@@ -182,17 +213,25 @@ class FirebaseSubscriptionRepositoryImpl : SubscriptionRepository {
         return Result.success(true)
     }
 
-    override suspend fun refundCredits(transactionId: String, reason: String): Result<Boolean> {
+    override suspend fun refundCredits(
+        transactionId: String,
+        reason: String,
+    ): Result<Boolean> {
         // Server side: update transaction status to REFUNDED, return amount to balance atomically
         return Result.success(true)
     }
 
-    override suspend fun verifyPurchase(platform: String, productId: String, purchaseToken: String, workspaceId: String?): Result<Subscription> {
+    override suspend fun verifyPurchase(
+        platform: String,
+        productId: String,
+        purchaseToken: String,
+        workspaceId: String?,
+    ): Result<Subscription> {
         // In a real app, this calls a Cloud Function to securely verify the purchase token.
         // It should never trust the client's assertion of a successful purchase.
         // For app_store, the server will call App Store Server API using the signed transaction.
         // For google_play, the server will call Google Play Developer API.
-        
+
         return Result.success(
             Subscription(
                 id = "sub_new_${System.currentTimeMillis()}",
@@ -208,8 +247,8 @@ class FirebaseSubscriptionRepositoryImpl : SubscriptionRepository {
                 expiresAt = System.currentTimeMillis() + 2592000000L,
                 cancelledAt = null,
                 createdAt = System.currentTimeMillis(),
-                updatedAt = System.currentTimeMillis()
-            )
+                updatedAt = System.currentTimeMillis(),
+            ),
         )
     }
 }

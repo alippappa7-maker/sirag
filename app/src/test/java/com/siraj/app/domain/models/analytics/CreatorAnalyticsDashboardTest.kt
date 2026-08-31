@@ -4,7 +4,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class CreatorAnalyticsDashboardTest {
-
     @Test
     fun `default values are set correctly`() {
         val dashboard = CreatorAnalyticsDashboard()
@@ -19,10 +18,11 @@ class CreatorAnalyticsDashboardTest {
 
     @Test
     fun `custom values are assigned correctly`() {
-        val dashboard = CreatorAnalyticsDashboard(
-            totalViews = 1500,
-            timeFilter = AnalyticsTimeFilter.LAST_7_DAYS
-        )
+        val dashboard =
+            CreatorAnalyticsDashboard(
+                totalViews = 1500,
+                timeFilter = AnalyticsTimeFilter.LAST_7_DAYS,
+            )
         assertEquals(1500L, dashboard.totalViews)
         assertEquals(AnalyticsTimeFilter.LAST_7_DAYS, dashboard.timeFilter)
     }

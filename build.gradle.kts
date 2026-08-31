@@ -7,4 +7,5 @@ plugins {
   alias(libs.plugins.secrets) apply false
   alias(libs.plugins.google.services) apply false
   alias(libs.plugins.firebase.crashlytics) apply false
+  id("com.diffplug.spotless") version "7.0.4" apply false
 }

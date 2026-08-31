@@ -26,7 +26,7 @@ interface BetaDefectManagementRepository {
         classification: DefectClassification,
         priority: DefectPriority,
         assignedRole: String,
-        targetRelease: String
+        targetRelease: String,
     ): Result<Unit>
 
     /**
@@ -37,7 +37,7 @@ interface BetaDefectManagementRepository {
         newStatus: DefectStatus,
         resolutionNote: String? = null,
         closureReason: String? = null,
-        verificationTest: String? = null
+        verificationTest: String? = null,
     ): Result<Unit>
 
     /**

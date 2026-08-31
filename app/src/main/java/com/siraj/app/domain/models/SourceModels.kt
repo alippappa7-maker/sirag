@@ -3,6 +3,7 @@ package com.siraj.app.domain.models
 import java.util.UUID
 
 enum class SourceType { QURAN, HADITH, TAFSIR, FIQH, BOOK, LECTURE, OFFICIAL_INSTITUTION, OTHER }
+
 enum class SourceVerificationStatus { UNVERIFIED, SUGGESTED, PENDING_REVIEW, VERIFIED, REJECTED, OUTDATED }
 
 data class Source(
@@ -21,7 +22,7 @@ data class Source(
     val reviewedBy: String? = null,
     val reviewedAt: Long? = null,
     val notes: String = "",
-    val version: Int = 1
+    val version: Int = 1,
 )
 
 data class VerificationRecord(
@@ -32,5 +33,5 @@ data class VerificationRecord(
     val previousStatus: SourceVerificationStatus,
     val newStatus: SourceVerificationStatus,
     val decisionNotes: String,
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
 )

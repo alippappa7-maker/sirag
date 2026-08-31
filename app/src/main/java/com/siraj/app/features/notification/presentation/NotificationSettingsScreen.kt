@@ -23,16 +23,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.siraj.app.domain.models.notification.NotificationPreferences
 import com.siraj.app.domain.models.notification.NotificationType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationSettingsScreen(
     onNavigateBack: () -> Unit,
-    viewModel: NotificationViewModel = viewModel(
-        factory = NotificationViewModelFactory(LocalContext.current.applicationContext as Application)
-    )
+    viewModel: NotificationViewModel =
+        viewModel(
+            factory = NotificationViewModelFactory(LocalContext.current.applicationContext as Application),
+        ),
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
@@ -44,22 +44,27 @@ fun NotificationSettingsScreen(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 ContextCompat.checkSelfPermission(
                     context,
-                    Manifest.permission.POST_NOTIFICATIONS
+                    Manifest.permission.POST_NOTIFICATIONS,
                 ) == PackageManager.PERMISSION_GRANTED
             } else {
                 true
-            }
+            },
         )
     }
 
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        hasNotificationPermission = isGranted
-        if (isGranted) {
-            viewModel.sendTestNotification(NotificationType.SYSTEM_MESSAGE, "تم تفعيل الإشعارات بنجاح", "ستصلك التنبيهات المهمة أولاً بأول.")
+    val permissionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
+        ) { isGranted ->
+            hasNotificationPermission = isGranted
+            if (isGranted) {
+                viewModel.sendTestNotification(
+                    NotificationType.SYSTEM_MESSAGE,
+                    "تم تفعيل الإشعارات بنجاح",
+                    "ستصلك التنبيهات المهمة أولاً بأول.",
+                )
+            }
         }
-    }
 
     var showTestNotificationSheet by remember { mutableStateOf(false) }
     var showQuietHoursDialog by remember { mutableStateOf(false) }
@@ -77,75 +82,83 @@ fun NotificationSettingsScreen(
                 title = { Text("إعدادات الإشعارات", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription =
+                                androidx.compose.ui.res
+                                    .stringResource(com.siraj.app.R.string.back),
+                        )
                     }
-                }
+                },
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             Surface(
                 tonalElevation = 3.dp,
-                shadowElevation = 8.dp
+                shadowElevation = 8.dp,
             ) {
                 Button(
                     onClick = { showTestNotificationSheet = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    shape = RoundedCornerShape(12.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                    shape = RoundedCornerShape(12.dp),
                 ) {
                     Icon(Icons.Default.NotificationsActive, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("تجربة إرسال إشعار تجريبي", fontWeight = FontWeight.Bold)
                 }
             }
-        }
+        },
     ) { padding ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(vertical = 16.dp)
+            contentPadding = PaddingValues(vertical = 16.dp),
         ) {
             // Android 13+ Permission Banner
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !hasNotificationPermission) {
                 item {
                     Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
-                        ),
-                        shape = RoundedCornerShape(16.dp)
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            ),
+                        shape = RoundedCornerShape(16.dp),
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     Icons.Default.NotificationsNone,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary
+                                    tint = MaterialTheme.colorScheme.primary,
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = "إذن الإشعارات غير مفعل",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                                 )
                             }
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = "يرجى منح الإذن لتتمكن من تلقي تنبيهات اكتمال الفيديو، مواقيت الصلاة، واعتمادات المحتوى فور صدورها.",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             Button(
                                 onClick = {
                                     permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                                 },
-                                shape = RoundedCornerShape(8.dp)
+                                shape = RoundedCornerShape(8.dp),
                             ) {
                                 Text("تفعيل الإشعارات الآن")
                             }
@@ -166,7 +179,7 @@ fun NotificationSettingsScreen(
                             subtitle = "إشعار فوري عند جهوزية الفيديو للتنزيل والمشاركة",
                             icon = Icons.Default.VideoLibrary,
                             checked = prefs.videoGeneration,
-                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(videoGeneration = it)) }
+                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(videoGeneration = it)) },
                         )
                         HorizontalDivider()
                         NotificationToggleItem(
@@ -174,7 +187,7 @@ fun NotificationSettingsScreen(
                             subtitle = "تنبيه فوري في حال حدوث أي عائق أثناء المعالجة",
                             icon = Icons.Default.ErrorOutline,
                             checked = prefs.exportStatus,
-                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(exportStatus = it)) }
+                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(exportStatus = it)) },
                         )
                         HorizontalDivider()
                         NotificationToggleItem(
@@ -182,7 +195,7 @@ fun NotificationSettingsScreen(
                             subtitle = "إشعار بتعليقات المراجعين وتعديلات المشاهد",
                             icon = Icons.Default.Comment,
                             checked = prefs.projectComments,
-                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(projectComments = it)) }
+                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(projectComments = it)) },
                         )
                     }
                 }
@@ -200,7 +213,7 @@ fun NotificationSettingsScreen(
                             subtitle = "إشعار باعتماد المحتوى وحصوله على وسم موثق",
                             icon = Icons.Default.Verified,
                             checked = prefs.reviewResults,
-                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(reviewResults = it)) }
+                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(reviewResults = it)) },
                         )
                         HorizontalDivider()
                         NotificationToggleItem(
@@ -208,7 +221,7 @@ fun NotificationSettingsScreen(
                             subtitle = "تنبيه المراجعين عند وصول سيناريو أو مشروع جديد",
                             icon = Icons.Default.RateReview,
                             checked = prefs.reviewRequests,
-                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(reviewRequests = it)) }
+                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(reviewRequests = it)) },
                         )
                     }
                 }
@@ -226,7 +239,7 @@ fun NotificationSettingsScreen(
                             subtitle = "تنبيه قبل وعند دخول وقت الصلاة في موقعك",
                             icon = Icons.Default.AccessTime,
                             checked = prefs.prayerReminders,
-                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(prayerReminders = it)) }
+                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(prayerReminders = it)) },
                         )
                         HorizontalDivider()
                         NotificationToggleItem(
@@ -234,7 +247,7 @@ fun NotificationSettingsScreen(
                             subtitle = "تذكير يومي في الصباح الباكر وقبل الغروب",
                             icon = Icons.Default.MenuBook,
                             checked = prefs.adhkarReminders,
-                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(adhkarReminders = it)) }
+                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(adhkarReminders = it)) },
                         )
                     }
                 }
@@ -252,7 +265,7 @@ fun NotificationSettingsScreen(
                             subtitle = "إشعار عند إضافة تلاوة خاشعة أو تسجيل جديد",
                             icon = Icons.Default.Headphones,
                             checked = prefs.newAudio,
-                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(newAudio = it)) }
+                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(newAudio = it)) },
                         )
                         HorizontalDivider()
                         NotificationToggleItem(
@@ -260,7 +273,7 @@ fun NotificationSettingsScreen(
                             subtitle = "إشعار بالمقاطع القصيرة والهادفة المنشورة حديثاً",
                             icon = Icons.Default.Bolt,
                             checked = prefs.newFlashes,
-                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(newFlashes = it)) }
+                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(newFlashes = it)) },
                         )
                     }
                 }
@@ -275,27 +288,41 @@ fun NotificationSettingsScreen(
                     Column {
                         NotificationToggleItem(
                             title = "تفعيل وقت الهدوء",
-                            subtitle = if (prefs.quietHoursEnabled)
-                                "كتم الإشعارات من ${String.format("%02d:00", prefs.quietHoursStartHour)} إلى ${String.format("%02d:00", prefs.quietHoursEndHour)}"
-                            else
-                                "إيقاف الأصوات والتنبيهات غير الحرجة أثناء الليل",
+                            subtitle =
+                                if (prefs.quietHoursEnabled) {
+                                    "كتم الإشعارات من ${String.format(
+                                        "%02d:00",
+                                        prefs.quietHoursStartHour,
+                                    )} إلى ${String.format("%02d:00", prefs.quietHoursEndHour)}"
+                                } else {
+                                    "إيقاف الأصوات والتنبيهات غير الحرجة أثناء الليل"
+                                },
                             icon = Icons.Default.Bedtime,
                             checked = prefs.quietHoursEnabled,
-                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(quietHoursEnabled = it)) }
+                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(quietHoursEnabled = it)) },
                         )
                         if (prefs.quietHoursEnabled) {
                             HorizontalDivider()
                             ListItem(
                                 headlineContent = { Text("تعديل ساعات الهدوء") },
                                 supportingContent = {
-                                    Text("من ${String.format("%02d:%02d", prefs.quietHoursStartHour, prefs.quietHoursStartMinute)} حتى ${String.format("%02d:%02d", prefs.quietHoursEndHour, prefs.quietHoursEndMinute)}")
+                                    Text(
+                                        "من ${String.format(
+                                            "%02d:%02d",
+                                            prefs.quietHoursStartHour,
+                                            prefs.quietHoursStartMinute,
+                                        )} حتى ${String.format("%02d:%02d", prefs.quietHoursEndHour, prefs.quietHoursEndMinute)}",
+                                    )
                                 },
                                 leadingContent = { Icon(Icons.Default.AccessTime, contentDescription = null) },
                                 trailingContent = {
                                     TextButton(onClick = { showQuietHoursDialog = true }) {
-                                        Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.edit))
+                                        Text(
+                                            androidx.compose.ui.res
+                                                .stringResource(com.siraj.app.R.string.edit),
+                                        )
                                     }
-                                }
+                                },
                             )
                         }
                         HorizontalDivider()
@@ -304,7 +331,7 @@ fun NotificationSettingsScreen(
                             subtitle = "إخفاء التفاصيل الدينية والشرعية الحساسة في شاشة القفل",
                             icon = Icons.Default.Lock,
                             checked = prefs.hideSensitiveOnLockScreen,
-                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(hideSensitiveOnLockScreen = it)) }
+                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(hideSensitiveOnLockScreen = it)) },
                         )
                     }
                 }
@@ -322,7 +349,7 @@ fun NotificationSettingsScreen(
                             subtitle = "تنبيهات حالة الحساب، الرصيد، والتحديثات التقنية",
                             icon = Icons.Default.Info,
                             checked = prefs.systemMessages,
-                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(systemMessages = it)) }
+                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(systemMessages = it)) },
                         )
                         HorizontalDivider()
                         NotificationToggleItem(
@@ -330,7 +357,7 @@ fun NotificationSettingsScreen(
                             subtitle = "معطل افتراضياً - تفعيله يتيح استقبال العروض والخصومات",
                             icon = Icons.Default.Campaign,
                             checked = prefs.marketingAllowed,
-                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(marketingAllowed = it)) }
+                            onCheckedChange = { viewModel.updatePreferences(prefs.copy(marketingAllowed = it)) },
                         )
                     }
                 }
@@ -356,7 +383,7 @@ fun NotificationSettingsScreen(
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text("وقت البدء (مساءً):")
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -372,7 +399,7 @@ fun NotificationSettingsScreen(
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text("وقت الانتهاء (صباحاً):")
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -392,81 +419,95 @@ fun NotificationSettingsScreen(
                     viewModel.updatePreferences(
                         prefs.copy(
                             quietHoursStartHour = startH,
-                            quietHoursEndHour = endH
-                        )
+                            quietHoursEndHour = endH,
+                        ),
                     )
                     showQuietHoursDialog = false
                 }) {
-                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.save))
+                    Text(
+                        androidx.compose.ui.res
+                            .stringResource(com.siraj.app.R.string.save),
+                    )
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showQuietHoursDialog = false }) {
-                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
+                    Text(
+                        androidx.compose.ui.res
+                            .stringResource(com.siraj.app.R.string.cancel),
+                    )
                 }
-            }
+            },
         )
     }
 
     // Test Notification Sender Bottom Sheet
     if (showTestNotificationSheet) {
         ModalBottomSheet(
-            onDismissRequest = { showTestNotificationSheet = false }
+            onDismissRequest = { showTestNotificationSheet = false },
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 Text(
                     text = "اختبار إرسال الإشعارات",
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
                 Text(
                     text = "اختر نوع الإشعار لإرساله محلياً واختبار ظهوره في شريط الإشعارات ومركز التنبيهات:",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                val sampleTypes = listOf(
-                    NotificationType.VIDEO_GENERATION_COMPLETED,
-                    NotificationType.REVIEW_RESULT,
-                    NotificationType.PRAYER_REMINDER,
-                    NotificationType.NEW_AUDIO_CONTENT,
-                    NotificationType.MORNING_EVENING_ADHKAR,
-                    NotificationType.SUBSCRIPTION_BILLING
-                )
+                val sampleTypes =
+                    listOf(
+                        NotificationType.VIDEO_GENERATION_COMPLETED,
+                        NotificationType.REVIEW_RESULT,
+                        NotificationType.PRAYER_REMINDER,
+                        NotificationType.NEW_AUDIO_CONTENT,
+                        NotificationType.MORNING_EVENING_ADHKAR,
+                        NotificationType.SUBSCRIPTION_BILLING,
+                    )
 
                 sampleTypes.forEach { type ->
                     OutlinedCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                viewModel.sendTestNotification(type)
-                                showTestNotificationSheet = false
-                            },
-                        shape = RoundedCornerShape(12.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    viewModel.sendTestNotification(type)
+                                    showTestNotificationSheet = false
+                                },
+                        shape = RoundedCornerShape(12.dp),
                     ) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Icon(
                                 Icons.Default.Send,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(20.dp),
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(type.titleAr, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
-                                Text(type.categoryAr, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(
+                                    type.categoryAr,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
                             }
                         }
                     }
@@ -484,7 +525,7 @@ fun NotificationSectionHeader(title: String) {
         style = MaterialTheme.typography.titleSmall,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)
+        modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
     )
 }
 
@@ -494,7 +535,7 @@ fun NotificationToggleItem(
     subtitle: String,
     icon: ImageVector,
     checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (Boolean) -> Unit,
 ) {
     ListItem(
         headlineContent = { Text(title, fontWeight = FontWeight.SemiBold) },
@@ -503,14 +544,14 @@ fun NotificationToggleItem(
             Icon(
                 icon,
                 contentDescription = null,
-                tint = if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                tint = if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
             )
         },
         trailingContent = {
             Switch(
                 checked = checked,
-                onCheckedChange = onCheckedChange
+                onCheckedChange = onCheckedChange,
             )
-        }
+        },
     )
 }

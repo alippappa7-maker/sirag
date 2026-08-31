@@ -25,7 +25,6 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BetaFeedbackViewModelTest {
-
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var feedbackRepository: BetaFeedbackRepository
     private lateinit var authRepository: AuthRepository
@@ -39,16 +38,17 @@ class BetaFeedbackViewModelTest {
 
         val mockUser = UserProfile(id = "tester_1", email = "beta@siraj.app", name = "مختبر تجريبي")
         every { authRepository.currentUser } returns flowOf(mockUser)
-        every { feedbackRepository.getMyFeedback("tester_1") } returns flowOf(
-            listOf(
-                BetaFeedback(
-                    id = "fb_1",
-                    userId = "tester_1",
-                    title = "خلل تجريبي",
-                    category = FeedbackCategory.BUG
-                )
+        every { feedbackRepository.getMyFeedback("tester_1") } returns
+            flowOf(
+                listOf(
+                    BetaFeedback(
+                        id = "fb_1",
+                        userId = "tester_1",
+                        title = "خلل تجريبي",
+                        category = FeedbackCategory.BUG,
+                    ),
+                ),
             )
-        )
     }
 
     @After
@@ -57,56 +57,63 @@ class BetaFeedbackViewModelTest {
     }
 
     @Test
-    fun `initialization loads my feedback list`() = runTest {
-        viewModel = BetaFeedbackViewModel(feedbackRepository, authRepository)
-        advanceUntilIdle()
+    fun `initialization loads my feedback list`() =
+        runTest {
+            viewModel = BetaFeedbackViewModel(feedbackRepository, authRepository)
+            advanceUntilIdle()
 
-        val state = viewModel.uiState.value
-        assertEquals(1, state.myFeedbackList.size)
-        assertEquals("fb_1", state.myFeedbackList[0].id)
-    }
-
-    @Test
-    fun `submitFeedback fails when title is empty`() = runTest {
-        viewModel = BetaFeedbackViewModel(feedbackRepository, authRepository)
-        advanceUntilIdle()
-
-        viewModel.updateTitle("")
-        viewModel.updateDescription("وصف المشكلة")
-        viewModel.submitFeedback()
-        advanceUntilIdle()
-
-        val state = viewModel.uiState.value
-        assertFalse(state.isSuccess)
-        assertNotNull(state.errorMessage)
-    }
+            val state = viewModel.uiState.value
+            assertEquals(1, state.myFeedbackList.size)
+            assertEquals("fb_1", state.myFeedbackList[0].id)
+        }
 
     @Test
-    fun `submitFeedback succeeds when required fields are filled`() = runTest {
-        coEvery { feedbackRepository.submitFeedback(any()) } returns Result.success("fb_123")
+    fun `submitFeedback fails when title is empty`() =
+        runTest {
+            viewModel = BetaFeedbackViewModel(feedbackRepository, authRepository)
+            advanceUntilIdle()
 
-        viewModel = BetaFeedbackViewModel(feedbackRepository, authRepository)
-        advanceUntilIdle()
+            viewModel.updateTitle("")
+            viewModel.updateDescription("وصف المشكلة")
+            viewModel.submitFeedback()
+            advanceUntilIdle()
 
-        viewModel.updateCategory(FeedbackCategory.SHARIA_ISSUE)
-        viewModel.updateSeverity(FeedbackSeverity.HIGH)
-        viewModel.updateTitle("خطأ في تشكيل الآية")
-        viewModel.updateDescription("هناك فتحة بدلاً من ضمة في سورة كذا")
-        viewModel.updateSteps("فتح المصحف ثم الانتقال للآية")
+            val state = viewModel.uiState.value
+            assertFalse(state.isSuccess)
+            assertNotNull(state.errorMessage)
+        }
 
-        viewModel.submitFeedback()
-        advanceUntilIdle()
+    @Test
+    fun `submitFeedback succeeds when required fields are filled`() =
+        runTest {
+            coEvery { feedbackRepository.submitFeedback(any()) } returns Result.success("fb_123")
 
-        val state = viewModel.uiState.value
-        assertTrue(state.isSuccess)
-        assertNotNull(state.successMessage)
-        assertEquals("", state.title)
-        assertEquals("", state.description)
+            viewModel = BetaFeedbackViewModel(feedbackRepository, authRepository)
+            advanceUntilIdle()
 
-        coVerify { feedbackRepository.submitFeedback(match { 
-            it.title == "خطأ في تشكيل الآية" && 
-            it.category == FeedbackCategory.SHARIA_ISSUE && 
-            it.severity == FeedbackSeverity.HIGH 
-        }) }
-    }
+            viewModel.updateCategory(FeedbackCategory.SHARIA_ISSUE)
+            viewModel.updateSeverity(FeedbackSeverity.HIGH)
+            viewModel.updateTitle("خطأ في تشكيل الآية")
+            viewModel.updateDescription("هناك فتحة بدلاً من ضمة في سورة كذا")
+            viewModel.updateSteps("فتح المصحف ثم الانتقال للآية")
+
+            viewModel.submitFeedback()
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertTrue(state.isSuccess)
+            assertNotNull(state.successMessage)
+            assertEquals("", state.title)
+            assertEquals("", state.description)
+
+            coVerify {
+                feedbackRepository.submitFeedback(
+                    match {
+                        it.title == "خطأ في تشكيل الآية" &&
+                            it.category == FeedbackCategory.SHARIA_ISSUE &&
+                            it.severity == FeedbackSeverity.HIGH
+                    },
+                )
+            }
+        }
 }

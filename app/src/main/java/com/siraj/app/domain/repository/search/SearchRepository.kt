@@ -14,13 +14,16 @@ interface SearchRepository {
         page: Int = 1,
         pageSize: Int = 20,
         userId: String? = null,
-        workspaceId: String? = null
+        workspaceId: String? = null,
     ): Resource<GlobalSearchResult>
 
     /**
      * اقتراحات البحث التلقائية السريعة أثناء الكتابة
      */
-    suspend fun getSuggestions(query: String, limit: Int = 8): List<SearchSuggestion>
+    suspend fun getSuggestions(
+        query: String,
+        limit: Int = 8,
+    ): List<SearchSuggestion>
 
     /**
      * مراقبة سجل البحث المحلي للمستخدم
@@ -34,7 +37,7 @@ interface SearchRepository {
         query: String,
         category: SearchCategory,
         resultCount: Int,
-        userId: String?
+        userId: String?,
     )
 
     /**

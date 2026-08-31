@@ -18,13 +18,12 @@ data class ShariaReviewUiState(
     val activeFilter: ShariaReviewFilter = ShariaReviewFilter(),
     val errorMessage: String? = null,
     val successMessage: String? = null,
-    val isActionInProgress: Boolean = false
+    val isActionInProgress: Boolean = false,
 )
 
 class ShariaReviewViewModel(
-    private val repository: ShariaReviewRepository
+    private val repository: ShariaReviewRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(ShariaReviewUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -38,16 +37,18 @@ class ShariaReviewViewModel(
             repository.getReviewQueue(filter).collectLatest { result ->
                 when (result) {
                     is Resource.Success -> {
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            queueItems = result.data ?: emptyList()
-                        )
+                        _uiState.value =
+                            _uiState.value.copy(
+                                isLoading = false,
+                                queueItems = result.data ?: emptyList(),
+                            )
                     }
                     is Resource.Error -> {
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            errorMessage = result.message
-                        )
+                        _uiState.value =
+                            _uiState.value.copy(
+                                isLoading = false,
+                                errorMessage = result.message,
+                            )
                     }
                     is Resource.Loading -> {
                         _uiState.value = _uiState.value.copy(isLoading = true)
@@ -63,16 +64,18 @@ class ShariaReviewViewModel(
             repository.getReviewItemById(itemId).collectLatest { result ->
                 when (result) {
                     is Resource.Success -> {
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            selectedItem = result.data
-                        )
+                        _uiState.value =
+                            _uiState.value.copy(
+                                isLoading = false,
+                                selectedItem = result.data,
+                            )
                     }
                     is Resource.Error -> {
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            errorMessage = result.message
-                        )
+                        _uiState.value =
+                            _uiState.value.copy(
+                                isLoading = false,
+                                errorMessage = result.message,
+                            )
                     }
                     is Resource.Loading -> {
                         _uiState.value = _uiState.value.copy(isLoading = true)
@@ -87,42 +90,54 @@ class ShariaReviewViewModel(
         loadQueue(filter)
     }
 
-    fun claimReview(itemId: String, reviewerId: String, reviewerName: String) {
+    fun claimReview(
+        itemId: String,
+        reviewerId: String,
+        reviewerName: String,
+    ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isActionInProgress = true)
             when (val res = repository.claimReview(itemId, reviewerId, reviewerName)) {
                 is Resource.Success -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        successMessage = "تم حجز المحتوى وبدء المراجعة الشرعية"
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            successMessage = "تم حجز المحتوى وبدء المراجعة الشرعية",
+                        )
                 }
                 is Resource.Error -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        errorMessage = res.message
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            errorMessage = res.message,
+                        )
                 }
                 else -> Unit
             }
         }
     }
 
-    fun releaseReview(itemId: String, reviewerId: String, reviewerName: String) {
+    fun releaseReview(
+        itemId: String,
+        reviewerId: String,
+        reviewerName: String,
+    ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isActionInProgress = true)
             when (val res = repository.releaseReview(itemId, reviewerId, reviewerName)) {
                 is Resource.Success -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        successMessage = "تم إلغاء الحجز وإعادة المحتوى للقائمة"
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            successMessage = "تم إلغاء الحجز وإعادة المحتوى للقائمة",
+                        )
                 }
                 is Resource.Error -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        errorMessage = res.message
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            errorMessage = res.message,
+                        )
                 }
                 else -> Unit
             }
@@ -134,64 +149,80 @@ class ShariaReviewViewModel(
         reviewerId: String,
         reviewerName: String,
         reason: String,
-        scheduledReReviewDate: Long? = null
+        scheduledReReviewDate: Long? = null,
     ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isActionInProgress = true)
             when (val res = repository.approveItem(itemId, reviewerId, reviewerName, reason, scheduledReReviewDate)) {
                 is Resource.Success -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        successMessage = "تم تسجيل قرار الاعتماد الشرعي بنجاح"
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            successMessage = "تم تسجيل قرار الاعتماد الشرعي بنجاح",
+                        )
                 }
                 is Resource.Error -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        errorMessage = res.message
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            errorMessage = res.message,
+                        )
                 }
                 else -> Unit
             }
         }
     }
 
-    fun rejectItem(itemId: String, reviewerId: String, reviewerName: String, reason: String) {
+    fun rejectItem(
+        itemId: String,
+        reviewerId: String,
+        reviewerName: String,
+        reason: String,
+    ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isActionInProgress = true)
             when (val res = repository.rejectItem(itemId, reviewerId, reviewerName, reason)) {
                 is Resource.Success -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        successMessage = "تم تسجيل قرار الرفض الشرعي بنجاح"
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            successMessage = "تم تسجيل قرار الرفض الشرعي بنجاح",
+                        )
                 }
                 is Resource.Error -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        errorMessage = res.message
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            errorMessage = res.message,
+                        )
                 }
                 else -> Unit
             }
         }
     }
 
-    fun requestChanges(itemId: String, reviewerId: String, reviewerName: String, requiredChanges: String) {
+    fun requestChanges(
+        itemId: String,
+        reviewerId: String,
+        reviewerName: String,
+        requiredChanges: String,
+    ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isActionInProgress = true)
             when (val res = repository.requestChanges(itemId, reviewerId, reviewerName, requiredChanges)) {
                 is Resource.Success -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        successMessage = "تم إرسال طلب التعديل الشرعي للمنشئ"
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            successMessage = "تم إرسال طلب التعديل الشرعي للمنشئ",
+                        )
                 }
                 is Resource.Error -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        errorMessage = res.message
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            errorMessage = res.message,
+                        )
                 }
                 else -> Unit
             }
@@ -204,24 +235,34 @@ class ShariaReviewViewModel(
         reviewerName: String,
         targetReviewerId: String,
         targetReviewerName: String,
-        reason: String
+        reason: String,
     ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isActionInProgress = true)
-            when (val res = repository.escalateToSecondReviewer(
-                itemId, reviewerId, reviewerName, targetReviewerId, targetReviewerName, reason
-            )) {
-                is Resource.Success -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        successMessage = "تم تحويل المحتوى للمراجع الثاني ($targetReviewerName)"
+            when (
+                val res =
+                    repository.escalateToSecondReviewer(
+                        itemId,
+                        reviewerId,
+                        reviewerName,
+                        targetReviewerId,
+                        targetReviewerName,
+                        reason,
                     )
+            ) {
+                is Resource.Success -> {
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            successMessage = "تم تحويل المحتوى للمراجع الثاني ($targetReviewerName)",
+                        )
                 }
                 is Resource.Error -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        errorMessage = res.message
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            errorMessage = res.message,
+                        )
                 }
                 else -> Unit
             }
@@ -233,87 +274,118 @@ class ShariaReviewViewModel(
         secondReviewerId: String,
         secondReviewerName: String,
         approve: Boolean,
-        reason: String
+        reason: String,
     ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isActionInProgress = true)
-            when (val res = repository.submitSecondReviewDecision(
-                itemId, secondReviewerId, secondReviewerName, approve, reason
-            )) {
-                is Resource.Success -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        successMessage = if (approve) "تم اكتمال الاعتماد المشترك بنجاح" else "تم تسجيل قرار المراجع الثاني"
+            when (
+                val res =
+                    repository.submitSecondReviewDecision(
+                        itemId,
+                        secondReviewerId,
+                        secondReviewerName,
+                        approve,
+                        reason,
                     )
+            ) {
+                is Resource.Success -> {
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            successMessage = if (approve) "تم اكتمال الاعتماد المشترك بنجاح" else "تم تسجيل قرار المراجع الثاني",
+                        )
                 }
                 is Resource.Error -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        errorMessage = res.message
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            errorMessage = res.message,
+                        )
                 }
                 else -> Unit
             }
         }
     }
 
-    fun addClaimComment(itemId: String, claimId: String, reviewerId: String, reviewerName: String, comment: String) {
+    fun addClaimComment(
+        itemId: String,
+        claimId: String,
+        reviewerId: String,
+        reviewerName: String,
+        comment: String,
+    ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isActionInProgress = true)
             when (val res = repository.addClaimComment(itemId, claimId, reviewerId, reviewerName, comment)) {
                 is Resource.Success -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        successMessage = "تم حفظ التعليق الشرعي على المطالبة"
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            successMessage = "تم حفظ التعليق الشرعي على المطالبة",
+                        )
                 }
                 is Resource.Error -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        errorMessage = res.message
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            errorMessage = res.message,
+                        )
                 }
                 else -> Unit
             }
         }
     }
 
-    fun addInternalNote(itemId: String, authorId: String, authorName: String, note: String) {
+    fun addInternalNote(
+        itemId: String,
+        authorId: String,
+        authorName: String,
+        note: String,
+    ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isActionInProgress = true)
             when (val res = repository.addInternalNote(itemId, authorId, authorName, note)) {
                 is Resource.Success -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        successMessage = "تمت إضافة الملاحظة الداخلية للمراجعين"
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            successMessage = "تمت إضافة الملاحظة الداخلية للمراجعين",
+                        )
                 }
                 is Resource.Error -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        errorMessage = res.message
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            errorMessage = res.message,
+                        )
                 }
                 else -> Unit
             }
         }
     }
 
-    fun scheduleReReview(itemId: String, reviewerId: String, reviewerName: String, timestamp: Long) {
+    fun scheduleReReview(
+        itemId: String,
+        reviewerId: String,
+        reviewerName: String,
+        timestamp: Long,
+    ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isActionInProgress = true)
             when (val res = repository.scheduleReReviewDate(itemId, reviewerId, reviewerName, timestamp)) {
                 is Resource.Success -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        successMessage = "تم تحديد موعد إعادة المراجعة الشرعية"
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            successMessage = "تم تحديد موعد إعادة المراجعة الشرعية",
+                        )
                 }
                 is Resource.Error -> {
-                    _uiState.value = _uiState.value.copy(
-                        isActionInProgress = false,
-                        errorMessage = res.message
-                    )
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isActionInProgress = false,
+                            errorMessage = res.message,
+                        )
                 }
                 else -> Unit
             }
@@ -326,7 +398,7 @@ class ShariaReviewViewModel(
 }
 
 class ShariaReviewViewModelFactory(
-    private val repository: ShariaReviewRepository
+    private val repository: ShariaReviewRepository,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

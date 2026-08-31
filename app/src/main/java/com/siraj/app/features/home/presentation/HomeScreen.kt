@@ -3,12 +3,10 @@ package com.siraj.app.features.home.presentation
 import android.app.Application
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
@@ -45,9 +43,10 @@ fun HomeScreen(
     onNavigateToShariaReview: () -> Unit = {},
     onNavigateToTesterHub: () -> Unit = {},
     viewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory()),
-    notificationViewModel: NotificationViewModel = viewModel(
-        factory = NotificationViewModelFactory(LocalContext.current.applicationContext as Application)
-    )
+    notificationViewModel: NotificationViewModel =
+        viewModel(
+            factory = NotificationViewModelFactory(LocalContext.current.applicationContext as Application),
+        ),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val notifState by notificationViewModel.uiState.collectAsState()
@@ -65,7 +64,7 @@ fun HomeScreen(
                     onValueChange = { newProjectTitle = it },
                     label = { Text("اسم المشروع") },
                     singleLine = true,
-                    shape = MaterialTheme.shapes.medium
+                    shape = MaterialTheme.shapes.medium,
                 )
             },
             confirmButton = {
@@ -79,38 +78,41 @@ fun HomeScreen(
                             newProjectTitle = ""
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 ) {
                     Text("إنشاء")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showCreateDialog = false }) {
-                    Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
+                    Text(
+                        androidx.compose.ui.res
+                            .stringResource(com.siraj.app.R.string.cancel),
+                    )
                 }
             },
-            shape = MaterialTheme.shapes.large
+            shape = MaterialTheme.shapes.large,
         )
     }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(spacing.medium),
-        verticalArrangement = Arrangement.spacedBy(spacing.large)
+        verticalArrangement = Arrangement.spacedBy(spacing.large),
     ) {
         // 1. Header Section
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column {
                     Text(
                         text = "مرحباً، ${uiState.userProfile?.name ?: "مستخدم"}",
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -118,7 +120,7 @@ fun HomeScreen(
                         Icon(
                             imageVector = Icons.Default.History,
                             contentDescription = "سجل النشاط",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                     IconButton(onClick = onNavigateToNotifications) {
@@ -129,12 +131,26 @@ fun HomeScreen(
                                         Text(if (notifState.unreadCount > 99) "+99" else "${notifState.unreadCount}")
                                     }
                                 }
-                            }
+                            },
                         ) {
                             Icon(
-                                imageVector = if (notifState.unreadCount > 0) Icons.Default.NotificationsActive else Icons.Default.Notifications,
+                                imageVector =
+                                    if (notifState.unreadCount >
+                                        0
+                                    ) {
+                                        Icons.Default.NotificationsActive
+                                    } else {
+                                        Icons.Default.Notifications
+                                    },
                                 contentDescription = "الإشعارات",
-                                tint = if (notifState.unreadCount > 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant
+                                tint =
+                                    if (notifState.unreadCount >
+                                        0
+                                    ) {
+                                        MaterialTheme.colorScheme.secondary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    },
                             )
                         }
                     }
@@ -149,7 +165,7 @@ fun HomeScreen(
         item {
             BetaBadgeBanner(
                 currentRoute = "home",
-                onOpenTesterHub = onNavigateToTesterHub
+                onOpenTesterHub = onNavigateToTesterHub,
             )
         }
 
@@ -158,45 +174,47 @@ fun HomeScreen(
             SirajGlowContainer(
                 isActive = true,
                 glowColor = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(spacing.large),
-                    verticalArrangement = Arrangement.spacedBy(spacing.medium)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(spacing.large),
+                    verticalArrangement = Arrangement.spacedBy(spacing.medium),
                 ) {
                     Text(
                         text = "جاهز لإنتاج محتوى جديد اليوم؟",
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
-                    
+
                     // Search (Cyan touch)
                     Surface(
                         onClick = onNavigateToSearch,
                         shape = MaterialTheme.shapes.medium,
                         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary.copy(alpha = 0.3f)),
-                        modifier = Modifier.fillMaxWidth().testTag("home_search_banner")
+                        modifier = Modifier.fillMaxWidth().testTag("home_search_banner"),
                     ) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = spacing.medium, vertical = spacing.medium),
-                            verticalAlignment = Alignment.CenterVertically
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = spacing.medium, vertical = spacing.medium),
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Search,
                                 contentDescription = "البحث",
                                 tint = MaterialTheme.colorScheme.tertiary,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(24.dp),
                             )
                             Spacer(Modifier.width(spacing.medium))
                             Text(
                                 text = "ابحث في القرآن، الصوتيات، الومضات...",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                     }
@@ -205,20 +223,22 @@ fun HomeScreen(
                     Button(
                         onClick = { showCreateDialog = true },
                         shape = MaterialTheme.shapes.medium,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondary,
-                            contentColor = MaterialTheme.colorScheme.onSecondary
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
+                        colors =
+                            ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.onSecondary,
+                            ),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
                     ) {
                         Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
                         Spacer(Modifier.width(spacing.small))
                         Text(
                             text = "إنشاء فيديو جديد",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                     }
                 }
@@ -229,7 +249,7 @@ fun HomeScreen(
         item {
             Column(verticalArrangement = Arrangement.spacedBy(spacing.medium)) {
                 SirajSectionHeader(title = "المشاريع الأخيرة")
-                
+
                 Crossfade(targetState = uiState.recentProjects, label = "projects_crossfade") { projectsRes ->
                     when (projectsRes) {
                         is Resource.Loading -> {
@@ -244,13 +264,16 @@ fun HomeScreen(
                             if (projectsRes.data.isEmpty()) {
                                 SirajTechCard(isActive = false) {
                                     Box(modifier = Modifier.fillMaxWidth().padding(spacing.medium), contentAlignment = Alignment.Center) {
-                                        Text("لا توجد مشاريع سابقة. ابدأ بإنشاء مشروع جديد.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        Text(
+                                            "لا توجد مشاريع سابقة. ابدأ بإنشاء مشروع جديد.",
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        )
                                     }
                                 }
                             } else {
                                 LazyRow(
                                     horizontalArrangement = Arrangement.spacedBy(spacing.medium),
-                                    contentPadding = PaddingValues(horizontal = 4.dp) // for shadows
+                                    contentPadding = PaddingValues(horizontal = 4.dp), // for shadows
                                 ) {
                                     items(projectsRes.data, key = { it.id }) { project ->
                                         ProjectCard(project = project, onClick = { onNavigateToProject(project.id) })
@@ -267,38 +290,39 @@ fun HomeScreen(
         item {
             Column(verticalArrangement = Arrangement.spacedBy(spacing.medium)) {
                 SirajSectionHeader(title = "اختصارات سريعة")
-                
+
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(spacing.medium),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     ShortcutCard("المحراب", Modifier.weight(1f), onClick = { /* TODO Navigate */ })
                     ShortcutCard("ومضات", Modifier.weight(1f), onClick = { /* TODO Navigate */ })
-                    
+
                     // Sharia Review - specific highlight
                     SirajTechCard(
                         isActive = true, // specific highlight
-                        modifier = Modifier
-                            .weight(1.2f)
-                            .height(90.dp)
-                            .testTag("shortcut_sharia_review"),
-                        onClick = { onNavigateToShariaReview() }
+                        modifier =
+                            Modifier
+                                .weight(1.2f)
+                                .height(90.dp)
+                                .testTag("shortcut_sharia_review"),
+                        onClick = { onNavigateToShariaReview() },
                     ) {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
+                                verticalArrangement = Arrangement.Center,
                             ) {
                                 Text(
                                     text = "المراجعة الشرعية",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    color = MaterialTheme.colorScheme.onSurface,
                                 )
                                 Text(
                                     text = "تدقيق وتوثيق",
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.tertiary
+                                    color = MaterialTheme.colorScheme.tertiary,
                                 )
                             }
                         }
@@ -312,44 +336,51 @@ fun HomeScreen(
 }
 
 @Composable
-fun ProjectCard(project: Project, onClick: () -> Unit) {
+fun ProjectCard(
+    project: Project,
+    onClick: () -> Unit,
+) {
     val spacing = LocalSpacing.current
     SirajTechCard(
         isActive = false,
         onClick = onClick,
-        modifier = Modifier.width(220.dp).height(110.dp)
+        modifier = Modifier.width(220.dp).height(110.dp),
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
                 text = project.title,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1
+                maxLines = 1,
             )
             Text(
                 text = "آخر تعديل: ${project.updatedAt}",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.tertiary
+                color = MaterialTheme.colorScheme.tertiary,
             )
         }
     }
 }
 
 @Composable
-fun ShortcutCard(title: String, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
+fun ShortcutCard(
+    title: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+) {
     SirajTechCard(
         isActive = false,
         onClick = onClick,
-        modifier = modifier.height(90.dp)
+        modifier = modifier.height(90.dp),
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

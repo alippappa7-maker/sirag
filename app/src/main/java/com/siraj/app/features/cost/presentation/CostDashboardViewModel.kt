@@ -2,7 +2,6 @@ package com.siraj.app.features.cost.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.siraj.app.core.utils.Resource
 import com.siraj.app.domain.models.cost.CostProvider
 import com.siraj.app.domain.models.cost.ProviderEmergencyStatus
 import com.siraj.app.domain.models.cost.WorkspaceUsageStatus
@@ -14,9 +13,8 @@ import kotlinx.coroutines.launch
 
 class CostDashboardViewModel(
     private val repository: CostManagementRepository,
-    private val workspaceId: String = "ws_test_123"
+    private val workspaceId: String = "ws_test_123",
 ) : ViewModel() {
-
     private val _usageState = MutableStateFlow<WorkspaceUsageStatus?>(null)
     val usageState: StateFlow<WorkspaceUsageStatus?> = _usageState.asStateFlow()
 
@@ -29,7 +27,7 @@ class CostDashboardViewModel(
                 _usageState.value = status
             }
         }
-        
+
         viewModelScope.launch {
             repository.getProviderEmergencyStatuses().collect { statuses ->
                 _providerStatuses.value = statuses
@@ -37,7 +35,10 @@ class CostDashboardViewModel(
         }
     }
 
-    fun toggleProviderStatus(provider: CostProvider, isEnabled: Boolean) {
+    fun toggleProviderStatus(
+        provider: CostProvider,
+        isEnabled: Boolean,
+    ) {
         viewModelScope.launch {
             repository.setProviderEmergencyStatus(provider, isEnabled, "admin_current_user")
         }

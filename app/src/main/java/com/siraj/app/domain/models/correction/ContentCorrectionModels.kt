@@ -8,86 +8,98 @@ import java.util.UUID
 /**
  * أنواع أسباب التصحيح الشرعي والفني
  */
-enum class CorrectionType(val arabicTitle: String, val description: String, val requiresReviewer: Boolean) {
+enum class CorrectionType(
+    val arabicTitle: String,
+    val description: String,
+    val requiresReviewer: Boolean,
+) {
     SOURCE_ERROR(
         arabicTitle = "خطأ في المصدر أو التخريج",
         description = "خطأ في عزو الحديث، رقم الصفحة، اسم الكتاب، أو درجة صحة الرواية",
-        requiresReviewer = true
+        requiresReviewer = true,
     ),
     WORDING_ERROR(
         arabicTitle = "خطأ في الصياغة أو اللفظ",
         description = "لحن، خطأ إملائي، أو سقط في كلمة تؤثر على المعنى الشرعي",
-        requiresReviewer = true
+        requiresReviewer = true,
     ),
     ATTRIBUTION_ERROR(
         arabicTitle = "خطأ في نسبة القول أو العالم",
         description = "نسبة قول أو فتوى لغير قائلها من العلماء المعتبرين",
-        requiresReviewer = true
+        requiresReviewer = true,
     ),
     RIGHTS_ISSUE(
         arabicTitle = "مسألة حقوق ملكية أو ترخيص",
         description = "انتهاء ترخيص صورة/صوت أو مطالبة من صاحب الحق الأصلي",
-        requiresReviewer = false
+        requiresReviewer = false,
     ),
     TECHNICAL_ERROR(
         arabicTitle = "خطأ تقني أو مونتاجي",
         description = "خلل في تزامن الصوت مع النص، أو تقطيع في الفيديو",
-        requiresReviewer = false
+        requiresReviewer = false,
     ),
     SAFETY_ISSUE(
         arabicTitle = "مسألة سلامة أو محتوى غير لائق",
         description = "محتوى يمس الضوابط الأخلاقية أو معايير السلامة العامة",
-        requiresReviewer = false
+        requiresReviewer = false,
     ),
     OTHER(
         arabicTitle = "تصحيح آخر",
         description = "تحسينات أو استدراكات عامة أخرى",
-        requiresReviewer = false
-    )
+        requiresReviewer = false,
+    ),
 }
 
 /**
  * جهة اكتشاف المشكلة
  */
-enum class DiscoveredByType(val arabicTitle: String) {
+enum class DiscoveredByType(
+    val arabicTitle: String,
+) {
     USER_REPORT("بلاغ من مستخدم"),
     REVIEWER_AUDIT("تدقيق مراجع شرعي"),
     CREATOR_SELF_DISCOVERY("اكتشاف ذاتي من الصانع"),
-    SYSTEM_SCAN("فحص آلي للنظام")
+    SYSTEM_SCAN("فحص آلي للنظام"),
 }
 
 /**
  * حالة الإصدار
  */
-enum class VersionStatus(val arabicTitle: String) {
+enum class VersionStatus(
+    val arabicTitle: String,
+) {
     DRAFT("مسودة تصحيح"),
     IN_REVIEW("قيد مراجعة التصحيح"),
     ACTIVE_PUBLISHED("منشور ومعتمد حالياً"),
     SUPERSEDED("مستبدل بنسخة أحدث"),
     RESTRICTED_SUSPENDED("موقوف ومقيد مؤقتاً"),
-    ARCHIVED("مؤرشف في السجل الثابت")
+    ARCHIVED("مؤرشف في السجل الثابت"),
 }
 
 /**
  * حالة المواد والمقاطع المتأثرة
  */
-enum class AssetImpactStatus(val arabicTitle: String) {
+enum class AssetImpactStatus(
+    val arabicTitle: String,
+) {
     REQUIRES_RE_RENDER("يتطلب إعادة رندرة"),
     SUSPENDED("موقوف مؤقتاً عن النشر"),
     UPDATED("تم التحديث بنجاح"),
-    DEPRECATED("أصبح قديماً ومستبعداً")
+    DEPRECATED("أصبح قديماً ومستبعداً"),
 }
 
 /**
  * نوع المادة المتأثرة
  */
-enum class AffectedAssetType(val arabicTitle: String) {
+enum class AffectedAssetType(
+    val arabicTitle: String,
+) {
     PROJECT("مشروع إنتاجي"),
     SCENE("مشهد سيناريو"),
     VIDEO_RENDER("فيديو مرندر"),
     AUDIO_TRACK("تسجيل صوتي"),
     SUBTITLE("نصوص وترجمة المشهد"),
-    PUBLISHED_FLASH("ومضة منشورة في الموجز")
+    PUBLISHED_FLASH("ومضة منشورة في الموجز"),
 }
 
 /**
@@ -113,7 +125,7 @@ data class ContentVersion(
     val immutableHash: String = "",
     val changeSummary: String = "",
     val isRestricted: Boolean = false,
-    val restrictionReason: String? = null
+    val restrictionReason: String? = null,
 )
 
 /**
@@ -140,7 +152,7 @@ data class CorrectionNotice(
     val reviewedAt: Long? = null,
     val isImmediateSuspensionApplied: Boolean = false,
     val notificationSent: Boolean = false,
-    val notificationSentAt: Long? = null
+    val notificationSentAt: Long? = null,
 )
 
 /**
@@ -164,7 +176,7 @@ data class SourceRevision(
     val correctionReason: String,
     val sourceUrl: String = "",
     val isVerified: Boolean = false,
-    val verifiedBy: String? = null
+    val verifiedBy: String? = null,
 )
 
 /**
@@ -183,7 +195,7 @@ data class AffectedAsset(
     val status: AssetImpactStatus = AssetImpactStatus.REQUIRES_RE_RENDER,
     val impactDescription: String,
     val remediationAction: String,
-    val updatedAt: Long = System.currentTimeMillis()
+    val updatedAt: Long = System.currentTimeMillis(),
 )
 
 /**
@@ -201,7 +213,7 @@ data class CorrectionReview(
     val reviewerNotes: String,
     val shariaEvidences: List<String> = emptyList(),
     val reviewedAt: Long = System.currentTimeMillis(),
-    val isApproved: Boolean = false
+    val isApproved: Boolean = false,
 )
 
 /**
@@ -219,5 +231,5 @@ data class ImpactReport(
     val affectedPublishedFlashesCount: Int,
     val affectedAssets: List<AffectedAsset> = emptyList(),
     val generatedAt: Long = System.currentTimeMillis(),
-    val summary: String
+    val summary: String,
 )

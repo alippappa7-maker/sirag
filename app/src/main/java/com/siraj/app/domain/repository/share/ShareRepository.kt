@@ -13,7 +13,7 @@ interface ShareRepository {
         type: ShareType,
         userId: String,
         isPrivate: Boolean,
-        expiresAt: Long? = null
+        expiresAt: Long? = null,
     ): Resource<ShareLink>
 
     /**
@@ -22,13 +22,16 @@ interface ShareRepository {
      */
     suspend fun getAndValidateShareLink(
         linkId: String,
-        token: String? = null
+        token: String? = null,
     ): Resource<ShareLink>
 
     /**
      * Revokes an existing share link (owner only).
      */
-    suspend fun revokeShareLink(linkId: String, userId: String): Resource<Unit>
+    suspend fun revokeShareLink(
+        linkId: String,
+        userId: String,
+    ): Resource<Unit>
 
     /**
      * Logs anonymous view on a share link.

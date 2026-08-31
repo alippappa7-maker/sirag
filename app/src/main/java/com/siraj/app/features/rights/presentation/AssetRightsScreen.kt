@@ -18,7 +18,7 @@ fun AssetRightsScreen(
     viewModel: AssetRightsViewModel,
     assetId: String,
     currentUserId: String,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -34,9 +34,9 @@ fun AssetRightsScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
                     }
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         if (uiState.isLoading) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = androidx.compose.ui.Alignment.Center) {
@@ -64,48 +64,49 @@ fun AssetRightsScreen(
         var reason by remember { mutableStateOf("") }
 
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text("معلومات الأصل: ${asset.type.name}", style = MaterialTheme.typography.titleMedium)
-            
+
             OutlinedTextField(
                 value = sourceUrl,
                 onValueChange = { sourceUrl = it },
                 label = { Text("رابط المصدر") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
-            
+
             OutlinedTextField(
                 value = creatorName,
                 onValueChange = { creatorName = it },
                 label = { Text("اسم صانع المحتوى") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
             OutlinedTextField(
                 value = provider,
                 onValueChange = { provider = it },
                 label = { Text("المزود / المنصة") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
             OutlinedTextField(
                 value = licenseType,
                 onValueChange = { licenseType = it },
                 label = { Text("نوع الترخيص") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
             OutlinedTextField(
                 value = proofUrl,
                 onValueChange = { proofUrl = it },
                 label = { Text("رابط إثبات الترخيص (للاستخدام الداخلي فقط)") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -123,11 +124,31 @@ fun AssetRightsScreen(
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 Button(
                     onClick = { status = RightsStatus.COMMERCIAL_ALLOWED },
-                    colors = ButtonDefaults.buttonColors(containerColor = if (status == RightsStatus.COMMERCIAL_ALLOWED) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary)
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor =
+                                if (status ==
+                                    RightsStatus.COMMERCIAL_ALLOWED
+                                ) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.secondary
+                                },
+                        ),
                 ) { Text("مصرح") }
                 Button(
                     onClick = { status = RightsStatus.REJECTED },
-                    colors = ButtonDefaults.buttonColors(containerColor = if (status == RightsStatus.REJECTED) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary)
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor =
+                                if (status ==
+                                    RightsStatus.REJECTED
+                                ) {
+                                    MaterialTheme.colorScheme.error
+                                } else {
+                                    MaterialTheme.colorScheme.secondary
+                                },
+                        ),
                 ) { Text("مرفوض") }
             }
 
@@ -135,7 +156,7 @@ fun AssetRightsScreen(
                 value = reason,
                 onValueChange = { reason = it },
                 label = { Text("سبب القرار (سجل المراجعة)") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
             Button(
@@ -154,10 +175,10 @@ fun AssetRightsScreen(
                         proofUrl = proofUrl,
                         expiresAt = asset.expiresAt,
                         newStatus = status,
-                        reason = reason
+                        reason = reason,
                     )
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text("تحديث الحقوق")
             }
