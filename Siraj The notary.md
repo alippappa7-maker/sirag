@@ -12,7 +12,8 @@
 1. **ديباجة وميثاق التأسيس (Foundational Charter)**
 2. **فلسفة الهوية الجمالية: سراج التقني الروحاني (Siraj Techno-Spiritual Design System)**
 3. **الهيكلية المعمارية الكلية للنظام (System Architecture & Framework Foundations)**
-4. **التوثيق التفصيلي الشامل لكافة الوحدات الوظيفية والشاشات (All 16 System Modules - كل صغيرة وكبيرة)**
+4. **التوثيق التفصيلي للوحدات الوظيفية والشاشات (كل صغيرة وكبيرة)**
+   > **تصحيح:** القائمة التاريخية في هذه الوثيقة كانت تذكر 16 وحدة فقط، وهذا غير دقيق. يوجد في الكود الفعلي **30 وحدة وظيفية** ضمن `app/src/main/java/com/siraj/app/features/`. للقائمة الموثّقة والمطابقة للكود، راجع قسم «الوحدات الوظيفية الفعلية» في [README.md](README.md). ما يلي هو الوصف المفصّل لأبرز هذه الوحدات:
    - 4.1. وحدة المصادقة والتهيئة (Authentication & Onboarding Engine)
    - 4.2. وحدة الواجهة الرئيسية ولوحة التحكم (Home Dashboard & Daily Pulse)
    - 4.3. وحدة المحراب والعبادات (Mihrab & Spiritual Engine - مواقيت، أذكار، قبلة، تقويم)
@@ -29,6 +30,7 @@
    - 4.14. منظومة المراقبة والاستجابة للطوارئ والترقيات (Crash Monitoring, Incident Room & Migration)
    - 4.15. منظومة البحث الموحد والتصنيف المعرفي (Unified Search & Content Taxonomy)
    - 4.16. منظومة الاشتراكات والدعم الفني ومركز المختبرين (Subscriptions, Support & Beta Tester Hub)
+   - 4.17. وحدات إضافية موجودة في الكود وغير مغطاة تفصيلياً هنا: `ai`، `share`، `community`، `details`، `history`، `migration`، `notification`، `settings`، `subscription`، `taxonomy`، `admin` (راجع README.md للقائمة الكاملة)
 5. **قاموس نماذج البيانات والكيانات البرمجية (Data Entities & Schemas Dictionary)**
 6. **مصفوفة الأمان والأذونات وسياسات التشغيل (Security Matrix, Permissions & Runtime Policies)**
 7. **إقرار التوثيق العدلي والإقفال الرسمي (Notary Attestation & Sealing)**
