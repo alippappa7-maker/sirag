@@ -32,6 +32,7 @@ import com.siraj.app.domain.models.review.ShariaClaim
 import com.siraj.app.domain.models.review.ShariaReviewStatus
 import java.text.SimpleDateFormat
 import java.util.*
+import com.siraj.app.ui.theme.statusColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -268,12 +269,12 @@ private fun VersionItemCard(
     val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
 
     val (statusBg, statusFg) = when (version.status) {
-        VersionStatus.ACTIVE_PUBLISHED -> Color(0xFFE8F5E9) to Color(0xFF2E7D32)
-        VersionStatus.SUPERSEDED -> Color(0xFFECEFF1) to Color(0xFF546E7A)
-        VersionStatus.RESTRICTED_SUSPENDED -> Color(0xFFFFEBEE) to Color(0xFFC62828)
-        VersionStatus.IN_REVIEW -> Color(0xFFFFF8E1) to Color(0xFFF57F17)
-        VersionStatus.DRAFT -> Color(0xFFEDE7F6) to Color(0xFF512DA8)
-        VersionStatus.ARCHIVED -> Color(0xFFF5F5F5) to Color(0xFF757575)
+        VersionStatus.ACTIVE_PUBLISHED -> MaterialTheme.statusColors.successBg to MaterialTheme.statusColors.successFg
+        VersionStatus.SUPERSEDED -> MaterialTheme.statusColors.neutralBg to MaterialTheme.statusColors.neutralFg
+        VersionStatus.RESTRICTED_SUSPENDED -> MaterialTheme.statusColors.errorBg to MaterialTheme.statusColors.errorFg
+        VersionStatus.IN_REVIEW -> MaterialTheme.statusColors.warningBg to MaterialTheme.statusColors.warningFg
+        VersionStatus.DRAFT -> MaterialTheme.statusColors.draftBg to MaterialTheme.statusColors.draftFg
+        VersionStatus.ARCHIVED -> MaterialTheme.statusColors.neutralBg to MaterialTheme.statusColors.neutralFg
     }
 
     Card(
@@ -353,13 +354,13 @@ private fun VersionItemCard(
                 Spacer(modifier = Modifier.height(8.dp))
                 Surface(
                     shape = RoundedCornerShape(6.dp),
-                    color = Color(0xFFFFEBEE)
+                    color = MaterialTheme.statusColors.errorBg
                 ) {
                     Text(
                         text = "⚠️ قيد مفروض: ${version.restrictionReason}",
                         modifier = Modifier.padding(8.dp),
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFFC62828)
+                        color = MaterialTheme.statusColors.errorFg
                     )
                 }
             }
@@ -494,7 +495,7 @@ private fun CorrectionNoticeCard(
                 Spacer(modifier = Modifier.height(8.dp))
                 Surface(
                     shape = RoundedCornerShape(6.dp),
-                    color = Color(0xFFFFF3E0)
+                    color = MaterialTheme.statusColors.warningBg
                 ) {
                     Row(
                         modifier = Modifier.padding(8.dp),
@@ -503,14 +504,14 @@ private fun CorrectionNoticeCard(
                         Icon(
                             Icons.Default.Campaign,
                             contentDescription = null,
-                            tint = Color(0xFFE65100),
+                            tint = MaterialTheme.statusColors.warningFg,
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "الإفصاح العام للمستخدمين: ${notice.publicNoticeText}",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFFE65100)
+                            color = MaterialTheme.statusColors.warningFg
                         )
                     }
                 }
@@ -554,13 +555,13 @@ private fun CorrectionNoticeCard(
                 } else {
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = if (notice.status == ShariaReviewStatus.APPROVED) Color(0xFFE8F5E9) else Color(0xFFFFEBEE)
+                        color = if (notice.status == ShariaReviewStatus.APPROVED) MaterialTheme.statusColors.successBg else MaterialTheme.statusColors.errorBg
                     ) {
                         Text(
                             text = notice.status.arabicTitle,
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                             style = MaterialTheme.typography.labelSmall,
-                            color = if (notice.status == ShariaReviewStatus.APPROVED) Color(0xFF2E7D32) else Color(0xFFC62828),
+                            color = if (notice.status == ShariaReviewStatus.APPROVED) MaterialTheme.statusColors.successFg else MaterialTheme.statusColors.errorFg,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -622,13 +623,13 @@ private fun SourceRevisionCard(revision: SourceRevision) {
                         .weight(1f)
                         .padding(end = 4.dp),
                     shape = RoundedCornerShape(8.dp),
-                    color = Color(0xFFFFEBEE)
+                    color = MaterialTheme.statusColors.errorBg
                 ) {
                     Column(modifier = Modifier.padding(10.dp)) {
                         Text(
                             text = "❌ المصدر السابق",
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFC62828),
+                            color = MaterialTheme.statusColors.errorFg,
                             fontSize = 12.sp
                         )
                         Spacer(modifier = Modifier.height(4.dp))
@@ -658,13 +659,13 @@ private fun SourceRevisionCard(revision: SourceRevision) {
                         .weight(1f)
                         .padding(start = 4.dp),
                     shape = RoundedCornerShape(8.dp),
-                    color = Color(0xFFE8F5E9)
+                    color = MaterialTheme.statusColors.successBg
                 ) {
                     Column(modifier = Modifier.padding(10.dp)) {
                         Text(
                             text = "✅ المصدر المصحح",
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2E7D32),
+                            color = MaterialTheme.statusColors.successFg,
                             fontSize = 12.sp
                         )
                         Spacer(modifier = Modifier.height(4.dp))
@@ -741,10 +742,10 @@ private fun AffectedAssetCard(
     onUpdateStatus: (AssetImpactStatus) -> Unit
 ) {
     val (statusColor, statusBg) = when (asset.status) {
-        AssetImpactStatus.REQUIRES_RE_RENDER -> Color(0xFFE65100) to Color(0xFFFFF3E0)
-        AssetImpactStatus.SUSPENDED -> Color(0xFFC62828) to Color(0xFFFFEBEE)
-        AssetImpactStatus.UPDATED -> Color(0xFF2E7D32) to Color(0xFFE8F5E9)
-        AssetImpactStatus.DEPRECATED -> Color(0xFF757575) to Color(0xFFEEEEEE)
+        AssetImpactStatus.REQUIRES_RE_RENDER -> MaterialTheme.statusColors.warningFg to MaterialTheme.statusColors.warningBg
+        AssetImpactStatus.SUSPENDED -> MaterialTheme.statusColors.errorFg to MaterialTheme.statusColors.errorBg
+        AssetImpactStatus.UPDATED -> MaterialTheme.statusColors.successFg to MaterialTheme.statusColors.successBg
+        AssetImpactStatus.DEPRECATED -> MaterialTheme.statusColors.neutralFg to MaterialTheme.statusColors.neutralBg
     }
 
     Card(

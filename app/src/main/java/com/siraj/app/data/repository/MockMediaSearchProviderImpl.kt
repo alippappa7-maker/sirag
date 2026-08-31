@@ -20,7 +20,7 @@ class MockMediaSearchProviderImpl : MediaSearchProvider {
         
         val cacheKey = "$query-${filter.type}-${filter.orientation}-$pageToken"
         if (cache.containsKey(cacheKey)) {
-            emit(Resource.Success(cache[cacheKey]!!))
+            cache[cacheKey]?.let { emit(Resource.Success(it)) }
             return@flow
         }
         

@@ -44,7 +44,7 @@ class SirajAudioService : MediaSessionService() {
             )
             .build()
             
-        mediaSession = MediaSession.Builder(this, exoPlayer!!)
+        mediaSession = MediaSession.Builder(this, exoPlayer ?: return)
             .build()
     }
 

@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.siraj.app.core.ui.components.SirajButton
+import com.siraj.app.ui.theme.statusColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,7 +93,7 @@ fun CommunityGuidelinesScreen(
             GuidelineCard(
                 icon = Icons.Default.Warning,
                 title = "2. مكافحة المحتوى المزعج والاحتيال (Anti-Spam)",
-                color = Color(0xFFE65100),
+                color = MaterialTheme.statusColors.warningFg,
                 items = listOf(
                     "حظر الروابط الترويجية المشبوهة، الربح السريع، والاحتيال المالي.",
                     "منع إغراق المنصة بمقاطع مكررة أو مولدة آلياً دون قيمة مضافة.",

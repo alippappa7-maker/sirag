@@ -137,7 +137,7 @@ fun SubtitleEditorScreen(
 
                 // Subtitle Overlay rendered according to style
                 if (activePreviewSub != null) {
-                    val sub = activePreviewSub!!
+                    val sub = activePreviewSub
                     val alignment = when (currentStyle.position) {
                         SubtitlePosition.TOP -> Alignment.TopCenter
                         SubtitlePosition.MIDDLE -> Alignment.Center
@@ -374,7 +374,7 @@ fun SubtitleEditorScreen(
 
     // Edit Subtitle Line Dialog
     if (editingSubtitle != null) {
-        val sub = editingSubtitle!!
+        val sub = editingSubtitle
         var textValue by remember(sub) { mutableStateOf(sub.text) }
         var startSec by remember(sub) { mutableStateOf((sub.startMs / 1000f).toString()) }
         var endSec by remember(sub) { mutableStateOf((sub.endMs / 1000f).toString()) }
@@ -461,7 +461,7 @@ fun SubtitleEditorScreen(
     // Export Dialog (SRT / VTT)
     if (exportedContent != null) {
         val format = exportFormat ?: "SRT"
-        val content = exportedContent!!
+        val content = exportedContent
 
         AlertDialog(
             onDismissRequest = { viewModel.closeExportDialog() },

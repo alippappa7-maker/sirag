@@ -201,7 +201,7 @@ fun AudioStudioScreen(
 
     // Audio Trim Modal Dialog
     if (selectedAudioForTrim != null) {
-        val audio = selectedAudioForTrim!!
+        val audio = selectedAudioForTrim
         AlertDialog(
             onDismissRequest = { viewModel.closeTrimDialog() },
             title = {

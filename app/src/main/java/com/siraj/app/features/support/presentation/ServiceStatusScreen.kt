@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.siraj.app.ui.theme.statusColors
 
 data class ServiceHealthItem(
     val name: String,
@@ -71,7 +72,7 @@ fun ServiceStatusScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = if (allOperational) Color(0xFFE8F5E9) else MaterialTheme.colorScheme.errorContainer
+                        containerColor = if (allOperational) MaterialTheme.statusColors.successBg else MaterialTheme.colorScheme.errorContainer
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -82,7 +83,7 @@ fun ServiceStatusScreen(
                         Icon(
                             imageVector = if (allOperational) Icons.Default.CheckCircle else Icons.Default.Warning,
                             contentDescription = null,
-                            tint = if (allOperational) Color(0xFF2E7D32) else MaterialTheme.colorScheme.error,
+                            tint = if (allOperational) MaterialTheme.statusColors.successFg else MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(36.dp)
                         )
                         Spacer(modifier = Modifier.width(12.dp))
@@ -91,12 +92,12 @@ fun ServiceStatusScreen(
                                 if (allOperational) "جميع الخدمات والأنظمة تعمل بكفاءة تامة" else "يوجد بعض التأخير في معالجة الخدمات",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = if (allOperational) Color(0xFF1B5E20) else MaterialTheme.colorScheme.onErrorContainer
+                                color = if (allOperational) MaterialTheme.statusColors.successFg else MaterialTheme.colorScheme.onErrorContainer
                             )
                             Text(
                                 "نسبة التوفر التشغيلي خلال الـ 30 يوماً الماضية: 99.98%",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = if (allOperational) Color(0xFF2E7D32) else MaterialTheme.colorScheme.onErrorContainer
+                                color = if (allOperational) MaterialTheme.statusColors.successFg else MaterialTheme.colorScheme.onErrorContainer
                             )
                         }
                     }
@@ -134,14 +135,14 @@ fun ServiceStatusScreen(
 
                         Surface(
                             shape = RoundedCornerShape(8.dp),
-                            color = if (service.isOperational) Color(0xFFE8F5E9) else MaterialTheme.colorScheme.errorContainer
+                            color = if (service.isOperational) MaterialTheme.statusColors.successBg else MaterialTheme.colorScheme.errorContainer
                         ) {
                             Text(
                                 text = if (service.isOperational) "تعمل" else "صيانة",
                                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = if (service.isOperational) Color(0xFF2E7D32) else MaterialTheme.colorScheme.error
+                                color = if (service.isOperational) MaterialTheme.statusColors.successFg else MaterialTheme.colorScheme.error
                             )
                         }
                     }

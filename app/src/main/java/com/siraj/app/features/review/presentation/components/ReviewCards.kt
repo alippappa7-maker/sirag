@@ -23,28 +23,29 @@ import androidx.compose.ui.unit.sp
 import com.siraj.app.domain.models.review.*
 import java.text.SimpleDateFormat
 import java.util.*
+import com.siraj.app.ui.theme.statusColors
 
 @Composable
 fun RiskBadge(riskLevel: RiskLevel, modifier: Modifier = Modifier) {
     val (bgColor, textColor, icon) = when (riskLevel) {
         RiskLevel.LOW -> Triple(
-            Color(0xFFE8F5E9),
-            Color(0xFF2E7D32),
+            MaterialTheme.statusColors.successBg,
+            MaterialTheme.statusColors.successFg,
             Icons.Default.CheckCircle
         )
         RiskLevel.MEDIUM -> Triple(
-            Color(0xFFFFF8E1),
-            Color(0xFFF57F17),
+            MaterialTheme.statusColors.warningBg,
+            MaterialTheme.statusColors.warningFg,
             Icons.Default.Info
         )
         RiskLevel.HIGH -> Triple(
             Color(0xFFFFE0B2),
-            Color(0xFFE65100),
+            MaterialTheme.statusColors.warningFg,
             Icons.Default.Warning
         )
         RiskLevel.CRITICAL -> Triple(
-            Color(0xFFFFEBEE),
-            Color(0xFFC62828),
+            MaterialTheme.statusColors.errorBg,
+            MaterialTheme.statusColors.errorFg,
             Icons.Default.ReportProblem
         )
     }
@@ -78,13 +79,13 @@ fun RiskBadge(riskLevel: RiskLevel, modifier: Modifier = Modifier) {
 @Composable
 fun StatusBadge(status: ShariaReviewStatus, modifier: Modifier = Modifier) {
     val (bgColor, textColor, icon) = when (status) {
-        ShariaReviewStatus.PENDING -> Triple(Color(0xFFECEFF1), Color(0xFF455A64), Icons.Default.HourglassEmpty)
+        ShariaReviewStatus.PENDING -> Triple(MaterialTheme.statusColors.neutralBg, Color(0xFF455A64), Icons.Default.HourglassEmpty)
         ShariaReviewStatus.IN_REVIEW -> Triple(Color(0xFFE3F2FD), Color(0xFF1565C0), Icons.Default.RateReview)
-        ShariaReviewStatus.CHANGES_REQUESTED -> Triple(Color(0xFFFFF3E0), Color(0xFFE65100), Icons.Default.EditNote)
+        ShariaReviewStatus.CHANGES_REQUESTED -> Triple(MaterialTheme.statusColors.warningBg, MaterialTheme.statusColors.warningFg, Icons.Default.EditNote)
         ShariaReviewStatus.ESCALATED_SECOND_REVIEW -> Triple(Color(0xFFF3E5F5), Color(0xFF7B1FA2), Icons.Default.SupervisorAccount)
-        ShariaReviewStatus.DUAL_APPROVAL_PENDING -> Triple(Color(0xFFEDE7F6), Color(0xFF512DA8), Icons.Default.HowToReg)
-        ShariaReviewStatus.APPROVED -> Triple(Color(0xFFE8F5E9), Color(0xFF2E7D32), Icons.Default.CheckCircle)
-        ShariaReviewStatus.REJECTED -> Triple(Color(0xFFFFEBEE), Color(0xFFC62828), Icons.Default.Cancel)
+        ShariaReviewStatus.DUAL_APPROVAL_PENDING -> Triple(MaterialTheme.statusColors.draftBg, MaterialTheme.statusColors.draftFg, Icons.Default.HowToReg)
+        ShariaReviewStatus.APPROVED -> Triple(MaterialTheme.statusColors.successBg, MaterialTheme.statusColors.successFg, Icons.Default.CheckCircle)
+        ShariaReviewStatus.REJECTED -> Triple(MaterialTheme.statusColors.errorBg, MaterialTheme.statusColors.errorFg, Icons.Default.Cancel)
     }
 
     Surface(

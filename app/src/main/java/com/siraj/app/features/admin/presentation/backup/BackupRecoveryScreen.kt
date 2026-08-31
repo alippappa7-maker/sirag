@@ -25,6 +25,7 @@ import com.siraj.app.domain.models.backup.*
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.siraj.app.ui.theme.statusColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -279,7 +280,7 @@ private fun BackupHealthKpiDashboard(
                         modifier = Modifier
                             .size(10.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFF2E7D32))
+                            .background(MaterialTheme.statusColors.successFg)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("حالة النسخ الاحتياطي والطوارئ: متوافقة ونشطة", fontWeight = FontWeight.Bold, fontSize = 14.sp)
@@ -392,8 +393,8 @@ private fun BackupSnapshotCard(
 
                 Surface(
                     color = when (snapshot.environment) {
-                        BackupEnvironment.PROD -> Color(0xFF1B5E20).copy(alpha = 0.15f)
-                        BackupEnvironment.STAGING -> Color(0xFFE65100).copy(alpha = 0.15f)
+                        BackupEnvironment.PROD -> MaterialTheme.statusColors.successFg.copy(alpha = 0.15f)
+                        BackupEnvironment.STAGING -> MaterialTheme.statusColors.warningFg.copy(alpha = 0.15f)
                         BackupEnvironment.DEV -> Color(0xFF0277BD).copy(alpha = 0.15f)
                     },
                     shape = RoundedCornerShape(6.dp)
@@ -404,8 +405,8 @@ private fun BackupSnapshotCard(
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                         color = when (snapshot.environment) {
-                            BackupEnvironment.PROD -> Color(0xFF1B5E20)
-                            BackupEnvironment.STAGING -> Color(0xFFE65100)
+                            BackupEnvironment.PROD -> MaterialTheme.statusColors.successFg
+                            BackupEnvironment.STAGING -> MaterialTheme.statusColors.warningFg
                             BackupEnvironment.DEV -> Color(0xFF0277BD)
                         }
                     )
@@ -570,15 +571,15 @@ private fun DryRunRestoreModal(
                 Text("موقع التخزين: ${snapshot.storageLocationUri}", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 
                 Surface(
-                    color = Color(0xFFE8F5E9),
+                    color = MaterialTheme.statusColors.successBg,
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(10.dp)) {
-                        Text("🛡️ الضمانات الأمنية للاختبار التجريبي:", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color(0xFF1B5E20))
-                        Text("• يتم الاختبار داخل Sandbox معزول دون أي تأثير على بيانات الإنتاج.", fontSize = 11.sp, color = Color(0xFF1B5E20))
-                        Text("• يتم تطبيق استبعاد $tombstoneCount طلباً لحذف الحسابات تلقائياً (Right to be Forgotten).", fontSize = 11.sp, color = Color(0xFF1B5E20))
-                        Text("• يتم فحص توافق الفهارس وتكامل التواقيع الرقمية SHA-256.", fontSize = 11.sp, color = Color(0xFF1B5E20))
+                        Text("🛡️ الضمانات الأمنية للاختبار التجريبي:", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.statusColors.successFg)
+                        Text("• يتم الاختبار داخل Sandbox معزول دون أي تأثير على بيانات الإنتاج.", fontSize = 11.sp, color = MaterialTheme.statusColors.successFg)
+                        Text("• يتم تطبيق استبعاد $tombstoneCount طلباً لحذف الحسابات تلقائياً (Right to be Forgotten).", fontSize = 11.sp, color = MaterialTheme.statusColors.successFg)
+                        Text("• يتم فحص توافق الفهارس وتكامل التواقيع الرقمية SHA-256.", fontSize = 11.sp, color = MaterialTheme.statusColors.successFg)
                     }
                 }
 

@@ -158,7 +158,7 @@ fun IdeationScreen(
                     }
                     
                     if (uiState.error != null) {
-                        Text(uiState.error!!, color = MaterialTheme.colorScheme.error)
+                        Text(uiState.error ?: "", color = MaterialTheme.colorScheme.error)
                     }
                     
                     Spacer(modifier = Modifier.weight(1f))

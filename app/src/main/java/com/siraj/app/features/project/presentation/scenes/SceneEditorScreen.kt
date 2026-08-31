@@ -57,6 +57,8 @@ fun SceneEditorScreen(
         return
     }
 
+    val currentScene = scene ?: return
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
@@ -91,11 +93,11 @@ fun SceneEditorScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Preview Box
-            ScenePreviewBox(scene = scene!!, sceneText = sceneText)
+            ScenePreviewBox(scene = currentScene, sceneText = sceneText)
             
             Divider()
 
-            if (scene!!.status == SceneStatus.APPROVED) {
+            if (currentScene.status == SceneStatus.APPROVED) {
                 Surface(color = MaterialTheme.colorScheme.tertiaryContainer, shape = RoundedCornerShape(8.dp)) {
                     Row(modifier = Modifier.padding(16.dp).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onTertiaryContainer)
@@ -111,9 +113,9 @@ fun SceneEditorScreen(
 
             // Title
             OutlinedTextField(
-                value = scene!!.title,
+                value = currentScene.title,
                 onValueChange = { 
-                    viewModel.updateSceneAndText(scene!!.copy(title = it), sceneText) 
+                    viewModel.updateSceneAndText(currentScene.copy(title = it), sceneText) 
                 },
                 label = { Text("عنوان المشهد") },
                 modifier = Modifier.fillMaxWidth()
@@ -121,9 +123,9 @@ fun SceneEditorScreen(
 
             // Narration Text
             OutlinedTextField(
-                value = scene!!.narrationText,
+                value = currentScene.narrationText,
                 onValueChange = { 
-                    viewModel.updateSceneAndText(scene!!.copy(narrationText = it), sceneText) 
+                    viewModel.updateSceneAndText(currentScene.copy(narrationText = it), sceneText) 
                 },
                 label = { Text("نص التعليق الصوتي") },
                 modifier = Modifier.fillMaxWidth().height(120.dp),
@@ -132,7 +134,7 @@ fun SceneEditorScreen(
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilledTonalButton(
-                    onClick = { onNavigateToAudioStudio(projectId, sceneId, scene!!.narrationText) },
+                    onClick = { onNavigateToAudioStudio(projectId, sceneId, currentScene.narrationText) },
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(Icons.Default.PlayArrow, contentDescription = null)
@@ -154,7 +156,7 @@ fun SceneEditorScreen(
             OutlinedTextField(
                 value = sceneText.text,
                 onValueChange = { 
-                    viewModel.updateSceneAndText(scene!!, sceneText.copy(text = it)) 
+                    viewModel.updateSceneAndText(currentScene, sceneText.copy(text = it)) 
                 },
                 label = { Text("النص الظاهر على الشاشة (Caption)") },
                 modifier = Modifier.fillMaxWidth().height(100.dp),
@@ -162,7 +164,7 @@ fun SceneEditorScreen(
             )
 
             FilledTonalButton(
-                onClick = { onNavigateToSubtitles(projectId, sceneId, scene!!.narrationText.ifBlank { sceneText.text }) },
+                onClick = { onNavigateToSubtitles(projectId, sceneId, currentScene.narrationText.ifBlank { sceneText.text }) },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(Icons.Default.Edit, contentDescription = null)
@@ -181,7 +183,7 @@ fun SceneEditorScreen(
                     onValueChange = { 
                         fontSizeStr = it
                         it.toFloatOrNull()?.let { size ->
-                            viewModel.updateSceneAndText(scene!!, sceneText.copy(fontSize = size)) 
+                            viewModel.updateSceneAndText(currentScene, sceneText.copy(fontSize = size)) 
                         }
                     },
                     label = { Text("حجم الخط") },
@@ -206,7 +208,7 @@ fun SceneEditorScreen(
                     ExposedDropdownMenu(expanded = expandedAlign, onDismissRequest = { expandedAlign = false }) {
                         listOf("Start", "Center", "End").forEach { a ->
                             DropdownMenuItem(text = { Text(a) }, onClick = { 
-                                viewModel.updateSceneAndText(scene!!, sceneText.copy(alignment = a))
+                                viewModel.updateSceneAndText(currentScene, sceneText.copy(alignment = a))
                                 expandedAlign = false 
                             })
                         }
@@ -233,7 +235,7 @@ fun SceneEditorScreen(
                     ExposedDropdownMenu(expanded = expandedPos, onDismissRequest = { expandedPos = false }) {
                         listOf("Top", "Center", "Bottom").forEach { p ->
                             DropdownMenuItem(text = { Text(p) }, onClick = { 
-                                viewModel.updateSceneAndText(scene!!, sceneText.copy(position = p))
+                                viewModel.updateSceneAndText(currentScene, sceneText.copy(position = p))
                                 expandedPos = false 
                             })
                         }
@@ -245,7 +247,7 @@ fun SceneEditorScreen(
                     Checkbox(
                         checked = sceneText.showSource,
                         onCheckedChange = { 
-                            viewModel.updateSceneAndText(scene!!, sceneText.copy(showSource = it)) 
+                            viewModel.updateSceneAndText(currentScene, sceneText.copy(showSource = it)) 
                         }
                     )
                     Text("إظهار المصدر")
@@ -255,13 +257,13 @@ fun SceneEditorScreen(
             // Duration and Settings
             Text("إعدادات المشهد", style = MaterialTheme.typography.titleMedium)
             
-            var durationStr by remember { mutableStateOf((scene!!.durationMs / 1000).toString()) }
+            var durationStr by remember { mutableStateOf((currentScene.durationMs / 1000).toString()) }
             OutlinedTextField(
                 value = durationStr,
                 onValueChange = { 
                     durationStr = it.filter { char -> char.isDigit() }
                     durationStr.toLongOrNull()?.let { sec ->
-                         viewModel.updateSceneAndText(scene!!.copy(durationMs = sec * 1000), sceneText)
+                         viewModel.updateSceneAndText(currentScene.copy(durationMs = sec * 1000), sceneText)
                     }
                 },
                 label = { Text("المدة (بالثواني)") },
@@ -271,7 +273,7 @@ fun SceneEditorScreen(
             var expandedTransition by remember { mutableStateOf(false) }
             ExposedDropdownMenuBox(expanded = expandedTransition, onExpandedChange = { expandedTransition = !expandedTransition }) {
                 OutlinedTextField(
-                    value = scene!!.transition.name,
+                    value = currentScene.transition.name,
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("نوع الانتقال") },
@@ -281,7 +283,7 @@ fun SceneEditorScreen(
                 ExposedDropdownMenu(expanded = expandedTransition, onDismissRequest = { expandedTransition = false }) {
                     TransitionType.values().forEach { t ->
                         DropdownMenuItem(text = { Text(t.name) }, onClick = { 
-                            viewModel.updateSceneAndText(scene!!.copy(transition = t), sceneText)
+                            viewModel.updateSceneAndText(currentScene.copy(transition = t), sceneText)
                             expandedTransition = false 
                         })
                     }
@@ -291,7 +293,7 @@ fun SceneEditorScreen(
             var expandedBg by remember { mutableStateOf(false) }
             ExposedDropdownMenuBox(expanded = expandedBg, onExpandedChange = { expandedBg = !expandedBg }) {
                 OutlinedTextField(
-                    value = scene!!.backgroundType.name,
+                    value = currentScene.backgroundType.name,
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("نوع الخلفية") },
@@ -301,7 +303,7 @@ fun SceneEditorScreen(
                 ExposedDropdownMenu(expanded = expandedBg, onDismissRequest = { expandedBg = false }) {
                     BackgroundType.values().forEach { b ->
                         DropdownMenuItem(text = { Text(b.name) }, onClick = { 
-                            viewModel.updateSceneAndText(scene!!.copy(backgroundType = b), sceneText)
+                            viewModel.updateSceneAndText(currentScene.copy(backgroundType = b), sceneText)
                             expandedBg = false 
                         })
                     }

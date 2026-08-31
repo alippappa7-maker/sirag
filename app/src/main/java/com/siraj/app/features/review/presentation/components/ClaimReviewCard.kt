@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.siraj.app.domain.models.review.ShariaClaim
+import com.siraj.app.ui.theme.statusColors
 
 @Composable
 fun ClaimReviewCard(
@@ -62,7 +63,7 @@ fun ClaimReviewCard(
                 }
 
                 Surface(
-                    color = if (claim.isVerified) Color(0xFFE8F5E9) else Color(0xFFFFF3E0),
+                    color = if (claim.isVerified) MaterialTheme.statusColors.successBg else MaterialTheme.statusColors.warningBg,
                     shape = RoundedCornerShape(6.dp)
                 ) {
                     Row(
@@ -72,13 +73,13 @@ fun ClaimReviewCard(
                         Icon(
                             imageVector = if (claim.isVerified) Icons.Default.CheckCircle else Icons.Default.HelpOutline,
                             contentDescription = null,
-                            tint = if (claim.isVerified) Color(0xFF2E7D32) else Color(0xFFE65100),
+                            tint = if (claim.isVerified) MaterialTheme.statusColors.successFg else MaterialTheme.statusColors.warningFg,
                             modifier = Modifier.size(14.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = if (claim.isVerified) "تم التخريج والتوثيق" else "بحاجة لتخريج",
-                            color = if (claim.isVerified) Color(0xFF2E7D32) else Color(0xFFE65100),
+                            color = if (claim.isVerified) MaterialTheme.statusColors.successFg else MaterialTheme.statusColors.warningFg,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -167,7 +168,7 @@ fun ClaimReviewCard(
                             Icon(
                                 Icons.Default.Verified,
                                 contentDescription = null,
-                                tint = Color(0xFF2E7D32),
+                                tint = MaterialTheme.statusColors.successFg,
                                 modifier = Modifier.size(12.dp)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
@@ -175,7 +176,7 @@ fun ClaimReviewCard(
                                 text = "درجة الحديث / التوثيق: $grade",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF2E7D32)
+                                color = MaterialTheme.statusColors.successFg
                             )
                         }
                     }

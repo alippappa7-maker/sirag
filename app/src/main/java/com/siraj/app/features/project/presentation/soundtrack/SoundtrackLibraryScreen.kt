@@ -172,7 +172,7 @@ fun SoundtrackLibraryScreen(
 
             // Current Scene Active Track Card (if any attached)
             if (sceneId != null && currentSceneTrack != null) {
-                val track = currentSceneTrack!!
+                val track = currentSceneTrack ?: return
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -258,7 +258,7 @@ fun SoundtrackLibraryScreen(
 
     // Modal Sheet / Dialog for Audio Layer Configuration & Trimming
     if (selectedTrackForConfig != null) {
-        val track = selectedTrackForConfig!!
+        val track = selectedTrackForConfig ?: return
         AlertDialog(
             onDismissRequest = { viewModel.closeConfigureDialog() },
             title = {

@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.siraj.app.domain.models.taxonomy.*
 import com.siraj.app.domain.repository.taxonomy.ContentTaxonomyFilter
+import com.siraj.app.ui.theme.statusColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -140,15 +141,17 @@ fun ContentTaxonomyManagementScreen(
 
     // Dialogs
     if (showAuditDialog && uiState.auditReport != null) {
+        val report = uiState.auditReport
         TaxonomyAuditDialog(
-            report = uiState.auditReport!!,
+            report = report,
             onDismiss = { showAuditDialog = false }
         )
     }
 
     if (showMigrationDialog && uiState.migrationResult != null) {
+        val result = uiState.migrationResult
         TaxonomyMigrationDialog(
-            result = uiState.migrationResult!!,
+            result = result,
             onDismiss = { showMigrationDialog = false }
         )
     }
@@ -445,7 +448,7 @@ private fun TaxonomyMigrationDialog(
         onDismissRequest = onDismiss,
         title = {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Icon(Icons.Default.DoneAll, contentDescription = null, tint = Color(0xFF2E7D32))
+                Icon(Icons.Default.DoneAll, contentDescription = null, tint = MaterialTheme.statusColors.successFg)
                 Text("نتائج ترحيل البيانات القديمة", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
         },

@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.siraj.app.domain.models.beta.*
+import com.siraj.app.ui.theme.statusColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -245,12 +246,13 @@ fun DefectTriageScreen(
 
     // Dialog لتعديل وتصنيف الفرز (Triage Dialog)
     if (uiState.isTriageDialogOpen && uiState.selectedDefect != null) {
+        val defect = uiState.selectedDefect
         TriageActionDialog(
-            defect = uiState.selectedDefect!!,
+            defect = defect,
             onDismiss = { viewModel.closeTriageDialog() },
             onConfirm = { classification, priority, role, targetRelease ->
                 viewModel.applyTriage(
-                    defectId = uiState.selectedDefect!!.id,
+                    defectId = defect.id,
                     classification = classification,
                     priority = priority,
                     assignedRole = role,
@@ -262,12 +264,13 @@ fun DefectTriageScreen(
 
     // Dialog لتحديث دورة حياة الحالة (Status Transition Dialog)
     if (uiState.isStatusDialogOpen && uiState.selectedDefect != null) {
+        val defect = uiState.selectedDefect
         StatusTransitionDialog(
-            defect = uiState.selectedDefect!!,
+            defect = defect,
             onDismiss = { viewModel.closeStatusDialog() },
             onConfirm = { newStatus, resolutionNote, closureReason, verificationTest ->
                 viewModel.updateStatus(
-                    defectId = uiState.selectedDefect!!.id,
+                    defectId = defect.id,
                     newStatus = newStatus,
                     resolutionNote = resolutionNote,
                     closureReason = closureReason,
@@ -320,22 +323,22 @@ private fun TriageSummaryCard(summary: DefectTriageSummary) {
                 MetricChip(
                     title = "Blocker",
                     count = summary.blockerCount,
-                    containerColor = Color(0xFFFFEBEE),
-                    contentColor = Color(0xFFC62828),
+                    containerColor = MaterialTheme.statusColors.errorBg,
+                    contentColor = MaterialTheme.statusColors.errorFg,
                     modifier = Modifier.weight(1f)
                 )
                 MetricChip(
                     title = "Critical",
                     count = summary.criticalCount,
-                    containerColor = Color(0xFFFFF3E0),
-                    contentColor = Color(0xFFE65100),
+                    containerColor = MaterialTheme.statusColors.warningBg,
+                    contentColor = MaterialTheme.statusColors.warningFg,
                     modifier = Modifier.weight(1f)
                 )
                 MetricChip(
                     title = "Major",
                     count = summary.majorCount,
                     containerColor = Color(0xFFFFFDE7),
-                    contentColor = Color(0xFFF57F17),
+                    contentColor = MaterialTheme.statusColors.warningFg,
                     modifier = Modifier.weight(1f)
                 )
                 MetricChip(
@@ -364,14 +367,14 @@ private fun TriageSummaryCard(summary: DefectTriageSummary) {
                 MetricChip(
                     title = "مغلق / مبرر",
                     count = summary.closedCount,
-                    containerColor = Color(0xFFE8F5E9),
-                    contentColor = Color(0xFF2E7D32),
+                    containerColor = MaterialTheme.statusColors.successBg,
+                    contentColor = MaterialTheme.statusColors.successFg,
                     modifier = Modifier.weight(1f)
                 )
                 MetricChip(
                     title = "مؤجل",
                     count = summary.deferredCount,
-                    containerColor = Color(0xFFECEFF1),
+                    containerColor = MaterialTheme.statusColors.neutralBg,
                     contentColor = Color(0xFF37474F),
                     modifier = Modifier.weight(1f)
                 )
@@ -672,8 +675,8 @@ private fun DefectCardItem(
 private fun PriorityBadge(priority: DefectPriority) {
     val (bgColor, txtColor) = when (priority) {
         DefectPriority.P0_IMMEDIATE -> Color(0xFFFFCDD2) to Color(0xFFB71C1C)
-        DefectPriority.P1_HIGH -> Color(0xFFFFE0B2) to Color(0xFFE65100)
-        DefectPriority.P2_MEDIUM -> Color(0xFFFFF9C4) to Color(0xFFF57F17)
+        DefectPriority.P1_HIGH -> Color(0xFFFFE0B2) to MaterialTheme.statusColors.warningFg
+        DefectPriority.P2_MEDIUM -> Color(0xFFFFF9C4) to MaterialTheme.statusColors.warningFg
         DefectPriority.P3_LOW -> Color(0xFFE1F5FE) to Color(0xFF0277BD)
     }
     Surface(
@@ -714,10 +717,10 @@ private fun StatusBadge(status: DefectStatus) {
         DefectStatus.REPORTED -> Color(0xFFE0E0E0) to Color(0xFF424242)
         DefectStatus.TRIAGED -> Color(0xFFE1BEE7) to Color(0xFF4A148C)
         DefectStatus.IN_PROGRESS -> Color(0xFFBBDEFB) to Color(0xFF0D47A1)
-        DefectStatus.RESOLVED -> Color(0xFFC8E6C9) to Color(0xFF1B5E20)
-        DefectStatus.VERIFIED -> Color(0xFFA5D6A7) to Color(0xFF1B5E20)
+        DefectStatus.RESOLVED -> Color(0xFFC8E6C9) to MaterialTheme.statusColors.successFg
+        DefectStatus.VERIFIED -> Color(0xFFA5D6A7) to MaterialTheme.statusColors.successFg
         DefectStatus.DEFERRED -> Color(0xFFCFD8DC) to Color(0xFF37474F)
-        DefectStatus.CLOSED -> Color(0xFFEEEEEE) to Color(0xFF616161)
+        DefectStatus.CLOSED -> MaterialTheme.statusColors.neutralBg to Color(0xFF616161)
     }
     Surface(
         shape = RoundedCornerShape(8.dp),
@@ -799,13 +802,13 @@ private fun DefectDetailDialog(
                 if (defect.expectedResult.isNotBlank()) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(text = "النتيجة المتوقعة:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
-                    Text(text = defect.expectedResult, style = MaterialTheme.typography.bodySmall, color = Color(0xFF2E7D32))
+                    Text(text = defect.expectedResult, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.statusColors.successFg)
                 }
 
                 if (defect.actualResult.isNotBlank()) {
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(text = "النتيجة الفعلية:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
-                    Text(text = defect.actualResult, style = MaterialTheme.typography.bodySmall, color = Color(0xFFC62828))
+                    Text(text = defect.actualResult, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.statusColors.errorFg)
                 }
 
                 // سجلات آمنة
@@ -843,13 +846,13 @@ private fun DefectDetailDialog(
                 // تفاصيل الحل أو سبب الإغلاق إن وجدت
                 defect.resolutionNote?.let { note ->
                     Surface(
-                        color = Color(0xFFE8F5E9),
+                        color = MaterialTheme.statusColors.successBg,
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(modifier = Modifier.padding(8.dp)) {
-                            Text(text = "ملاحظة الحل الفني:", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium, color = Color(0xFF1B5E20))
-                            Text(text = note, style = MaterialTheme.typography.bodySmall, color = Color(0xFF2E7D32))
+                            Text(text = "ملاحظة الحل الفني:", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.statusColors.successFg)
+                            Text(text = note, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.statusColors.successFg)
                             defect.verificationTest?.let { test ->
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(text = "اختبار التحقق: $test", style = MaterialTheme.typography.labelSmall, color = Color(0xFF33691E))
@@ -860,7 +863,7 @@ private fun DefectDetailDialog(
 
                 defect.closureReason?.let { reason ->
                     Surface(
-                        color = Color(0xFFECEFF1),
+                        color = MaterialTheme.statusColors.neutralBg,
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -1101,13 +1104,13 @@ private fun StatusTransitionDialog(
 
 private fun getClassificationColor(classification: DefectClassification): Color {
     return when (classification) {
-        DefectClassification.BLOCKER -> Color(0xFFC62828)
+        DefectClassification.BLOCKER -> MaterialTheme.statusColors.errorFg
         DefectClassification.CRITICAL -> Color(0xFFD84315)
-        DefectClassification.MAJOR -> Color(0xFFF57F17)
+        DefectClassification.MAJOR -> MaterialTheme.statusColors.warningFg
         DefectClassification.MINOR -> Color(0xFF1565C0)
         DefectClassification.ENHANCEMENT -> Color(0xFF6A1B9A)
-        DefectClassification.DUPLICATE -> Color(0xFF546E7A)
+        DefectClassification.DUPLICATE -> MaterialTheme.statusColors.neutralFg
         DefectClassification.NOT_REPRODUCIBLE -> Color(0xFF78909C)
-        DefectClassification.EXPECTED_BEHAVIOR -> Color(0xFF2E7D32)
+        DefectClassification.EXPECTED_BEHAVIOR -> MaterialTheme.statusColors.successFg
     }
 }

@@ -23,6 +23,8 @@ import com.siraj.app.domain.models.support.*
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.siraj.app.ui.theme.statusColors
+import com.siraj.app.ui.theme.SirajGold
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -226,7 +228,7 @@ fun TicketDetailScreen(
                                             Icon(
                                                 imageVector = if (i <= ticket.rating.stars) Icons.Default.Star else Icons.Default.StarBorder,
                                                 contentDescription = null,
-                                                tint = Color(0xFFFFB300),
+                                                tint = SirajGold,
                                                 modifier = Modifier.size(24.dp)
                                             )
                                         }
@@ -247,7 +249,7 @@ fun TicketDetailScreen(
                                                 Icon(
                                                     imageVector = if (i <= uiState.ratingStars) Icons.Default.Star else Icons.Default.StarBorder,
                                                     contentDescription = "$i نجوم",
-                                                    tint = Color(0xFFFFB300),
+                                                    tint = SirajGold,
                                                     modifier = Modifier.size(32.dp)
                                                 )
                                             }

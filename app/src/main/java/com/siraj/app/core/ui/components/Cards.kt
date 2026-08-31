@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.siraj.app.domain.models.*
+import com.siraj.app.ui.theme.statusColors
 
 @Composable
 fun SirajProjectCard(project: ProjectPreview, modifier: Modifier = Modifier) {
@@ -144,10 +145,11 @@ fun SirajSourceCard(source: SourcePreview, modifier: Modifier = Modifier) {
 
 @Composable
 fun VerificationStatusBadge(status: VerificationStatus, modifier: Modifier = Modifier) {
+    val statusColors = MaterialTheme.statusColors
     val (backgroundColor, textColor) = when (status) {
-        VerificationStatus.VERIFIED -> Color(0xFFE8F5E9) to Color(0xFF2E7D32) // Success Green
-        VerificationStatus.PENDING -> Color(0xFFFFF8E1) to Color(0xFFF57F17) // Warning Yellow
-        VerificationStatus.REJECTED -> Color(0xFFFFEBEE) to Color(0xFFC62828) // Error Red
+        VerificationStatus.VERIFIED -> statusColors.successBg to statusColors.successFg
+        VerificationStatus.PENDING -> statusColors.warningBg to statusColors.warningFg
+        VerificationStatus.REJECTED -> statusColors.errorBg to statusColors.errorFg
     }
 
     Box(

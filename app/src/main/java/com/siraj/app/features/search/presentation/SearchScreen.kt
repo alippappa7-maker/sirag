@@ -222,7 +222,7 @@ fun SearchScreen(
                 // 2. Error State
                 uiState.errorMessage != null -> {
                     SearchErrorView(
-                        errorMessage = uiState.errorMessage!!,
+                        errorMessage = uiState.errorMessage ?: "",
                         onRetry = { viewModel.onSearchSubmitted() }
                     )
                 }

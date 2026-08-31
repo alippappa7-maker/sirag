@@ -31,6 +31,7 @@ import com.siraj.app.domain.models.ReviewState
 import com.siraj.app.features.project.domain.models.*
 import java.text.SimpleDateFormat
 import java.util.*
+import com.siraj.app.ui.theme.statusColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -475,7 +476,7 @@ private fun PreExportValidationBanner(
         colors = CardDefaults.cardColors(
             containerColor = when {
                 !report.isExportAllowed -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
-                report.hasWarnings -> Color(0xFFFEF3C7)
+                report.hasWarnings -> MaterialTheme.statusColors.warningBg
                 else -> Color(0xFFD1FAE5)
             }
         ),

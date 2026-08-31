@@ -45,6 +45,7 @@ fun AdminSecurityDashboardScreen(
             return@Scaffold
         }
 
+        val securityConfig = config
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -64,9 +65,9 @@ fun AdminSecurityDashboardScreen(
                             Text("ملف الأمان الخاص بك", style = MaterialTheme.typography.titleLarge)
                         }
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("الدور: ${config!!.role.name}")
-                        Text("حالة المصادقة الثنائية (MFA): ${if (config!!.isMfaEnabled) "مفعل" else "معطل"}")
-                        Text("إعادة التحقق للعمليات الحساسة: ${if (config!!.requireReAuthForSensitiveOps) "مطلوب" else "غير مطلوب"}")
+                        Text("الدور: ${securityConfig.role.name}")
+                        Text("حالة المصادقة الثنائية (MFA): ${if (securityConfig.isMfaEnabled) "مفعل" else "معطل"}")
+                        Text("إعادة التحقق للعمليات الحساسة: ${if (securityConfig.requireReAuthForSensitiveOps) "مطلوب" else "غير مطلوب"}")
                     }
                 }
             }
