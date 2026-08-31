@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Siraj splash screen logo: a glowing lantern (سراج) on transparent background.
+     Used by Theme.App.Starting via windowSplashScreenAnimatedIcon. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Glowing light rays -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M54,30 L54,24 M54,82 L54,88 M30,54 L24,54 M78,54 L84,54 M37.5,37.5 L33.26,33.26 M70.5,70.5 L74.74,74.74 M37.5,70.5 L33.26,74.74 M70.5,37.5 L74.74,33.26"
+        android:strokeWidth="3"
+        android:strokeColor="#FFD700"
+        android:strokeLineCap="round"/>
+
+    <!-- Lantern Top Hook -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M54,34 C50,34 48,37 48,40 L60,40 C60,37 58,34 54,34 Z"
+        android:strokeWidth="2.5"
+        android:strokeColor="#F5D061"/>
+
+    <!-- Lantern Dome -->
+    <path
+        android:fillColor="#F5D061"
+        android:pathData="M44,44 L64,44 L61,50 L47,50 Z"/>
+
+    <!-- Lantern Glass Body -->
+    <path
+        android:fillColor="#FFE89C"
+        android:pathData="M46,50 L62,50 L65,70 L43,70 Z"
+        android:strokeWidth="1.5"
+        android:strokeColor="#F5D061"/>
+
+    <!-- Flame / Light inside -->
+    <path
+        android:fillColor="#FF9800"
+        android:pathData="M54,54 C51,59 52,63 54,66 C56,63 57,59 54,54 Z"/>
+    <path
+        android:fillColor="#FFEE58"
+        android:pathData="M54,57 C52.5,60 53,62 54,64 C55,62 55.5,60 54,57 Z"/>
+
+    <!-- Lantern Base -->
+    <path
+        android:fillColor="#F5D061"
+        android:pathData="M42,70 L66,70 L63,76 L45,76 Z"/>
+
+    <!-- Crescent accent on top -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M54,28 C56.5,28 58.5,29.5 58.5,32 C56.5,31 54.5,31.5 53.5,33.5 C52,32 52.5,29 54,28 Z"/>
+</vector>
