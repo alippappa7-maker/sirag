@@ -217,6 +217,7 @@ class FirebasePrivacyRepositoryImpl(
             FileWriter(file).use { it.write(json) }
             Resource.Success(file)
         } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             Resource.Error("فشل حفظ ملف التصدير محلياً: ${e.message}")
         }
     }
@@ -243,6 +244,7 @@ class FirebasePrivacyRepositoryImpl(
             PrivacyManager.clearDirectory(downloadsDir)
             Resource.Success(Unit)
         } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             Resource.Error("فشل مسح التنزيلات: ${e.message}")
         }
     }
@@ -253,6 +255,7 @@ class FirebasePrivacyRepositoryImpl(
             PrivacyManager.clearDirectory(context.cacheDir)
             Resource.Success(initialSize)
         } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             Resource.Error("فشل تفريغ الذاكرة المؤقتة: ${e.message}")
         }
     }

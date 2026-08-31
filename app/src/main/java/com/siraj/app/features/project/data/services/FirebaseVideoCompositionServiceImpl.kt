@@ -181,9 +181,7 @@ class FirebaseVideoCompositionServiceImpl(
             )
 
             Result.success(manifest)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override fun executeComposition(

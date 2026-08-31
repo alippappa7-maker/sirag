@@ -130,9 +130,7 @@ class FirebaseSubtitleRepositoryImpl(
 
             docRef.set(data).await()
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun deleteSubtitle(projectId: String, sceneId: String, subtitleId: String): Result<Unit> {
@@ -140,9 +138,7 @@ class FirebaseSubtitleRepositoryImpl(
             firestore.collection("projects").document(projectId)
                 .collection("subtitles").document(subtitleId).delete().await()
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun generateSubtitlesFromScene(
@@ -201,9 +197,7 @@ class FirebaseSubtitleRepositoryImpl(
             }
 
             Result.success(generatedList)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun autoTranslateToEnglish(
@@ -244,9 +238,7 @@ class FirebaseSubtitleRepositoryImpl(
             }
 
             Result.success(translatedItems)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun updateSubtitleStyleForScene(
@@ -276,9 +268,7 @@ class FirebaseSubtitleRepositoryImpl(
             }
 
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override fun exportToSrt(subtitles: List<SubtitleItem>): String {

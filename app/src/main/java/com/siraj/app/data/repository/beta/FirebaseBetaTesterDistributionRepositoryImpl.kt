@@ -161,9 +161,7 @@ class FirebaseBetaTesterDistributionRepositoryImpl(
             ).await()
             CrashMonitoringManager.logBreadcrumb("Tester $testerId completed journey: $journeyId")
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun submitExperienceSurvey(survey: TesterExperienceSurvey): Result<String> {
@@ -216,9 +214,7 @@ class FirebaseBetaTesterDistributionRepositoryImpl(
             ).await()
             CrashMonitoringManager.logBreadcrumb("Tester Access Revoked for $testerId - Reason: $reason")
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override fun getReleaseNotes(): List<BetaReleaseNote> {

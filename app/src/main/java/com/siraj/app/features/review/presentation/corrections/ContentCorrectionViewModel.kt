@@ -159,8 +159,7 @@ class ContentCorrectionViewModel(
                     }
                     is Resource.Loading -> {}
                 }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, errorMessage = e.localizedMessage ?: "حدث خطأ غير متوقع") }
+            } catch (e: Exception) { GlobalErrorHandler.handle(e); _uiState.update { it.copy(isLoading = false, errorMessage = e.localizedMessage ?: "حدث خطأ غير متوقع") } }
             }
         }
     }

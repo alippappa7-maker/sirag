@@ -298,9 +298,7 @@ class FirebaseBetaDefectManagementRepositoryImpl(
             } else {
                 Result.failure(IllegalArgumentException("العيب غير موجود"))
             }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun updateDefectStatus(
@@ -350,9 +348,7 @@ class FirebaseBetaDefectManagementRepositoryImpl(
             } else {
                 Result.failure(IllegalArgumentException("العيب غير موجود"))
             }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override fun getPrioritizedFixList(): Flow<List<BetaDefectRecord>> {
@@ -421,9 +417,7 @@ class FirebaseBetaDefectManagementRepositoryImpl(
             GlobalErrorHandler.handle(e) }
 
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     private fun mapDefectToMap(defect: BetaDefectRecord): Map<String, Any?> {

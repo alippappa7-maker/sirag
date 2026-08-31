@@ -130,9 +130,7 @@ class FirebaseMonitoringRepositoryImpl(
             }
 
             Result.success(updated)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun runAllHealthProbes(): Result<List<ServiceHealthCheck>> {
@@ -143,9 +141,7 @@ class FirebaseMonitoringRepositoryImpl(
                 res.onSuccess { updatedList.add(it) }
             }
             Result.success(updatedList)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun toggleServiceCircuitBreaker(
@@ -183,9 +179,7 @@ class FirebaseMonitoringRepositoryImpl(
             }
 
             Result.success(true)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun createIncident(
@@ -234,9 +228,7 @@ class FirebaseMonitoringRepositoryImpl(
             _alertsFlow.value = listOf(alert) + _alertsFlow.value
 
             Result.success(incident)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun updateIncidentState(
@@ -281,9 +273,7 @@ class FirebaseMonitoringRepositoryImpl(
             }
 
             Result.success(updated)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun acknowledgeAlert(alertId: String): Result<Boolean> {
@@ -292,18 +282,14 @@ class FirebaseMonitoringRepositoryImpl(
                 if (it.alertId == alertId) it.copy(isAcknowledged = true) else it
             }
             Result.success(true)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun dismissAlert(alertId: String): Result<Boolean> {
         return try {
             _alertsFlow.value = _alertsFlow.value.filter { it.alertId != alertId }
             Result.success(true)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override fun sanitizePublicErrorMessage(service: MonitoredService, internalError: String?): String {

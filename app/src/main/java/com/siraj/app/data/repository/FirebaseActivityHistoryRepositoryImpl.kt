@@ -45,6 +45,7 @@ class FirebaseActivityHistoryRepositoryImpl(
                 null
             }
         } catch (e: Exception) {
+            GlobalErrorHandler.handle(e, tag)
             Log.w(tag, "Firestore not available: ${e.message}")
             null
         }

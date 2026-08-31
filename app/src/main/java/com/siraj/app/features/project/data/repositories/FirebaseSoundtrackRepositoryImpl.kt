@@ -279,9 +279,7 @@ class FirebaseSoundtrackRepositoryImpl(
             ).await()
 
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun removeTrackFromScene(
@@ -300,8 +298,6 @@ class FirebaseSoundtrackRepositoryImpl(
             ).await()
 
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 }

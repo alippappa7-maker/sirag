@@ -224,8 +224,7 @@ class ActivityHistoryViewModel(
                 repository.syncPending(userId)
                 loadHistory(reset = true)
                 _uiState.update { it.copy(isSyncing = false, message = "تمت المزامنة بنجاح") }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isSyncing = false, error = "تعذرت المزامنة: ${e.message}") }
+            } catch (e: Exception) { GlobalErrorHandler.handle(e); _uiState.update { it.copy(isSyncing = false, error = "تعذرت المزامنة: ${e.message} }") }
             }
         }
     }

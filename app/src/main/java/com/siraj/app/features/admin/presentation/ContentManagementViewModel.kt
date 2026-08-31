@@ -42,8 +42,7 @@ class ContentManagementViewModel(
                     .collectLatest { items ->
                         _state.update { it.copy(isLoading = false, items = items) }
                     }
-            } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, error = e.message) }
+            } catch (e: Exception) { GlobalErrorHandler.handle(e); _state.update { it.copy(isLoading = false, error = e.message) } }
             }
         }
     }
@@ -98,8 +97,7 @@ class ContentManagementViewModel(
             try {
                 val url = repository.exportAdminReport()
                 _state.update { it.copy(isLoading = false, reportUrl = url) }
-            } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, error = e.message) }
+            } catch (e: Exception) { GlobalErrorHandler.handle(e); _state.update { it.copy(isLoading = false, error = e.message) } }
             }
         }
     }

@@ -100,8 +100,7 @@ class ProjectPreviewViewModel(
                     runPreExportValidation(sceneList, subs)
                 }
 
-            } catch (e: Exception) {
-                _userMessage.value = "خطأ في تحميل المشروع: ${e.message}"
+            } catch (e: Exception) { GlobalErrorHandler.handle(e); _userMessage.value = "خطأ في تحميل المشروع: ${e.message} }"
             } finally {
                 _isLoading.value = false
             }

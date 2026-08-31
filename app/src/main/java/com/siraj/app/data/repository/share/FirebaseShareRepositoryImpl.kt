@@ -98,8 +98,6 @@ class FirebaseShareRepositoryImpl : ShareRepository {
         try {
             val link = shareLinks[linkId] ?: return
             shareLinks[linkId] = link.copy(accessCount = link.accessCount + 1)
-        } catch (e: Exception) {
-            // Ignore logging errors
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e) }
     }
 }

@@ -106,9 +106,7 @@ class SupportViewModel(
             try {
                 val diagnostics = repository.generateSafeDiagnostics()
                 _uiState.value = _uiState.value.copy(safeLogsPreview = diagnostics)
-            } catch (e: Exception) {
-                // Ignore
-            }
+            } catch (e: Exception) { GlobalErrorHandler.handle(e) }
         }
     }
 

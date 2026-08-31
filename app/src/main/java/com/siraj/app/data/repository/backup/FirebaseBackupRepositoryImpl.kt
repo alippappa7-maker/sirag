@@ -102,9 +102,7 @@ class FirebaseBackupRepositoryImpl(
             }
 
             Result.success(newSnapshot)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun executeDryRunRestore(
@@ -150,9 +148,7 @@ class FirebaseBackupRepositoryImpl(
             )
 
             Result.success(restoreJob)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun restoreProjectFromSnapshot(
@@ -190,9 +186,7 @@ class FirebaseBackupRepositoryImpl(
 
             _restoreJobsFlow.value = listOf(restoreJob) + _restoreJobsFlow.value
             Result.success(restoreJob)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun getDeletedUsersTombstoneCount(): Int {

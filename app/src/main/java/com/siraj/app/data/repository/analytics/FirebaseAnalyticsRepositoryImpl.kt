@@ -68,9 +68,7 @@ class FirebaseAnalyticsRepositoryImpl(
             for (document in snapshot.documents) {
                 document.reference.delete().await()
             }
-        } catch (e: Exception) {
-            // Ignore
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e) }
     }
 
     override fun getAggregatedEvents(): Flow<List<AnalyticsLog>> = callbackFlow {

@@ -41,9 +41,7 @@ class NotificationViewModel(
     init {
         try {
             NotificationHelper.createNotificationChannels(application)
-        } catch (e: Exception) {
-            // Ignore channel creation in unit tests
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e) }
         observeNotifications()
         observePreferences()
     }

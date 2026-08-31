@@ -94,6 +94,7 @@ class QuranRepositoryImpl(
             }
             Resource.Success(ayahs)
         } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             // When offline or API fails, do NOT generate fake verses. Return error.
             Resource.Error(e.message ?: "Failed to load Ayahs from source")
         }

@@ -119,9 +119,7 @@ class FirebaseProductionJobRepositoryImpl(
             ).await()
 
             Result.success(newJob)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
 
@@ -195,9 +193,7 @@ class FirebaseProductionJobRepositoryImpl(
             ).await()
 
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun retryJob(jobId: String): Result<ProductionJob> {
@@ -230,9 +226,7 @@ class FirebaseProductionJobRepositoryImpl(
 
             firestore.collection("production_jobs").document(jobId).set(updatedJob).await()
             Result.success(updatedJob)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun deleteExportedFile(jobId: String): Result<Unit> {
@@ -253,8 +247,6 @@ class FirebaseProductionJobRepositoryImpl(
             ).await()
 
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 }

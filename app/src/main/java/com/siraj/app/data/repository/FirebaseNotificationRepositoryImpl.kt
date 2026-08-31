@@ -74,9 +74,7 @@ class FirebaseNotificationRepositoryImpl(
                 Log.w("NotificationRepo", "Firestore update offline or failed", e)
             }
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun markAllAsRead(userId: String): Result<Unit> {
@@ -101,9 +99,7 @@ class FirebaseNotificationRepositoryImpl(
                 Log.w("NotificationRepo", "Firestore markAllAsRead batch failed or offline", e)
             }
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun deleteNotification(userId: String, notificationId: String): Result<Unit> {
@@ -120,9 +116,7 @@ class FirebaseNotificationRepositoryImpl(
                 Log.w("NotificationRepo", "Firestore delete failed or offline", e)
             }
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun clearAllNotifications(userId: String): Result<Unit> {
@@ -144,9 +138,7 @@ class FirebaseNotificationRepositoryImpl(
                 Log.w("NotificationRepo", "Firestore clearAll batch failed or offline", e)
             }
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun saveNotification(notification: SirajNotification): Result<Unit> {
@@ -183,9 +175,7 @@ class FirebaseNotificationRepositoryImpl(
                 Log.w("NotificationRepo", "Firestore saveNotification offline", e)
             }
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override fun getPreferencesFlow(userId: String): Flow<NotificationPreferences> {
@@ -231,9 +221,7 @@ class FirebaseNotificationRepositoryImpl(
                 Log.w("NotificationRepo", "Firestore updatePreferences offline", e)
             }
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun registerDeviceToken(userId: String, tokenInfo: DeviceTokenInfo): Result<Unit> {
@@ -272,9 +260,7 @@ class FirebaseNotificationRepositoryImpl(
                 .await()
 
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun cleanStaleTokensAndExpired(userId: String): Result<Unit> {
@@ -297,9 +283,7 @@ class FirebaseNotificationRepositoryImpl(
             }
             batch.commit().await()
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     private fun startFirestoreSync(userId: String) {

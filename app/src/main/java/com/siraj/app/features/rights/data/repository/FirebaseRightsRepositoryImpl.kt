@@ -19,9 +19,7 @@ class FirebaseRightsRepositoryImpl(
         return try {
             firestore.collection("assets").document(assetId).update(updates).await()
             Resource.Success(Unit)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Failed to update asset rights")
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Resource.Error(e.message ?: "Failed to update asset rights") }
     }
 
     override suspend fun logRightsDecision(
@@ -43,9 +41,7 @@ class FirebaseRightsRepositoryImpl(
             )
             firestore.collection("rights_decisions").document(logData["id"] as String).set(logData).await()
             Resource.Success(Unit)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Failed to log rights decision")
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Resource.Error(e.message ?: "Failed to log rights decision") }
     }
 
     override fun getAssetsWithPendingRights(workspaceId: String): Flow<Resource<List<Asset>>> = flow<Resource<List<Asset>>> {
@@ -85,8 +81,6 @@ class FirebaseRightsRepositoryImpl(
             } else {
                 Resource.Success(true)
             }
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Failed to verify rights")
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Resource.Error(e.message ?: "Failed to verify rights") }
     }
 }

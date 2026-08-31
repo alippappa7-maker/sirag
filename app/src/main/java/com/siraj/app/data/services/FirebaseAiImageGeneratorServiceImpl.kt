@@ -86,6 +86,7 @@ class FirebaseAiImageGeneratorServiceImpl(
                 emit(Resource.Success(items))
             }
         } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             // In case Firebase Function is not yet deployed, fallback to Mock service
             val fallback = MockAiImageGeneratorServiceImpl(projectRepository, assetRepository)
             emitAll(fallback.generateImage(request))

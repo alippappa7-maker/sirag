@@ -154,9 +154,7 @@ class FirebaseAudioRepositoryImpl(
                 .collection("assets").document(asset.id).set(asset).await()
 
             Result.success(audioItem)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun uploadUserAudio(
@@ -248,9 +246,7 @@ class FirebaseAudioRepositoryImpl(
                 .collection("assets").document(asset.id).set(asset).await()
 
             Result.success(audioItem)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun trimAudio(
@@ -290,9 +286,7 @@ class FirebaseAudioRepositoryImpl(
             }
 
             Result.success(updated)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun attachAudioToScene(
@@ -334,9 +328,7 @@ class FirebaseAudioRepositoryImpl(
                 .update("sceneId", sceneId).await()
 
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 
     override suspend fun getProjectAudios(projectId: String): Flow<List<AudioItem>> = callbackFlow {
@@ -369,8 +361,6 @@ class FirebaseAudioRepositoryImpl(
                 doc.reference.delete().await()
             }
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Result.failure(e) }
     }
 }

@@ -49,17 +49,13 @@ class FirebaseIdeaGeneratorServiceImpl(
             }
 
             Resource.Success(ideas)
-        } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "فشل الاتصال بخادم الذكاء الاصطناعي. تأكد من اتصالك بالإنترنت.")
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Resource.Error(e.localizedMessage ?: "فشل الاتصال بخادم الذكاء الاصطناعي. تأكد من اتصالك بالإنترنت.") }
     }
 
     override suspend fun reportIdea(ideaId: String, reason: String): Resource<Unit> {
         return try {
             functions.getHttpsCallable("reportIdea").call(mapOf("ideaId" to ideaId, "reason" to reason)).await()
             Resource.Success(Unit)
-        } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "Failed to report idea")
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Resource.Error(e.localizedMessage ?: "Failed to report idea") }
     }
 }

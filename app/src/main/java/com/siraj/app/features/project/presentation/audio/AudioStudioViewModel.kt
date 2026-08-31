@@ -239,8 +239,7 @@ class AudioStudioViewModel(
                     true
                 }
             }
-        } catch (e: Exception) {
-            _userMessage.value = "تعذر تشغيل الصوت: ${e.message}"
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); _userMessage.value = "تعذر تشغيل الصوت: ${e.message} }"
         }
     }
 
