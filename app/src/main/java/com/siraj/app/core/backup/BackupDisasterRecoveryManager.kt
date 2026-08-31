@@ -3,6 +3,7 @@ package com.siraj.app.core.backup
 import com.siraj.app.domain.models.backup.BackupEnvironment
 import com.siraj.app.domain.models.backup.BackupSnapshot
 import java.security.MessageDigest
+import com.siraj.app.core.error.GlobalErrorHandler
 
 object BackupDisasterRecoveryManager {
 
@@ -17,7 +18,8 @@ object BackupDisasterRecoveryManager {
             val digest = MessageDigest.getInstance("SHA-256")
             val hashBytes = digest.digest(data.toByteArray(Charsets.UTF_8))
             hashBytes.joinToString("") { "%02x".format(it) }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             "sha256_fallback_checksum"
         }
     }

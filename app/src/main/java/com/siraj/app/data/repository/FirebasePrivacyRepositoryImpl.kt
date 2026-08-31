@@ -19,6 +19,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileWriter
 import java.util.UUID
+import com.siraj.app.core.error.GlobalErrorHandler
 
 class FirebasePrivacyRepositoryImpl(
     private val context: Context,
@@ -43,7 +44,8 @@ class FirebasePrivacyRepositoryImpl(
                         userId = userId,
                         status = try {
                             DeletionStatus.valueOf(deletionDoc.getString("status") ?: "NONE")
-                        } catch (_: Exception) { DeletionStatus.NONE },
+                        } catch (e: Exception) {
+            GlobalErrorHandler.handle(e) DeletionStatus.NONE },
                         requestedAt = deletionDoc.getLong("requestedAt") ?: 0L,
                         scheduledPurgeAt = deletionDoc.getLong("scheduledPurgeAt") ?: 0L,
                         gracePeriodDays = deletionDoc.getLong("gracePeriodDays")?.toInt() ?: 14,
@@ -98,7 +100,8 @@ class FirebasePrivacyRepositoryImpl(
                     userId = userId,
                     status = try {
                         DeletionStatus.valueOf(deletionDoc.getString("status") ?: "NONE")
-                    } catch (_: Exception) { DeletionStatus.NONE },
+                    } catch (e: Exception) {
+            GlobalErrorHandler.handle(e) DeletionStatus.NONE },
                     requestedAt = deletionDoc.getLong("requestedAt") ?: 0L,
                     scheduledPurgeAt = deletionDoc.getLong("scheduledPurgeAt") ?: 0L,
                     gracePeriodDays = deletionDoc.getLong("gracePeriodDays")?.toInt() ?: 14,
@@ -129,7 +132,8 @@ class FirebasePrivacyRepositoryImpl(
                 categories = categories,
                 deletionRequest = deletionReq
             )
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             calculateLocalPrivacyOverview(userId, null)
         }
     }

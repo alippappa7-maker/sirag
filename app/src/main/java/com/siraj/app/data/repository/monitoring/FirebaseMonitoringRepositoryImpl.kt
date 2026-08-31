@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
+import com.siraj.app.core.error.GlobalErrorHandler
 
 class FirebaseMonitoringRepositoryImpl(
     private val firestore: FirebaseFirestore? = try { FirebaseFirestore.getInstance() } catch (_: Throwable) { null }
@@ -123,7 +124,8 @@ class FirebaseMonitoringRepositoryImpl(
                     )
                     firestore.collection("system_health_probes").document(service.name).set(probeDoc).await()
                 }
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
                 // Non-blocking in offline / demo mode
             }
 

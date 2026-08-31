@@ -19,6 +19,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import com.siraj.app.core.error.GlobalErrorHandler
 
 class FirebaseAudioRepositoryImpl(
     private val functions: FirebaseFunctions = FirebaseFunctions.getInstance("europe-west2"),
@@ -362,7 +363,8 @@ class FirebaseAudioRepositoryImpl(
                 if (audio != null && audio.storagePath.isNotBlank()) {
                     try {
                         storage.reference.child(audio.storagePath).delete().await()
-                    } catch (_: Exception) {}
+                    } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)}
                 }
                 doc.reference.delete().await()
             }

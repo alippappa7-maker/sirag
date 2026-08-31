@@ -7,6 +7,7 @@ import com.siraj.app.domain.monitoring.BreadcrumbType
 import com.siraj.app.domain.monitoring.CrashMonitoringService
 import com.siraj.app.domain.monitoring.ErrorCategory
 import com.siraj.app.domain.monitoring.ErrorSeverity
+import com.siraj.app.core.error.GlobalErrorHandler
 
 /**
  * Concrete implementation of CrashMonitoringService using Firebase Crashlytics on Android.
@@ -40,7 +41,7 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
                 Log.d(tag, "Crashlytics instance not available at initialization.")
             }
         } catch (e: Exception) {
-            Log.w(tag, "Failed to initialize Crashlytics custom keys: ${e.message}")
+            GlobalErrorHandler.handle(e, tag)
         }
     }
 
@@ -50,7 +51,7 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
             getCrashlyticsInstance()?.setCrashlyticsCollectionEnabled(enabled)
             Log.i(tag, "Crashlytics collection enabled set to: $enabled")
         } catch (e: Exception) {
-            Log.w(tag, "Failed to toggle Crashlytics collection: ${e.message}")
+            GlobalErrorHandler.handle(e, tag)
         }
     }
 
@@ -95,7 +96,7 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
                 Log.d(tag, "Recorded non-fatal exception to Crashlytics: [Category=${category.key}] ${throwable.message}")
             }
         } catch (e: Exception) {
-            Log.w(tag, "Failed to record exception to Crashlytics: ${e.message}")
+            GlobalErrorHandler.handle(e, tag)
         }
     }
 
@@ -111,7 +112,7 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
             getCrashlyticsInstance()?.log(formatted)
             Log.d(tag, "Breadcrumb: $formatted")
         } catch (e: Exception) {
-            Log.w(tag, "Failed to log breadcrumb: ${e.message}")
+            GlobalErrorHandler.handle(e, tag)
         }
     }
 
@@ -120,7 +121,7 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
         try {
             getCrashlyticsInstance()?.setCustomKey(key, CrashlyticsSanitizer.sanitizeMessage(value))
         } catch (e: Exception) {
-            Log.w(tag, "Failed to set custom string key: ${e.message}")
+            GlobalErrorHandler.handle(e, tag)
         }
     }
 
@@ -129,7 +130,7 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
         try {
             getCrashlyticsInstance()?.setCustomKey(key, value)
         } catch (e: Exception) {
-            Log.w(tag, "Failed to set custom boolean key: ${e.message}")
+            GlobalErrorHandler.handle(e, tag)
         }
     }
 
@@ -138,7 +139,7 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
         try {
             getCrashlyticsInstance()?.setCustomKey(key, value)
         } catch (e: Exception) {
-            Log.w(tag, "Failed to set custom int key: ${e.message}")
+            GlobalErrorHandler.handle(e, tag)
         }
     }
 
@@ -147,7 +148,7 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
         try {
             getCrashlyticsInstance()?.setCustomKey(key, value)
         } catch (e: Exception) {
-            Log.w(tag, "Failed to set custom long key: ${e.message}")
+            GlobalErrorHandler.handle(e, tag)
         }
     }
 
@@ -156,7 +157,7 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
         try {
             getCrashlyticsInstance()?.setCustomKey(key, value)
         } catch (e: Exception) {
-            Log.w(tag, "Failed to set custom double key: ${e.message}")
+            GlobalErrorHandler.handle(e, tag)
         }
     }
 
@@ -168,7 +169,7 @@ class FirebaseCrashMonitoringServiceImpl : CrashMonitoringService {
                 getCrashlyticsInstance()?.setUserId(anonymized)
             }
         } catch (e: Exception) {
-            Log.w(tag, "Failed to set anonymized userId: ${e.message}")
+            GlobalErrorHandler.handle(e, tag)
         }
     }
 

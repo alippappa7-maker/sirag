@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import com.siraj.app.core.error.GlobalErrorHandler
 
 class SirajFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -46,7 +47,8 @@ class SirajFirebaseMessagingService : FirebaseMessagingService() {
         val typeStr = data["type"] ?: NotificationType.SYSTEM_MESSAGE.name
         val type = try {
             NotificationType.valueOf(typeStr)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             NotificationType.SYSTEM_MESSAGE
         }
 

@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import com.siraj.app.core.error.GlobalErrorHandler
 
 class FirebaseNotificationRepositoryImpl(
     private val context: Context,
@@ -31,9 +32,7 @@ class FirebaseNotificationRepositoryImpl(
         coroutineScope.launch {
             try {
                 dao.deleteExpiredNotifications()
-            } catch (e: Exception) {
-                Log.e("NotificationRepo", "Error cleaning expired notifications", e)
-            }
+            } catch (e: Exception) { GlobalErrorHandler.handle(e) }
         }
     }
 
@@ -356,9 +355,7 @@ class FirebaseNotificationRepositoryImpl(
                         }
                     }
                 }
-        } catch (e: Exception) {
-            Log.e("NotificationRepo", "Failed to start Firestore listener", e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e) }
     }
 
     private fun getInitialNotifications(userId: String): List<SirajNotification> {
@@ -414,9 +411,7 @@ class FirebaseNotificationRepositoryImpl(
         coroutineScope.launch {
             try {
                 dao.insertNotifications(sampleList.map { NotificationEntity.fromDomain(it) })
-            } catch (e: Exception) {
-                Log.e("NotificationRepo", "Seeding initial notifications error", e)
-            }
+            } catch (e: Exception) { GlobalErrorHandler.handle(e) }
         }
         return sampleList
     }

@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.UUID
+import com.siraj.app.core.error.GlobalErrorHandler
 
 class FirebaseActivityHistoryRepositoryImpl(
     private val context: Context
@@ -53,7 +54,8 @@ class FirebaseActivityHistoryRepositoryImpl(
         try {
             Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
                 ?: UUID.randomUUID().toString()
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             UUID.randomUUID().toString()
         }
     }
@@ -197,7 +199,7 @@ class FirebaseActivityHistoryRepositoryImpl(
                 ?.delete()
                 ?.await()
         } catch (e: Exception) {
-            Log.w(tag, "Failed to delete item from cloud: ${e.message}")
+            GlobalErrorHandler.handle(e, tag)
         }
     }
 
@@ -216,7 +218,7 @@ class FirebaseActivityHistoryRepositoryImpl(
                 doc.reference.delete()
             }
         } catch (e: Exception) {
-            Log.w(tag, "Failed to clear cloud history: ${e.message}")
+            GlobalErrorHandler.handle(e, tag)
         }
     }
 
@@ -265,7 +267,7 @@ class FirebaseActivityHistoryRepositoryImpl(
                     SetOptions.merge()
                 )?.await()
         } catch (e: Exception) {
-            Log.w(tag, "Failed to save cloud preferences: ${e.message}")
+            GlobalErrorHandler.handle(e, tag)
         }
 
         // Apply retention pruning immediately
@@ -312,7 +314,7 @@ class FirebaseActivityHistoryRepositoryImpl(
                 ?.delete()
                 ?.await()
         } catch (e: Exception) {
-            Log.w(tag, "Failed to purge user cloud history settings: ${e.message}")
+            GlobalErrorHandler.handle(e, tag)
         }
     }
 
@@ -348,7 +350,7 @@ class FirebaseActivityHistoryRepositoryImpl(
             // Update local item status to SYNCED
             dao.insertOrUpdate(ActivityHistoryEntity.fromDomain(item.copy(syncStatus = SyncStatus.SYNCED)))
         } catch (e: Exception) {
-            Log.w(tag, "Sync to cloud failed for ${item.id}: ${e.message}")
+            GlobalErrorHandler.handle(e, tag)
         }
     }
 
@@ -402,7 +404,7 @@ class FirebaseActivityHistoryRepositoryImpl(
                 dao.insertAll(cloudEntities)
             }
         } catch (e: Exception) {
-            Log.w(tag, "Fetch cloud updates failed: ${e.message}")
+            GlobalErrorHandler.handle(e, tag)
         }
     }
 }

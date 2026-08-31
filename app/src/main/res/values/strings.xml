@@ -1,8 +1,11 @@
 <resources>
+    <!-- App -->
     <string name="app_name">سراج</string>
     <string name="language">اللغة</string>
     <string name="language_arabic">العربية</string>
     <string name="language_english">الإنجليزية</string>
+
+    <!-- Common Actions -->
     <string name="settings">الإعدادات</string>
     <string name="cancel">إلغاء</string>
     <string name="back">رجوع</string>
@@ -25,5 +28,119 @@
     <string name="play">تشغيل</string>
     <string name="logout">تسجيل الخروج</string>
     <string name="undo">تراجع</string>
+    <string name="redo">إعادة</string>
     <string name="general">عام</string>
+    <string name="confirm">تأكيد</string>
+    <string name="apply">تطبيق</string>
+    <string name="done">تم</string>
+    <string name="loading">جاري التحميل…</string>
+    <string name="error">خطأ</string>
+    <string name="success">نجاح</string>
+    <string name="warning">تحذير</string>
+    <string name="update">تحديث</string>
+    <string name="add">إضافة</string>
+    <string name="remove">إزالة</string>
+    <string name="next">التالي</string>
+    <string name="previous">السابق</string>
+    <string name="finish">إنهاء</string>
+    <string name="select">اختيار</string>
+    <string name="upload">رفع</string>
+    <string name="download">تنزيل</string>
+    <string name="preview">معاينة</string>
+    <string name="export">تصدير</string>
+    <string name="import_">استيراد</string>
+    <string name="filter">تصفية</string>
+    <string name="sort">ترتيب</string>
+    <string name="refresh">تحديث</string>
+
+    <!-- Status -->
+    <string name="status_pending">قيد المراجعة</string>
+    <string name="status_approved">معتمد</string>
+    <string name="status_published">منشور</string>
+    <string name="status_draft">مسودة</string>
+    <string name="status_archived">مؤرشف</string>
+    <string name="status_in_review">قيد المراجعة</string>
+    <string name="status_active">نشط</string>
+    <string name="status_suspended">موقوف</string>
+    <string name="status_operational">تعمل</string>
+    <string name="status_maintenance">صيانة</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_mihrab">المحراب</string>
+    <string name="nav_studio">الاستوديو</string>
+    <string name="nav_flashes">ومضات</string>
+    <string name="nav_search">البحث</string>
+    <string name="nav_notifications">الإشعارات</string>
+    <string name="nav_profile">الملف الشخصي</string>
+    <string name="nav_settings">الإعدادات</string>
+
+    <!-- Mihrab -->
+    <string name="mihrab_prayer_times">أوقات الصلاة</string>
+    <string name="mihrab_qibla">القبلة</string>
+    <string name="mihrab_adhkar">الأذكار</string>
+    <string name="mihrab_quran">القرآن الكريم</string>
+    <string name="mihrab_calendar">التقويم الهجري</string>
+    <string name="next_prayer">الصلاة القادمة</string>
+    <string name="prayer_fajr">الفجر</string>
+    <string name="prayer_dhuhr">الظهر</string>
+    <string name="prayer_asr">العصر</string>
+    <string name="prayer_maghrib">المغرب</string>
+    <string name="prayer_isha">العشاء</string>
+
+    <!-- Studio -->
+    <string name="studio_project">المشروع</string>
+    <string name="studio_scenes">المشاهد</string>
+    <string name="studio_audio">الصوت</string>
+    <string name="studio_subtitles">الترجمة</string>
+    <string name="studio_export">تصدير المشروع</string>
+    <string name="scene_title">عنوان المشهد</string>
+    <string name="narration_text">نص التعليق الصوتي</string>
+    <string name="caption_text">النص الظاهر على الشاشة</string>
+
+    <!-- Review -->
+    <string name="sharia_review">المراجعة الشرعية</string>
+    <string name="review_governance">حوكمة المراجعين</string>
+    <string name="content_corrections">تصحيحات المحتوى</string>
+    <string name="reviewer_qualifications">مؤهلات المراجع</string>
+
+    <!-- Admin -->
+    <string name="admin_dashboard">لوحة الإدارة</string>
+    <string name="admin_monitoring">المراقبة</string>
+    <string name="admin_backup">النسخ الاحتياطي</string>
+    <string name="admin_incidents">الاستجابة للحوادث</string>
+    <string name="admin_security">الأمان</string>
+
+    <!-- Errors -->
+    <string name="error_network">فشل الاتصال بالشبكة</string>
+    <string name="error_auth">خطأ في المصادقة</string>
+    <string name="error_database">خطأ في قاعدة البيانات</string>
+    <string name="error_storage">خطأ في تخزين الملفات</string>
+    <string name="error_unknown">خطأ غير معروف</string>
+    <string name="error_not_found">غير موجود</string>
+    <string name="error_permission_denied">تم رفض الإذن</string>
+    <string name="error_timeout">انتهت مهلة الاتصال</string>
+
+    <!-- Settings -->
+    <string name="settings_account">الحساب</string>
+    <string name="settings_privacy">الخصوصية</string>
+    <string name="settings_accessibility">الوصول الشامل</string>
+    <string name="settings_notifications">الإشعارات</string>
+    <string name="settings_subscription">الاشتراك</string>
+    <string name="settings_about">عن التطبيق</string>
+    <string name="settings_language">اللغة</string>
+    <string name="settings_appearance">المظهر</string>
+    <string name="settings_dark_mode">الوضع الداكن</string>
+    <string name="settings_high_contrast">تباين فائق</string>
+    <string name="settings_font_size">حجم الخط</string>
+
+    <!-- Support -->
+    <string name="support_tickets">التذاكر</string>
+    <string name="support_status">حالة الخدمة</string>
+    <string name="support_contact">تواصل معنا</string>
+
+    <!-- Beta -->
+    <string name="beta_program">برنامج بيتا</string>
+    <string name="beta_feedback">ملاحظات</string>
+    <string name="beta_report_bug">الإبلاغ عن خطأ</string>
 </resources>

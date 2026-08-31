@@ -10,6 +10,7 @@ import com.siraj.app.features.project.domain.repositories.SubtitleRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import com.siraj.app.core.error.GlobalErrorHandler
 
 class SubtitleEditorViewModel(
     private val projectId: String,
@@ -73,7 +74,8 @@ class SubtitleEditorViewModel(
                     _sceneNarration.value = text
                     _sceneDurationMs.value = dur
                 }
-            } catch (_: Exception) {}
+            } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)}
         }
     }
 

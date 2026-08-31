@@ -10,6 +10,7 @@ import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.siraj.app.core.error.GlobalErrorHandler
 
 object PrivacyManager {
 
@@ -76,7 +77,8 @@ object PrivacyManager {
             val digest = MessageDigest.getInstance("SHA-256")
             val hashBytes = digest.digest(content.toByteArray(Charsets.UTF_8))
             hashBytes.joinToString("") { "%02x".format(it) }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             "checksum_error"
         }
     }

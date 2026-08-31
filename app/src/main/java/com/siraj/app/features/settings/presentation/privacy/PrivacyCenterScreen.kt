@@ -34,6 +34,7 @@ import com.siraj.app.domain.models.privacy.AccountDeletionRequest
 import com.siraj.app.domain.models.privacy.DeletionStatus
 import com.siraj.app.domain.models.privacy.StoredDataCategory
 import java.io.File
+import com.siraj.app.core.error.GlobalErrorHandler
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -1063,7 +1064,8 @@ private fun shareExportedFile(context: Context, file: File) {
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         context.startActivity(Intent.createChooser(intent, "مشاركة ملف تصدير بيانات سراج"))
-    } catch (_: Exception) {
+    } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
         // Fallback: simple text share if FileProvider is not configured
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"

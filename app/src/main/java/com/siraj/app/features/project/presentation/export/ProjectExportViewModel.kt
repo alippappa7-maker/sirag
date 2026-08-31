@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
+import com.siraj.app.core.error.GlobalErrorHandler
 
 class ProjectExportViewModel(
     val projectId: String,
@@ -127,7 +128,8 @@ class ProjectExportViewModel(
 
                 // Run Validation
                 runPreExportValidation(sceneList, subList)
-            } catch (_: Exception) {}
+            } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)}
         }
     }
 

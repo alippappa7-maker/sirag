@@ -15,6 +15,7 @@ import com.siraj.app.domain.models.history.UserActivityItem
 import com.siraj.app.domain.repository.history.ActivityHistoryRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import com.siraj.app.core.error.GlobalErrorHandler
 
 data class ActivityHistoryUiState(
     val selectedTab: ActivityTab = ActivityTab.ALL,
@@ -233,7 +234,8 @@ class ActivityHistoryViewModel(
         viewModelScope.launch {
             try {
                 repository.applyRetentionPolicy(userId)
-            } catch (_: Exception) {}
+            } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)}
         }
     }
 

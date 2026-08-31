@@ -13,6 +13,7 @@ import com.siraj.app.features.project.domain.models.SoundtrackItem
 import com.siraj.app.features.project.domain.repositories.SoundtrackRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import com.siraj.app.core.error.GlobalErrorHandler
 
 class SoundtrackLibraryViewModel(
     private val projectId: String,
@@ -114,7 +115,8 @@ class SoundtrackLibraryViewModel(
                                 licenseDisplayName = map["licenseDisplayName"] as? String ?: ""
                             )
                             _currentSceneTrackConfig.value = cfg
-                        } catch (_: Exception) {
+                        } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
                             _currentSceneTrackConfig.value = null
                         }
                     } else {

@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
+import com.siraj.app.core.error.GlobalErrorHandler
 
 class FirebaseBackupRepositoryImpl(
     private val firestore: FirebaseFirestore? = try { FirebaseFirestore.getInstance() } catch (_: Throwable) { null }
@@ -95,7 +96,8 @@ class FirebaseBackupRepositoryImpl(
                     )
                     firestore.collection("backup_snapshots").document(snapshotId).set(docMap).await()
                 }
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
                 // Non-blocking in offline / demo mode
             }
 
@@ -198,7 +200,8 @@ class FirebaseBackupRepositoryImpl(
             if (firestore == null) return 14
             val snapshot = firestore.collection("account_deletion_requests").get().await()
             if (snapshot.isEmpty) 14 else snapshot.size()
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             14
         }
     }

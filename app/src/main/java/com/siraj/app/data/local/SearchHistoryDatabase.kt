@@ -5,6 +5,7 @@ import androidx.room.*
 import com.siraj.app.domain.models.search.SearchCategory
 import com.siraj.app.domain.models.search.SearchHistoryItem
 import kotlinx.coroutines.flow.Flow
+import com.siraj.app.core.error.GlobalErrorHandler
 
 @Entity(tableName = "search_history")
 data class SearchHistoryEntity(
@@ -18,7 +19,8 @@ data class SearchHistoryEntity(
     fun toDomain(): SearchHistoryItem {
         val cat = try {
             SearchCategory.valueOf(category)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             SearchCategory.ALL
         }
         return SearchHistoryItem(

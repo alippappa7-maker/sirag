@@ -30,9 +30,9 @@ android {
         buildConfigField("String", "APP_STORE_ISSUER_ID", "\"dummy\"")
         buildConfigField("String", "APP_STORE_KEY_ID", "\"dummy\"")
         buildConfigField("String", "APP_STORE_PRIVATE_KEY", "\"dummy\"")
-        buildConfigField("String", "ENVIRONMENT", "\"development\"")
-        buildConfigField("Boolean", "IS_BETA", "true")
-        buildConfigField("Boolean", "ALLOW_MOCK_DATA", "true")
+        buildConfigField("String", "ENVIRONMENT", "\"production\"")
+        buildConfigField("Boolean", "IS_BETA", "false")
+        buildConfigField("Boolean", "ALLOW_MOCK_DATA", "false")
         vectorDrawables {
             useSupportLibrary = true
         }

@@ -35,6 +35,7 @@ import com.siraj.app.core.accessibility.LocalAccessibilityConfig
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.siraj.app.core.error.GlobalErrorHandler
 
 private val SplashBackground = Color(0xFF0A1113)
 private val EmeraldPrimary = Color(0xFF1A8068)
@@ -106,7 +107,8 @@ fun SplashScreen(onNavigateToHome: () -> Unit) {
                 }
                 delay(200) // Brief rest for pleasant viewing before seamless transition
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             // Graceful fallback to avoid blocking
         } finally {
             onNavigateToHome()

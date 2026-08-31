@@ -8,6 +8,7 @@ import com.siraj.app.domain.models.history.RetentionPolicy
 import com.siraj.app.domain.models.history.SyncStatus
 import com.siraj.app.domain.models.history.UserActivityItem
 import kotlinx.coroutines.flow.Flow
+import com.siraj.app.core.error.GlobalErrorHandler
 
 @Entity(
     tableName = "activity_history",
@@ -40,13 +41,15 @@ data class ActivityHistoryEntity(
     fun toDomain(): UserActivityItem {
         val parsedEntityType = try {
             ActivityEntityType.valueOf(entityType)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             ActivityEntityType.VIDEO
         }
 
         val parsedSyncStatus = try {
             SyncStatus.valueOf(syncStatus)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             SyncStatus.SYNCED
         }
 
@@ -109,7 +112,8 @@ data class ActivityHistoryPreferencesEntity(
     fun toDomain(): ActivityHistoryPreferences {
         val policy = try {
             RetentionPolicy.valueOf(retentionPolicy)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             RetentionPolicy.DAYS_90
         }
         return ActivityHistoryPreferences(

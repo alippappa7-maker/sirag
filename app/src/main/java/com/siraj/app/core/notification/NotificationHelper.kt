@@ -14,6 +14,7 @@ import com.siraj.app.R
 import com.siraj.app.domain.models.notification.NotificationPreferences
 import com.siraj.app.domain.models.notification.NotificationType
 import com.siraj.app.domain.models.notification.SirajNotification
+import com.siraj.app.core.error.GlobalErrorHandler
 
 object NotificationHelper {
 
@@ -162,8 +163,6 @@ object NotificationHelper {
             }
         } catch (e: SecurityException) {
             Log.w("NotificationHelper", "Notification permission not granted", e)
-        } catch (e: Exception) {
-            Log.e("NotificationHelper", "Error showing notification", e)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e) }
     }
 }

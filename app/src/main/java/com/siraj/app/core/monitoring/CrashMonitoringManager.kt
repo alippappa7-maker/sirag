@@ -6,6 +6,7 @@ import com.siraj.app.domain.monitoring.BreadcrumbType
 import com.siraj.app.domain.monitoring.CrashMonitoringService
 import com.siraj.app.domain.monitoring.ErrorCategory
 import com.siraj.app.domain.monitoring.ErrorSeverity
+import com.siraj.app.core.error.GlobalErrorHandler
 
 /**
  * Global entry point for crash and error monitoring across the Siraj platform.
@@ -51,9 +52,7 @@ object CrashMonitoringManager {
                     severity = ErrorSeverity.FATAL,
                     customKeys = mapOf("fatal" to true, "thread_name" to thread.name)
                 )
-            } catch (e: Exception) {
-                Log.e(TAG, "Error in uncaught exception handler: ${e.message}")
-            } finally {
+            } catch (e: Exception) { GlobalErrorHandler.handle(e) } finally {
                 defaultHandler?.uncaughtException(thread, throwable)
             }
         }

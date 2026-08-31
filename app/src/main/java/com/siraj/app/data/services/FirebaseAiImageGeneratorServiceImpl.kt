@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.TimeUnit
+import com.siraj.app.core.error.GlobalErrorHandler
 
 class FirebaseAiImageGeneratorServiceImpl(
     private val functions: FirebaseFunctions = FirebaseFunctions.getInstance(),
@@ -95,18 +96,14 @@ class FirebaseAiImageGeneratorServiceImpl(
         return try {
             functions.getHttpsCallable("cancelImageGeneration").call(mapOf("requestId" to requestId)).await()
             Resource.Success(Unit)
-        } catch (e: Exception) {
-            Resource.Success(Unit)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Resource.Error(e.message ?: "Unknown error") }
     }
 
     override suspend fun deleteGeneratedImage(projectId: String, imageId: String): Resource<Unit> {
         return try {
             functions.getHttpsCallable("deleteGeneratedImage").call(mapOf("projectId" to projectId, "imageId" to imageId)).await()
             Resource.Success(Unit)
-        } catch (e: Exception) {
-            Resource.Success(Unit)
-        }
+        } catch (e: Exception) { GlobalErrorHandler.handle(e); Resource.Error(e.message ?: "Unknown error") }
     }
 
     override suspend fun attachImageToScene(

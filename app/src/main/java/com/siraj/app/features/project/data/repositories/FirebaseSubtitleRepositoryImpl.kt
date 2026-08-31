@@ -7,6 +7,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import com.siraj.app.core.error.GlobalErrorHandler
 
 class FirebaseSubtitleRepositoryImpl(
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -32,9 +33,11 @@ class FirebaseSubtitleRepositoryImpl(
                     val endMs = doc.getLong("endMs") ?: 3000L
                     val locked = doc.getBoolean("locked") ?: false
                     val srcTypeStr = doc.getString("sourceType") ?: SubtitleSourceType.SCENE_NARRATION.name
-                    val sourceType = try { SubtitleSourceType.valueOf(srcTypeStr) } catch (_: Exception) { SubtitleSourceType.SCENE_NARRATION }
+                    val sourceType = try { SubtitleSourceType.valueOf(srcTypeStr) } catch (e: Exception) {
+            GlobalErrorHandler.handle(e) SubtitleSourceType.SCENE_NARRATION }
                     val reviewStr = doc.getString("reviewStatus") ?: SubtitleReviewStatus.NOT_REQUIRED.name
-                    val reviewStatus = try { SubtitleReviewStatus.valueOf(reviewStr) } catch (_: Exception) { SubtitleReviewStatus.NOT_REQUIRED }
+                    val reviewStatus = try { SubtitleReviewStatus.valueOf(reviewStr) } catch (e: Exception) {
+            GlobalErrorHandler.handle(e) SubtitleReviewStatus.NOT_REQUIRED }
                     val reviewerNotes = doc.getString("reviewerNotes")
                     val sourceRefTitle = doc.getString("sourceRefTitle")
                     val createdAt = doc.getLong("createdAt") ?: System.currentTimeMillis()
@@ -42,9 +45,11 @@ class FirebaseSubtitleRepositoryImpl(
                     val styleMap = doc.get("style") as? Map<*, *>
                     val style = if (styleMap != null) {
                         val fontStr = styleMap["fontFamily"] as? String ?: SubtitleFontFamily.SYSTEM_SANS.name
-                        val fontFamily = try { SubtitleFontFamily.valueOf(fontStr) } catch (_: Exception) { SubtitleFontFamily.SYSTEM_SANS }
+                        val fontFamily = try { SubtitleFontFamily.valueOf(fontStr) } catch (e: Exception) {
+            GlobalErrorHandler.handle(e) SubtitleFontFamily.SYSTEM_SANS }
                         val posStr = styleMap["position"] as? String ?: SubtitlePosition.BOTTOM.name
-                        val position = try { SubtitlePosition.valueOf(posStr) } catch (_: Exception) { SubtitlePosition.BOTTOM }
+                        val position = try { SubtitlePosition.valueOf(posStr) } catch (e: Exception) {
+            GlobalErrorHandler.handle(e) SubtitlePosition.BOTTOM }
                         SubtitleStyle(
                             fontFamily = fontFamily,
                             fontSizeSp = (styleMap["fontSizeSp"] as? Number)?.toInt() ?: 18,

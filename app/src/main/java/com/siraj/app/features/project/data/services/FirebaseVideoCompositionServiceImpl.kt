@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
+import com.siraj.app.core.error.GlobalErrorHandler
 
 class FirebaseVideoCompositionServiceImpl(
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -303,6 +304,7 @@ class FirebaseVideoCompositionServiceImpl(
     private suspend fun updateJobInFirestore(job: ProductionJob) {
         try {
             firestore.collection("production_jobs").document(job.jobId).set(job).await()
-        } catch (_: Exception) {}
+        } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)}
     }
 }

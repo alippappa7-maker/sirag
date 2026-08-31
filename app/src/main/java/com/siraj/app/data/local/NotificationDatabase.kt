@@ -7,6 +7,7 @@ import com.siraj.app.domain.models.notification.NotificationPreferences
 import com.siraj.app.domain.models.notification.NotificationType
 import com.siraj.app.domain.models.notification.SirajNotification
 import kotlinx.coroutines.flow.Flow
+import com.siraj.app.core.error.GlobalErrorHandler
 
 @Entity(tableName = "notifications")
 data class NotificationEntity(
@@ -27,13 +28,15 @@ data class NotificationEntity(
     fun toDomain(): SirajNotification {
         val parsedType = try {
             NotificationType.valueOf(type)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             NotificationType.SYSTEM_MESSAGE
         }
 
         val parsedStatus = try {
             DeliveryStatus.valueOf(deliveryStatus)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            GlobalErrorHandler.handle(e)
             DeliveryStatus.DELIVERED
         }
 

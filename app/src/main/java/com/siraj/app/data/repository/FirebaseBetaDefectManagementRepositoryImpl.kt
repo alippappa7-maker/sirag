@@ -13,9 +13,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
+import com.siraj.app.core.error.GlobalErrorHandler
 
 class FirebaseBetaDefectManagementRepositoryImpl(
-    private val firestore: FirebaseFirestore? = try { FirebaseFirestore.getInstance() } catch (_: Exception) { null }
+    private val firestore: FirebaseFirestore? = try { FirebaseFirestore.getInstance() } catch (e: Exception) {
+            GlobalErrorHandler.handle(e) null }
 ) : BetaDefectManagementRepository {
 
     private val defectsCollection get() = firestore?.collection("beta_defects")
@@ -289,7 +291,8 @@ class FirebaseBetaDefectManagementRepositoryImpl(
                 // حفظ في Firestore إن أمكن
                 try {
                     defectsCollection?.document(id)?.set(mapDefectToMap(updated))?.await()
-                } catch (_: Exception) { }
+                } catch (e: Exception) {
+            GlobalErrorHandler.handle(e) }
 
                 Result.success(Unit)
             } else {
@@ -340,7 +343,8 @@ class FirebaseBetaDefectManagementRepositoryImpl(
 
                 try {
                     defectsCollection?.document(id)?.set(mapDefectToMap(updated))?.await()
-                } catch (_: Exception) { }
+                } catch (e: Exception) {
+            GlobalErrorHandler.handle(e) }
 
                 Result.success(Unit)
             } else {
@@ -413,7 +417,8 @@ class FirebaseBetaDefectManagementRepositoryImpl(
             inMemoryDefects.add(0, finalDefect)
             try {
                 defectsCollection?.document(finalDefect.id)?.set(mapDefectToMap(finalDefect))?.await()
-            } catch (_: Exception) { }
+            } catch (e: Exception) {
+            GlobalErrorHandler.handle(e) }
 
             Result.success(Unit)
         } catch (e: Exception) {
@@ -456,16 +461,20 @@ class FirebaseBetaDefectManagementRepositoryImpl(
             description = data["description"] as? String ?: "",
             classification = try {
                 DefectClassification.valueOf(data["classification"] as? String ?: "MINOR")
-            } catch (_: Exception) { DefectClassification.MINOR },
+            } catch (e: Exception) {
+            GlobalErrorHandler.handle(e) DefectClassification.MINOR },
             domain = try {
                 DefectDomain.valueOf(data["domain"] as? String ?: "UI_ACCESSIBILITY")
-            } catch (_: Exception) { DefectDomain.UI_ACCESSIBILITY },
+            } catch (e: Exception) {
+            GlobalErrorHandler.handle(e) DefectDomain.UI_ACCESSIBILITY },
             priority = try {
                 DefectPriority.valueOf(data["priority"] as? String ?: "P2_MEDIUM")
-            } catch (_: Exception) { DefectPriority.P2_MEDIUM },
+            } catch (e: Exception) {
+            GlobalErrorHandler.handle(e) DefectPriority.P2_MEDIUM },
             status = try {
                 DefectStatus.valueOf(data["status"] as? String ?: "REPORTED")
-            } catch (_: Exception) { DefectStatus.REPORTED },
+            } catch (e: Exception) {
+            GlobalErrorHandler.handle(e) DefectStatus.REPORTED },
             deviceModel = data["deviceModel"] as? String ?: "",
             osVersion = data["osVersion"] as? String ?: "",
             appVersion = data["appVersion"] as? String ?: "1.0.0-beta.1",
