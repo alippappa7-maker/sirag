@@ -197,7 +197,7 @@ fun MinorSafetyScreen(
     }
 
     if (uiState.showVerifyOtpDialog && uiState.selectedConsentIdToVerify != null) {
-        val consentId = uiState.selectedConsentIdToVerify
+        val consentId = uiState.selectedConsentIdToVerify!!
         VerifyOtpDialog(
             consentId = consentId,
             onDismiss = { viewModel.closeVerifyOtpDialog() },

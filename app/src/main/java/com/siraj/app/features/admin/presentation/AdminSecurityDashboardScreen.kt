@@ -45,7 +45,7 @@ fun AdminSecurityDashboardScreen(
             return@Scaffold
         }
 
-        val securityConfig = config
+        val securityConfig = config!!
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()

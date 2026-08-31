@@ -193,7 +193,7 @@ fun SurahScreen(
         },
         bottomBar = {
             if (currentlyPlayingAyah != null) {
-                val ayah = currentlyPlayingAyah
+                val ayah = currentlyPlayingAyah!!
                 QuranAudioPlayerBottomBar(
                     ayah = ayah,
                     isPlaying = isPlaying,

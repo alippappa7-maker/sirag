@@ -349,7 +349,7 @@ fun CreateTicketScreen(
 
         // Safe logs preview dialog
         if (showLogsPreviewDialog && uiState.safeLogsPreview != null) {
-            val logs = uiState.safeLogsPreview ?: ""
+            val logs = uiState.safeLogsPreview!!
             AlertDialog(
                 onDismissRequest = { showLogsPreviewDialog = false },
                 title = { Text("معاينة سجلات التشخيص الآمنة") },

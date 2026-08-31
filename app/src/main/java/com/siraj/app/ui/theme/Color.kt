@@ -71,7 +71,7 @@ val md_theme_dark_scrim = Color(0xFF000000)
 // ─── Semantic State Colors (Light) ───
 val siraj_light_success = Color(0xFF00C896)
 val siraj_light_onSuccess = Color(0xFFFFFFFF)
-val siraj_light_warning = com.siraj.app.ui.theme.SirajGold
+val siraj_light_warning = Color(0xFFFFD700)
 val siraj_light_onWarning = Color(0xFF1A1100)
 val siraj_light_processing = Color(0xFF3B82F6)
 val siraj_light_onProcessing = Color(0xFFFFFFFF)

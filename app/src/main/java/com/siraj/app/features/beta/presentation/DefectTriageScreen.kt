@@ -246,7 +246,7 @@ fun DefectTriageScreen(
 
     // Dialog لتعديل وتصنيف الفرز (Triage Dialog)
     if (uiState.isTriageDialogOpen && uiState.selectedDefect != null) {
-        val defect = uiState.selectedDefect
+        val defect = uiState.selectedDefect!!
         TriageActionDialog(
             defect = defect,
             onDismiss = { viewModel.closeTriageDialog() },
@@ -264,7 +264,7 @@ fun DefectTriageScreen(
 
     // Dialog لتحديث دورة حياة الحالة (Status Transition Dialog)
     if (uiState.isStatusDialogOpen && uiState.selectedDefect != null) {
-        val defect = uiState.selectedDefect
+        val defect = uiState.selectedDefect!!
         StatusTransitionDialog(
             defect = defect,
             onDismiss = { viewModel.closeStatusDialog() },
@@ -1102,6 +1102,7 @@ private fun StatusTransitionDialog(
     )
 }
 
+@Composable
 private fun getClassificationColor(classification: DefectClassification): Color {
     return when (classification) {
         DefectClassification.BLOCKER -> MaterialTheme.statusColors.errorFg

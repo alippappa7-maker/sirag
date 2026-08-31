@@ -40,7 +40,7 @@ fun CostDashboardScreen(
             return@Scaffold
         }
 
-        val usage = usageState ?: return
+        val usage = usageState!!
 
         LazyColumn(
             modifier = Modifier

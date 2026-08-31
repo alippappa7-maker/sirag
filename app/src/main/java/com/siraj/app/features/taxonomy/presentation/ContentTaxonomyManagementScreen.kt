@@ -141,7 +141,7 @@ fun ContentTaxonomyManagementScreen(
 
     // Dialogs
     if (showAuditDialog && uiState.auditReport != null) {
-        val report = uiState.auditReport
+        val report = uiState.auditReport!!
         TaxonomyAuditDialog(
             report = report,
             onDismiss = { showAuditDialog = false }
@@ -149,7 +149,7 @@ fun ContentTaxonomyManagementScreen(
     }
 
     if (showMigrationDialog && uiState.migrationResult != null) {
-        val result = uiState.migrationResult
+        val result = uiState.migrationResult!!
         TaxonomyMigrationDialog(
             result = result,
             onDismiss = { showMigrationDialog = false }

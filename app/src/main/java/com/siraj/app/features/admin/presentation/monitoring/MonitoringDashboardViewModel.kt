@@ -108,7 +108,7 @@ class MonitoringDashboardViewModel(
             _uiState.value = _uiState.value.copy(bannerMessage = "جارٍ فحص ${service.displayNameArabic}...")
             val res = repository.runProbeHealthCheck(service)
             if (res.isSuccess) {
-                val check = res.getOrNull() ?: return
+                val check = res.getOrNull() ?: return@launch
                 _uiState.value = _uiState.value.copy(
                     bannerMessage = "تم فحص ${service.displayNameArabic}: زمن الاستجابة ${check.latencyMs}ms (${check.status.displayNameArabic})"
                 )

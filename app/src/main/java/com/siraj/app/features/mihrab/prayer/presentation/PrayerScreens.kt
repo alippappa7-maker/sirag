@@ -106,7 +106,7 @@ fun PrayerTimesScreen(
                         // Next Prayer Countdown
                         item {
                             if (nextPrayer != null) {
-                                val prayer = nextPrayer
+                                val prayer = nextPrayer!!
                                 val remainingSecs = prayer.timeRemainingMs / 1000
                                 val hours = remainingSecs / 3600
                                 val minutes = (remainingSecs % 3600) / 60

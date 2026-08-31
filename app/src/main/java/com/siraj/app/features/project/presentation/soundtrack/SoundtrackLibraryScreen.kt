@@ -172,7 +172,7 @@ fun SoundtrackLibraryScreen(
 
             // Current Scene Active Track Card (if any attached)
             if (sceneId != null && currentSceneTrack != null) {
-                val track = currentSceneTrack ?: return
+                val track = currentSceneTrack!!
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
