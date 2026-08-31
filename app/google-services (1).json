@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "603236184136",
+    "project_id": "siraj-development",
+    "storage_bucket": "siraj-development.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:603236184136:android:8ea8cec39cb7978453e87d",
+        "android_client_info": {
+          "package_name": "com.siraj.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8MqHHFs0NJfBT3QozbQy9AFEVfqNvrhg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
