@@ -1,5 +1,80 @@
 # سجل التغييرات (Changelog)
 
+## [1.1.8] - Visual Identity Phase 2 - Content & Search Modules
+### Changed
+- **ترقية شاشات المحتوى والبحث بصريًا (Quran, Notifications & Search Visual Upgrade):**
+  - **شاشات المصحف (`QuranScreens.kt`):**
+    - استبدال بطاقات السور التقليدية بمكون الهوية التقنية `SirajTechCard`.
+    - ترقية بطاقة الآية (`AyahCard`) لتعمل بمكون `SirajTechCard` مع تفعيل تأثير التوهج الذكي الخفيف (`isActive = isPlaying`) عند الاستماع إلى تلاوة الآية.
+    - ترقية شريط المشغل الصوتي السفلي (`QuranAudioPlayerBottomBar`) ليحتوي على غلاف التوهج البصري التقني `SirajGlowContainer`.
+    - إضافة انتقال بصري ناعم `Crossfade` لحالات تحميل الآيات والسور.
+  - **مركز الإشعارات (`NotificationCenterScreen.kt`):**
+    - ترقية بطاقة الإشعار (`NotificationCard`) إلى `SirajTechCard` مع إبراز الإشعارات غير المقروءة عبر الخاصية التفاعلية (`isActive = isUnread`).
+    - إضافة انتقال `Crossfade` بين حالة التحميل وحالة القائمة الفارغة وحالة عرض الإشعارات.
+  - **شاشات البحث والنتائج (`SearchResultCard.kt`, `SearchScreen.kt`, `SearchFilterBottomSheet.kt`):**
+    - ترقية بطاقة نتيجة البحث `SearchResultCard` إلى `SirajTechCard` مع تمييز النتائج الموثقة عبر `isActive = item.isVerified`.
+    - ترقية بطاقات سجل البحث في `SearchScreen` إلى `SirajTechCard`.
+    - ترقية بطاقة خيار البحث الخاص في نافذة التصفية `SearchFilterBottomSheet` إلى `SirajTechCard`.
+  - **الالتزام بالقواعد البصرية والوظيفية:**
+    - الحفاظ الكامل على كافة الوظائف والمنطق والـ ViewModels والـ Navigation دون أي مساس.
+    - اجتياز كافة اختبارات الوحدة (Unit Tests) بنسبة نجاح 100%.
+
+## [1.1.7] - Visual Identity Phase 3 - Motion & Accessibility (PROMPT 54)
+### Changed
+- **تحسين الحركة (Motion) والتدقيق البصري:**
+  - تطبيق حركة انتقالية مرنة (`animateContentSize` و `animateDpAsState` و `animateFloatAsState`) على حاويات التوهج (`SirajGlowContainer`) والبطاقات.
+  - إضافة `Crossfade` سلس لتأثيرات تحميل وتبديل البيانات (قوائم الصوتيات والمشاريع).
+  - الالتزام التام بتوظيف الحركة البسيطة فقط وتجنب الحركات المستمرة والمقلقة للعين، لتتناسب مع الطابع التقني الوقور.
+  - الحفاظ على المنطق الوظيفي وعدم إضافة أية بيانات وهمية أو خدمات غير مكتملة.
+
+## [1.1.6] - Visual Identity Phase 2 - Mihrab & Audio (PROMPT 53)
+### Changed
+- **ترقية شاشات المحراب والمشغل الصوتي بصريًا (Mihrab & Audio Screens Visual Upgrade):**
+  - استبدال البطاقات التقليدية بـ `SirajTechCard` في شاشة المحراب للحصول على مظهر تقني وهادئ.
+  - إضافة `SirajGlowContainer` لتمييز اختصارات الوصول السريع (Shortcuts) والمشغل المصغر.
+  - تزيين زر التشغيل الرئيسي في `AudioPlayerScreen` بتوهج ذهبي وتكبير حجمه ليكون الإجراء الأبرز.
+  - إضافة مساحة تنفس (padding) أسفل القوائم في `MihrabScreen` و `AudioScreen` لمنع المشغل المصغر من تغطية المحتوى.
+  - ربط وتطويع أشرطة التقدم (LinearProgressIndicator) بالألوان التقنية `tertiary` و `secondary`.
+  - تحسين توافق الأزرار والبطاقات مع معايير اللمس والأحجام المناسبة للـ Accessibility.
+  - الحفاظ التام على المنطق الوظيفي وتجنب إضافة مصادر أو خدمات وهمية.
+
+## [1.1.5] - Visual Identity Phase 2 - Studio Screen (PROMPT 52)
+### Changed
+- **ترقية شاشة الاستوديو بصريًا (Studio Screen Visual Upgrade):**
+  - تحويل واجهة "إدارة المشاريع" إلى "استوديو الإنتاج التقني" باستخدام مكونات الهوية (`SirajTechCard` و `SirajGlowContainer`).
+  - تخصيص ألوان الأزرار للإجراءات الإبداعية بحيث يأخذ زر "فكرة إبداعية جديدة" اللون الذهبي (الأساسي) كإجراء رئيسي.
+  - تعزيز التسلسل الهرمي بين أدوات البحث/الفلترة وبين منطقة عرض المشاريع.
+  - تحويل حالات المشروع (`DRAFT, PROCESSING, READY, COMPLETED, FAILED...`) لتستخدم المكون الذكي `SirajStatusBadge`.
+  - تحسين المسافات بالاعتماد على `LocalSpacing` واستخدام الألوان التقنية (`tertiary` السماوي) لرموز البحث والتفاعل.
+  - الحفاظ على الوظائف دون مساس ودعم كامل للأوضاع الفاتحة والداكنة واتجاه النص RTL.
+
+## [1.1.4] - Visual Identity Phase 2 - Home Screen (PROMPT 51)
+### Changed
+- **ترقية الشاشة الرئيسية بصريًا (Home Screen Visual Upgrade):**
+  - استخدام المكونات التقنية `SirajGlowContainer` و `SirajTechCard` لتنظيم الشاشة الرئيسية.
+  - إبراز الإجراء الأساسي ("إنشاء فيديو جديد") وحاوية البحث الشامل ضمن حاوية مركزية تعكس الهوية البصرية (الذهبي للإجراء، والسماوي للبحث والتقنية).
+  - استخدام `LocalSpacing` بدلاً من القيم الصلبة لتوفير مساحات تنفس متناسقة ومريحة للعين.
+  - الحفاظ على الوظائف والتنقل دون تغيير أو إضافة بيانات وهمية.
+  - دعم كامل للوضعين الفاتح والداكن ومراعاة اتجاه النصوص (RTL).
+
+## [1.1.3] - Visual Identity Phase 2 - Reusable Components (PROMPT 098)
+### Added
+- **مكونات واجهة تقنية (Techno-Spiritual UI Components):**
+  - إنشاء `SirajTechComponents.kt` لبناء مكونات قابلة لإعادة الاستخدام (Reusable UI Components) بدون التأثير على الشاشات الحالية.
+  - إضافة `SirajGlowContainer` مع تأثير إضاءة نيون خفيف ومناسب للحالات النشطة (`isActive`).
+  - إضافة `SirajTechCard` و `SirajMetricCard` لعرض البيانات.
+  - إضافة `SirajAiStatusChip` و `SirajStatusBadge` و `SirajProgressIndicator` كعناصر معالجة وربطها بألوان `ExtendedColors`.
+  - إضافة `SirajPrimaryButton` و `SirajSecondaryButton` و `SirajSectionHeader`.
+  - إضافة `@Preview` متوافق مع RTL (اللغة العربية) لاختبار وعرض المكونات بألوان الهوية المعتمدة للوضعين الفاتح والداكن.
+
+## [1.1.2] - Visual Identity Phase 2 (PROMPT 097)
+### Changed
+- **تثبيت نظام التصميم التقني (Techno-Spiritual Design System):**
+  - توحيد `ColorScheme` للوضعين الفاتح والداكن بشكل دقيق مع ألوان الهوية (الأخضر، الذهبي، السماوي).
+  - إضافة `ExtendedColors` (نجاح، تحذير، معالجة) وحقنها كـ `CompositionLocal` عبر `MaterialTheme.extendedColors`.
+  - تحديث وتوحيد `Spacing.kt` بإضافة `Elevations` ليعمل كنقطة مركزية لـ Design Tokens.
+  - الحفاظ على بناء المشروع واستقراره دون كسر الوظائف أو النماذج أو الخدمات الحالية.
+
 ## [1.1.1] - Visual Identity Phase 1 (UI Audit)
 ### Changed
 - **تأسيس الهوية البصرية (Visual Identity Setup):**

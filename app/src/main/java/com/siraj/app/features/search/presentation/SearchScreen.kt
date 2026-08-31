@@ -31,6 +31,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.siraj.app.core.ui.components.SirajTechCard
 import com.siraj.app.domain.models.search.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -398,14 +399,10 @@ fun SearchIdleView(
             }
 
             items(history, key = { it.id }) { historyItem ->
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onHistoryClick(historyItem.query) }
+                SirajTechCard(
+                    isActive = false,
+                    onClick = { onHistoryClick(historyItem.query) },
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
                         modifier = Modifier

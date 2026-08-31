@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.siraj.app.core.ui.components.SirajTechCard
 import com.siraj.app.domain.models.notification.NotificationFilter
 import com.siraj.app.domain.models.notification.NotificationType
 import com.siraj.app.domain.models.notification.SirajNotification
@@ -174,43 +175,48 @@ fun NotificationCenterScreen(
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
             // Notifications List
-            if (uiState.isLoading) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            } else if (uiState.filteredNotifications.isEmpty()) {
-                EmptyNotificationsView(selectedFilter = uiState.selectedFilter)
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(
-                        items = uiState.filteredNotifications,
-                        key = { it.id }
-                    ) { notification ->
-                        NotificationCard(
-                            notification = notification,
-                            onNotificationClick = {
-                                viewModel.markAsRead(notification.id)
-                                handleNotificationNavigation(
-                                    notification = notification,
-                                    onNavigateToProject = onNavigateToProject,
-                                    onNavigateToReview = onNavigateToReview,
-                                    onNavigateToAudio = onNavigateToAudio,
-                                    onNavigateToFlashes = onNavigateToFlashes,
-                                    onNavigateToMihrab = onNavigateToMihrab,
-                                    onNavigateToSettings = onNavigateToSettings
-                                )
-                            },
-                            onDeleteClick = {
-                                viewModel.deleteNotification(notification.id)
-                            },
-                            onMarkAsReadClick = {
-                                viewModel.markAsRead(notification.id)
-                            }
-                        )
+            Crossfade(
+                targetState = Triple(uiState.isLoading, uiState.filteredNotifications.isEmpty(), uiState.filteredNotifications),
+                label = "NotificationsCrossfade"
+            ) { (isLoading, isEmpty, notifications) ->
+                if (isLoading) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                } else if (isEmpty) {
+                    EmptyNotificationsView(selectedFilter = uiState.selectedFilter)
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(
+                            items = notifications,
+                            key = { it.id }
+                        ) { notification ->
+                            NotificationCard(
+                                notification = notification,
+                                onNotificationClick = {
+                                    viewModel.markAsRead(notification.id)
+                                    handleNotificationNavigation(
+                                        notification = notification,
+                                        onNavigateToProject = onNavigateToProject,
+                                        onNavigateToReview = onNavigateToReview,
+                                        onNavigateToAudio = onNavigateToAudio,
+                                        onNavigateToFlashes = onNavigateToFlashes,
+                                        onNavigateToMihrab = onNavigateToMihrab,
+                                        onNavigateToSettings = onNavigateToSettings
+                                    )
+                                },
+                                onDeleteClick = {
+                                    viewModel.deleteNotification(notification.id)
+                                },
+                                onMarkAsReadClick = {
+                                    viewModel.markAsRead(notification.id)
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -229,18 +235,10 @@ fun NotificationCard(
     val icon = getNotificationIcon(notification.type)
     val iconColor = getNotificationColor(notification.type)
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onNotificationClick() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isUnread)
-                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f)
-            else
-                MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = if (isUnread) 2.dp else 0.5.dp)
+    SirajTechCard(
+        isActive = isUnread,
+        onClick = onNotificationClick,
+        modifier = Modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier

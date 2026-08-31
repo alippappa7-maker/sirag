@@ -11,6 +11,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
 
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
+
+@Immutable
+data class ExtendedColors(
+    val success: Color,
+    val onSuccess: Color,
+    val warning: Color,
+    val onWarning: Color,
+    val processing: Color,
+    val onProcessing: Color
+)
+
+val LocalExtendedColors = staticCompositionLocalOf {
+    ExtendedColors(
+        success = Color.Unspecified,
+        onSuccess = Color.Unspecified,
+        warning = Color.Unspecified,
+        onWarning = Color.Unspecified,
+        processing = Color.Unspecified,
+        onProcessing = Color.Unspecified
+    )
+}
+
+val MaterialTheme.extendedColors: ExtendedColors
+    @Composable
+    get() = LocalExtendedColors.current
+
 private val DarkColorScheme = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,
@@ -76,7 +105,30 @@ fun MyApplicationTheme(
 
     val scaledTypography = getScaledTypography(fontScaleMultiplier)
 
-    CompositionLocalProvider(LocalSpacing provides Spacing()) {
+    val extendedColors = if (darkTheme) {
+        ExtendedColors(
+            success = siraj_dark_success,
+            onSuccess = siraj_dark_onSuccess,
+            warning = siraj_dark_warning,
+            onWarning = siraj_dark_onWarning,
+            processing = siraj_dark_processing,
+            onProcessing = siraj_dark_onProcessing
+        )
+    } else {
+        ExtendedColors(
+            success = siraj_light_success,
+            onSuccess = siraj_light_onSuccess,
+            warning = siraj_light_warning,
+            onWarning = siraj_light_onWarning,
+            processing = siraj_light_processing,
+            onProcessing = siraj_light_onProcessing
+        )
+    }
+
+    CompositionLocalProvider(
+        LocalSpacing provides Spacing(),
+        LocalExtendedColors provides extendedColors
+    ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = scaledTypography,

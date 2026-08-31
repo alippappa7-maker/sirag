@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.siraj.app.domain.models.*
+import com.siraj.app.core.ui.components.SirajTechCard
 
 @Composable
 fun AccountSettings(uiState: SettingsUiState, viewModel: SettingsViewModel, onLogout: () -> Unit) {
@@ -381,9 +382,9 @@ fun SupportSettings(
         Text("مراقبة الأعطال والتشخيص (Crashlytics)", style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(8.dp))
         
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        SirajTechCard(
+            isActive = true,
+            modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text("البيئة: ${com.siraj.app.core.config.EnvironmentConfig.currentEnvironment.displayName}", style = MaterialTheme.typography.bodySmall)
@@ -507,21 +508,21 @@ fun AccessibilitySettings(uiState: SettingsUiState, viewModel: SettingsViewModel
 
             // Live Preview Card
             Spacer(modifier = Modifier.height(12.dp))
-            Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+            SirajTechCard(
+                isActive = true,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Text(
                         text = "معاينة حجم النص والخط العربي:",
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ - سِرَاجٌ مُنِيرٌ",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -651,8 +652,8 @@ fun AccessibilitySettings(uiState: SettingsUiState, viewModel: SettingsViewModel
         }
 
         item {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+            SirajTechCard(
+                isActive = false,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -705,8 +706,8 @@ fun AboutSettings(
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        Card(
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        SirajTechCard(
+            isActive = false,
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(14.dp)) {

@@ -2,6 +2,7 @@ package com.siraj.app.features.quran.presentation
 
 import android.app.Application
 import android.net.Uri
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -29,6 +30,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import com.siraj.app.core.ui.components.SirajGlowContainer
+import com.siraj.app.core.ui.components.SirajTechCard
 import com.siraj.app.core.utils.Resource
 import com.siraj.app.domain.models.quran.Ayah
 import com.siraj.app.domain.models.quran.QuranReaderSettings
@@ -71,43 +74,46 @@ fun QuranScreen(
                 shape = RoundedCornerShape(12.dp)
             )
 
-            when (val state = surahsState) {
-                is Resource.Loading -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
-                is Resource.Error -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text(state.message, color = MaterialTheme.colorScheme.error) }
-                is Resource.Success -> {
-                    val filteredSurahs = state.data.filter { it.nameArabic.contains(searchQuery) }
-                    LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(filteredSurahs) { surah ->
-                            Card(
-                                modifier = Modifier.fillMaxWidth().clickable { onNavigateToSurah(surah.chapterNumber, surah.nameArabic) },
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
+            Crossfade(targetState = surahsState, label = "SurahsStateCrossfade") { state ->
+                when (state) {
+                    is Resource.Loading -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+                    is Resource.Error -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text(state.message, color = MaterialTheme.colorScheme.error) }
+                    is Resource.Success -> {
+                        val filteredSurahs = state.data.filter { it.nameArabic.contains(searchQuery) }
+                        LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            items(filteredSurahs) { surah ->
+                                SirajTechCard(
+                                    isActive = false,
+                                    onClick = { onNavigateToSurah(surah.chapterNumber, surah.nameArabic) },
+                                    modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    Column {
-                                        Text(surah.nameArabic, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                                        Text("${surah.revelationPlace} • ${surah.versesCount} آيات • ${surah.nameTranslated}", style = MaterialTheme.typography.bodySmall)
+                                    Row(
+                                        modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column {
+                                            Text(surah.nameArabic, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                                            Text("${surah.revelationPlace} • ${surah.versesCount} آيات • ${surah.nameTranslated}", style = MaterialTheme.typography.bodySmall)
+                                        }
+                                        Text(
+                                            surah.chapterNumber.toString(),
+                                            style = MaterialTheme.typography.headlineMedium,
+                                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                                        )
                                     }
-                                    Text(
-                                        surah.chapterNumber.toString(),
-                                        style = MaterialTheme.typography.headlineMedium,
-                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-                                    )
                                 }
                             }
-                        }
-                        item {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                "المصدر: Quran Foundation - البيانات موثقة",
-                                style = MaterialTheme.typography.labelSmall,
-                                modifier = Modifier.fillMaxWidth(),
-                                textAlign = TextAlign.Center,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            item {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    "المصدر: Quran Foundation - البيانات موثقة",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
                     }
                 }
@@ -218,36 +224,38 @@ fun SurahScreen(
         containerColor = if (settings.isNightMode) Color(0xFF121212) else MaterialTheme.colorScheme.background
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            when (val state = ayahsState) {
-                is Resource.Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                is Resource.Error -> Text(state.message, color = MaterialTheme.colorScheme.error, modifier = Modifier.align(Alignment.Center))
-                is Resource.Success -> {
-                    LazyColumn(
-                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 100.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        items(state.data) { ayah ->
-                            AyahCard(
-                                ayah = ayah,
-                                settings = settings,
-                                isPlaying = currentlyPlayingAyah?.verseKey == ayah.verseKey && isPlaying,
-                                onPlayClick = {
-                                    if (currentlyPlayingAyah?.verseKey == ayah.verseKey) {
-                                        if (isPlaying) exoPlayer?.pause() else exoPlayer?.play()
-                                    } else {
-                                        currentlyPlayingAyah = ayah
-                                        ayah.audio?.let { audioData ->
-                                            exoPlayer?.setMediaItem(MediaItem.fromUri(Uri.parse(audioData.url)))
-                                            exoPlayer?.prepare()
-                                            exoPlayer?.play()
+            Crossfade(targetState = ayahsState, label = "AyahsCrossfade") { state ->
+                when (state) {
+                    is Resource.Loading -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+                    is Resource.Error -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text(state.message, color = MaterialTheme.colorScheme.error) }
+                    is Resource.Success -> {
+                        LazyColumn(
+                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 100.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            items(state.data) { ayah ->
+                                AyahCard(
+                                    ayah = ayah,
+                                    settings = settings,
+                                    isPlaying = currentlyPlayingAyah?.verseKey == ayah.verseKey && isPlaying,
+                                    onPlayClick = {
+                                        if (currentlyPlayingAyah?.verseKey == ayah.verseKey) {
+                                            if (isPlaying) exoPlayer?.pause() else exoPlayer?.play()
+                                        } else {
+                                            currentlyPlayingAyah = ayah
+                                            ayah.audio?.let { audioData ->
+                                                exoPlayer?.setMediaItem(MediaItem.fromUri(Uri.parse(audioData.url)))
+                                                exoPlayer?.prepare()
+                                                exoPlayer?.play()
+                                            }
                                         }
-                                    }
-                                },
-                                onToggleBookmark = { viewModel.toggleBookmark(ayah.verseKey, ayah.verseNumber, ayah.isBookmarked) },
-                                onSaveNote = { note -> viewModel.saveNote(ayah.verseKey, ayah.verseNumber, note) },
-                                onShare = { /* TODO System Share */ },
-                                onDownload = { /* TODO Download Logic */ }
-                            )
+                                    },
+                                    onToggleBookmark = { viewModel.toggleBookmark(ayah.verseKey, ayah.verseNumber, ayah.isBookmarked) },
+                                    onSaveNote = { note -> viewModel.saveNote(ayah.verseKey, ayah.verseNumber, note) },
+                                    onShare = { /* TODO System Share */ },
+                                    onDownload = { /* TODO Download Logic */ }
+                                )
+                            }
                         }
                     }
                 }
@@ -283,10 +291,9 @@ fun AyahCard(
     val textColor = if (settings.isNightMode) Color.White else MaterialTheme.colorScheme.onSurface
     val containerColor = if (settings.isNightMode) Color(0xFF1E1E1E) else MaterialTheme.colorScheme.surface
 
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = containerColor),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    SirajTechCard(
+        isActive = isPlaying,
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             // Top Actions
@@ -505,51 +512,56 @@ fun QuranAudioPlayerBottomBar(
     onToggleRepeat: () -> Unit,
     onChangeSpeed: () -> Unit
 ) {
-    Surface(
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        tonalElevation = 8.dp,
+    SirajGlowContainer(
+        isActive = isPlaying,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text("جاري التلاوة - الآية ${ayah.verseNumber}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Text("القارئ: ${ayah.audio?.reciterName ?: "غير معروف"}", style = MaterialTheme.typography.bodySmall)
-                }
-                IconButton(onClick = onStop) {
-                    Icon(Icons.Default.Close, contentDescription = "إيقاف والتسكير")
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextButton(onClick = onChangeSpeed) {
-                    Text("${speed}x")
-                }
-                IconButton(onClick = onToggleRepeat) {
-                    Icon(
-                        if (repeatMode == Player.REPEAT_MODE_ONE) Icons.Default.RepeatOne else Icons.Default.Repeat,
-                        contentDescription = "تكرار",
-                        tint = if (repeatMode == Player.REPEAT_MODE_ONE) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                FloatingActionButton(
-                    onClick = onPlayPause,
-                    containerColor = MaterialTheme.colorScheme.primary
+        Surface(
+            color = MaterialTheme.colorScheme.surface,
+            tonalElevation = 8.dp,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                        contentDescription = if (isPlaying) "Pause" else "Play"
-                    )
+                    Column {
+                        Text("جاري التلاوة - الآية ${ayah.verseNumber}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text("القارئ: ${ayah.audio?.reciterName ?: "غير معروف"}", style = MaterialTheme.typography.bodySmall)
+                    }
+                    IconButton(onClick = onStop) {
+                        Icon(Icons.Default.Close, contentDescription = "إيقاف والتسكير")
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(onClick = onChangeSpeed) {
+                        Text("${speed}x")
+                    }
+                    IconButton(onClick = onToggleRepeat) {
+                        Icon(
+                            if (repeatMode == Player.REPEAT_MODE_ONE) Icons.Default.RepeatOne else Icons.Default.Repeat,
+                            contentDescription = "تكرار",
+                            tint = if (repeatMode == Player.REPEAT_MODE_ONE) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    FloatingActionButton(
+                        onClick = onPlayPause,
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ) {
+                        Icon(
+                            if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                            contentDescription = if (isPlaying) "Pause" else "Play"
+                        )
+                    }
                 }
             }
         }

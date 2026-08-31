@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.siraj.app.core.ui.components.SirajTechCard
 import com.siraj.app.domain.models.search.SearchCategory
 import com.siraj.app.domain.models.search.SearchResultItem
 
@@ -28,16 +29,12 @@ fun SearchResultCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    SirajTechCard(
+        isActive = item.isVerified,
+        onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .testTag("search_result_item_${item.id}"),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        shape = RoundedCornerShape(16.dp)
+            .testTag("search_result_item_${item.id}")
     ) {
         Column(
             modifier = Modifier

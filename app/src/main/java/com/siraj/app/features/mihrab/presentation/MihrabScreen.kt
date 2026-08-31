@@ -25,6 +25,9 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.siraj.app.core.ui.components.SirajTextField
+import com.siraj.app.core.ui.components.SirajTechCard
+import com.siraj.app.core.ui.components.SirajGlowContainer
+import com.siraj.app.ui.theme.LocalSpacing
 
 @Composable
 fun MihrabScreen(
@@ -122,10 +125,17 @@ fun MihrabContent(
     onNavigateToCalendar: () -> Unit,
     onNavigateToAdhkar: () -> Unit
 ) {
+    val spacing = LocalSpacing.current
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        contentPadding = PaddingValues(
+            start = spacing.medium,
+            top = spacing.medium,
+            end = spacing.medium,
+            bottom = 120.dp // Prevent MiniPlayer overlap
+        ),
+        verticalArrangement = Arrangement.spacedBy(spacing.large)
     ) {
         // Search
         item {
@@ -254,34 +264,32 @@ fun LastActionCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Card(
-        modifier = modifier.clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    SirajTechCard(
+        isActive = true, // Highlight as active/last action
+        onClick = onClick,
+        modifier = modifier
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier.size(24.dp)
             )
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 2
+                maxLines = 2,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
             )
         }
     }
@@ -308,18 +316,24 @@ fun ShortcutCard(
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .size(56.dp)
-                .background(MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(16.dp)),
-            contentAlignment = Alignment.Center
+        SirajGlowContainer(
+            modifier = Modifier.size(56.dp),
+            isActive = true,
+            glowColor = MaterialTheme.colorScheme.tertiary
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = shortcut.title,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.size(28.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(16.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = shortcut.title,
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
         }
         Text(
             text = shortcut.title,
@@ -343,13 +357,10 @@ fun SectionCard(
         else -> Icons.Default.Folder
     }
 
-    Card(
-        modifier = modifier.clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    SirajTechCard(
+        isActive = false,
+        onClick = onClick,
+        modifier = modifier
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -359,13 +370,13 @@ fun SectionCard(
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .background(MaterialTheme.colorScheme.secondaryContainer, shape = RoundedCornerShape(12.dp)),
+                    .background(MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                    tint = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier.size(24.dp)
                 )
             }

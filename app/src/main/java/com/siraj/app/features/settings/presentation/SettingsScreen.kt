@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.siraj.app.domain.models.*
 import com.siraj.app.features.settings.presentation.privacy.PrivacyCenterScreen
+import com.siraj.app.core.ui.components.SirajTechCard
 
 enum class SettingsPage(val title: String) {
     MAIN("الإعدادات"),
@@ -168,13 +169,12 @@ fun MainSettingsList(
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         if (com.siraj.app.core.config.EnvironmentConfig.isBeta) {
             item {
-                Card(
+                SirajTechCard(
+                    isActive = true,
+                    onClick = onNavigateToTesterHub,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .clickable { onNavigateToTesterHub() },
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
@@ -183,7 +183,7 @@ fun MainSettingsList(
                         Icon(
                             imageVector = Icons.Default.Science,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(28.dp)
                         )
                         Spacer(modifier = Modifier.width(12.dp))
@@ -192,18 +192,18 @@ fun MainSettingsList(
                                 text = "مركز المختبرين (Tester Hub)",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = "متابعة المسارات الأساسية، تقييم التجربة، ودليل التثبيت",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.8f)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onTertiaryContainer
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }

@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.siraj.app.core.ui.components.SirajTechCard
 import com.siraj.app.domain.models.search.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -180,10 +181,8 @@ fun SearchFilterBottomSheet(
             Spacer(Modifier.height(16.dp))
 
             // 5. Private Projects Only Switch
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                ),
+            SirajTechCard(
+                isActive = onlyPrivateProjects,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(

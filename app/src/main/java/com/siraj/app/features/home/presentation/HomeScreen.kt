@@ -1,32 +1,38 @@
 package com.siraj.app.features.home.presentation
 
+import android.app.Application
+import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.siraj.app.core.ui.components.BetaBadgeBanner
+import com.siraj.app.core.ui.components.SirajGlowContainer
+import com.siraj.app.core.ui.components.SirajSectionHeader
+import com.siraj.app.core.ui.components.SirajTechCard
 import com.siraj.app.core.utils.Resource
 import com.siraj.app.domain.models.Project
-
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.ui.platform.LocalContext
-import android.app.Application
 import com.siraj.app.features.notification.presentation.NotificationViewModel
 import com.siraj.app.features.notification.presentation.NotificationViewModelFactory
+import com.siraj.app.ui.theme.LocalSpacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +53,7 @@ fun HomeScreen(
     val notifState by notificationViewModel.uiState.collectAsState()
     var showCreateDialog by remember { mutableStateOf(false) }
     var newProjectTitle by remember { mutableStateOf("") }
+    val spacing = LocalSpacing.current
 
     if (showCreateDialog) {
         AlertDialog(
@@ -56,19 +63,24 @@ fun HomeScreen(
                 OutlinedTextField(
                     value = newProjectTitle,
                     onValueChange = { newProjectTitle = it },
-                    label = { Text("اسم المشروع") }
+                    label = { Text("اسم المشروع") },
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium
                 )
             },
             confirmButton = {
-                Button(onClick = {
-                    if (newProjectTitle.isNotBlank()) {
-                        viewModel.createProject(newProjectTitle) { projectId ->
-                            onNavigateToProject(projectId)
+                Button(
+                    onClick = {
+                        if (newProjectTitle.isNotBlank()) {
+                            viewModel.createProject(newProjectTitle) { projectId ->
+                                onNavigateToProject(projectId)
+                            }
+                            showCreateDialog = false
+                            newProjectTitle = ""
                         }
-                        showCreateDialog = false
-                        newProjectTitle = ""
-                    }
-                }) {
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
                     Text("إنشاء")
                 }
             },
@@ -76,15 +88,17 @@ fun HomeScreen(
                 TextButton(onClick = { showCreateDialog = false }) {
                     Text(androidx.compose.ui.res.stringResource(com.siraj.app.R.string.cancel))
                 }
-            }
+            },
+            shape = MaterialTheme.shapes.large
         )
     }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        contentPadding = PaddingValues(spacing.medium),
+        verticalArrangement = Arrangement.spacedBy(spacing.large)
     ) {
+        // 1. Header Section
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -95,29 +109,16 @@ fun HomeScreen(
                     Text(
                         text = "مرحباً، ${uiState.userProfile?.name ?: "مستخدم"}",
                         style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "جاهز لإنتاج محتوى جديد اليوم؟",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(
-                        onClick = onNavigateToSearch,
-                        modifier = Modifier.testTag("home_search_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "البحث الشامل",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
                     IconButton(onClick = onNavigateToHistory) {
                         Icon(
                             imageVector = Icons.Default.History,
-                            contentDescription = "سجل النشاط والمتابعة"
+                            contentDescription = "سجل النشاط",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     IconButton(onClick = onNavigateToNotifications) {
@@ -125,17 +126,15 @@ fun HomeScreen(
                             badge = {
                                 if (notifState.unreadCount > 0) {
                                     Badge {
-                                        Text(
-                                            text = if (notifState.unreadCount > 99) "+99" else "${notifState.unreadCount}"
-                                        )
+                                        Text(if (notifState.unreadCount > 99) "+99" else "${notifState.unreadCount}")
                                     }
                                 }
                             }
                         ) {
                             Icon(
                                 imageVector = if (notifState.unreadCount > 0) Icons.Default.NotificationsActive else Icons.Default.Notifications,
-                                contentDescription = "مركز الإشعارات",
-                                tint = if (notifState.unreadCount > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                contentDescription = "الإشعارات",
+                                tint = if (notifState.unreadCount > 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -146,170 +145,212 @@ fun HomeScreen(
             }
         }
 
-        // Beta Watermark & Feedback Banner
+        // 2. Beta Banner
         item {
-            com.siraj.app.core.ui.components.BetaBadgeBanner(
+            BetaBadgeBanner(
                 currentRoute = "home",
                 onOpenTesterHub = onNavigateToTesterHub
             )
         }
 
-        // Global Search Card Banner
+        // 3. The Central Technical Hero Container
         item {
-            Surface(
-                onClick = onNavigateToSearch,
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f)),
-                tonalElevation = 2.dp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("home_search_banner")
+            SirajGlowContainer(
+                isActive = true,
+                glowColor = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 14.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(spacing.large),
+                    verticalArrangement = Arrangement.spacedBy(spacing.medium)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = androidx.compose.ui.res.stringResource(com.siraj.app.R.string.search),
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(22.dp)
-                    )
-                    Spacer(Modifier.width(12.dp))
                     Text(
-                        text = "ابحث في القرآن، الصوتيات، الومضات، المصادر...",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        text = "جاهز لإنتاج محتوى جديد اليوم؟",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
-                }
-            }
-        }
-
-        item {
-            Button(
-                onClick = { showCreateDialog = true },
-                shape = RoundedCornerShape(14.dp),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                elevation = androidx.compose.material3.ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "إنشاء فيديو")
-                Spacer(Modifier.width(8.dp))
-                Text("إنشاء فيديو جديد", style = MaterialTheme.typography.labelLarge)
-            }
-        }
-
-        item {
-            Text(
-                text = "المشاريع الأخيرة",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            when (val projectsRes = uiState.recentProjects) {
-                is Resource.Loading -> {
-                    Box(modifier = Modifier.fillMaxWidth().height(100.dp), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+                    
+                    // Search (Cyan touch)
+                    Surface(
+                        onClick = onNavigateToSearch,
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary.copy(alpha = 0.3f)),
+                        modifier = Modifier.fillMaxWidth().testTag("home_search_banner")
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = spacing.medium, vertical = spacing.medium),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "البحث",
+                                tint = MaterialTheme.colorScheme.tertiary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(Modifier.width(spacing.medium))
+                            Text(
+                                text = "ابحث في القرآن، الصوتيات، الومضات...",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
-                }
-                is Resource.Error -> {
-                    Text(text = "خطأ: ${projectsRes.message}", color = MaterialTheme.colorScheme.error)
-                }
-                is Resource.Success -> {
-                    if (projectsRes.data.isEmpty()) {
-                        Card(modifier = Modifier.fillMaxWidth()) {
-                            Box(modifier = Modifier.padding(24.dp).fillMaxWidth(), contentAlignment = Alignment.Center) {
-                                Text("لا توجد مشاريع سابقة. ابدأ بإنشاء مشروع جديد.")
-                            }
-                        }
-                    } else {
-                        LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                            items(projectsRes.data, key = { it.id }) { project ->
-                                ProjectCard(project = project, onClick = { onNavigateToProject(project.id) })
-                            }
-                        }
+
+                    // Primary Action (Gold touch)
+                    Button(
+                        onClick = { showCreateDialog = true },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.onSecondary
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
+                        Spacer(Modifier.width(spacing.small))
+                        Text(
+                            text = "إنشاء فيديو جديد",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             }
         }
 
+        // 4. Recent Projects
         item {
-            Text(
-                text = "اختصارات سريعة",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                ShortcutCard("المحراب", Modifier.weight(1f))
-                ShortcutCard("ومضات", Modifier.weight(1f))
-                Card(
-                    modifier = Modifier
-                        .weight(1.2f)
-                        .height(100.dp)
-                        .clickable { onNavigateToShariaReview() }
-                        .testTag("shortcut_sharia_review"),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+            Column(verticalArrangement = Arrangement.spacedBy(spacing.medium)) {
+                SirajSectionHeader(title = "المشاريع الأخيرة")
+                
+                Crossfade(targetState = uiState.recentProjects, label = "projects_crossfade") { projectsRes ->
+                    when (projectsRes) {
+                        is Resource.Loading -> {
+                            Box(modifier = Modifier.fillMaxWidth().height(100.dp), contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator(color = MaterialTheme.colorScheme.tertiary)
+                            }
+                        }
+                        is Resource.Error -> {
+                            Text(text = "خطأ: ${projectsRes.message}", color = MaterialTheme.colorScheme.error)
+                        }
+                        is Resource.Success -> {
+                            if (projectsRes.data.isEmpty()) {
+                                SirajTechCard(isActive = false) {
+                                    Box(modifier = Modifier.fillMaxWidth().padding(spacing.medium), contentAlignment = Alignment.Center) {
+                                        Text("لا توجد مشاريع سابقة. ابدأ بإنشاء مشروع جديد.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                }
+                            } else {
+                                LazyRow(
+                                    horizontalArrangement = Arrangement.spacedBy(spacing.medium),
+                                    contentPadding = PaddingValues(horizontal = 4.dp) // for shadows
+                                ) {
+                                    items(projectsRes.data, key = { it.id }) { project ->
+                                        ProjectCard(project = project, onClick = { onNavigateToProject(project.id) })
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 5. Shortcuts
+        item {
+            Column(verticalArrangement = Arrangement.spacedBy(spacing.medium)) {
+                SirajSectionHeader(title = "اختصارات سريعة")
+                
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(spacing.medium),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = "المراجعة الشرعية",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                            Text(
-                                text = "تدقيق وتوثيق",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
-                            )
+                    ShortcutCard("المحراب", Modifier.weight(1f), onClick = { /* TODO Navigate */ })
+                    ShortcutCard("ومضات", Modifier.weight(1f), onClick = { /* TODO Navigate */ })
+                    
+                    // Sharia Review - specific highlight
+                    SirajTechCard(
+                        isActive = true, // specific highlight
+                        modifier = Modifier
+                            .weight(1.2f)
+                            .height(90.dp)
+                            .testTag("shortcut_sharia_review"),
+                        onClick = { onNavigateToShariaReview() }
+                    ) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "المراجعة الشرعية",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = "تدقيق وتوثيق",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
                         }
                     }
                 }
             }
+            // Bottom Spacing for navigation bar
+            Spacer(modifier = Modifier.height(spacing.huge))
         }
     }
 }
 
 @Composable
 fun ProjectCard(project: Project, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .width(200.dp)
-            .height(120.dp)
-            .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        border = androidx.compose.foundation.BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)),
-        shape = RoundedCornerShape(16.dp)
+    val spacing = LocalSpacing.current
+    SirajTechCard(
+        isActive = false,
+        onClick = onClick,
+        modifier = Modifier.width(220.dp).height(110.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp).fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
-            Text(text = project.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            Text(text = "آخر تعديل: ${project.updatedAt}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = project.title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1
+            )
+            Text(
+                text = "آخر تعديل: ${project.updatedAt}",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.tertiary
+            )
         }
     }
 }
 
 @Composable
-fun ShortcutCard(title: String, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier.height(100.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        border = androidx.compose.foundation.BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)),
-        shape = RoundedCornerShape(16.dp)
+fun ShortcutCard(title: String, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
+    SirajTechCard(
+        isActive = false,
+        onClick = onClick,
+        modifier = modifier.height(90.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(text = title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

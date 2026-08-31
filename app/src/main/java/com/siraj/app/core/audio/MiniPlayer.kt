@@ -31,6 +31,8 @@ import com.siraj.app.core.accessibility.AccessibilitySemantics.sirajClickable
 import com.siraj.app.core.accessibility.AccessibilitySemantics.sirajLiveRegion
 import com.siraj.app.core.accessibility.AccessibilitySemantics.sirajTouchTarget
 import com.siraj.app.core.accessibility.LocalAccessibilityConfig
+import com.siraj.app.core.ui.components.SirajGlowContainer
+import com.siraj.app.core.ui.components.SirajTechCard
 
 @Composable
 fun MiniPlayer(
@@ -50,127 +52,128 @@ fun MiniPlayer(
         val track = playbackState.currentTrack ?: return@AnimatedVisibility
         val hasTranscript = !track.transcript.isNullOrBlank() || track.transcriptSegments.isNotEmpty()
         
-        Card(
+        SirajGlowContainer(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 4.dp)
-                .clickable(
-                    onClickLabel = "فتح مشغل الصوت الموسع للمقطع ${track.title}",
-                    role = Role.Button
-                ) { onExpand() },
-            shape = RoundedCornerShape(12.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-            border = if (a11yConfig.highContrastMode) {
-                BorderStroke(2.dp, MaterialTheme.colorScheme.onBackground)
-            } else null,
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            isActive = playbackState.isPlaying,
+            glowColor = MaterialTheme.colorScheme.tertiary
         ) {
-            Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Artwork / Placeholder
-                    Box(
+            SirajTechCard(
+                isActive = playbackState.isPlaying,
+                onClick = onExpand,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column {
+                    Row(
                         modifier = Modifier
-                            .size(48.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.primary),
-                        contentAlignment = Alignment.Center
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (playbackState.isBuffering) {
-                            CircularProgressIndicator(
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .semantics { contentDescription = "جاري تحميل المقطع الصوتي مؤقتاً" },
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                strokeWidth = 2.dp
+                        // Artwork / Placeholder
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(if (playbackState.isPlaying) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.surfaceVariant),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (playbackState.isBuffering) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .semantics { contentDescription = "جاري تحميل المقطع الصوتي مؤقتاً" },
+                                    color = MaterialTheme.colorScheme.onTertiary,
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = if (playbackState.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                                    contentDescription = if (playbackState.isPlaying) "المشغل في حالة تشغيل" else "المشغل متوقف مؤقتاً",
+                                    tint = if (playbackState.isPlaying) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                        
+                        Spacer(modifier = Modifier.width(16.dp))
+                        
+                        // Track Info
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .semantics(mergeDescendants = true) {}
+                        ) {
+                            Text(
+                                text = track.title,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
-                        } else {
-                            Icon(
-                                imageVector = if (playbackState.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                                contentDescription = if (playbackState.isPlaying) "المشغل في حالة تشغيل" else "المشغل متوقف مؤقتاً",
-                                tint = MaterialTheme.colorScheme.onPrimary
+                            Text(
+                                text = track.speaker,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                    }
-                    
-                    Spacer(modifier = Modifier.width(12.dp))
-                    
-                    // Track Info
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .semantics(mergeDescendants = true) {}
-                    ) {
-                        Text(
-                            text = track.title,
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = track.speaker,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    
-                    // Transcript Button if available or enabled
-                    if (hasTranscript || a11yConfig.showTranscripts) {
+                        
+                        // Transcript Button if available or enabled
+                        if (hasTranscript || a11yConfig.showTranscripts) {
+                            IconButton(
+                                onClick = { showTranscriptDialog = true },
+                                modifier = Modifier.sirajTouchTarget()
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Description,
+                                    contentDescription = "عرض التفريغ النصي للصوت",
+                                    tint = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+
+                        // Controls
                         IconButton(
-                            onClick = { showTranscriptDialog = true },
+                            onClick = { AudioController.togglePlayPause() },
                             modifier = Modifier.sirajTouchTarget()
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Description,
-                                contentDescription = "عرض التفريغ النصي للصوت",
-                                tint = MaterialTheme.colorScheme.primary
+                                imageVector = if (playbackState.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                                contentDescription = if (playbackState.isPlaying) "إيقاف الصوت مؤقتاً" else "استئناف تشغيل الصوت",
+                                tint = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+
+                        IconButton(
+                            onClick = { AudioController.stop() },
+                            modifier = Modifier.sirajTouchTarget()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "إغلاق وإيقاف المشغل الصوتي",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
-
-                    // Controls
-                    IconButton(
-                        onClick = { AudioController.togglePlayPause() },
-                        modifier = Modifier.sirajTouchTarget()
-                    ) {
-                        Icon(
-                            imageVector = if (playbackState.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                            contentDescription = if (playbackState.isPlaying) "إيقاف الصوت مؤقتاً" else "استئناف تشغيل الصوت"
+                    
+                    // Mini Progress Bar
+                    if (playbackState.duration > 0) {
+                        val progress = playbackState.currentPosition.toFloat() / playbackState.duration.toFloat()
+                        LinearProgressIndicator(
+                            progress = { progress },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(2.dp)
+                                .semantics {
+                                    contentDescription = "شريط التقدم الصوتي: ${(progress * 100).toInt()} بالمائة"
+                                },
+                            color = MaterialTheme.colorScheme.secondary,
+                            trackColor = Color.Transparent
                         )
                     }
-
-                    IconButton(
-                        onClick = { AudioController.stop() },
-                        modifier = Modifier.sirajTouchTarget()
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "إغلاق وإيقاف المشغل الصوتي"
-                        )
-                    }
-                }
-                
-                // Mini Progress Bar
-                if (playbackState.duration > 0) {
-                    val progress = playbackState.currentPosition.toFloat() / playbackState.duration.toFloat()
-                    LinearProgressIndicator(
-                        progress = { progress },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(3.dp)
-                            .semantics {
-                                contentDescription = "شريط التقدم الصوتي: ${(progress * 100).toInt()} بالمائة"
-                            },
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = Color.Transparent
-                    )
                 }
             }
         }
