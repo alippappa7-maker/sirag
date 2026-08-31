@@ -1,6 +1,0 @@
-{
-  "name": "Siraj",
-  "description": "An Arabic Islamic platform for creating ideas, audio/visual content, and connecting claims with references.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
