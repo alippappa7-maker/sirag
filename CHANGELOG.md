@@ -1,5 +1,20 @@
 # سجل التغييرات (Changelog)
 
+## [1.1.9] - Technical SplashScreen API & Motion Upgrade
+### Added
+- **تكامل شاشة البداية التقنية الرسمية (Android SplashScreen API & Compose Engine):**
+  - اعتماد مكتبة `androidx.core:core-splashscreen` الرسمية لتوفير إطلاق متوافق من مستوى النظام وحتى واجهة Compose لكافة إصدارات Android من 12 والإصدارات السابقة.
+  - إضافة سمة الثيم الرسمية `Theme.App.Starting` في `values/themes.xml` و `values-v31/themes.xml` مع تعيين الخلفية الليلية `#0A1113` وأيقونة السراج المتجهة.
+  - إنشاء أيقونة المتجهات الدقيقة عالية الدقة `@drawable/ic_siraj_splash_logo.xml` بتركيبة ألوان الهوية (الأخضر الزمردي `#1A8068` مع لمسة ذهبية `#D2A84A` وتوهج سماوي ناعم `#55D6C2`).
+  - تطوير شاشة `SplashScreen.kt` في Jetpack Compose بتدرج حركي زمني محسوب يقل عن 1000ms:
+    1. ظهور نقطة ضوء مركزية خافتة (Point of Light).
+    2. تشكل تدريجي لرمز السراج المتجهي عبر منحنيات هندسية رصينة (Lantern Symbol Formation).
+    3. انبعاث توهج سماوي خفيف غير صاخب (Subtle Glow).
+    4. ظهور اسم التطبيق "سراج" بتلاشٍ ناعم وانزلاق عمودي طفيف.
+    5. انتقال سلس وآمن إلى شاشات التطبيق دون اعتماد على خوادم أو شبكة أو تأخيرات مصطنعة.
+  - دعم خاصية تقليل الحركة (`reduceMotion`) في إعدادات إمكانية الوصول للانتقال الفوري دون حركات مجهدة.
+  - إضافة اختبارات وحدة Compose و Robolectric المعتمدة (`SplashScreenTest.kt`) مع اجتياز كافة الاختبارات بنسبة 100%.
+
 ## [1.1.8] - Visual Identity Phase 2 - Content & Search Modules
 ### Changed
 - **ترقية شاشات المحتوى والبحث بصريًا (Quran, Notifications & Search Visual Upgrade):**
