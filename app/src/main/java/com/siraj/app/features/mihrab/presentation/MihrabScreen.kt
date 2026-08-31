@@ -64,7 +64,7 @@ fun MihrabScreen(
                 }
                 state.error != null -> {
                     ErrorState(
-                        message = state.error!!,
+                        message = state.error ?: "",
                         onRetry = { viewModel.retry() },
                         modifier = Modifier.align(Alignment.Center)
                     )

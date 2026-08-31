@@ -135,7 +135,7 @@ class FirebaseIncidentResponseRepositoryImpl : IncidentResponseRepository {
         )
         if (actionResult.isFailure) return actionResult
 
-        val record = actionResult.getOrNull()!!
+        val record = actionResult.getOrThrow()
         isGlobalPublishingHalted.value = halt
         emergencyActions.value = listOf(record) + emergencyActions.value
         return Result.success(record)
@@ -155,7 +155,7 @@ class FirebaseIncidentResponseRepositoryImpl : IncidentResponseRepository {
         )
         if (actionResult.isFailure) return actionResult
 
-        val record = actionResult.getOrNull()!!
+        val record = actionResult.getOrThrow()
         emergencyActions.value = listOf(record) + emergencyActions.value
         return Result.success(record)
     }
@@ -174,7 +174,7 @@ class FirebaseIncidentResponseRepositoryImpl : IncidentResponseRepository {
         )
         if (actionResult.isFailure) return actionResult
 
-        val record = actionResult.getOrNull()!!
+        val record = actionResult.getOrThrow()
         emergencyActions.value = listOf(record) + emergencyActions.value
         return Result.success(record)
     }
@@ -194,7 +194,7 @@ class FirebaseIncidentResponseRepositoryImpl : IncidentResponseRepository {
         )
         if (actionResult.isFailure) return actionResult
 
-        val record = actionResult.getOrNull()!!
+        val record = actionResult.getOrThrow()
         emergencyActions.value = listOf(record) + emergencyActions.value
         return Result.success(record)
     }
@@ -205,7 +205,7 @@ class FirebaseIncidentResponseRepositoryImpl : IncidentResponseRepository {
         val validationResult = IncidentResponseEngine.validateShariaCorrection(correction)
         if (validationResult.isFailure) return validationResult
 
-        val verified = validationResult.getOrNull()!!
+        val verified = validationResult.getOrThrow()
         shariaCorrections.value = listOf(verified) + shariaCorrections.value
         return Result.success(verified)
     }

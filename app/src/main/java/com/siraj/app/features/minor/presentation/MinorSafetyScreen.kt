@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.siraj.app.domain.models.minor.*
+import com.siraj.app.ui.theme.statusColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -196,10 +197,11 @@ fun MinorSafetyScreen(
     }
 
     if (uiState.showVerifyOtpDialog && uiState.selectedConsentIdToVerify != null) {
+        val consentId = uiState.selectedConsentIdToVerify
         VerifyOtpDialog(
-            consentId = uiState.selectedConsentIdToVerify!!,
+            consentId = consentId,
             onDismiss = { viewModel.closeVerifyOtpDialog() },
-            onSubmit = { code -> viewModel.verifyParentalConsent(uiState.selectedConsentIdToVerify!!, code) }
+            onSubmit = { code -> viewModel.verifyParentalConsent(consentId, code) }
         )
     }
 
@@ -473,12 +475,12 @@ private fun EmergencyReportsTab(
                             color = MaterialTheme.colorScheme.error
                         )
                         Surface(
-                            color = Color(0xFFFEE2E2),
+                            color = MaterialTheme.statusColors.errorBg,
                             shape = RoundedCornerShape(6.dp)
                         ) {
                             Text(
                                 text = rep.urgency.titleArabic,
-                                color = Color(0xFF991B1B),
+                                color = MaterialTheme.statusColors.errorFg,
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
@@ -576,7 +578,7 @@ private fun EducationalAuditorTab(
             item {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = if (check.isChildSafe) Color(0xFFF0FDF4) else Color(0xFFFEF2F2)
+                        containerColor = if (check.isChildSafe) MaterialTheme.statusColors.successBg else MaterialTheme.statusColors.errorBg
                     ),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -586,7 +588,7 @@ private fun EducationalAuditorTab(
                             Icon(
                                 imageVector = if (check.isChildSafe) Icons.Default.CheckCircle else Icons.Default.Cancel,
                                 contentDescription = null,
-                                tint = if (check.isChildSafe) Color(0xFF166534) else Color(0xFF991B1B),
+                                tint = if (check.isChildSafe) MaterialTheme.statusColors.successFg else MaterialTheme.statusColors.errorFg,
                                 modifier = Modifier.size(24.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
@@ -594,7 +596,7 @@ private fun EducationalAuditorTab(
                                 text = if (check.isChildSafe) "المحتوى آمن ومناسب للأطفال" else "تنبيه: المحتوى يتضمن محاذير",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = if (check.isChildSafe) Color(0xFF166534) else Color(0xFF991B1B)
+                                color = if (check.isChildSafe) MaterialTheme.statusColors.successFg else MaterialTheme.statusColors.errorFg
                             )
                         }
                         Spacer(modifier = Modifier.height(8.dp))
@@ -656,7 +658,7 @@ private fun DataErasureTab(
         uiState.lastDeletionSummary?.let { summary ->
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF0FDF4)),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.statusColors.successBg),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -665,7 +667,7 @@ private fun DataErasureTab(
                             text = "إشعار إتمام التطهير بنجاح",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF166534)
+                            color = MaterialTheme.statusColors.successFg
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(text = "تم مسح ${summary.deletedRecordingsCount} تسجيلات صوتية و ${summary.deletedProjectsCount} مشاريع.")
@@ -674,7 +676,7 @@ private fun DataErasureTab(
                         Text(
                             text = summary.legalComplianceStatement,
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF166534)
+                            color = MaterialTheme.statusColors.successFg
                         )
                     }
                 }

@@ -85,6 +85,7 @@ import com.siraj.app.domain.models.monitoring.SystemTelemetryOverview
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.siraj.app.ui.theme.statusColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -257,9 +258,9 @@ fun TelemetryOverviewCards(telemetry: SystemTelemetryOverview) {
                             .clip(CircleShape)
                             .background(
                                 when (telemetry.overallSystemStatus) {
-                                    ServiceHealthStatus.HEALTHY -> Color(0xFF2E7D32)
-                                    ServiceHealthStatus.DEGRADED -> Color(0xFFE65100)
-                                    else -> Color(0xFFC62828)
+                                    ServiceHealthStatus.HEALTHY -> MaterialTheme.statusColors.successFg
+                                    ServiceHealthStatus.DEGRADED -> MaterialTheme.statusColors.warningFg
+                                    else -> MaterialTheme.statusColors.errorFg
                                 }
                             )
                     )
@@ -369,10 +370,10 @@ fun ServiceHealthCheckCard(
     onOpenRunbook: () -> Unit
 ) {
     val statusColor = when (check.status) {
-        ServiceHealthStatus.HEALTHY -> Color(0xFF2E7D32)
-        ServiceHealthStatus.DEGRADED -> Color(0xFFE65100)
-        ServiceHealthStatus.UNAVAILABLE -> Color(0xFFC62828)
-        ServiceHealthStatus.CIRCUIT_BROKEN_DISABLED -> Color(0xFF757575)
+        ServiceHealthStatus.HEALTHY -> MaterialTheme.statusColors.successFg
+        ServiceHealthStatus.DEGRADED -> MaterialTheme.statusColors.warningFg
+        ServiceHealthStatus.UNAVAILABLE -> MaterialTheme.statusColors.errorFg
+        ServiceHealthStatus.CIRCUIT_BROKEN_DISABLED -> MaterialTheme.statusColors.neutralFg
         ServiceHealthStatus.MAINTENANCE -> Color(0xFF0277BD)
     }
 
@@ -494,7 +495,7 @@ fun ServiceHealthCheckCard(
                         Icon(
                             imageVector = if (check.isCircuitBroken) Icons.Default.PowerSettingsNew else Icons.Default.CloudOff,
                             contentDescription = if (check.isCircuitBroken) "إعادة التفعيل" else "تعطيل احترازي",
-                            tint = if (check.isCircuitBroken) Color(0xFF2E7D32) else Color(0xFFC62828),
+                            tint = if (check.isCircuitBroken) MaterialTheme.statusColors.successFg else MaterialTheme.statusColors.errorFg,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -547,7 +548,7 @@ fun IncidentsManagementTab(
                             .padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF2E7D32), modifier = Modifier.size(36.dp))
+                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.statusColors.successFg, modifier = Modifier.size(36.dp))
                         Spacer(modifier = Modifier.height(8.dp))
                         Text("لا توجد أعطال أو بلاغات تشغيلية نشطة حالياً", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                         Text("كافة الخدمات تعمل ضمن الكفاءة المحددة ودون أي انقطاع", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -590,17 +591,17 @@ fun IncidentCardItem(
     onQuickResolve: () -> Unit
 ) {
     val severityColor = when (incident.severity) {
-        IncidentSeverity.P0_CRITICAL -> Color(0xFFC62828)
-        IncidentSeverity.P1_HIGH -> Color(0xFFE65100)
-        IncidentSeverity.P2_MEDIUM -> Color(0xFFF57F17)
+        IncidentSeverity.P0_CRITICAL -> MaterialTheme.statusColors.errorFg
+        IncidentSeverity.P1_HIGH -> MaterialTheme.statusColors.warningFg
+        IncidentSeverity.P2_MEDIUM -> MaterialTheme.statusColors.warningFg
         IncidentSeverity.P3_LOW -> Color(0xFF1565C0)
     }
 
     val stateColor = when (incident.state) {
-        IncidentState.INVESTIGATING -> Color(0xFFC62828)
-        IncidentState.IDENTIFIED -> Color(0xFFE65100)
+        IncidentState.INVESTIGATING -> MaterialTheme.statusColors.errorFg
+        IncidentState.IDENTIFIED -> MaterialTheme.statusColors.warningFg
         IncidentState.MITIGATING -> Color(0xFF0277BD)
-        IncidentState.RESOLVED -> Color(0xFF2E7D32)
+        IncidentState.RESOLVED -> MaterialTheme.statusColors.successFg
         IncidentState.MONITORING -> Color(0xFF00897B)
     }
 
@@ -677,13 +678,13 @@ fun IncidentCardItem(
 
                 if (incident.state != IncidentState.RESOLVED) {
                     TextButton(onClick = onQuickResolve) {
-                        Text("إغلاق العطل وحله", fontSize = 11.sp, color = Color(0xFF2E7D32))
+                        Text("إغلاق العطل وحله", fontSize = 11.sp, color = MaterialTheme.statusColors.successFg)
                     }
                 } else {
                     Text(
                         text = "تم الحل: ${dateFormat.format(Date(incident.resolvedTimestamp ?: incident.startTimestamp))}",
                         fontSize = 11.sp,
-                        color = Color(0xFF2E7D32)
+                        color = MaterialTheme.statusColors.successFg
                     )
                 }
             }

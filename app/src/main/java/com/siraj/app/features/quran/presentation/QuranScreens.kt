@@ -193,8 +193,9 @@ fun SurahScreen(
         },
         bottomBar = {
             if (currentlyPlayingAyah != null) {
+                val ayah = currentlyPlayingAyah
                 QuranAudioPlayerBottomBar(
-                    ayah = currentlyPlayingAyah!!,
+                    ayah = ayah,
                     isPlaying = isPlaying,
                     repeatMode = repeatMode,
                     speed = settings.playbackSpeed,

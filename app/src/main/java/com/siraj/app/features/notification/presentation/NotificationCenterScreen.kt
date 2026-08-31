@@ -30,6 +30,7 @@ import com.siraj.app.core.ui.components.SirajTechCard
 import com.siraj.app.domain.models.notification.NotificationFilter
 import com.siraj.app.domain.models.notification.NotificationType
 import com.siraj.app.domain.models.notification.SirajNotification
+import com.siraj.app.ui.theme.statusColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -435,7 +436,7 @@ private fun getNotificationColor(type: NotificationType): Color {
         NotificationType.VIDEO_GENERATION_COMPLETED -> MaterialTheme.colorScheme.primary
         NotificationType.EXPORT_FAILED -> MaterialTheme.colorScheme.error
         NotificationType.REVIEW_REQUESTED -> MaterialTheme.colorScheme.tertiary
-        NotificationType.REVIEW_RESULT -> Color(0xFF2E7D32) // Islamic Emerald Green
+        NotificationType.REVIEW_RESULT -> MaterialTheme.statusColors.successFg // Islamic Emerald Green
         NotificationType.PROJECT_COMMENT_UPDATE -> MaterialTheme.colorScheme.secondary
         NotificationType.NEW_AUDIO_CONTENT -> Color(0xFF0288D1)
         NotificationType.NEW_FLASH -> Color(0xFFF57C00)

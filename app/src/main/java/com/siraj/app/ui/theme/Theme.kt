@@ -4,16 +4,13 @@ import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.graphics.Color
 
 @Immutable
 data class ExtendedColors(
@@ -23,6 +20,22 @@ data class ExtendedColors(
     val onWarning: Color,
     val processing: Color,
     val onProcessing: Color
+)
+
+@Immutable
+data class StatusColors(
+    val successBg: Color,
+    val successFg: Color,
+    val warningBg: Color,
+    val warningFg: Color,
+    val errorBg: Color,
+    val errorFg: Color,
+    val infoBg: Color,
+    val infoFg: Color,
+    val neutralBg: Color,
+    val neutralFg: Color,
+    val draftBg: Color,
+    val draftFg: Color
 )
 
 val LocalExtendedColors = staticCompositionLocalOf {
@@ -36,9 +49,24 @@ val LocalExtendedColors = staticCompositionLocalOf {
     )
 }
 
+val LocalStatusColors = staticCompositionLocalOf {
+    StatusColors(
+        successBg = Color.Unspecified, successFg = Color.Unspecified,
+        warningBg = Color.Unspecified, warningFg = Color.Unspecified,
+        errorBg = Color.Unspecified, errorFg = Color.Unspecified,
+        infoBg = Color.Unspecified, infoFg = Color.Unspecified,
+        neutralBg = Color.Unspecified, neutralFg = Color.Unspecified,
+        draftBg = Color.Unspecified, draftFg = Color.Unspecified
+    )
+}
+
 val MaterialTheme.extendedColors: ExtendedColors
     @Composable
     get() = LocalExtendedColors.current
+
+val MaterialTheme.statusColors: StatusColors
+    @Composable
+    get() = LocalStatusColors.current
 
 private val DarkColorScheme = darkColorScheme(
     primary = md_theme_dark_primary,
@@ -63,7 +91,12 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = md_theme_dark_onSurface,
     surfaceVariant = md_theme_dark_surfaceVariant,
     onSurfaceVariant = md_theme_dark_onSurfaceVariant,
-    outline = md_theme_dark_outline
+    outline = md_theme_dark_outline,
+    surfaceTint = md_theme_dark_surfaceTint,
+    inverseSurface = md_theme_dark_inverseSurface,
+    inverseOnSurface = md_theme_dark_inverseOnSurface,
+    inversePrimary = md_theme_dark_inversePrimary,
+    scrim = md_theme_dark_scrim
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -89,7 +122,12 @@ private val LightColorScheme = lightColorScheme(
     onSurface = md_theme_light_onSurface,
     surfaceVariant = md_theme_light_surfaceVariant,
     onSurfaceVariant = md_theme_light_onSurfaceVariant,
-    outline = md_theme_light_outline
+    outline = md_theme_light_outline,
+    surfaceTint = md_theme_light_surfaceTint,
+    inverseSurface = md_theme_light_inverseSurface,
+    inverseOnSurface = md_theme_light_inverseOnSurface,
+    inversePrimary = md_theme_light_inversePrimary,
+    scrim = md_theme_light_scrim
 )
 
 @Composable
@@ -97,10 +135,9 @@ fun MyApplicationTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     highContrast: Boolean = false,
     fontScaleMultiplier: Float = 1.0f,
-    dynamicColor: Boolean = false, // Ignored to preserve Siraj brand identity
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    // Siraj brand identity dictates fixed semantic colors over user wallpaper colors
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
 
     val scaledTypography = getScaledTypography(fontScaleMultiplier)
@@ -125,9 +162,30 @@ fun MyApplicationTheme(
         )
     }
 
+    val statusColors = if (darkTheme) {
+        StatusColors(
+            successBg = StatusSuccessBgDark, successFg = StatusSuccessFgDark,
+            warningBg = StatusWarningBgDark, warningFg = StatusWarningFgDark,
+            errorBg = StatusErrorBgDark, errorFg = StatusErrorFgDark,
+            infoBg = StatusInfoBgDark, infoFg = StatusInfoFgDark,
+            neutralBg = StatusNeutralBgDark, neutralFg = StatusNeutralFgDark,
+            draftBg = StatusDraftBgDark, draftFg = StatusDraftFgDark
+        )
+    } else {
+        StatusColors(
+            successBg = StatusSuccessBgLight, successFg = StatusSuccessFgLight,
+            warningBg = StatusWarningBgLight, warningFg = StatusWarningFgLight,
+            errorBg = StatusErrorBgLight, errorFg = StatusErrorFgLight,
+            infoBg = StatusInfoBgLight, infoFg = StatusInfoFgLight,
+            neutralBg = StatusNeutralBgLight, neutralFg = StatusNeutralFgLight,
+            draftBg = StatusDraftBgLight, draftFg = StatusDraftFgLight
+        )
+    }
+
     CompositionLocalProvider(
         LocalSpacing provides Spacing(),
-        LocalExtendedColors provides extendedColors
+        LocalExtendedColors provides extendedColors,
+        LocalStatusColors provides statusColors
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

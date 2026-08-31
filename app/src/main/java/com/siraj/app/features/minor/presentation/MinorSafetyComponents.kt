@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.siraj.app.domain.models.minor.*
+import com.siraj.app.ui.theme.statusColors
 
 @Composable
 fun AgeBracketBadge(
@@ -35,13 +36,13 @@ fun AgeBracketBadge(
             Icons.Default.Person
         )
         UserAgeBracket.TEEN_13_TO_17 -> Triple(
-            Color(0xFFE0F2FE),
-            Color(0xFF0369A1),
+            MaterialTheme.statusColors.infoBg,
+            MaterialTheme.statusColors.infoFg,
             Icons.Default.School
         )
         UserAgeBracket.CHILD_UNDER_13 -> Triple(
-            Color(0xFFFEF3C7),
-            Color(0xFFB45309),
+            MaterialTheme.statusColors.warningBg,
+            MaterialTheme.statusColors.warningFg,
             Icons.Default.ChildCare
         )
         UserAgeBracket.UNSPECIFIED -> Triple(
@@ -131,12 +132,12 @@ fun SafetyGuardrailRow(
             }
 
             Surface(
-                color = if (isActive) Color(0xFFDCFCE7) else Color(0xFFFEE2E2),
+                color = if (isActive) MaterialTheme.statusColors.successBg else MaterialTheme.statusColors.errorBg,
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
                     text = if (isActive) "مفعل ومحمٍ" else "غير مقيد",
-                    color = if (isActive) Color(0xFF166534) else Color(0xFF991B1B),
+                    color = if (isActive) MaterialTheme.statusColors.successFg else MaterialTheme.statusColors.errorFg,
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -182,9 +183,9 @@ fun ParentalConsentCard(
 
                 Surface(
                     color = when (consent.status) {
-                        ParentalConsentStatus.APPROVED_VERIFIED -> Color(0xFFDCFCE7)
-                        ParentalConsentStatus.PENDING_VERIFICATION -> Color(0xFFFEF3C7)
-                        ParentalConsentStatus.REJECTED, ParentalConsentStatus.REVOKED -> Color(0xFFFEE2E2)
+                        ParentalConsentStatus.APPROVED_VERIFIED -> MaterialTheme.statusColors.successBg
+                        ParentalConsentStatus.PENDING_VERIFICATION -> MaterialTheme.statusColors.warningBg
+                        ParentalConsentStatus.REJECTED, ParentalConsentStatus.REVOKED -> MaterialTheme.statusColors.errorBg
                         ParentalConsentStatus.NOT_REQUESTED -> MaterialTheme.colorScheme.surfaceVariant
                     },
                     shape = RoundedCornerShape(8.dp)
@@ -192,9 +193,9 @@ fun ParentalConsentCard(
                     Text(
                         text = consent.status.titleArabic,
                         color = when (consent.status) {
-                            ParentalConsentStatus.APPROVED_VERIFIED -> Color(0xFF166534)
-                            ParentalConsentStatus.PENDING_VERIFICATION -> Color(0xFFB45309)
-                            ParentalConsentStatus.REJECTED, ParentalConsentStatus.REVOKED -> Color(0xFF991B1B)
+                            ParentalConsentStatus.APPROVED_VERIFIED -> MaterialTheme.statusColors.successFg
+                            ParentalConsentStatus.PENDING_VERIFICATION -> MaterialTheme.statusColors.warningFg
+                            ParentalConsentStatus.REJECTED, ParentalConsentStatus.REVOKED -> MaterialTheme.statusColors.errorFg
                             ParentalConsentStatus.NOT_REQUESTED -> MaterialTheme.colorScheme.onSurfaceVariant
                         },
                         style = MaterialTheme.typography.labelSmall,

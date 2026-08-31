@@ -30,6 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.siraj.app.domain.models.history.*
 import java.text.SimpleDateFormat
 import java.util.*
+import com.siraj.app.ui.theme.statusColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -829,8 +830,8 @@ private fun getEntityTypeColor(type: ActivityEntityType): Color {
     return when (type) {
         ActivityEntityType.VIDEO -> MaterialTheme.colorScheme.primary
         ActivityEntityType.AUDIO -> MaterialTheme.colorScheme.secondary
-        ActivityEntityType.FLASH -> Color(0xFFE65100) // Amber / Orange
-        ActivityEntityType.QURAN_RECITATION -> Color(0xFF2E7D32) // Islamic Forest Green
+        ActivityEntityType.FLASH -> MaterialTheme.statusColors.warningFg // Amber / Orange
+        ActivityEntityType.QURAN_RECITATION -> MaterialTheme.statusColors.successFg // Islamic Forest Green
     }
 }
 

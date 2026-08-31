@@ -20,6 +20,7 @@ import com.siraj.app.core.ui.components.SirajButton
 import com.siraj.app.domain.models.community.*
 import java.text.SimpleDateFormat
 import java.util.*
+import com.siraj.app.ui.theme.statusColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -213,7 +214,7 @@ private fun ReportCardItem(
                 )
 
                 // SLA Badge
-                val slaColor = if (report.isOverdue) MaterialTheme.colorScheme.error else Color(0xFF2E7D32)
+                val slaColor = if (report.isOverdue) MaterialTheme.colorScheme.error else MaterialTheme.statusColors.successFg
                 Surface(
                     color = slaColor.copy(alpha = 0.15f),
                     shape = RoundedCornerShape(12.dp)
@@ -360,8 +361,8 @@ private fun UgcItemCard(
     var actionNotes by remember { mutableStateOf("") }
 
     val stateColor = when (item.state) {
-        UgcState.APPROVED, UgcState.RESTORED -> Color(0xFF2E7D32)
-        UgcState.LIMITED -> Color(0xFFF57F17)
+        UgcState.APPROVED, UgcState.RESTORED -> MaterialTheme.statusColors.successFg
+        UgcState.LIMITED -> MaterialTheme.statusColors.warningFg
         UgcState.REJECTED, UgcState.SUSPENDED, UgcState.REMOVED -> MaterialTheme.colorScheme.error
         UgcState.APPEALED -> Color(0xFF7B1FA2)
         else -> MaterialTheme.colorScheme.primary
@@ -417,7 +418,7 @@ private fun UgcItemCard(
                                 Text("• $flag", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                             }
                         } else {
-                            Text("• لم يتم رصد مخالفات آلية (نظيف)", style = MaterialTheme.typography.bodySmall, color = Color(0xFF2E7D32))
+                            Text("• لم يتم رصد مخالفات آلية (نظيف)", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.statusColors.successFg)
                         }
                     }
                 }
@@ -529,9 +530,9 @@ private fun AppealCardItem(
                     modifier = Modifier.weight(1f)
                 )
                 val statusColor = when (appeal.status) {
-                    AppealStatus.APPROVED -> Color(0xFF2E7D32)
+                    AppealStatus.APPROVED -> MaterialTheme.statusColors.successFg
                     AppealStatus.REJECTED -> MaterialTheme.colorScheme.error
-                    AppealStatus.PENDING -> Color(0xFFF57F17)
+                    AppealStatus.PENDING -> MaterialTheme.statusColors.warningFg
                 }
                 Surface(color = statusColor.copy(alpha = 0.15f), shape = RoundedCornerShape(12.dp)) {
                     Text(
@@ -633,7 +634,7 @@ private fun PerformanceTabContent(
                     ) {
                         Column {
                             Text("الالتزام بـ SLA (24h)", style = MaterialTheme.typography.labelSmall)
-                            Text("$complianceRate%", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
+                            Text("$complianceRate%", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.statusColors.successFg)
                         }
                         Column {
                             Text("إجمالي البلاغات", style = MaterialTheme.typography.labelSmall)

@@ -138,9 +138,7 @@ class FirebaseMonitoringRepositoryImpl(
             val updatedList = mutableListOf<ServiceHealthCheck>()
             for (service in MonitoredService.values()) {
                 val res = runProbeHealthCheck(service)
-                if (res.isSuccess) {
-                    updatedList.add(res.getOrNull()!!)
-                }
+                res.onSuccess { updatedList.add(it) }
             }
             Result.success(updatedList)
         } catch (e: Exception) {

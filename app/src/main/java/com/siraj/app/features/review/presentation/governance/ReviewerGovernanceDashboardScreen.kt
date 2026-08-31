@@ -31,6 +31,7 @@ import com.siraj.app.domain.models.review.CriticalTopic
 import com.siraj.app.domain.models.review.RiskLevel
 import java.text.SimpleDateFormat
 import java.util.*
+import com.siraj.app.ui.theme.statusColors
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -595,7 +596,7 @@ private fun StatusBadge(status: ReviewerStatus) {
             "معتمد نشط"
         )
         ReviewerStatus.PENDING_VERIFICATION -> Triple(
-            Color(0xFFFEF3C7),
+            MaterialTheme.statusColors.warningBg,
             Color(0xFF92400E),
             "قيد التحقق"
         )

@@ -59,7 +59,7 @@ fun WorkspaceSettingsScreen(
                     .padding(16.dp)
             ) {
                 if (uiState.error != null) {
-                    Text(text = uiState.error!!, color = MaterialTheme.colorScheme.error)
+                    Text(text = uiState.error ?: "", color = MaterialTheme.colorScheme.error)
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(onClick = { viewModel.clearError() }) { Text("حسناً") }
                     Spacer(modifier = Modifier.height(16.dp))

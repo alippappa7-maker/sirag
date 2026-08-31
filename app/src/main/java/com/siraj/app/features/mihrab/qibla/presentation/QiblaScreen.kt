@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.siraj.app.ui.theme.SirajAccentDim
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -163,7 +164,7 @@ fun QiblaScreen(
                                 lineTo(0f, size.height)
                                 close()
                             }
-                            drawPath(path = path, color = Color(0xFF00BFA5)) // Emerald green for Qibla
+                            drawPath(path = path, color = SirajAccentDim) // Emerald green for Qibla
                         }
                     }
                 }

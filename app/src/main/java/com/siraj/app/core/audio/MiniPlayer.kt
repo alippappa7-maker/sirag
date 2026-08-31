@@ -181,7 +181,7 @@ fun MiniPlayer(
 
     // Audio Transcript Dialog
     if (showTranscriptDialog && playbackState.currentTrack != null) {
-        val currentTrack = playbackState.currentTrack!!
+        val currentTrack = playbackState.currentTrack ?: return
         AlertDialog(
             onDismissRequest = { showTranscriptDialog = false },
             title = {

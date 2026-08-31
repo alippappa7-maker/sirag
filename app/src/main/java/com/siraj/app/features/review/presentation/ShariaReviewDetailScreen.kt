@@ -24,6 +24,7 @@ import com.siraj.app.domain.models.review.*
 import com.siraj.app.features.review.presentation.components.*
 import java.text.SimpleDateFormat
 import java.util.*
+import com.siraj.app.ui.theme.statusColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -173,7 +174,7 @@ fun ShariaReviewDetailScreen(
                                                 .weight(1f)
                                                 .testTag("btn_action_approve"),
                                             shape = RoundedCornerShape(10.dp),
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
+                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.statusColors.successFg)
                                         ) {
                                             Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(16.dp))
                                             Spacer(modifier = Modifier.width(4.dp))
@@ -186,7 +187,7 @@ fun ShariaReviewDetailScreen(
                                                 .weight(1f)
                                                 .testTag("btn_action_request_changes"),
                                             shape = RoundedCornerShape(10.dp),
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE65100))
+                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.statusColors.warningFg)
                                         ) {
                                             Icon(Icons.Default.EditNote, contentDescription = null, modifier = Modifier.size(16.dp))
                                             Spacer(modifier = Modifier.width(4.dp))

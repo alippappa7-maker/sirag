@@ -106,7 +106,8 @@ fun PrayerTimesScreen(
                         // Next Prayer Countdown
                         item {
                             if (nextPrayer != null) {
-                                val remainingSecs = nextPrayer!!.timeRemainingMs / 1000
+                                val prayer = nextPrayer
+                                val remainingSecs = prayer.timeRemainingMs / 1000
                                 val hours = remainingSecs / 3600
                                 val minutes = (remainingSecs % 3600) / 60
                                 val secs = remainingSecs % 60
@@ -120,9 +121,9 @@ fun PrayerTimesScreen(
                                         modifier = Modifier.padding(24.dp).fillMaxWidth(),
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
-                                        Text("الصلاة القادمة: ${nextPrayer!!.name}", style = MaterialTheme.typography.titleLarge)
+                                        Text("الصلاة القادمة: ${prayer.name}", style = MaterialTheme.typography.titleLarge)
                                         Text(countdownStr, style = MaterialTheme.typography.displayMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                                        Text("على الساعة ${nextPrayer!!.timeStr}", style = MaterialTheme.typography.bodyLarge)
+                                        Text("على الساعة ${prayer.timeStr}", style = MaterialTheme.typography.bodyLarge)
                                     }
                                 }
                             }
@@ -138,7 +139,7 @@ fun PrayerTimesScreen(
                                     Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                                         Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.onErrorContainer)
                                         Spacer(modifier = Modifier.width(8.dp))
-                                        Text(locationError!!, color = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.weight(1f))
+                                        Text(locationError ?: "", color = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.weight(1f))
                                         TextButton(onClick = { showLocationRationale = true }) {
                                             Text("تحديد الموقع")
                                         }

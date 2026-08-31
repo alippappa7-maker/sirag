@@ -18,6 +18,7 @@ import com.siraj.app.domain.models.review.RiskLevel
 import com.siraj.app.domain.models.review.ShariaReviewItem
 import java.text.SimpleDateFormat
 import java.util.*
+import com.siraj.app.ui.theme.statusColors
 
 @Composable
 fun ApproveDialog(
@@ -36,7 +37,7 @@ fun ApproveDialog(
                 Icon(
                     Icons.Default.CheckCircle,
                     contentDescription = null,
-                    tint = Color(0xFF2E7D32)
+                    tint = MaterialTheme.statusColors.successFg
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
@@ -97,7 +98,7 @@ fun ApproveDialog(
                     onConfirm(reason.ifBlank { "تم التدقيق والموافقة الشرعية" }, null)
                 },
                 modifier = Modifier.testTag("btn_confirm_approve"),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.statusColors.successFg)
             ) {
                 Text(if (isCritical) "تأكيد الاعتماد الأولي" else "اعتماد ونشر")
             }
@@ -183,7 +184,7 @@ fun RequestChangesDialog(
                 Icon(
                     Icons.Default.EditNote,
                     contentDescription = null,
-                    tint = Color(0xFFE65100)
+                    tint = MaterialTheme.statusColors.warningFg
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("طلب تعديل شرعي من المنشئ", fontWeight = FontWeight.Bold)
@@ -215,7 +216,7 @@ fun RequestChangesDialog(
                 },
                 enabled = requiredChanges.isNotBlank(),
                 modifier = Modifier.testTag("btn_confirm_request_changes"),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE65100))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.statusColors.warningFg)
             ) {
                 Text("إرسال طلب التعديل")
             }
@@ -398,7 +399,7 @@ fun DualApprovalDialog(
                 },
                 modifier = Modifier.testTag("btn_confirm_dual_approval"),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (approve) Color(0xFF2E7D32) else Color(0xFFE65100)
+                    containerColor = if (approve) MaterialTheme.statusColors.successFg else MaterialTheme.statusColors.warningFg
                 )
             ) {
                 Text(if (approve) "اعتماد مشترك نهائي" else "إرسال الملاحظات")

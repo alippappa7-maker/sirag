@@ -27,6 +27,7 @@ import com.siraj.app.core.ui.components.BetaFeedbackDialog
 import com.siraj.app.domain.models.beta.CriticalJourney
 import com.siraj.app.domain.models.beta.DistributionChannelInfo
 import com.siraj.app.domain.models.beta.TesterStatus
+import com.siraj.app.ui.theme.SirajGold
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -803,7 +804,7 @@ private fun RatingQuestionRow(
                     Icon(
                         imageVector = if (star <= rating) Icons.Default.Star else Icons.Default.StarBorder,
                         contentDescription = "$star نجوم",
-                        tint = if (star <= rating) Color(0xFFFFB300) else MaterialTheme.colorScheme.onSurfaceVariant,
+                        tint = if (star <= rating) com.siraj.app.ui.theme.SirajGold else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(32.dp)
                     )
                 }

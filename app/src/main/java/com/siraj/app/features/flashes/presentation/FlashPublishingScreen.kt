@@ -118,7 +118,7 @@ fun FlashPublishingScreen(
                     }
                 }
             } else {
-                val flash = state.currentFlash!!
+                val flash = state.currentFlash ?: return
                 
                 // Status Banner
                 val statusColor = when(flash.publishingState) {

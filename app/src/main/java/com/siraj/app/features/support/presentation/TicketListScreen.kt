@@ -22,6 +22,7 @@ import com.siraj.app.domain.models.support.*
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.siraj.app.ui.theme.statusColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -257,7 +258,7 @@ fun TicketStatusBadge(status: TicketStatus) {
         TicketStatus.OPEN -> MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer
         TicketStatus.WAITING_USER -> MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
         TicketStatus.IN_PROGRESS -> MaterialTheme.colorScheme.secondaryContainer to MaterialTheme.colorScheme.onSecondaryContainer
-        TicketStatus.RESOLVED -> Color(0xFFE8F5E9) to Color(0xFF2E7D32)
+        TicketStatus.RESOLVED -> MaterialTheme.statusColors.successBg to MaterialTheme.statusColors.successFg
         TicketStatus.CLOSED -> MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
         TicketStatus.ESCALATED -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
     }
