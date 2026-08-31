@@ -137,4 +137,8 @@ sealed class Screen(val route: String) {
     object AiPolicy : Screen("ai_policy")
     object ContentPolicy : Screen("content_policy")
     object CommunityGuidelines : Screen("community_guidelines")
+    object MinorSafety : Screen("minor_safety")
+    object SecretsLifecycle : Screen("secrets_lifecycle")
+    object CostDashboard : Screen("cost_dashboard")
+    object AdminSecurity : Screen("admin_security")
 }

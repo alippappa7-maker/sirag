@@ -1037,26 +1037,77 @@ fun AppNavigation(
                     }
                 )
             }
-        }
-    }
-
-    if (isMainScreen) {
-        MainShellScreen(navController = navController) { paddingValues ->
-            Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-                content(Modifier)
-                MiniPlayer(
-                    modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp),
-                    onExpand = { navController.navigate(Screen.AudioPlayer.route) }
+            composable(Screen.MinorSafety.route) {
+                val repository = remember { com.siraj.app.data.repository.minor.MinorSafetyRepositoryImpl() }
+                val minorViewModel = remember { com.siraj.app.features.minor.presentation.MinorSafetyViewModel(repository) }
+                com.siraj.app.features.minor.presentation.MinorSafetyScreen(
+                    viewModel = minorViewModel,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            composable(Screen.SecretsLifecycle.route) {
+                val repository = remember { com.siraj.app.data.repository.secrets.SecretsLifecycleRepositoryImpl() }
+                val secretsViewModel = remember { com.siraj.app.features.secrets.presentation.SecretsLifecycleViewModel(repository) }
+                com.siraj.app.features.secrets.presentation.SecretsLifecycleScreen(
+                    viewModel = secretsViewModel,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            composable(Screen.CostDashboard.route) {
+                val engine = remember { com.siraj.app.features.cost.domain.CostEngine() }
+                val repository = remember { com.siraj.app.data.repository.cost.CostManagementRepositoryImpl(engine) }
+                val viewModel = remember { com.siraj.app.features.cost.presentation.CostDashboardViewModel(repository) }
+                com.siraj.app.features.cost.presentation.CostDashboardScreen(
+                    viewModel = viewModel,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            composable(Screen.AdminSecurity.route) {
+                val engine = remember { com.siraj.app.features.admin.domain.AdminSecurityEngine() }
+                val repository = remember { com.siraj.app.data.repository.admin.AdminSecurityRepositoryImpl(engine) }
+                val viewModel = remember { com.siraj.app.features.admin.presentation.AdminSecurityViewModel(repository) }
+                com.siraj.app.features.admin.presentation.AdminSecurityDashboardScreen(
+                    viewModel = viewModel,
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
         }
-    } else {
-        Box(modifier = Modifier.fillMaxSize()) {
-            content(Modifier)
-            MiniPlayer(
-                modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp),
-                onExpand = { navController.navigate(Screen.AudioPlayer.route) }
-            )
+    }
+
+    val isConfigInitialized by com.siraj.app.core.config.FeatureFlagManager.isInitialized.collectAsState()
+    val isMaintenanceMode = remember(isConfigInitialized) {
+        com.siraj.app.core.config.FeatureFlagManager.isFeatureEnabled(com.siraj.app.core.config.FeatureFlagManager.FEATURE_MAINTENANCE_MODE)
+    }
+    val isReadOnlyMode = remember(isConfigInitialized) {
+        com.siraj.app.core.config.FeatureFlagManager.isFeatureEnabled(com.siraj.app.core.config.FeatureFlagManager.FEATURE_SYSTEM_READ_ONLY_MODE)
+    }
+
+    androidx.compose.foundation.layout.Column(modifier = Modifier.fillMaxSize()) {
+        com.siraj.app.core.ui.components.SystemStatusBanner(
+            isMaintenanceMode = isMaintenanceMode,
+            isReadOnlyMode = isReadOnlyMode
+        )
+        
+        Box(modifier = Modifier.weight(1f)) {
+            if (isMainScreen) {
+                MainShellScreen(navController = navController) { paddingValues ->
+                    Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+                        content(Modifier)
+                        MiniPlayer(
+                            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp),
+                            onExpand = { navController.navigate(Screen.AudioPlayer.route) }
+                        )
+                    }
+                }
+            } else {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    content(Modifier)
+                    MiniPlayer(
+                        modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp),
+                        onExpand = { navController.navigate(Screen.AudioPlayer.route) }
+                    )
+                }
+            }
         }
     }
 }

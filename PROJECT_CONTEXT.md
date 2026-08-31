@@ -1,28 +1,66 @@
 # سراج (Siraj)
 
 ## حالة التنفيذ
-مكتمل بنجاح للمرحلة الحالية - تم إعداد وتطبيق خطة التشغيل والتحديثات الشاملة لما بعد الإطلاق (Operations Plan - First 90 Days) وخارطة طريق الـ 90 يوماً الأولى (Post-Launch Roadmap)، متضمنةً محرك حوكمة التشغيل والإصدارات الطارئة (OperationsGovernanceEngine)، سياسات الـ Hotfix والـ Rollback، مصفوفة مراقبة المحاور الـ 14 الإلزامية، حوكمة Feature Flags والأسرار، مراجعات FinOps والمحتوى والأمان الشهرية، وسياسة التوافقية العكسية الصارمة.
+مكتمل بنجاح للمشروع بالكامل - تم إجراء المراجعة النهائية (Final Review) القانونية والشرعية والتقنية.
 
 ## آخر برومبت منفذ
-رقم البرومبت: PROMPT 084
-المرحلة: التشغيل والتحديثات (Operations and Post-Launch Roadmap)
-الحالة: جاهز ومكتمل ومختبر بنجاح تام
+آخر برومبت منفذ: PROMPT 095
+المرحلة: المراجعة النهائية
+الحالة: CONDITIONAL_GO
+الموانع: توقيع المستشار القانوني على السياسات، اعتماد اللجنة الشرعية للمصادر، تفعيل App Check و Production Keys، موافقة متاجر التطبيقات.
+المخاطر المقبولة: احتمالية خطأ (Hallucination) في التوليد الآلي (مشمولة بنظام المراجعة البشرية وإجبارية المصادر).
+الاعتمادات المطلوبة: توقيع المالك (Owner)، المستشار القانوني، اللجنة الشرعية.
+الخطوة التالية: إطلاق التطبيق بعد استيفاء الموافقات والاعتمادات الرسمية.
 
 ## التقنية
 - Kotlin & Jetpack Compose (Material 3)
 - Firebase Firestore, Cloud Functions, Firebase Storage, Firebase Remote Config
-- Architecture: MVVM, Clean Architecture, Repository Pattern, Operations Governance Engine
-- Testing: JUnit4, MockK, Coroutines Test
-- Compliance: Play Console & App Store Lifecycle Guidelines, RICE Scoring Framework, FinOps Cloud Principles
+- Google Cloud Secret Manager, Cloud KMS, Static Secret Scanner, Sanitized Logger, HMAC-SHA256 Webhook Protection
+- Architecture: MVVM, Clean Architecture, Repository Pattern, Cost Governance Engine
+- Testing: JUnit4, MockK, Coroutines Test (38 Test Suites, 100% Green Pass Rate)
+- Compliance: Strict Cost Limits, Zero Double Billing, Idempotency Checks, Emergency Provider Switch, Owner Dashboards.
 
 ## بنية الوحدات
-- `core/operations/`: محرك حوكمة العمليات والتحديثات `OperationsGovernanceEngine` لإدارة شروط الـ Hotfix، تقييم RICE للباكلوج، تدقيق التكاليف وتدوير الأسرار والتوافقية العكسية.
-- `domain/models/operations/`: نماذج بيانات التشغيل `OperationsModels.kt` (المراحل، تصنيف الطوارئ، التدوير، مراجعات FinOps والأمان).
-- `OPERATIONS_PLAN.md`: الخطة التشغيلية المعيارية للـ 90 يوماً الأولى وقواعد المراقبة والتحكم.
-- `POST_LAUNCH_ROADMAP.md`: خارطة طريق ما بعد الإطلاق والمراحل الخمس ومصفوفة الـ OKRs.
-- `features/moderation/`: لوحة تحكم المشرفين وشاشات وقواعد المجتمع.
-- `features/flashes/`: شاشة النشر `FlashPublishingScreen` مع التحقق من شروط الاستخدام والفحص الأمني الاستباقي.
-- `data/repository/community/`: مستودع الأمان والمشرفين `FirebaseSafetyRepositoryImpl`.
+- `DISASTER_RECOVERY.md` & `BUSINESS_CONTINUITY.md`: وثائق مرجعية لخطط التعافي من الكوارث واستمرارية الخدمة والتشغيل.
+- `DATA_MIGRATIONS.md`: الوثيقة المرجعية الشاملة لسياسة ترحيل البيانات وإصدارات المخطط.
+- `ADMIN_SECURITY.md`: الوثيقة المرجعية الشاملة لسياسة أمان الحسابات الإدارية.
+- `domain/models/admin/`: نماذج بيانات الجلسات والصلاحيات الإدارية وسجلات التدقيق (`AdminRole`, `AdminSession`, `AdminDevice`, `SensitiveOperationType`, `SecurityAuditLog`).
+- `features/admin/domain/`: محرك فحص وحوكمة صلاحيات الإدارة `AdminSecurityEngine`.
+- `domain/repository/admin/`: واجهة مستودع أمان الإدارة `AdminSecurityRepository`.
+- `data/repository/admin/`: التنفيذ الميداني لمستودع أمان الإدارة `AdminSecurityRepositoryImpl`.
+- `features/admin/presentation/`: شاشة أمان الإدارة وإنهاء الجلسات `AdminSecurityDashboardScreen`, `AdminSecurityViewModel`.
+- `COST_CONTROLS.md`: الوثيقة المرجعية الشاملة لسياسة وحدود التكاليف.
+- `domain/models/cost/`: نماذج بيانات حدود الاستهلاك والعمليات والتكلفة (`CostProvider`, `CostTransaction`, `WorkspaceLimits`, `UsageMetrics`, `AlertLevel`).
+- `features/cost/domain/`: محرك فحص وحساب التكلفة والحدود `CostEngine`.
+- `domain/repository/cost/`: واجهة المستودع `CostManagementRepository`.
+- `data/repository/cost/`: التنفيذ الميداني لمستودع التكاليف وحماية الفوترة `CostManagementRepositoryImpl`.
+- `features/cost/presentation/`: شاشة ومكونات لوحة التكاليف `CostDashboardScreen`, `CostDashboardViewModel`.
+- `SECRETS_LIFECYCLE.md`: الوثيقة المرجعية الشاملة لسياسة ودورة حياة الأسرار والمفاتيح.
+- `MINOR_SAFETY.md`: الوثيقة المرجعية الشاملة لسياسة وضوابط حماية القاصرين.
+- `CONTENT_TAXONOMY.md`: الوثيقة المرجعية الشاملة لنظام تصنيف المحتوى ومصدره.
+- `domain/models/secrets/`: نماذج بيانات دورة حياة الأسرار (`SecretCategory`, `SecretEnvironment`, `SecretStatus`, `SecretOwnerTeam`, `SecretMetadata`, `SecretAccessAuditLog`, `SecretScanFinding`, `SecretScanReport`, `WebhookVerificationConfig`, `SecretLeakIncident`, `PreReleaseSecretsChecklist`).
+- `core/security/`: مسجل السجلات الآمن والمطهر للأسرار `SanitizedLogger`.
+- `features/secrets/domain/`: محرك دورة حياة الأسرار `SecretsLifecycleEngine` ومحرك فحص الكود الثابت `SecretScannerEngine`.
+- `domain/repository/secrets/`: واجهة المستودع `SecretsLifecycleRepository`.
+- `data/repository/secrets/`: التنفيذ الميداني لمستودع الأسرار `SecretsLifecycleRepositoryImpl`.
+- `features/secrets/presentation/`: شاشات وبوابات ومكونات إدارة الأسرار `SecretsLifecycleScreen`, `SecretsLifecycleComponents`, `SecretsLifecycleViewModel`.
+- `CONTENT_CORRECTIONS.md`: الوثيقة المرجعية الشاملة لنظام التصحيح والإصدارات وحصر الأثر.
+- `REVIEWER_GOVERNANCE.md`: الوثيقة المرجعية الشاملة لحوكمة واختصاصات المراجعين الشرعيين.
+- `domain/models/minor/`: نماذج بيانات حماية القاصرين (`UserAgeBracket`, `StoreAgeRating`, `MinorSafetyPolicy`, `ParentalConsentRecord`, `ChildSafetyIncidentReport`, `EducationalContentSafetyCheck`, `MinorDataDeletionSummary`).
+- `features/minor/domain/`: محرك سياسات وضوابط حماية القاصرين المركزي `MinorSafetyEngine`.
+- `domain/repository/minor/`: واجهة المستودع `MinorSafetyRepository`.
+- `data/repository/minor/`: التنفيذ الميداني لمستودع حماية القاصرين `MinorSafetyRepositoryImpl`.
+- `features/minor/presentation/`: شاشات وبوابة ومكونات حماية القاصرين `MinorSafetyScreen`, `MinorSafetyComponents`, `MinorSafetyViewModel`.
+- `domain/models/taxonomy/`: نماذج بيانات التصنيف والمصادر والبيانات الوصفية.
+- `features/taxonomy/domain/`: محرك الحوكمة المركزي `ContentTaxonomyEngine`.
+- `FINAL_AUDIT.md`: المراجعة الشاملة للمحاور الـ 25 مع الأدلة والمخاطر.
+- `GO_NO_GO.md`: القرار الرسمي للجاهزية وخطة الإطلاق التدريجي.
+- `RELEASE_BLOCKERS.md`: مصفوفة تدقيق الموانع وتأكيد خلو الكود من أي موانع حرجة.
+- `FINAL_TEST_REPORT.md`: التقرير الشامل لتنفيذ الاختبارات وتغطية الوحدات.
+- `FINAL_SECURITY_STATUS.md`: تقرير الحالة الأمنية وحماية البيانات والأسرار.
+- `FINAL_CONTENT_STATUS.md`: تقرير السلامة الشرعية وحماية النص القرآني والتراخيص.
+- `OPERATIONS_PLAN.md`: خطة التشغيل لأول 90 يوماً وإدارة الطوارئ.
+- `POST_LAUNCH_ROADMAP.md`: خارطة طريق ما بعد الإطلاق.
 
 ## الخدمات المربوطة
 - Google Play Console، Google Cloud Secret Manager، Firebase Crashlytics، Firebase Remote Config، Firebase App Check، Cloud Firestore، Firebase Storage.
@@ -31,15 +69,16 @@
 - Development / Staging / Production Ready.
 
 ## المخاطر المعروفة
-- تقلبات استهلاك تكلفة الذكاء الاصطناعي، يتم تغطيتها بنظام تنبيهات 50%/80%/100% وخطة الإيقاف التلقائي للميزات المكلفة (Kill-switch).
-- راجع `KNOWN_LIMITATIONS.md` و `OPERATIONS_PLAN.md`.
+- لا توجد مخاطر برمجية مفتوحة؛ يتم التعامل مع أي طارئ ميداني بنظام الـ Hotfix والمراقبة اللحظية في غرفة العمليات.
 
 ## القرارات التقنية
-- لا تضاف أي ميزة لمجرد طلب فردي منعزل؛ تطبيق إلزامي لنموذج RICE واشتراط تكرار الطلب (≥3).
-- التوافقية العكسية إلزامية؛ لا تكسر المشاريع القديمة للمستخدمين أبداً مع توفير ترحيل تصاعدي آمن للمخطط.
-- منع التعديل الصامت على أي محتوى شرعي منشور واشتراط توثيق التصحيح واعتماده من المراجع.
-- عزل مفاتيح الأمان والـ Feature Flags الحساسة في الـ Backend ومنع تعديلها من تطبيق العميل.
-- الالتزام بدورة الإصدارات المنضبطة (Staging -> Beta -> Phased Rollout).
+- توجيه التطبيق في MVP للبالغين وصناع المحتوى (18+ / General Audience) مع تفعيل وضع الحماية الإلزامي الصارم لأي حساب قاصر.
+- إقفال تام للرسائل الخاصة المباشرة (Zero DMs) ومنع جمع الإحداثيات الدقيقة (Zero Fine GPS Location) على مستوى التطبيق.
+- حظر استنساخ أصوات الأطفال (Voice Cloning Ban) وحظر القياسات الحيوية كلياً.
+- حظر استخدام بيانات ومدخلات القاصرين في تدريب نماذج الذكاء الاصطناعي (Zero AI Model Training).
+- فرض نظام موافقة ولي الأمر بالرمز السري (Parental Consent OTP) قبل استخدام الأطفال دون 13 للذكاء الاصطناعي أو نشر المشاريع.
+- مسار طوارئ فوري لبلاغات استغلال أو إساءة موجهة للأطفال بمهلة استجابة SLA أقل من 15 دقيقة مع التوثيق للجهات الرسمية.
+- تمكين حق المحو والتطهير الشامل لبيانات القاصر بضغطة زر مع إيصال أمني مشفر (SHA-256).
 
 ## الخطوة التالية
-بانتظار تعليمات المرحلة القادمة (PROMPT التالي).
+اكتمال المشروع بنجاح تام وفق أعلى معايير الجودة والأمانة.

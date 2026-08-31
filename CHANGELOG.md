@@ -1,5 +1,191 @@
 # سجل التغييرات (Changelog)
 
+## [1.1.0] - Final Project Review (PROMPT 095)
+### Added
+- **المراجعة النهائية (Final Legal, Sharia, and Technical Review):**
+  - إنشاء `FINAL_LEGAL_REVIEW.md` لتوثيق الجاهزية القانونية وحماية القاصرين وشروط الاستخدام.
+  - إنشاء `FINAL_SHARIA_REVIEW.md` لتوثيق الجاهزية الشرعية، فصل النصوص، الاعتمادات، وحماية الفتاوى.
+  - إنشاء `FINAL_TECHNICAL_REVIEW.md` لتوثيق الأمان التقني وقواعد البيانات والأسرار.
+  - إنشاء `RELEASE_BLOCKERS.md` لتوثيق موانع الإطلاق والاعتمادات البشرية المطلوبة.
+  - إصدار قرار الجاهزية الرسمي `FINAL_GO_NO_GO.md` بحالة `CONDITIONAL_GO`.
+  - عدم إضافة أي ميزات برمجية جديدة (مرحلة حوكمة ومراجعة حصرية).
+
+
+## [1.0.9] - Disaster Recovery & Business Continuity (PROMPT 094)
+### Added
+- **نظام استمرارية الخدمة والتعافي من الكوارث (Disaster Recovery & Business Continuity):**
+  - بناء وتحديث `FeatureFlagManager` لدعم أعلام الطوارئ المتقدمة (`FEATURE_SYSTEM_READ_ONLY_MODE` و `FEATURE_MAINTENANCE_MODE`).
+  - تطبيق وضع القراءة فقط (Read-Only Mode) عند توقف الخدمات الحرجة لضمان استمرار تصفح المستخدمين للقرآن والمشاريع المصدرة.
+  - إرساء سياسات الاسترداد والتعافي وتوثيق قيم RTO و RPO للأقسام الحرجة.
+  - تعزيز حماية الفوترة عبر اختبار سياسة الـ Idempotency لمنع أي عمليات دفع أو خصم مزدوج أثناء انهيار الخدمة أو الشبكة.
+  - وضع خطط استجابة تشغيلية للحوادث غير التقنية (مثل غياب المراجعين الشرعيين، تسرب أمني، خطأ مصدري شامل).
+  - التوثيق المرجعي الشامل في وثيقتي `DISASTER_RECOVERY.md` و `BUSINESS_CONTINUITY.md`.
+  - إجراء اختبار التعافي عبر `DisasterRecoveryTest` لضمان عمل وضع القراءة فقط وأنظمة الحماية (نجاح 100%).
+
+## [1.0.8] - Schema Versioning & Data Migrations (PROMPT 093)
+### Added
+- **نظام الترحيل وإصدارات المخطط (Schema Versioning & Data Migrations):**
+  - بناء محرك ترحيل خلفي (`MigrationEngine`) لترقية مخططات البيانات (Schema Versions) بشكل آمن ومنفصل عن تطبيق العميل.
+  - دعم خصائص الترحيل المتقدمة:
+    - **التشغيل التجريبي (Dry Run):** محاكاة الترقيات واكتشاف الأخطاء بدون حفظ فعلي.
+    - **الترحيل على دفعات (Batching):** معالجة الوثائق بدفعات محدودة الحجم (100 وثيقة) لتفادي حدود Firestore.
+    - **اكتشاف الوثائق القديمة:** فحص `schemaVersion` لكل وثيقة بشكل ديناميكي.
+  - حوكمة الأمان والبيانات:
+    - التحقق المسبق الإلزامي من وجود نسخة احتياطية (Pre-Migration Backup Gate) للترحيل الحقيقي.
+    - نظام قفل التزامن (Concurrent Lock) لمنع تضارب عمليات الترحيل في نفس الوقت.
+    - الحفاظ التام على التوافق الخلفي (عدم حذف الحقول القديمة وعدم تغيير معانيها).
+  - نماذج البيانات (`domain/models/migration/`):
+    - `MigrationJob`, `MigrationStatus`, `MigrationError`, `DocumentSchemaState`, `SchemaConstants`.
+  - واجهة وتطبيق المستودع الميداني: `MigrationRepository` و `MigrationRepositoryImpl`.
+  - التوثيق المرجعي الشامل في وثيقة `DATA_MIGRATIONS.md`.
+  - اختبارات الوحدة الشاملة: `MigrationTest` لاختبار نجاح الـ Dry Run، والتأكد من توافق المخطط، واختبار قفل التزامن (نجاح 100%).
+
+## [1.0.7] - Admin Security Controls (PROMPT 092)
+### Added
+- **أمان الحسابات الإدارية (Admin Security Controls):**
+  - فرض المصادقة ثنائية العوامل (MFA) لكافة أدوار الإدارة (`OWNER`, `ADMIN`, `REVIEWER`).
+  - نماذج البيانات (`domain/models/admin/`):
+    - `AdminRole`, `SensitiveOperationType`, `AdminDevice`, `AdminSession`, `AdminSecurityConfig`, `SecurityAuditLog`.
+  - محرك حوكمة الإدارة (`AdminSecurityEngine`):
+    - إعادة التحقق التلقائي للعمليات الحساسة (مثل `DELETE_CONTENT`، `EXPORT_DATA`) من الأجهزة غير الموثوقة.
+    - تقييد الجلسات الخاملة (Idle Timeout) وتعليقها التلقائي.
+    - تطبيق مبدأ أقل امتيازاً ومنع تجاوز الصلاحيات (Admin vs Owner).
+  - واجهة وتطبيق المستودع الميداني: `AdminSecurityRepository` و `AdminSecurityRepositoryImpl`.
+  - شاشات أمان الإدارة: `AdminSecurityDashboardScreen` لرؤية الأجهزة النشطة والـ IPs، وإمكانية إبطال (Revoke) أي جلسة مشبوهة.
+  - التوثيق المرجعي الشامل في وثيقة `ADMIN_SECURITY.md`.
+  - اختبارات الوحدة الشاملة: `AdminSecurityTest` للتحقق من منع الجلسات بدون MFA، إبطال الجلسات، واختبار مهلة الجمود (نجاح 100%).
+
+## [1.0.6] - Cost & Limits Management System (PROMPT 091)
+### Added
+- **إدارة التكلفة والحدود (Cost & Limits Management System):**
+  - تصنيف وحوكمة الحدود بـ 6 فئات رئيسية: حد يومي، حد شهري، حد مستخدم، حد عملية، حد إعادة توليد، حدود فيزيائية (حجم/مدة).
+  - نماذج البيانات (`domain/models/cost/`):
+    - `CostProvider`, `OperationType`, `WorkspaceLimits`, `UsageMetrics`, `CostTransaction`, `CostEstimate`, `AlertLevel`, `WorkspaceUsageStatus`, `ProviderEmergencyStatus`.
+  - محرك التكاليف (`CostEngine`):
+    - فحص دقيق للحدود قبل التنفيذ بناءً على الحجز (Reservation) لمنع تجاوز السقف المحدد.
+  - واجهة وتطبيق المستودع الميداني: `CostManagementRepository` و `CostManagementRepositoryImpl`.
+  - حماية الازدواجية (Idempotency):
+    - منع تكرار الخصم لنفس العملية عند إعادة المحاولة بسبب انقطاع الشبكة.
+  - شاشات المالك: `CostDashboardScreen` لرؤية الاستهلاك الكلي، وتفعيل مفتاح الطوارئ `Emergency Switch`.
+  - التوثيق المرجعي الشامل في وثيقة `COST_CONTROLS.md`.
+  - اختبارات الوحدة الشاملة: `CostManagementTest` للتحقق من سلامة الحجز، التنبيهات، وحماية الدفع المزدوج (نجاح 100%).
+
+## [1.0.5] - Secrets & Key Management Lifecycle (PROMPT 090)
+### Added
+- **إدارة الأسرار والمفاتيح ودورة حياتها الشاملة (Secrets & Key Management Lifecycle):**
+  - تصنيف وحوكمة 10 فئات أسرار رئيسية:
+    - `GEMINI_API_KEY`, `IMAGE_PROVIDER_KEY`, `AUDIO_PROVIDER_KEY`, `VIDEO_PROVIDER_KEY`, `GOOGLE_PLAY_CREDENTIALS`, `APPLE_PRIVATE_KEY`, `FIREBASE_ADMIN_CREDENTIALS`, `WEBHOOK_SECRET`, `SIGNING_KEY`, `DATABASE_CREDENTIALS`.
+  - نماذج البيانات الوصفية وسجلات التدقيق وحوادث الطوارئ (`domain/models/secrets/`):
+    - `SecretCategory`, `SecretEnvironment`, `SecretStatus`, `SecretOwnerTeam`, `SecretMetadata`, `SecretAccessAuditLog`, `SecretScanFinding`, `SecretScanReport`, `WebhookVerificationConfig`, `SecretLeakIncident`, `PreReleaseSecretsChecklist`.
+  - محرك تطهير السجلات وحظر التسريب (`SanitizedLogger`):
+    - تطهير فوري لكافة أنماط المفاتيح (Google AIza, OpenAI sk-, Bearer tokens, private keys, passwords, database URLs) واستبدالها بـ `[REDACTED_SECRET]`.
+  - محرك الفحص الثابت للأسرار (`SecretScannerEngine`):
+    - فحص الكود وملفات التكوين للكشف عن الأسرار ومنع الرفع إلى المستودع (Push Protection).
+  - محرك حوكمة دورة حياة الأسرار (`SecretsLifecycleEngine`):
+    - فرض عزل العميل التام (Zero Secrets in Client APK) وتمرير كافة الطلبات الحساسة عبر Cloud Functions Backend.
+    - تدوير دوري مجدول للأسرار وإصدار نسخ جديدة وتوثيق في سجلات التدقيق المشفرة.
+    - بروتوكول الإبطال الفوري لحالات الطوارئ مع فتح ملف حادثة واحتواء الأثر.
+    - التحقق المشفر من صحة إشعارات Webhook باستخدام HMAC-SHA256 وحماية إعادة الإرسال (Replay Defense).
+    - بوابة تدقيق ما قبل الإصدار (Pre-Release Secrets Gate) لمنع تصدير التطبيق عند وجود أي تسريب.
+  - واجهة وتطبيق المستودع الميداني: `SecretsLifecycleRepository` و `SecretsLifecycleRepositoryImpl`.
+  - شاشات وبوابات إدارة الأسرار: `SecretsLifecycleScreen`, `SecretsLifecycleComponents`, `SecretsLifecycleViewModel`.
+  - التوثيق المرجعي الشامل في وثيقة `SECRETS_LIFECYCLE.md`.
+  - حزمة الاختبارات الآلية الشاملة: `SecretsLifecycleTest` بنسبة نجاح 100%.
+
+## [1.0.4] - Minor Safety & Child Protection System (PROMPT 089)
+### Added
+- **نظام وسياسة حماية القاصرين وسلامة الأطفال (Minor Safety & Child Protection System):**
+  - بناء نماذج بيانات حماية القاصرين:
+    - الفئات العمرية: `ADULT_18_PLUS`, `TEEN_13_TO_17`, `CHILD_UNDER_13`, `UNSPECIFIED` (وضع الحماية القصوى الافتراضي).
+    - تصنيفات المتاجر الرسمية: `PEGI 3`, `Everyone 10+ / Teen`.
+    - سياسة وضوابط الحماية المفروضة: `MinorSafetyPolicy`.
+    - نماذج موافقة ولي الأمر: `ParentalConsentRecord`, `ParentalConsentStatus`.
+    - بلاغات الطوارئ واستغلال الأطفال: `ChildSafetyIncidentReport`, `ChildSafetyIncidentType`, `IncidentUrgency`, `IncidentResolutionStatus`.
+    - تدقيق المحتوى التعليمي: `EducationalContentSafetyCheck`.
+    - حق المحو وتطهير بيانات القاصر: `MinorDataDeletionSummary`.
+  - محرك سياسات وضوابط حماية القاصرين (`MinorSafetyEngine`):
+    - إنفاذ نمط "خاص افتراضياً" (`Private by Default`) لكافة حسابات القاصرين واليافعين.
+    - الحظر البرمجي للرسائل الخاصة المباشرة (Zero DMs) ومنع أي اتصال غير مراقب.
+    - الحظر المطلق لجمع الإحداثيات الدقيقة (Zero Fine GPS Location) والاعتماد على التقريب العام لمواقيت الصلاة.
+    - التعطيل الصارم للإعلانات الموجهة وبناء الملفات التعريفية التتبعية (COPPA / GDPR-K).
+    - الحظر التام لاستخدام بيانات ومدخلات القاصرين لتدريب نماذج الذكاء الاصطناعي (Zero AI Model Training).
+    - الحظر الصارم لاستنساخ أصوات الأطفال بالذكاء الاصطناعي (Voice Cloning Ban).
+    - مسار الفرز والتصعيد الفوري لبلاغات استغلال أو إساءة الأطفال بمهلة استجابة عاجلة (SLA < 15 mins).
+    - فاحص المحتوى التعليمي للأطفال وخلوه من محفزات الشراء المضللة والعناصر المخيفة.
+    - محرك التطهير الفوري لبيانات وتسجيلات القاصر مع توليد إيصال أمني موثق (SHA-256 Checksum).
+  - واجهة المستودع وتنفيذه الميداني: `MinorSafetyRepository` و `MinorSafetyRepositoryImpl`.
+  - شاشات وبوابة ومكونات حماية القاصرين: `MinorSafetyScreen`, `MinorSafetyComponents`, `MinorSafetyViewModel`.
+  - التوثيق المرجعي الكامل في وثيقة `MINOR_SAFETY.md`.
+  - حزمة اختبارات الوحدة الشاملة: `MinorSafetyTest` بنسبة نجاح 100%.
+
+## [1.0.3] - Content Taxonomy & Provenance System (PROMPT 088)
+### Added
+- **نظام تصنيف المحتوى ومصدره وحوكمة الأصول (Content Taxonomy & Provenance System):**
+  - بناء نماذج البيانات المكتملة للتصنيف الموحد:
+    - أنواع الأصول ومصدر النشأة: `system_content`, `editorial_content`, `user_generated`, `ai_generated`, `licensed_external`.
+    - المجالات والمعارف الشرعية: `Quran_text`, `Tafsir`, `Hadith`, `Fiqh`, `Educational`, `General`.
+    - أنواع الوسائط: `Text`, `Audio`, `Video`, `Image`, `Template`, `Interactive`.
+    - البيانات الوصفية المركزية: `ContentTaxonomyMetadata`, `ClassifiedContentItem`, `TaxonomyAuditReport`, `TaxonomyMigrationResult`.
+  - محرك حوكمة وتصنيف المحتوى (`ContentTaxonomyEngine`):
+    - إقفال وحماية تامة للنص القرآني (`Quran_text`) وجعله غير قابل للتعديل (Immutable) مع قصر صلاحيات التعديل على القائمة الفارغة `[]` ومنع أي تعديل أو إسناد دور له.
+    - الفصل القاطع بين النص القرآني والتفاسير والترجمات.
+    - منع مساواة المحتوى المولد بالذكاء الاصطناعي (`ai_generated`) بالمحتوى التحريري الموثق شرعياً، وفرض المراجعة البشرية وفحص السلامة والحقوق.
+    - منع ادعاء ملكية سراج (`SIRAJ_ORIGINAL`) للمواد المرخصة خارجياً (`licensed_external`) وإلزام ذكر التراخيص والعزو.
+    - تعليق وتقييد فوري للمواد مجهولة الحقوق والترخيص (`UNKNOWN`) وحجبها عن النشر العام.
+    - عزل محتوى المستخدمين (`user_generated`) عن التحرير الرسمي ومنع أي مستخدم من التعديل على محتوى مستخدم آخر.
+    - التحقق الخادمي الصارم من التصنيفات وعدم الاعتماد على القيمة القادمة من العميل وحدها.
+    - توجيه المحتوى تلقائياً إلى مسار المراجعة المناسب (`ReviewPipelinePath`).
+    - محرك تدقيق الامتثال وحصر المواد غير المصنفة ومحرك ترحيل البيانات السابقة للمخطط الموحد.
+  - واجهة المستودع وتنفيذه الميداني: `ContentTaxonomyRepository` و `ContentTaxonomyRepositoryImpl` مع فلاتر البحث المتقدم.
+  - شاشات ووسوم ومكونات التصنيف والمصادر: `ContentTaxonomyManagementScreen`, `TaxonomyComponents`, `ContentTaxonomyViewModel`.
+  - التوثيق المرجعي الشامل في وثيقة `CONTENT_TAXONOMY.md`.
+  - حزمة اختبارات الوحدة الشاملة: `ContentTaxonomyTest` بنسبة نجاح 100%.
+
+## [1.0.2] - Content Corrections & Sharia Versioning (PROMPT 087)
+### Added
+- **نظام التصحيح والإصدارات الشرعية (Content Corrections & Versioning System):**
+  - بناء نماذج البيانات المكتملة: `ContentVersion`, `CorrectionNotice`, `SourceRevision`, `AffectedAsset`, `CorrectionReview`, `ImpactReport`.
+  - دعم أنواع التصحيحات السبعة: `SOURCE_ERROR`, `WORDING_ERROR`, `ATTRIBUTION_ERROR`, `RIGHTS_ISSUE`, `TECHNICAL_ERROR`, `SAFETY_ISSUE`, `OTHER`.
+  - دعم جهات الاكتشاف: `USER_REPORT`, `REVIEWER_AUDIT`, `CREATOR_SELF_DISCOVERY`, `SYSTEM_SCAN`.
+  - محرك التصحيح والإصدارات (`ContentCorrectionEngine`):
+    - حظر التعديل الصامت للمحتوى المنشور، وإنشاء إصدار جديد (`v_N+1`) مع الحفاظ الكامل على الإصدارات القديمة في السجل الثابت بصفتها (`SUPERSEDED`).
+    - توثيق البصمة الرقمية للنزاهة المشفرة (`immutableHash - SHA-256`) لكل إصدار.
+    - الإيقاف والتعليق الفوري للنسخ القديمة في قضايا الحقوق (`RIGHTS_ISSUE`) وقضايا السلامة (`SAFETY_ISSUE`).
+    - الإحالة الإلزامية لأخطاء المصادر والألفاظ والأقوال إلى مراجع شرعي مؤهل.
+    - تتبع وحصر كافة المشاهد ومقاطع الفيديو والومضات المتأثرة بالتصحيح مع توليد تقرير أثر إحصائي شامل (`ImpactReport`).
+    - النشر الشفاف مع إشعار المستخدمين عبر إفصاح تصحيحي عام (`Public Correction Notice`).
+  - واجهة المستودع وتنفيذه الميداني: `ContentCorrectionRepository` و `ContentCorrectionRepositoryImpl`.
+  - شاشة سجل وتاريخ الإصدارات والتصحيحات: `ContentCorrectionHistoryScreen` و `ContentCorrectionViewModel`.
+  - التوثيق المرجعي الكامل في وثيقة `CONTENT_CORRECTIONS.md`.
+  - حزمة اختبارات الوحدة الشاملة: `ContentCorrectionTest` بنسبة نجاح 100%.
+
+## [1.0.1] - Sharia Reviewer Governance (PROMPT 086)
+### Added
+- **منظومة حوكمة المراجعين الشرعيين (Sharia Reviewer Governance):**
+  - بناء نماذج الحوكمة المكتملة: `ReviewerProfile`, `ReviewerQualification`, `ReviewerScope`, `ReviewerConflict`, `ReviewerAssignment`, `ReviewerDecision`.
+  - دعم مجالات الاختصاص الشرعي الثمانية: `QURAN`, `HADITH`, `TAFSIR`, `FIQH`, `AQEEDAH`, `SEERAH`, `EDUCATION`, `GENERAL`.
+  - إدارة حالات المراجعين: `ACTIVE`, `PENDING_VERIFICATION`, `SUSPENDED`.
+  - محرك حوكمة المراجعين (`ReviewerGovernanceEngine`):
+    - التحقق الصارم من الأهلية والمؤهلات وتاريخ التوثيق من المالك (Owner Verification).
+    - التحقق من سقف مستوى الخطورة وتطبيق استثناء الموضوعات المحظورة لكل مراجع.
+    - منع تعارض المصالح قطعيّاً (منع الصانع من مراجعة عمله وفحص القيود المؤسسية والشخصية).
+    - فرض المراجعة المزدوجة (Second Reviewer) إلزامياً للموضوعات والمسائل الحرجة (Critical Topics).
+    - تسجيل القرارات الشرعية في سجل ثابت غير قابل للتعديل أو الحذف (Immutable Decision Log) مرتبط برقم النسخة.
+    - توليد بطاقة مراجع عامة آمنة (Sanitized Profile) لحماية البيانات الحساسة للمؤهلات.
+  - واجهة مستودع الحوكمة وتنفيذه الميداني: `ReviewerGovernanceRepository` و `ReviewerGovernanceRepositoryImpl`.
+  - لوحة تحكم المالك لإدارة المراجعين: `ReviewerGovernanceDashboardScreen` و `ReviewerGovernanceViewModel`.
+  - توثيق شامل للحوكمة في وثيقة `REVIEWER_GOVERNANCE.md`.
+  - اختبارات الوحدة الشاملة: `ReviewerGovernanceTest` بنسبة نجاح 100%.
+
+## [1.0.0] - Final Audit & Readiness Decision (PROMPT 085)
+### Added
+- **التدقيق النهائي الشامل للمنظومة (25-Pillar Comprehensive Audit):** مراجعة كاملة ودقيقة لـ 25 محوراً تشغيلياً وأمنياً وشرعياً وفنياً تغطي الوظائف الأساسية، رندرة الفيديو، التوثيق والمراجعة الشرعية، موجز الومضات، تراخيص الوسائط، المصادقة والصلاحيات (RBAC)، قواعد Firestore وStorage، دوال السحابة، الذكاء الاصطناعي كمساعد إنتاج، الاشتراكات والأرصدة، المحراب وحماية القرآن، الخصوصية وحذف الحسابات، الإشراف على المحتوى، مكافحة الأعطال وتطهير السجلات، الأداء والتخزين المؤقت، إمكانية الوصول وRTL، خطة الطوارئ والنسخ الاحتياطي، وجاهزية المتاجر.
+- **قرار الجاهزية الرسمي (`GO_NO_GO.md`):** إصدار قرار الجاهزية الرسمي **CONDITIONAL GO** المشروط باستكمال التجهيزات الإجرائية لبيئة الإنتاج السحابية وشهادات المتاجر.
+- **مصفوفة موانع النشر والإطلاق (`RELEASE_BLOCKERS.md`):** تأكيد خلو المنظومة التام من أي مانع برمجي أو أمني أو شرعي (Zero Code Blockers).
+- **التقرير النهائي لتنفيذ الاختبارات (`FINAL_TEST_REPORT.md`):** توثيق اجتياز 32 حزمة اختبارات أحادية وتكاملية بنسبة نجاح 100% وخلو المشروع من أي أخطاء بناء.
+- **التقرير النهائي للأمان والبيانات (`FINAL_SECURITY_STATUS.md`):** توثيق عزل الأسرار، وتطبيق قواعد أمان Firestore وStorage، وتطهير السجلات، ومطابقة متطلبات GDPR وGoogle Play.
+- **التقرير النهائي لسلامة المحتوى والامتثال الشرعي (`FINAL_CONTENT_STATUS.md`):** توثيق مناعة النص القرآني من التعديل (Immutable)، وتوثيق الأحاديث بالمراجع، وإلزامية المراجعة البشرية وسجل التصحيحات غير القابل للحذف.
+
 ## [Unreleased] - Operations & Post-Launch Roadmap (PROMPT 084)
 ### Added
 - **خطة التشغيل لأول 90 يوماً (Operations Plan - First 90 Days):** صياغة وثيقة `OPERATIONS_PLAN.md` متضمنةً المراحل الخمس (أول 24 ساعة، أول أسبوع، أول 30 يوماً، أول 60 يوماً، أول 90 يوماً)، ومصفوفة مراقبة المحاور الـ 14 الإلزامية (الأعطال، ANR، الدخول، التصدير، الذكاء الاصطناعي، التكاليف، الاشتراكات، البلاغات، المصادر، حذف الحسابات، الاستبقاء، التقييمات، التذاكر، واستخدام الميزات).
