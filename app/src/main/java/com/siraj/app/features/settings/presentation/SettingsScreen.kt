@@ -53,6 +53,7 @@ fun SettingsScreen(
     onNavigateToContentPolicy: () -> Unit = {},
     onNavigateToAiPolicy: () -> Unit = {},
     onNavigateToCommunityGuidelines: () -> Unit = {},
+    onNavigateToAdmin: () -> Unit = {},
     onNavigateBack: () -> Unit,
     onLogout: () -> Unit,
     viewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory()),
@@ -107,6 +108,8 @@ fun SettingsScreen(
                         onLogout = { viewModel.logout(onLogout) },
                         onNavigateToBilling = onNavigateToBilling,
                         onNavigateToTesterHub = onNavigateToTesterHub,
+                        onNavigateToAdmin = onNavigateToAdmin,
+                        currentUserRole = uiState.profile?.role,
                     )
                 SettingsPage.ACCOUNT -> AccountSettings(uiState, viewModel, onLogout)
                 SettingsPage.WORKSPACE -> onNavigateToWorkspaceSettings()
@@ -162,6 +165,8 @@ fun MainSettingsList(
     onLogout: () -> Unit,
     onNavigateToBilling: () -> Unit,
     onNavigateToTesterHub: () -> Unit = {},
+    onNavigateToAdmin: () -> Unit = {},
+    currentUserRole: UserRole? = null,
 ) {
     val items =
         listOf(
@@ -239,6 +244,15 @@ fun MainSettingsList(
                     }
                 },
             )
+        }
+        if (currentUserRole == UserRole.ADMIN || currentUserRole == UserRole.OWNER) {
+            item {
+                SettingsListItem(
+                    title = "لوحة الإدارة",
+                    icon = Icons.Default.AdminPanelSettings,
+                    onClick = onNavigateToAdmin,
+                )
+            }
         }
         item {
             Spacer(modifier = Modifier.height(24.dp))

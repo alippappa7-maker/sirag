@@ -365,6 +365,7 @@ fun AppNavigation(
                         onNavigateToContentPolicy = { navController.navigate(Screen.ContentPolicy.route) },
                         onNavigateToAiPolicy = { navController.navigate(Screen.AiPolicy.route) },
                         onNavigateToCommunityGuidelines = { navController.navigate(Screen.CommunityGuidelines.route) },
+                        onNavigateToAdmin = { navController.navigate(Screen.Admin.route) },
                         onNavigateBack = { navController.popBackStack() },
                         onLogout = {
                             navController.navigate(Screen.Login.route) {

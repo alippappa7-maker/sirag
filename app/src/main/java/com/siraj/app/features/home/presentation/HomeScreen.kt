@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -42,6 +43,7 @@ fun HomeScreen(
     onNavigateToSearch: () -> Unit = {},
     onNavigateToShariaReview: () -> Unit = {},
     onNavigateToTesterHub: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
     viewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory()),
     notificationViewModel: NotificationViewModel =
         viewModel(
@@ -153,6 +155,13 @@ fun HomeScreen(
                                     },
                             )
                         }
+                    }
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "الإعدادات",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                     IconButton(onClick = toggleTheme) {
                         Text("🌓")
