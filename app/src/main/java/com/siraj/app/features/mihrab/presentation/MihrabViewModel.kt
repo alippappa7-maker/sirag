@@ -67,14 +67,22 @@ class MihrabViewModel : ViewModel() {
                             ShortcutItem("adhkar", "الأذكار", "book"),
                             ShortcutItem("prayer_times", "مواقيت الصلاة", "schedule"),
                             ShortcutItem("qibla", "القبلة", "explore"),
-                            ShortcutItem("hijri", "التقويم الهجري", "calendar_today"),
+                            ShortcutItem("hijri_calendar", "التقويم الهجري", "calendar_today"),
+                            ShortcutItem("tasbih", "المسبحة", "touch_app"),
+                            ShortcutItem("zakat", "الزكاة", "calculate"),
+                            ShortcutItem("ramadan", "رمضان", "nightlight"),
+                            ShortcutItem("prayer_tracking", "تتبع الصلوات", "check_circle"),
                         ),
                     sections =
                         listOf(
                             MihrabSection("quran", "القرآن الكريم", "menu_book"),
+                            MihrabSection("tafsir", "التفسير", "library_books"),
+                            MihrabSection("hadith", "الحديث النبوي", "auto_stories"),
                             MihrabSection("recitations", "التلاوات", "headset"),
-                            MihrabSection("tafsir", "التفاسير", "library_books"),
-                            MihrabSection("saved_ayahs", "آيات محفوظة", "bookmark"),
+                            MihrabSection("zakat", "حاسبة الزكاة", "calculate"),
+                            MihrabSection("tasbih", "المسبحة الرقمية", "touch_app"),
+                            MihrabSection("ramadan", "وضع رمضان", "nightlight"),
+                            MihrabSection("prayer_tracking", "تتبع الصلوات", "check_circle"),
                         ),
                 )
         }

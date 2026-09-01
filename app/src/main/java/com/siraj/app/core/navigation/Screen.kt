@@ -266,4 +266,17 @@ sealed class Screen(
     object CostDashboard : Screen("cost_dashboard")
 
     object AdminSecurity : Screen("admin_security")
+
+    // ─── الشاشات الإسلامية الجديدة (سراج 2.0) ───
+    object Tafsir : Screen("tafsir")
+
+    object Hadith : Screen("hadith")
+
+    object ZakatCalculator : Screen("zakat_calculator")
+
+    object Tasbih : Screen("tasbih")
+
+    object PrayerTracking : Screen("prayer_tracking")
+
+    object Ramadan : Screen("ramadan")
 }

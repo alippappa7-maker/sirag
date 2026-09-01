@@ -33,6 +33,12 @@ fun MihrabScreen(
     onNavigateToQibla: () -> Unit = {},
     onNavigateToCalendar: () -> Unit = {},
     onNavigateToAdhkar: () -> Unit = {},
+    onNavigateToTafsir: () -> Unit = {},
+    onNavigateToHadith: () -> Unit = {},
+    onNavigateToZakat: () -> Unit = {},
+    onNavigateToTasbih: () -> Unit = {},
+    onNavigateToPrayerTracking: () -> Unit = {},
+    onNavigateToRamadan: () -> Unit = {},
     viewModel: MihrabViewModel = viewModel(),
 ) {
     val state by viewModel.state.collectAsState()
@@ -83,6 +89,12 @@ fun MihrabScreen(
                         onNavigateToQibla = onNavigateToQibla,
                         onNavigateToCalendar = onNavigateToCalendar,
                         onNavigateToAdhkar = onNavigateToAdhkar,
+                        onNavigateToTafsir = onNavigateToTafsir,
+                        onNavigateToHadith = onNavigateToHadith,
+                        onNavigateToZakat = onNavigateToZakat,
+                        onNavigateToTasbih = onNavigateToTasbih,
+                        onNavigateToPrayerTracking = onNavigateToPrayerTracking,
+                        onNavigateToRamadan = onNavigateToRamadan,
                     )
                 }
             }
@@ -122,6 +134,12 @@ fun MihrabContent(
     onNavigateToQibla: () -> Unit,
     onNavigateToCalendar: () -> Unit,
     onNavigateToAdhkar: () -> Unit,
+    onNavigateToTafsir: () -> Unit = {},
+    onNavigateToHadith: () -> Unit = {},
+    onNavigateToZakat: () -> Unit = {},
+    onNavigateToTasbih: () -> Unit = {},
+    onNavigateToPrayerTracking: () -> Unit = {},
+    onNavigateToRamadan: () -> Unit = {},
 ) {
     val spacing = LocalSpacing.current
 
@@ -210,6 +228,12 @@ fun MihrabContent(
                                     "qibla" -> onNavigateToQibla()
                                     "hijri_calendar" -> onNavigateToCalendar()
                                     "adhkar" -> onNavigateToAdhkar()
+                                    "tafsir" -> onNavigateToTafsir()
+                                    "hadith" -> onNavigateToHadith()
+                                    "zakat" -> onNavigateToZakat()
+                                    "tasbih" -> onNavigateToTasbih()
+                                    "prayer_tracking" -> onNavigateToPrayerTracking()
+                                    "ramadan" -> onNavigateToRamadan()
                                 }
                             },
                         )
@@ -238,10 +262,14 @@ fun MihrabContent(
                                 section = section,
                                 modifier = Modifier.weight(1f),
                                 onClick = {
-                                    if (section.id == "quran") {
-                                        onNavigateToQuran()
-                                    } else {
-                                        // TODO
+                                    when (section.id) {
+                                        "quran" -> onNavigateToQuran()
+                                        "tafsir" -> onNavigateToTafsir()
+                                        "hadith" -> onNavigateToHadith()
+                                        "zakat" -> onNavigateToZakat()
+                                        "tasbih" -> onNavigateToTasbih()
+                                        "ramadan" -> onNavigateToRamadan()
+                                        "prayer_tracking" -> onNavigateToPrayerTracking()
                                     }
                                 },
                             )
@@ -311,6 +339,10 @@ fun ShortcutCard(
             "schedule" -> Icons.Default.Schedule
             "explore" -> Icons.Default.Explore
             "calendar_today" -> Icons.Default.CalendarToday
+            "touch_app" -> Icons.Default.TouchApp
+            "calculate" -> Icons.Default.Calculate
+            "nightlight" -> Icons.Default.Nightlight
+            "check_circle" -> Icons.Default.CheckCircle
             else -> Icons.Default.Star
         }
 
@@ -363,6 +395,11 @@ fun SectionCard(
             "headset" -> Icons.Default.Headset
             "library_books" -> Icons.Default.LibraryBooks
             "bookmark" -> Icons.Default.Bookmark
+            "auto_stories" -> Icons.Default.AutoStories
+            "calculate" -> Icons.Default.Calculate
+            "touch_app" -> Icons.Default.TouchApp
+            "nightlight" -> Icons.Default.Nightlight
+            "check_circle" -> Icons.Default.CheckCircle
             else -> Icons.Default.Folder
         }
 

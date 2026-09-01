@@ -26,4 +26,25 @@
     <string name="logout">تسجيل الخروج</string>
     <string name="undo">تراجع</string>
     <string name="general">عام</string>
+
+    <!-- سراج 2.0 — الشاشات الإسلامية الجديدة -->
+    <string name="tafsir">التفسير</string>
+    <string name="hadith">الحديث النبوي</string>
+    <string name="zakat_calculator">حاسبة الزكاة</string>
+    <string name="tasbih">المسبحة</string>
+    <string name="prayer_tracking">تتبع الصلوات</string>
+    <string name="ramadan">وضع رمضان</string>
+    <string name="calculate_zakat">احسب الزكاة</string>
+    <string name="calculate_fitr">احسب زكاة الفطر</string>
+    <string name="zakat_due">الزكاة مستحقة (2.5%)</string>
+    <string name="zakat_not_due">الممتلكات أقل من النصاب، الزكاة غير مستحقة</string>
+    <string name="prayed">مصلّاة</string>
+    <string name="missed">فائتة</string>
+    <string name="pending">لم تُصلَّ بعد</string>
+    <string name="tasbih_completed">تم بحمد الله</string>
+    <string name="ramadan_progress">تقدم الصيام</string>
+    <string name="lailatul_qadr">ليلة القدر</string>
+    <string name="hadith_sahih">صحيح</string>
+    <string name="hadith_hasan">حسن</string>
+    <string name="hadith_daif">ضعيف</string>
 </resources>

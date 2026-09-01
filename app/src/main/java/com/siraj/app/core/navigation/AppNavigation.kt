@@ -196,6 +196,9 @@ fun AppNavigation(
                         onNavigateToTesterHub = {
                             navController.navigate(Screen.TesterHub.route)
                         },
+                        onNavigateToSettings = {
+                            navController.navigate(Screen.Settings.route)
+                        },
                     )
                 }
             }
@@ -258,6 +261,12 @@ fun AppNavigation(
                         onNavigateToQibla = { navController.navigate(Screen.Qibla.route) },
                         onNavigateToCalendar = { navController.navigate(Screen.HijriCalendar.route) },
                         onNavigateToAdhkar = { navController.navigate(Screen.AdhkarCategories.route) },
+                        onNavigateToTafsir = { navController.navigate(Screen.Tafsir.route) },
+                        onNavigateToHadith = { navController.navigate(Screen.Hadith.route) },
+                        onNavigateToZakat = { navController.navigate(Screen.ZakatCalculator.route) },
+                        onNavigateToTasbih = { navController.navigate(Screen.Tasbih.route) },
+                        onNavigateToPrayerTracking = { navController.navigate(Screen.PrayerTracking.route) },
+                        onNavigateToRamadan = { navController.navigate(Screen.Ramadan.route) },
                     )
                 }
             }
@@ -267,6 +276,38 @@ fun AppNavigation(
                 } else {
                     AudioLibraryScreen()
                 }
+            }
+
+            // ─── الشاشات الإسلامية الجديدة (سراج 2.0) ───
+            composable(Screen.Tafsir.route) {
+                com.siraj.app.features.tafsir.presentation.TafsirScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                )
+            }
+            composable(Screen.Hadith.route) {
+                com.siraj.app.features.hadith.presentation.HadithScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                )
+            }
+            composable(Screen.ZakatCalculator.route) {
+                com.siraj.app.features.zakat.presentation.ZakatCalculatorScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                )
+            }
+            composable(Screen.Tasbih.route) {
+                com.siraj.app.features.tasbih.presentation.TasbihScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                )
+            }
+            composable(Screen.PrayerTracking.route) {
+                com.siraj.app.features.mihrab.prayer.presentation.PrayerTrackingScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                )
+            }
+            composable(Screen.Ramadan.route) {
+                com.siraj.app.features.mihrab.ramadan.presentation.RamadanScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                )
             }
             composable(Screen.ContentModeration.route) {
                 if (!isLoggedIn) {
