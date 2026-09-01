@@ -119,9 +119,16 @@ fun AppNavigation(
                 if (isLoggedIn) {
                     LaunchedEffect(Unit) { navController.navigate(Screen.Home.route) { popUpTo(0) } }
                 } else {
-                    OnboardingScreen(onNavigateToLogin = {
-                        navController.navigate(Screen.Login.route)
-                    })
+                    OnboardingScreen(
+                        onNavigateToHome = {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Onboarding.route) { inclusive = true }
+                            }
+                        },
+                        onNavigateToRegister = {
+                            navController.navigate(Screen.Register.route)
+                        },
+                    )
                 }
             }
             composable(Screen.Login.route) {
