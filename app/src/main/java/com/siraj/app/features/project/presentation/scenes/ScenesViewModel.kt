@@ -153,7 +153,7 @@ class ScenesViewModel(
     fun undoLastChange() {
         val stack = _undoStack.value.toMutableList()
         if (stack.isNotEmpty()) {
-            val previousProject = stack.removeLast()
+            val previousProject = stack.removeAt(stack.lastIndex)
             _undoStack.value = stack
 
             // Note: Recalculate duration before restoring just in case

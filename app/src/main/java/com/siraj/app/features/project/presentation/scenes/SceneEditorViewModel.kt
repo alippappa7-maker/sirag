@@ -68,7 +68,7 @@ class SceneEditorViewModel(
     fun undo() {
         val stack = _undoStack.value.toMutableList()
         if (stack.isNotEmpty()) {
-            val previous = stack.removeLast()
+            val previous = stack.removeAt(stack.lastIndex)
             val currentScene = _sceneState.value
             val currentText = _sceneTextState.value
             if (currentScene != null) {
@@ -84,7 +84,7 @@ class SceneEditorViewModel(
     fun redo() {
         val stack = _redoStack.value.toMutableList()
         if (stack.isNotEmpty()) {
-            val next = stack.removeLast()
+            val next = stack.removeAt(stack.lastIndex)
             val currentScene = _sceneState.value
             val currentText = _sceneTextState.value
             if (currentScene != null) {
