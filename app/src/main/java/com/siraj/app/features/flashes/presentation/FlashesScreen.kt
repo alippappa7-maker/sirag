@@ -1,6 +1,5 @@
 @file:kotlin.OptIn(
     androidx.compose.material3.ExperimentalMaterial3Api::class,
-    androidx.media3.common.util.UnstableApi::class,
     androidx.compose.foundation.ExperimentalFoundationApi::class,
 )
 
@@ -9,6 +8,7 @@ package com.siraj.app.features.flashes.presentation
 import android.net.Uri
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.annotation.OptIn
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -169,6 +169,7 @@ fun FlashesScreen(
     }
 }
 
+@OptIn(androidx.media3.common.util.UnstableApi::class)
 @Composable
 fun FlashFeedItem(
     flash: Flash,
