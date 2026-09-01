@@ -22,6 +22,13 @@ class FirebaseAuthRepositoryImpl(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
 ) : AuthRepository {
+    private inline fun <reified E : Enum<E>> safeEnum(value: Any?, default: E): E =
+        try {
+            enumValueOf<E>((value as? String ?: default.name))
+        } catch (e: IllegalArgumentException) {
+            default
+        }
+
     override val currentUser: Flow<UserProfile?> =
         callbackFlow {
             var listenerRegistration: com.google.firebase.firestore.ListenerRegistration? = null
@@ -56,7 +63,7 @@ class FirebaseAuthRepositoryImpl(
                                         val preferences =
                                             if (prefMap != null) {
                                                 UserPreferences(
-                                                    themeMode = ThemeMode.valueOf(prefMap["themeMode"] as? String ?: "SYSTEM"),
+                                                    themeMode = safeEnum(prefMap["themeMode"], ThemeMode.SYSTEM),
                                                     highContrastMode = prefMap["highContrastMode"] as? Boolean ?: false,
                                                     fontScaleMultiplier = (prefMap["fontScaleMultiplier"] as? Number)?.toFloat() ?: 1.0f,
                                                     reduceMotion = prefMap["reduceMotion"] as? Boolean ?: false,
@@ -69,11 +76,9 @@ class FirebaseAuthRepositoryImpl(
                                                     prayerNotifications = prefMap["prayerNotifications"] as? Boolean ?: true,
                                                     adhkarNotifications = prefMap["adhkarNotifications"] as? Boolean ?: true,
                                                     calculationMethod =
-                                                        CalculationMethod.valueOf(
-                                                            prefMap["calculationMethod"] as? String ?: "UMM_AL_QURA",
-                                                        ),
-                                                    madhab = Madhab.valueOf(prefMap["madhab"] as? String ?: "SHAFI"),
-                                                    videoQuality = VideoQuality.valueOf(prefMap["videoQuality"] as? String ?: "HIGH"),
+                                                        safeEnum(prefMap["calculationMethod"], CalculationMethod.UMM_AL_QURA),
+                                                    madhab = safeEnum(prefMap["madhab"], Madhab.SHAFI),
+                                                    videoQuality = safeEnum(prefMap["videoQuality"], VideoQuality.HIGH),
                                                     downloadWifiOnly = prefMap["downloadWifiOnly"] as? Boolean ?: true,
                                                     appLockEnabled = prefMap["appLockEnabled"] as? Boolean ?: false,
                                                     activeWorkspaceId = prefMap["activeWorkspaceId"] as? String,
