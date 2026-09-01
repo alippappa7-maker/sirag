@@ -89,6 +89,32 @@ fun OnboardingScreen(onNavigateToLogin: () -> Unit) {
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
                 )
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.large))
+                // رسالة ترحيب روحانية منسوبة إلى أبي عبيدة بن الجراح رضي الله عنه
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                shape = MaterialTheme.shapes.medium,
+                            )
+                            .padding(MaterialTheme.spacing.large),
+                ) {
+                    Text(
+                        text = "مالي أراكَ حزيناً؟ أأحُرمتَ الجنّةَ أم بُشِّرتَ بالنّارِ؟ هوِّنْ عليكَ، فما هيَ إلا دنيا؛ إنّما هيَ أيّامٌ ونمضي، فلا تحزن.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                    )
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
+                    Text(
+                        text = "— منسوبة إلى أبي عبيدة بن الجرّاح رضي الله عنه، مواسياً عمر بن الخطّاب رضي الله عنه",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        textAlign = TextAlign.Center,
+                    )
+                }
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.huge))
 
                 // Using SirajButton directly as it should pick up primary color scheme
