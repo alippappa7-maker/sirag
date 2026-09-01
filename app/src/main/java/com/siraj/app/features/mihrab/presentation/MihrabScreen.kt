@@ -39,6 +39,9 @@ fun MihrabScreen(
     onNavigateToTasbih: () -> Unit = {},
     onNavigateToPrayerTracking: () -> Unit = {},
     onNavigateToRamadan: () -> Unit = {},
+    onNavigateToCopilot: () -> Unit = {},
+    onNavigateToPrayerIntelligence: () -> Unit = {},
+    onNavigateToDashboard: () -> Unit = {},
     viewModel: MihrabViewModel = viewModel(),
 ) {
     val state by viewModel.state.collectAsState()
@@ -95,6 +98,9 @@ fun MihrabScreen(
                         onNavigateToTasbih = onNavigateToTasbih,
                         onNavigateToPrayerTracking = onNavigateToPrayerTracking,
                         onNavigateToRamadan = onNavigateToRamadan,
+                        onNavigateToCopilot = onNavigateToCopilot,
+                        onNavigateToPrayerIntelligence = onNavigateToPrayerIntelligence,
+                        onNavigateToDashboard = onNavigateToDashboard,
                     )
                 }
             }
@@ -140,6 +146,9 @@ fun MihrabContent(
     onNavigateToTasbih: () -> Unit = {},
     onNavigateToPrayerTracking: () -> Unit = {},
     onNavigateToRamadan: () -> Unit = {},
+    onNavigateToCopilot: () -> Unit = {},
+    onNavigateToPrayerIntelligence: () -> Unit = {},
+    onNavigateToDashboard: () -> Unit = {},
 ) {
     val spacing = LocalSpacing.current
 
@@ -234,6 +243,10 @@ fun MihrabContent(
                                     "tasbih" -> onNavigateToTasbih()
                                     "prayer_tracking" -> onNavigateToPrayerTracking()
                                     "ramadan" -> onNavigateToRamadan()
+                                    "copilot" -> onNavigateToCopilot()
+                                    "prayer_intelligence" -> onNavigateToPrayerIntelligence()
+                                    "dashboard" -> onNavigateToDashboard()
+                                    "qibla" -> onNavigateToQibla()
                                 }
                             },
                         )
@@ -270,6 +283,9 @@ fun MihrabContent(
                                         "tasbih" -> onNavigateToTasbih()
                                         "ramadan" -> onNavigateToRamadan()
                                         "prayer_tracking" -> onNavigateToPrayerTracking()
+                                        "copilot" -> onNavigateToCopilot()
+                                        "prayer_intelligence" -> onNavigateToPrayerIntelligence()
+                                        "dashboard" -> onNavigateToDashboard()
                                     }
                                 },
                             )
@@ -343,6 +359,9 @@ fun ShortcutCard(
             "calculate" -> Icons.Default.Calculate
             "nightlight" -> Icons.Default.Nightlight
             "check_circle" -> Icons.Default.CheckCircle
+            "auto_awesome" -> Icons.Default.AutoAwesome
+            "insights" -> Icons.Default.Insights
+            "dashboard" -> Icons.Default.Dashboard
             else -> Icons.Default.Star
         }
 

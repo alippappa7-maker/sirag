@@ -279,4 +279,11 @@ sealed class Screen(
     object PrayerTracking : Screen("prayer_tracking")
 
     object Ramadan : Screen("ramadan")
+
+    // ─── الطبقة التقنية الحديثة (سراج 2.0 Tech) ───
+    object Copilot : Screen("copilot")
+
+    object PrayerIntelligence : Screen("prayer_intelligence")
+
+    object Dashboard : Screen("dashboard")
 }

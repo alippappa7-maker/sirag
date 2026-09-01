@@ -267,6 +267,9 @@ fun AppNavigation(
                         onNavigateToTasbih = { navController.navigate(Screen.Tasbih.route) },
                         onNavigateToPrayerTracking = { navController.navigate(Screen.PrayerTracking.route) },
                         onNavigateToRamadan = { navController.navigate(Screen.Ramadan.route) },
+                        onNavigateToCopilot = { navController.navigate(Screen.Copilot.route) },
+                        onNavigateToPrayerIntelligence = { navController.navigate(Screen.PrayerIntelligence.route) },
+                        onNavigateToDashboard = { navController.navigate(Screen.Dashboard.route) },
                     )
                 }
             }
@@ -307,6 +310,36 @@ fun AppNavigation(
             composable(Screen.Ramadan.route) {
                 com.siraj.app.features.mihrab.ramadan.presentation.RamadanScreen(
                     onNavigateBack = { navController.popBackStack() },
+                )
+            }
+            // ─── الطبقة التقنية الحديثة ───
+            composable(Screen.Copilot.route) {
+                com.siraj.app.features.copilot.presentation.CopilotScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                )
+            }
+            composable(Screen.Qibla.route) {
+                com.siraj.app.features.qibla.presentation.QiblaScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                )
+            }
+            composable(Screen.PrayerIntelligence.route) {
+                com.siraj.app.features.prayer_intelligence.presentation.PrayerIntelligenceScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                )
+            }
+            composable(Screen.Dashboard.route) {
+                com.siraj.app.features.dashboard.presentation.DashboardScreen(
+                    onNavigateToCopilot = { navController.navigate(Screen.Copilot.route) },
+                    onNavigateToQibla = { navController.navigate(Screen.Qibla.route) },
+                    onNavigateToTasbih = { navController.navigate(Screen.Tasbih.route) },
+                    onNavigateToPrayerIntel = { navController.navigate(Screen.PrayerIntelligence.route) },
+                    onNavigateToZakat = { navController.navigate(Screen.ZakatCalculator.route) },
+                    onNavigateToTafsir = { navController.navigate(Screen.Tafsir.route) },
+                    onNavigateToHadith = { navController.navigate(Screen.Hadith.route) },
+                    onNavigateToRamadan = { navController.navigate(Screen.Ramadan.route) },
+                    onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
+                    toggleTheme = toggleTheme,
                 )
             }
             composable(Screen.ContentModeration.route) {

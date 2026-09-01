@@ -47,4 +47,26 @@
     <string name="hadith_sahih">صحيح</string>
     <string name="hadith_hasan">حسن</string>
     <string name="hadith_daif">ضعيف</string>
+
+    <!-- سراج 2.0 — الطبقة التقنية الحديثة -->
+    <string name="copilot">المساعد الإسلامي</string>
+    <string name="copilot_welcome">السلام عليكم. أنا مساعدك الإسلامي المعرفي.</string>
+    <string name="copilot_thinking">يفكر...</string>
+    <string name="copilot_sources">المصادر الموثّقة</string>
+    <string name="qibla_direction">اتجاه القبلة</string>
+    <string name="qibla_distance">المسافة</string>
+    <string name="qibla_aligned">أنت باتجاه القبلة</string>
+    <string name="qibla_rotate">در إلى اتجاه القبلة</string>
+    <string name="prayer_intelligence">ذكاء الصلاة</string>
+    <string name="next_prayer">الصلاة القادمة</string>
+    <string name="today_progress">تقدم اليوم</string>
+    <string name="prayer_timeline">مواقيت اليوم</string>
+    <string name="performance_stats">إحصائيات الأداء</string>
+    <string name="weekly_trend">التحليل الأسبوعي</string>
+    <string name="smart_reminders">التنبيهات الذكية</string>
+    <string name="dashboard">لوحة التحكم</string>
+    <string name="glass_stat_tasbih">تسبيح اليوم</string>
+    <string name="glass_stat_prayers">الصلوات</string>
+    <string name="glass_stat_qibla">الاتجاه</string>
+    <string name="glass_stat_zakat">الزكاة</string>
 </resources>
