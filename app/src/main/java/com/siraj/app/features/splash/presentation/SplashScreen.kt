@@ -43,7 +43,8 @@ fun SplashScreen(onNavigateToHome: () -> Unit) {
     // Composition is loaded from assets; null while loading.
     val composition by rememberLottieComposition(LottieCompositionSpec.Asset("siraj_splash_star.json"))
 
-    // Play once when the composition is ready (or immediately in reduced-motion).
+    // Play once when the composition is ready. In reduced-motion we freeze on the
+    // final frame (progress = 1f) instead of playing an animation.
     val progress = animateLottieCompositionAsState(
         composition = composition,
         iterations = 1,
@@ -51,7 +52,10 @@ fun SplashScreen(onNavigateToHome: () -> Unit) {
         speed = if (reduceMotion) 0f else 1f,
     )
 
-    LaunchedEffect(composition, reduceMotion) {
+    // Single effect: runs once for the screen's lifetime. Navigation happens only
+    // after the animation (or the reduced-motion rest) completes — never in a
+    // finally block, which would fire early when the effect is cancelled.
+    LaunchedEffect(Unit) {
         try {
             if (reduceMotion) {
                 delay(400)
@@ -72,9 +76,8 @@ fun SplashScreen(onNavigateToHome: () -> Unit) {
             }
         } catch (_: Exception) {
             // Never block navigation on an animation hiccup.
-        } finally {
-            onNavigateToHome()
         }
+        onNavigateToHome()
     }
 
     Box(
@@ -88,7 +91,7 @@ fun SplashScreen(onNavigateToHome: () -> Unit) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             LottieAnimation(
                 composition = composition,
-                progress = { progress.value },
+                progress = { if (reduceMotion) 1f else progress.value },
                 modifier =
                     Modifier
                         .size(160.dp)

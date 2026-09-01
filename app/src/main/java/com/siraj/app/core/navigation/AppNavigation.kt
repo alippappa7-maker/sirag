@@ -75,6 +75,11 @@ fun AppNavigation(
 
     val isLoggedIn = (authState as? Resource.Success)?.data != null
 
+    // Guest sessions can browse public content (Home, Mihrab, Quran, Audio, Flashes)
+    // but creation/management screens still require a real login.
+    var isGuestSession by remember { mutableStateOf(false) }
+    val canBrowse = isLoggedIn || isGuestSession
+
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -125,6 +130,12 @@ fun AppNavigation(
                                 popUpTo(Screen.Onboarding.route) { inclusive = true }
                             }
                         },
+                        onContinueAsGuest = {
+                            isGuestSession = true
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Onboarding.route) { inclusive = true }
+                            }
+                        },
                         onNavigateToRegister = {
                             navController.navigate(Screen.Register.route)
                         },
@@ -162,7 +173,7 @@ fun AppNavigation(
 
             // Protected Routes
             composable(Screen.Home.route) {
-                if (!isLoggedIn) {
+                if (!canBrowse) {
                     LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
                 } else {
                     HomeScreen(
@@ -238,7 +249,7 @@ fun AppNavigation(
                 }
             }
             composable(Screen.Mihrab.route) {
-                if (!isLoggedIn) {
+                if (!canBrowse) {
                     LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
                 } else {
                     MihrabScreen(
@@ -251,7 +262,7 @@ fun AppNavigation(
                 }
             }
             composable(Screen.Audio.route) {
-                if (!isLoggedIn) {
+                if (!canBrowse) {
                     LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
                 } else {
                     AudioLibraryScreen()
@@ -278,7 +289,7 @@ fun AppNavigation(
                 }
             }
             composable(Screen.Flashes.route) {
-                if (!isLoggedIn) {
+                if (!canBrowse) {
                     LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
                 } else {
                     val flashesViewModel: com.siraj.app.features.flashes.presentation.FlashesViewModel =
@@ -479,7 +490,7 @@ fun AppNavigation(
             }
 
             composable(Screen.Quran.route) {
-                if (!isLoggedIn) {
+                if (!canBrowse) {
                     LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
                 } else {
                     QuranScreen(
@@ -497,7 +508,7 @@ fun AppNavigation(
                         navArgument("surahName") { type = NavType.StringType },
                     ),
             ) { backStackEntry ->
-                if (!isLoggedIn) {
+                if (!canBrowse) {
                     LaunchedEffect(Unit) { navController.navigate(Screen.Login.route) { popUpTo(0) } }
                 } else {
                     val surahId = backStackEntry.arguments?.getInt("surahId") ?: 1

@@ -10,7 +10,7 @@
     <!-- Subtle emerald glow disc behind the star -->
     <path
         android:fillColor="#1A00F0B0"
-        android:pathData="M54,18 m-40,0 a40,40 0 1,0 80,0 a40,40 0 1,0 -80,0 Z" />
+        android:pathData="M54,54 m-40,0 a40,40 0 1,0 80,0 a40,40 0 1,0 -80,0 Z" />
 
     <!-- 5-point star centered at (54,54), outer radius ~32, inner ~15 -->
     <path

@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -97,6 +98,7 @@ private val featurePages = listOf(
 @Composable
 fun OnboardingScreen(
     onNavigateToHome: () -> Unit,
+    onContinueAsGuest: () -> Unit,
     onNavigateToRegister: () -> Unit,
 ) {
     val pageCount = featurePages.size + 2 // welcome + features + login
@@ -118,7 +120,6 @@ fun OnboardingScreen(
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
-            userScrollEnabled = pagerState.currentPage < pageCount - 1,
         ) { page ->
             when (page) {
                 0 -> WelcomePage()
@@ -126,7 +127,7 @@ fun OnboardingScreen(
                 else -> LoginPage(
                     onLoginSuccess = onNavigateToHome,
                     onNavigateToRegister = onNavigateToRegister,
-                    onContinueAsGuest = onNavigateToHome,
+                    onContinueAsGuest = onContinueAsGuest,
                 )
             }
         }
@@ -317,14 +318,20 @@ private fun LoginPage(
             text = "ليس لديك حساب؟ تسجيل جديد",
             style = MaterialTheme.typography.bodyMedium,
             color = AccentEmerald,
-            modifier = Modifier.testTag("onboarding_register_link"),
+            modifier =
+                Modifier
+                    .testTag("onboarding_register_link")
+                    .clickable(onClick = onNavigateToRegister),
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "المتابعة كزائر",
             style = MaterialTheme.typography.bodyMedium,
             color = TextSecondary,
-            modifier = Modifier.testTag("onboarding_guest_link"),
+            modifier =
+                Modifier
+                    .testTag("onboarding_guest_link")
+                    .clickable(onClick = onContinueAsGuest),
         )
     }
 }
