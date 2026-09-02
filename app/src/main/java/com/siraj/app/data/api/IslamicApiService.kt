@@ -14,6 +14,7 @@ interface QuranApiService {
 
     /**
      * البحث في القرآن الكريم
+     * الرد: { search: { results: [...] } }
      */
     @GET("https://api.quran.com/api/v4/search")
     suspend fun searchQuran(
@@ -23,12 +24,13 @@ interface QuranApiService {
     ): QuranSearchResponse
 
     /**
-     * جلب تفسير آية معينة (ابن كثير)
+     * جلب تفسير آية معينة
+     * resource 169 = Ibn Kathir (English), 171 = Tafsir al-Jalalayn
      */
     @GET("https://api.qurancdn.com/api/v4/tafsirs/169/by_ayah/{verseKey}")
     suspend fun getTafsir(
         @Path("verseKey") verseKey: String,
-        @Query("locale") locale: String = "ar",
+        @Query("locale") locale: String = "en",
     ): TafsirResponse
 }
 
@@ -38,6 +40,10 @@ interface QuranApiService {
  */
 interface HadithApiService {
 
+    /**
+     * البحث في الأحاديث
+     * الرد: { success: true, data: { hadiths: [...] } }
+     */
     @GET("https://ummahapi.com/api/hadith/search")
     suspend fun searchHadith(
         @Query("q") query: String,
@@ -48,10 +54,17 @@ interface HadithApiService {
     suspend fun getCollections(): HadithCollectionsResponse
 }
 
-// ─── نماذج البيانات الجديدة (غير موجودة في QuranApi.kt) ───
+// ─── نماذج Quran.com ───
 
 @JsonClass(generateAdapter = true)
 data class QuranSearchResponse(
+    @Json(name = "search") val search: QuranSearchData? = null,
+)
+
+@JsonClass(generateAdapter = true)
+data class QuranSearchData(
+    @Json(name = "query") val query: String? = null,
+    @Json(name = "total_results") val totalResults: Int? = null,
     @Json(name = "results") val results: List<QuranSearchResult>? = null,
 )
 
@@ -65,7 +78,8 @@ data class QuranSearchResult(
 @JsonClass(generateAdapter = true)
 data class QuranTranslation(
     @Json(name = "text") val text: String,
-    @Json(name = "resource_name") val resourceName: String,
+    @Json(name = "name") val name: String? = null,
+    @Json(name = "resource_id") val resourceId: Int? = null,
 )
 
 @JsonClass(generateAdapter = true)
@@ -79,24 +93,35 @@ data class TafsirText(
     @Json(name = "resource_name") val resourceName: String? = null,
 )
 
+// ─── نماذج UmmahAPI ───
+
 @JsonClass(generateAdapter = true)
 data class HadithSearchResponse(
-    @Json(name = "results") val results: List<HadithResult>? = null,
+    @Json(name = "success") val success: Boolean? = null,
+    @Json(name = "data") val data: HadithSearchData? = null,
+)
+
+@JsonClass(generateAdapter = true)
+data class HadithSearchData(
+    @Json(name = "query") val query: String? = null,
+    @Json(name = "total_found") val totalFound: Int? = null,
+    @Json(name = "hadiths") val hadiths: List<HadithResult>? = null,
 )
 
 @JsonClass(generateAdapter = true)
 data class HadithResult(
+    @Json(name = "id") val id: String? = null,
     @Json(name = "collection") val collection: String? = null,
-    @Json(name = "book") val book: String? = null,
-    @Json(name = "number") val number: Int? = null,
-    @Json(name = "arabicText") val arabicText: String? = null,
-    @Json(name = "englishText") val englishText: String? = null,
+    @Json(name = "collection_name") val collectionName: String? = null,
+    @Json(name = "hadithnumber") val hadithNumber: Int? = null,
+    @Json(name = "arabic") val arabic: String? = null,
+    @Json(name = "english") val english: String? = null,
     @Json(name = "grade") val grade: String? = null,
 )
 
 @JsonClass(generateAdapter = true)
 data class HadithCollectionsResponse(
-    @Json(name = "collections") val collections: List<HadithCollection>? = null,
+    @Json(name = "data") val data: List<HadithCollection>? = null,
 )
 
 @JsonClass(generateAdapter = true)

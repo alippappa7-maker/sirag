@@ -22,8 +22,6 @@ import retrofit2.converter.moshi.MoshiConverterFactory
  * 3. يجلب تفسير ابن كثير من Quran.com
  * 4. يرسل المصادر كلها لـ Gemini API (مجاني) مع تعليمات صارمة
  * 5. يرجع الإجابة الذكية + المصادر الموثّقة
- *
- * لا يحتاج بطاقة ائتمانية. 1,500 طلب يومياً مجاناً.
  */
 class CopilotRepositoryImpl : CopilotRepository {
 
@@ -51,11 +49,9 @@ class CopilotRepositoryImpl : CopilotRepository {
             .create(GeminiApiService::class.java)
     }
 
-    // مفتاح Gemini API — مجاني من aistudio.google.com/apikey
-    // TODO: استبدل بمفتاحك المجاني أو خزّنه في BuildConfig
+    // مفتاح Gemini API — يُضعه المطور في local.properties
     var geminiApiKey: String = ""
 
-    // خريطة أسماء السور
     private val surahNames = mapOf(
         1 to "الفاتحة", 2 to "البقرة", 3 to "آل عمران", 4 to "النساء",
         5 to "المائدة", 6 to "الأنعام", 7 to "الأعراف", 8 to "الأنفال",
@@ -96,9 +92,11 @@ class CopilotRepositoryImpl : CopilotRepository {
             try {
                 val searchQuery = extractSearchTerms(query.text)
                 val quranResults = quranApi.searchQuran(searchQuery, query.language, 5)
-                quranResults.results?.forEach { result ->
+                quranResults.search?.results?.forEach { result ->
                     val surahNum = result.verseKey.split(":").firstOrNull()?.toIntOrNull()
                     val surahName = surahNames[surahNum ?: 0] ?: "سورة"
+                    val translation = result.translations?.firstOrNull()?.text ?: ""
+
                     sources.add(
                         CopilotSource(
                             type = CopilotSourceType.QURAN,
@@ -119,18 +117,18 @@ class CopilotRepositoryImpl : CopilotRepository {
             try {
                 val hadithQuery = extractSearchTerms(query.text)
                 val hadithResults = hadithApi.searchHadith(hadithQuery, 5)
-                hadithResults.results?.forEach { hadith ->
+                hadithResults.data?.hadiths?.forEach { hadith ->
                     sources.add(
                         CopilotSource(
                             type = CopilotSourceType.HADITH,
-                            title = hadith.collection ?: "حديث",
-                            reference = "${hadith.book ?: ""} ${hadith.number ?: ""}".trim(),
+                            title = hadith.collectionName ?: hadith.collection ?: "حديث",
+                            reference = "رقم ${hadith.hadithNumber ?: ""}",
                             excerpt = if (query.language == "ar") {
-                                hadith.arabicText ?: hadith.englishText ?: ""
+                                hadith.arabic ?: hadith.english ?: ""
                             } else {
-                                hadith.englishText ?: hadith.arabicText ?: ""
+                                hadith.english ?: hadith.arabic ?: ""
                             },
-                            url = "https://sunnah.com/${hadith.collection}:${hadith.number}",
+                            url = "https://sunnah.com/${hadith.collection}/${hadith.hadithNumber}",
                         ),
                     )
                 }
@@ -143,7 +141,7 @@ class CopilotRepositoryImpl : CopilotRepository {
         if (query.includeTafsir && sources.any { it.type == CopilotSourceType.QURAN }) {
             try {
                 val firstQuran = sources.first { it.type == CopilotSourceType.QURAN }
-                val tafsirResult = quranApi.getTafsir(firstQuran.reference, "ar")
+                val tafsirResult = quranApi.getTafsir(firstQuran.reference, "en")
                 tafsirResult.tafsir?.let { tafsir ->
                     sources.add(
                         CopilotSource(
@@ -206,7 +204,6 @@ class CopilotRepositoryImpl : CopilotRepository {
 6. End with: "This is a documented knowledge response, not a fatwa." """.trimIndent()
         }
 
-        // جهّز سياق المصادر
         val sourcesContext = sources.mapIndexed { i, s ->
             val typeLabel = when (s.type) {
                 CopilotSourceType.QURAN -> "آية قرآنية"
@@ -252,14 +249,10 @@ Answer from these sources only."""
             response.candidates?.firstOrNull()?.content?.parts?.firstOrNull()?.text
                 ?: buildLocalAnswer(question, sources)
         } catch (e: Exception) {
-            // في حالة فشل Gemini، استخدم الإجابة المحلية
             buildLocalAnswer(question, sources)
         }
     }
 
-    /**
-     * استخراج كلمات البحث من السؤال
-     */
     private fun extractSearchTerms(text: String): String {
         val stopWords = setOf(
             "ما", "ماذا", "كيف", "هل", "من", "أين", "متى", "لماذا",
@@ -276,9 +269,6 @@ Answer from these sources only."""
             .ifBlank { text }
     }
 
-    /**
-     * بناء إجابة محلية احتياطية (عند عدم توفر Gemini)
-     */
     private fun buildLocalAnswer(query: String, sources: List<CopilotSource>): String {
         if (sources.isEmpty()) {
             return "لم أجد مصادر مرتبطة بهذا السؤال.\n\n" +
@@ -339,7 +329,7 @@ Answer from these sources only."""
         val sources = mutableListOf<CopilotSource>()
         try {
             val quranResults = quranApi.searchQuran(query, language, 5)
-            quranResults.results?.forEach { result ->
+            quranResults.search?.results?.forEach { result ->
                 val surahNum = result.verseKey.split(":").firstOrNull()?.toIntOrNull()
                 sources.add(
                     CopilotSource(
