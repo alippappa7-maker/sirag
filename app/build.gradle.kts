@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -9,6 +11,13 @@ plugins {
 }
 
 val byteBuddyAgent by configurations.creating
+
+// قراءة مفتاح Gemini API من local.properties (يضعه المطور فقط)
+val localProperties = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY", "")
 
 android {
     namespace = "com.siraj.app"
@@ -31,6 +40,7 @@ android {
         buildConfigField("String", "APP_STORE_ISSUER_ID", "\"dummy\"")
         buildConfigField("String", "APP_STORE_KEY_ID", "\"dummy\"")
         buildConfigField("String", "APP_STORE_PRIVATE_KEY", "\"dummy\"")
+        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
         vectorDrawables {
             useSupportLibrary = true
         }

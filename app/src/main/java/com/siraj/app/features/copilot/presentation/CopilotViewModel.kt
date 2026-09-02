@@ -2,6 +2,7 @@ package com.siraj.app.features.copilot.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.siraj.app.BuildConfig
 import com.siraj.app.data.repository.CopilotRepositoryImpl
 import com.siraj.app.domain.models.copilot.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,11 +15,14 @@ data class CopilotUiState(
     val suggestedQuestions: List<String> = emptyList(),
     val isThinking: Boolean = false,
     val conversationId: String? = null,
+    val hasGeminiKey: Boolean = false,
 )
 
 class CopilotViewModel : ViewModel() {
 
-    private val repository = CopilotRepositoryImpl()
+    private val repository = CopilotRepositoryImpl().apply {
+        geminiApiKey = BuildConfig.GEMINI_API_KEY
+    }
 
     private val _uiState = MutableStateFlow(CopilotUiState())
     val uiState: StateFlow<CopilotUiState> = _uiState.asStateFlow()
@@ -26,6 +30,9 @@ class CopilotViewModel : ViewModel() {
     init {
         loadSuggestions()
         addWelcomeMessage()
+        _uiState.value = _uiState.value.copy(
+            hasGeminiKey = BuildConfig.GEMINI_API_KEY.isNotBlank(),
+        )
     }
 
     private fun loadSuggestions() {
@@ -36,10 +43,21 @@ class CopilotViewModel : ViewModel() {
     }
 
     private fun addWelcomeMessage() {
+        val hasKey = BuildConfig.GEMINI_API_KEY.isNotBlank()
+        val welcomeText = if (hasKey) {
+            "السلام عليكم. أنا مساعدك الإسلامي المعرفي الذكي.\n\n" +
+            "اسألني أي سؤال عن القرآن، الحديث، التفسير، الأدعية، أو أي موضوع إسلامي.\n" +
+            "أبحث في Quran.com و UmmahAPI، ثم أصيغ لك إجابة ذكية بمصادر موثّقة."
+        } else {
+            "السلام عليكم. أنا مساعدك الإسلامي المعرفي.\n\n" +
+            "اسألني أي سؤال عن القرآن، الحديث، التفسير، أو أي موضوع إسلامي.\n" +
+            "كل رد مدعوم بمصادر موثّقة من Quran.com و UmmahAPI."
+        }
+
         val welcome = CopilotMessage(
             id = "welcome",
             role = CopilotRole.ASSISTANT,
-            content = "السلام عليكم. أنا مساعدك الإسلامي المعرفي.\n\nاسألني عن القرآن، الحديث، التفسير، الأدعية، أو أي موضوع إسلامي. كل رد مدعوم بمصادر موثّقة.",
+            content = welcomeText,
             sources = emptyList(),
             timestamp = System.currentTimeMillis(),
         )
@@ -49,7 +67,6 @@ class CopilotViewModel : ViewModel() {
     fun askQuestion(question: String) {
         if (question.isBlank()) return
 
-        // أضف رسالة المستخدم
         val userMessage = CopilotMessage(
             id = System.currentTimeMillis().toString(),
             role = CopilotRole.USER,
@@ -58,7 +75,6 @@ class CopilotViewModel : ViewModel() {
             timestamp = System.currentTimeMillis(),
         )
 
-        // أضف رسالة التفكير
         val loadingMessage = CopilotMessage(
             id = "loading_${System.currentTimeMillis()}",
             role = CopilotRole.ASSISTANT,

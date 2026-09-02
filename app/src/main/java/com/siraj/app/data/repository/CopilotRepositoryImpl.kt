@@ -1,25 +1,29 @@
 package com.siraj.app.data.repository
 
 import com.siraj.app.data.api.*
-import com.siraj.app.data.api.QuranSearchResult as QuranSearchResultApi
-import com.siraj.app.data.api.HadithResult as HadithResultApi
+import com.siraj.app.data.api.GeminiContent
+import com.siraj.app.data.api.GeminiGenerationConfig
+import com.siraj.app.data.api.GeminiPart
+import com.siraj.app.data.api.GeminiRequest
+import com.siraj.app.data.api.GeminiResponse
 import com.siraj.app.domain.models.copilot.*
 import com.siraj.app.domain.repository.copilot.CopilotRepository
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 /**
- * تنفيذ المساعد الإسلامي الذكي — مجاني بالكامل، بدون مفتاح API
+ * المساعد الإسلامي الذكي — مجاني بالكامل
  *
- * يستخدم:
- * - Quran.com API v4 (مجاني) للقرآن والتفسير والبحث
- * - UmmahAPI (مجاني) للأحاديث النبوية والبحث
- * - خوارزمية مطابقة ذكية محلية لتحليل الأسئلة وربطها بالمصادر
+ * المعمارية:
+ * 1. يبحث في Quran.com API عن الآيات القرآنية
+ * 2. يبحث في UmmahAPI عن الأحاديث النبوية
+ * 3. يجلب تفسير ابن كثير من Quran.com
+ * 4. يرسل المصادر كلها لـ Gemini API (مجاني) مع تعليمات صارمة
+ * 5. يرجع الإجابة الذكية + المصادر الموثّقة
  *
- * لا يحتاج أي مفتاح، لا يدفع أي تكلفة.
+ * لا يحتاج بطاقة ائتمانية. 1,500 طلب يومياً مجاناً.
  */
 class CopilotRepositoryImpl : CopilotRepository {
 
@@ -38,6 +42,18 @@ class CopilotRepositoryImpl : CopilotRepository {
             .build()
             .create(HadithApiService::class.java)
     }
+
+    private val geminiApi: GeminiApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://generativelanguage.googleapis.com/")
+            .addConverterFactory(MoshiConverterFactory.create())
+            .build()
+            .create(GeminiApiService::class.java)
+    }
+
+    // مفتاح Gemini API — مجاني من aistudio.google.com/apikey
+    // TODO: استبدل بمفتاحك المجاني أو خزّنه في BuildConfig
+    var geminiApiKey: String = ""
 
     // خريطة أسماء السور
     private val surahNames = mapOf(
@@ -75,16 +91,14 @@ class CopilotRepositoryImpl : CopilotRepository {
     override suspend fun ask(query: CopilotQuery): Flow<CopilotResponse> = flow {
         val sources = mutableListOf<CopilotSource>()
 
-        // 1. ابحث في القرآن الكريم
+        // 1. ابحث في القرآن الكريم عبر Quran.com API
         if (query.includeQuran) {
             try {
-                val searchQuery = extractSearchTerms(query.text, "quran")
+                val searchQuery = extractSearchTerms(query.text)
                 val quranResults = quranApi.searchQuran(searchQuery, query.language, 5)
                 quranResults.results?.forEach { result ->
                     val surahNum = result.verseKey.split(":").firstOrNull()?.toIntOrNull()
                     val surahName = surahNames[surahNum ?: 0] ?: "سورة"
-                    val translation = result.translations?.firstOrNull()?.text ?: ""
-
                     sources.add(
                         CopilotSource(
                             type = CopilotSourceType.QURAN,
@@ -100,10 +114,10 @@ class CopilotRepositoryImpl : CopilotRepository {
             }
         }
 
-        // 2. ابحث في الحديث النبوي
+        // 2. ابحث في الحديث النبوي عبر UmmahAPI
         if (query.includeHadith) {
             try {
-                val hadithQuery = extractSearchTerms(query.text, "hadith")
+                val hadithQuery = extractSearchTerms(query.text)
                 val hadithResults = hadithApi.searchHadith(hadithQuery, 5)
                 hadithResults.results?.forEach { hadith ->
                     sources.add(
@@ -146,8 +160,13 @@ class CopilotRepositoryImpl : CopilotRepository {
             }
         }
 
-        // 4. ابنِ الإجابة من المصادر
-        val answer = buildAnswer(query.text, sources)
+        // 4. أرسل المصادر لـ Gemini لتوليد إجابة ذكية
+        val answer = if (geminiApiKey.isNotBlank() && sources.isNotEmpty()) {
+            generateGeminiAnswer(query.text, sources, query.language)
+        } else {
+            buildLocalAnswer(query.text, sources)
+        }
+
         val followUps = generateFollowUps(query.text)
 
         emit(
@@ -161,10 +180,87 @@ class CopilotRepositoryImpl : CopilotRepository {
     }
 
     /**
+     * إرسال المصادر لـ Gemini مع تعليمات صارمة
+     */
+    private suspend fun generateGeminiAnswer(
+        question: String,
+        sources: List<CopilotSource>,
+        language: String,
+    ): String {
+        val systemPrompt = if (language == "ar") {
+            """أنت مساعد إسلامي معرفي موثّق. مهمتك:
+1. أجب فقط من المصادر المرفقة. لا تخترع آيات أو أحاديث.
+2. إذا لم تكفِ المصادر للإجابة، قل ذلك بوضوح.
+3. اذكر المصدر مع كل معلومة (الآية، الحديث، التفسير).
+4. لا تقدم فتاوى. للأسئلة الفقهية، وجّه المستخدم لأهل العلم.
+5. أجب بالعربية الفصحى المبسّطة.
+6. كن موجزاً وواضحاً.
+7. في النهاية أضف: "هذا رد معرفي موثّق وليس فتوى. للاستفسارات الفقهية يُرجى الرجوع لأهل العلم." """.trimIndent()
+        } else {
+            """You are a verified Islamic knowledge assistant. Your task:
+1. Answer ONLY from the provided sources. Do not invent verses or hadiths.
+2. If sources are insufficient, say so clearly.
+3. Cite the source with each piece of information.
+4. Do not issue fatwas. For fiqh questions, direct users to scholars.
+5. Be concise and clear.
+6. End with: "This is a documented knowledge response, not a fatwa." """.trimIndent()
+        }
+
+        // جهّز سياق المصادر
+        val sourcesContext = sources.mapIndexed { i, s ->
+            val typeLabel = when (s.type) {
+                CopilotSourceType.QURAN -> "آية قرآنية"
+                CopilotSourceType.HADITH -> "حديث نبوي"
+                CopilotSourceType.TAFSIR -> "تفسير"
+                CopilotSourceType.DUA -> "دعاء"
+                CopilotSourceType.FIQH -> "فقه"
+            }
+            "[${i + 1}] $typeLabel — ${s.title} (${s.reference})\nالنص: ${s.excerpt}"
+        }.joinToString("\n\n")
+
+        val userPrompt = if (language == "ar") {
+            """سؤال المستخدم: $question
+
+المصادر الإسلامية الموثّقة المتاحة:
+$sourcesContext
+
+أجب من هذه المصادر فقط."""
+        } else {
+            """User question: $question
+
+Available verified Islamic sources:
+$sourcesContext
+
+Answer from these sources only."""
+        }
+
+        val request = GeminiRequest(
+            contents = listOf(
+                GeminiContent(parts = listOf(GeminiPart(text = userPrompt))),
+            ),
+            systemInstruction = GeminiContent(parts = listOf(GeminiPart(text = systemPrompt))),
+            generationConfig = GeminiGenerationConfig(
+                temperature = 0.3,
+                topP = 0.9,
+                topK = 40,
+                maxOutputTokens = 2048,
+            ),
+        )
+
+        return try {
+            val response: GeminiResponse = geminiApi.generateContent(geminiApiKey, request)
+            response.candidates?.firstOrNull()?.content?.parts?.firstOrNull()?.text
+                ?: buildLocalAnswer(question, sources)
+        } catch (e: Exception) {
+            // في حالة فشل Gemini، استخدم الإجابة المحلية
+            buildLocalAnswer(question, sources)
+        }
+    }
+
+    /**
      * استخراج كلمات البحث من السؤال
      */
-    private fun extractSearchTerms(text: String, source: String): String {
-        // إزالة كلمات الاستفهام والضمائر
+    private fun extractSearchTerms(text: String): String {
         val stopWords = setOf(
             "ما", "ماذا", "كيف", "هل", "من", "أين", "متى", "لماذا",
             "كم", "أي", "في", "عن", "على", "مع", "هو", "هي", "أن",
@@ -181,51 +277,47 @@ class CopilotRepositoryImpl : CopilotRepository {
     }
 
     /**
-     * بناء الإجابة من المصادر الموثّقة
+     * بناء إجابة محلية احتياطية (عند عدم توفر Gemini)
      */
-    private fun buildAnswer(query: String, sources: List<CopilotSource>): String {
+    private fun buildLocalAnswer(query: String, sources: List<CopilotSource>): String {
         if (sources.isEmpty()) {
-            return "لم أجد مصادر مرتبطة بهذا السؤال في قواعد البيانات الإسلامية.\n\n" +
-                   "حاول إعادة صياغة السؤال بكلمات من نص القرآن أو الحديث مباشرة.\n" +
+            return "لم أجد مصادر مرتبطة بهذا السؤال.\n\n" +
+                   "حاول إعادة صياغة السؤال بكلمات من نص القرآن أو الحديث.\n" +
                    "مثلاً: «الصبر»، «الصدقة»، «الصلاة»، «الرحمة»."
         }
 
         val builder = StringBuilder()
         builder.append("بناءً على المصادر الإسلامية الموثّقة:\n\n")
 
-        // الآيات القرآنية أولاً
-        val quranSources = sources.filter { it.type == CopilotSourceType.QURAN }
-        if (quranSources.isNotEmpty()) {
-            builder.append("📖 من القرآن الكريم:\n\n")
-            quranSources.forEachIndexed { i, source ->
-                builder.append("${i + 1}. [${source.reference}] ${source.title}\n")
-                builder.append("\"${source.excerpt}\"\n\n")
+        sources.filter { it.type == CopilotSourceType.QURAN }.let { quran ->
+            if (quran.isNotEmpty()) {
+                builder.append("📖 من القرآن الكريم:\n\n")
+                quran.forEachIndexed { i, s ->
+                    builder.append("${i + 1}. [${s.reference}] ${s.title}\n\"${s.excerpt}\"\n\n")
+                }
             }
         }
 
-        // الأحاديث
-        val hadithSources = sources.filter { it.type == CopilotSourceType.HADITH }
-        if (hadithSources.isNotEmpty()) {
-            builder.append("🕌 من الحديث النبوي:\n\n")
-            hadithSources.forEachIndexed { i, source ->
-                builder.append("${i + 1}. ${source.title} — ${source.reference}\n")
-                builder.append("\"${source.excerpt}\"\n\n")
+        sources.filter { it.type == CopilotSourceType.HADITH }.let { hadith ->
+            if (hadith.isNotEmpty()) {
+                builder.append("🕌 من الحديث النبوي:\n\n")
+                hadith.forEachIndexed { i, s ->
+                    builder.append("${i + 1}. ${s.title} — ${s.reference}\n\"${s.excerpt}\"\n\n")
+                }
             }
         }
 
-        // التفسير
-        val tafsirSources = sources.filter { it.type == CopilotSourceType.TAFSIR }
-        if (tafsirSources.isNotEmpty()) {
-            builder.append("📚 التفسير:\n\n")
-            tafsirSources.forEachIndexed { i, source ->
-                builder.append("${i + 1}. ${source.title} (${source.reference})\n")
-                builder.append("${source.excerpt}...\n\n")
+        sources.filter { it.type == CopilotSourceType.TAFSIR }.let { tafsir ->
+            if (tafsir.isNotEmpty()) {
+                builder.append("📚 التفسير:\n\n")
+                tafsir.forEachIndexed { i, s ->
+                    builder.append("${i + 1}. ${s.title} (${s.reference})\n${s.excerpt}...\n\n")
+                }
             }
         }
 
         builder.append("━ ━ ━ ━ ━\n")
-        builder.append("هذا رد معرفي موثّق من مصادر إسلامية معتمدة، وليس فتوى. للاستفسارات الفقهية يُرجى الرجوع لأهل العلم.")
-
+        builder.append("هذا رد معرفي موثّق وليس فتوى. للاستفسارات الفقهية يُرجى الرجوع لأهل العلم.")
         return builder.toString()
     }
 
@@ -238,7 +330,7 @@ class CopilotRepositoryImpl : CopilotRepository {
             lower.contains("مغفرة") || lower.contains("توبة") -> listOf("كيف أتوب؟", "شروط التوبة", "أحاديث عن التوبة")
             lower.contains("صلاة") || lower.contains("pray") -> listOf("مواقيت الصلاة", "كيف أتطهر؟", "أحاديث عن الصلاة")
             lower.contains("زكاة") || lower.contains("صدقة") -> listOf("ما هو نصاب الزكاة؟", "أحاديث عن الصدقة", "حاسبة الزكاة")
-            lower.contains("دعاء") || lower.contains("دعاء") -> listOf("دعاء الاستخارة", "أذكار الصباح والمساء", "أدعية من القرآن")
+            lower.contains("دعاء") -> listOf("دعاء الاستخارة", "أذكار الصباح والمساء", "أدعية من القرآن")
             else -> listOf("آيات عن الصبر", "أحاديث عن الرحمة", "أذكار الصباح")
         }
     }

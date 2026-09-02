@@ -317,4 +317,3 @@ private fun ThinkingIndicator() {
         )
     }
 }
-
