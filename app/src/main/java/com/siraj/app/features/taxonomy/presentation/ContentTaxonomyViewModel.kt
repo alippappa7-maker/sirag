@@ -120,41 +120,10 @@ class ContentTaxonomyViewModel(
         }
     }
 
-    fun runSampleLegacyMigration() {
+    fun runLegacyMigration(items: List<LegacyContentItem> = emptyList()) {
         viewModelScope.launch {
             _uiState.update { it.copy(isMigrating = true, errorMessage = null, successMessage = null) }
-            val sampleLegacy =
-                listOf(
-                    LegacyContentItem(
-                        id = "legacy_001",
-                        title = "سورة الكهف - قراءة وتدبر",
-                        rawCategory = "quran",
-                        rawSource = "مصحف المدينة",
-                        isQuran = true,
-                        isAi = false,
-                        ownerId = "system",
-                    ),
-                    LegacyContentItem(
-                        id = "legacy_002",
-                        title = "فوائد الاستغفار في الأثر",
-                        rawCategory = "hadith_general",
-                        rawSource = "السنن الكبرى",
-                        isQuran = false,
-                        isAi = false,
-                        ownerId = "creator_user_1",
-                    ),
-                    LegacyContentItem(
-                        id = "legacy_003",
-                        title = "خطة محتوى أسبوعي مقترحة للإنتاج",
-                        rawCategory = "ai_plan",
-                        rawSource = "Gemini API",
-                        isQuran = false,
-                        isAi = true,
-                        ownerId = "creator_user_1",
-                    ),
-                )
-
-            when (val res = repository.runLegacyMigration(sampleLegacy)) {
+            when (val res = repository.runLegacyMigration(items)) {
                 is Resource.Success -> {
                     _uiState.update {
                         it.copy(

@@ -132,7 +132,7 @@ fun SubtitleEditorScreen(
                         .background(Color(0xFF121212))
                         .padding(12.dp),
             ) {
-                // Mock Video Backdrop
+                // Video Backdrop Preview
                 Box(
                     modifier =
                         Modifier

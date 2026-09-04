@@ -202,7 +202,7 @@ fun PlanEditor(
                         Text("إرسال للمراجعة")
                     }
                 } else if (project.reviewState == ReviewState.SUBMITTED || project.reviewState == ReviewState.IN_REVIEW) {
-                    // Mock Reviewer Action
+                    // Reviewer Action
                     OutlinedButton(onClick = { showReviewerDialog = true }) {
                         Text("أدوات المراجع")
                     }

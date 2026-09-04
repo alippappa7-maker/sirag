@@ -1,11 +1,14 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.google.services)
-    alias(libs.plugins.firebase.crashlytics)
     alias(libs.plugins.secrets)
     id("com.google.devtools.ksp")
     id("com.diffplug.spotless")
+}
+
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
 }
 
 val byteBuddyAgent by configurations.creating
@@ -22,7 +25,6 @@ android {
         versionName = "1.0"
         // Default (debug) values — overridden per build type below.
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "FIREBASE_API_KEY", "\"dummy\"")
         buildConfigField("String", "GOOGLE_PLAY_PACKAGE_NAME", "\"dummy\"")
         buildConfigField("String", "GOOGLE_PLAY_PUBSUB_TOPIC_NAME", "\"dummy\"")
         buildConfigField("String", "GOOGLE_PLAY_SERVICE_ACCOUNT_JSON", "\"dummy\"")

@@ -355,16 +355,7 @@ Answer from these sources only."""
 
     override suspend fun getConversation(id: String): CopilotConversation? = null
 
-    override suspend fun getSuggestedQuestions(): List<String> = listOf(
-        "آيات عن الصبر",
-        "كيف أتطهر؟",
-        "ما هو أجر الصدقة؟",
-        "دعاء الاستخارة",
-        "آيات عن الرزق",
-        "أحاديث عن الأخلاق",
-        "كيف أحقق الطمأنينة؟",
-        "ما هي شروط التوبة؟",
-    )
+    override suspend fun getSuggestedQuestions(): List<String> = emptyList()
 
     override suspend fun getSourcesByType(type: CopilotSourceType): List<CopilotSource> = emptyList()
 }

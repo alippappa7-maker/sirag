@@ -39,13 +39,7 @@ class FirebaseNotificationRepositoryImpl(
     override fun getNotificationsFlow(userId: String): Flow<List<SirajNotification>> {
         startFirestoreSync(userId)
         return dao.getNotificationsForUser(userId).map { list ->
-            if (list.isEmpty()) {
-                // Generate initial welcoming system & sample notifications if fresh
-                val sampleList = getInitialNotifications(userId)
-                sampleList
-            } else {
-                list.map { it.toDomain() }
-            }
+            list.map { it.toDomain() }
         }
     }
 
@@ -379,66 +373,5 @@ class FirebaseNotificationRepositoryImpl(
         } catch (e: Exception) {
             Log.e("NotificationRepo", "Failed to start Firestore listener", e)
         }
-    }
-
-    private fun getInitialNotifications(userId: String): List<SirajNotification> {
-        val now = System.currentTimeMillis()
-        val sampleList =
-            listOf(
-                SirajNotification(
-                    id = "notif_welcome_1",
-                    userId = userId,
-                    type = NotificationType.SYSTEM_MESSAGE,
-                    title = "مرحباً بك في منصة سراج",
-                    body = "تم إعداد مساحة العمل الخاصة بك بنجاح. يمكنك الآن البدء بإنتاج المحتوى الهادف والموثق.",
-                    entityType = "SYSTEM",
-                    entityId = "welcome",
-                    readAt = null,
-                    createdAt = now - 1000 * 60 * 15, // 15 mins ago
-                ),
-                SirajNotification(
-                    id = "notif_adhkar_2",
-                    userId = userId,
-                    type = NotificationType.MORNING_EVENING_ADHKAR,
-                    title = "أذكار المساء",
-                    body = "حان وقت أذكار المساء، حصّن نفسك بذكر الله.",
-                    entityType = "MIHRAB",
-                    entityId = "evening_adhkar",
-                    readAt = null,
-                    createdAt = now - 1000 * 60 * 60 * 2, // 2 hours ago
-                ),
-                SirajNotification(
-                    id = "notif_audio_3",
-                    userId = userId,
-                    type = NotificationType.NEW_AUDIO_CONTENT,
-                    title = "تلاوة جديدة في المكتبة الصوتية",
-                    body = "تمت إضافة تلاوة خاشعة بصوت الشيخ مشاري العفاسي لسورة الملك.",
-                    entityType = "AUDIO",
-                    entityId = "surah_67",
-                    readAt = now - 1000 * 60 * 60 * 5,
-                    createdAt = now - 1000 * 60 * 60 * 5, // 5 hours ago
-                ),
-                SirajNotification(
-                    id = "notif_video_4",
-                    userId = userId,
-                    type = NotificationType.VIDEO_GENERATION_COMPLETED,
-                    title = "اكتمل تصيير الفيديو",
-                    body = "تم الانتهاء من تركيب وتصدير مشروع 'فضائل سورة الكهف' بجودة 1080p.",
-                    entityType = "PROJECT",
-                    entityId = "sample_project_1",
-                    readAt = null,
-                    createdAt = now - 1000 * 60 * 60 * 24, // 1 day ago
-                ),
-            )
-
-        // Seed into Room DB asynchronously
-        coroutineScope.launch {
-            try {
-                dao.insertNotifications(sampleList.map { NotificationEntity.fromDomain(it) })
-            } catch (e: Exception) {
-                Log.e("NotificationRepo", "Seeding initial notifications error", e)
-            }
-        }
-        return sampleList
     }
 }

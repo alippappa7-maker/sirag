@@ -11,14 +11,7 @@ class FirebaseHadithRepositoryImpl(
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) : HadithRepository {
 
-    private val defaultCollections = listOf(
-        HadithCollection("bukhari", "صحيح البخاري", "الإمام محمد بن إسماعيل البخاري", 7563, true),
-        HadithCollection("muslim", "صحيح مسلم", "الإمام مسلم بن الحجاج النيسابوري", 7500, true),
-        HadithCollection("abudawud", "سنن أبي داود", "الإمام أبو داود السجستاني", 5274, true),
-        HadithCollection("tirmidhi", "جامع الترمذي", "الإمام أبو عيسى محمد الترمذي", 3956, true),
-        HadithCollection("nasai", "سنن النسائي", "الإمام أحمد بن شعيب النسائي", 5758, true),
-        HadithCollection("ibnmajah", "سنن ابن ماجه", "الإمام محمد بن ماجه القزويني", 4341, true)
-    )
+    private val defaultCollections = emptyList<HadithCollection>()
 
     override suspend fun getCollections(): List<HadithCollection> {
         return try {

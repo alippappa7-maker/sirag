@@ -46,10 +46,6 @@ class QuranRepositoryImpl(
     override suspend fun getAyahs(surahId: Int): Resource<List<Ayah>> =
         try {
             // Fetch verses with translations and tafsirs
-            // Note: Since we are mocking/using a simulated API for now that might fail,
-            // we will catch the exception and return a dummy result for the UI to display,
-            // strictly following the rule: "Do not put static verses from memory".
-            // However, to ensure the UI works, we simulate the structure properly.
             val response = api.getVersesByChapter(surahId, translations = "131", tafsirs = "16")
             val ayahs =
                 response.verses.map { apiVerse ->
@@ -77,9 +73,10 @@ class QuranRepositoryImpl(
                             )
                         }
 
+                    val formattedAudio = String.format("%03d%03d", chapterNumber, verseNumber)
                     val audio =
                         AyahAudio(
-                            url = "https://example.com/audio/${chapterNumber}_$verseNumber.mp3", // Simulated URL
+                            url = "https://everyayah.com/data/Alafasy_128kbps/$formattedAudio.mp3",
                             reciterName = "مشاري راشد العفاسي",
                             reciterStyle = "مرتل",
                         )
@@ -98,7 +95,7 @@ class QuranRepositoryImpl(
                 }
             Resource.Success(ayahs)
         } catch (e: Exception) {
-            // When offline or API fails, do NOT generate fake verses. Return error.
+            // When offline or API fails, do NOT generate synthetic verses. Return error.
             Resource.Error(e.message ?: "Failed to load Ayahs from source")
         }
 

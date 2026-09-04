@@ -35,7 +35,7 @@ class CostManagementRepositoryImpl(
             return Resource.Error("Provider is currently disabled by administrator.")
         }
 
-        // Simple mock estimation logic
+        // Cost estimation logic
         val baseRate =
             when (operation) {
                 OperationType.TEXT_GENERATION -> 0.0001

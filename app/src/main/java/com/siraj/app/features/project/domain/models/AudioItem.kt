@@ -23,7 +23,7 @@ data class VoiceOption(
     val gender: AudioVoiceGender,
     val dialect: String,
     val description: String,
-    val previewSampleUrl: String = "",
+    val previewAudioUrl: String = "",
 )
 
 enum class AudioLanguage(

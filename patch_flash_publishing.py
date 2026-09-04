@@ -1,4 +1,8 @@
-package com.siraj.app.data.repository.flash
+import re
+
+file_path = "app/src/main/java/com/siraj/app/data/repository/flash/FirebaseFlashPublishingRepositoryImpl.kt"
+
+content = """package com.siraj.app.data.repository.flash
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.siraj.app.core.utils.Resource
@@ -255,3 +259,8 @@ class FirebaseFlashPublishingRepositoryImpl(
         }
     }
 }
+"""
+
+with open(file_path, "w") as f:
+    f.write(content)
+

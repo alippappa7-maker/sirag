@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 data class MinorSafetyUiState(
-    val currentUserId: String = "child_user_sample",
+    val currentUserId: String = "",
     val policy: MinorSafetyPolicy = MinorSafetyPolicy(),
     val ageBracket: UserAgeBracket = UserAgeBracket.UNSPECIFIED,
     val consents: List<ParentalConsentRecord> = emptyList(),

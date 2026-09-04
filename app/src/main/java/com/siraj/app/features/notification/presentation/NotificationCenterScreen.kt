@@ -503,12 +503,12 @@ private fun handleNotificationNavigation(
         NotificationType.EXPORT_FAILED,
         NotificationType.PROJECT_COMMENT_UPDATE,
         -> {
-            if (entityId.isNotBlank()) onNavigateToProject(entityId) else onNavigateToProject("sample_project_1")
+            if (entityId.isNotBlank()) onNavigateToProject(entityId)
         }
         NotificationType.REVIEW_REQUESTED,
         NotificationType.REVIEW_RESULT,
         -> {
-            if (entityId.isNotBlank()) onNavigateToReview(entityId) else onNavigateToReview("sample_review_1")
+            if (entityId.isNotBlank()) onNavigateToReview(entityId)
         }
         NotificationType.NEW_AUDIO_CONTENT -> {
             if (entityId.isNotBlank()) onNavigateToAudio(entityId) else onNavigateToAudio("surah_67")

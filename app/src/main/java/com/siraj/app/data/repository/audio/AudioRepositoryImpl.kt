@@ -1,84 +1,64 @@
 package com.siraj.app.data.repository.audio
 
+import com.google.firebase.firestore.FirebaseFirestore
 import com.siraj.app.core.utils.Resource
 import com.siraj.app.domain.models.audio.*
 import com.siraj.app.domain.repository.audio.AudioRepository
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.tasks.await
 
-class AudioRepositoryImpl : AudioRepository {
-    // Mock data in memory
-    private val mockTracks =
-        mutableListOf(
-            AudioTrack(
-                id = "a1",
-                title = "تلاوة سورة الكهف",
-                speaker = "القارئ محمد",
-                category = "recitation",
-                durationSeconds = 1800,
-                source = "مؤسسة التلاوات الرسمية",
-                rights = AudioRights("Creative Commons", "https://example.com/audio1"),
-                verificationStatus = AudioVerificationStatus.APPROVED,
-                playCount = 1500,
-                listenProgressSeconds = 120,
-            ),
-            AudioTrack(
-                id = "a2",
-                title = "شرح كتاب التوحيد - الدرس الأول",
-                speaker = "الشيخ أحمد",
-                category = "lesson",
-                durationSeconds = 3600,
-                source = "الموقع الرسمي للشيخ",
-                rights = AudioRights("Public Domain", "https://example.com/audio2"),
-                verificationStatus = AudioVerificationStatus.APPROVED,
-                playCount = 500,
-                isFavorite = true,
-            ),
-            AudioTrack(
-                id = "a3",
-                title = "محاضرة: كيف نستقبل رمضان",
-                speaker = "الشيخ إبراهيم",
-                category = "lecture",
-                durationSeconds = 2700,
-                source = "إذاعة القرآن الكريم",
-                rights = AudioRights("Copyrighted (Licensed)", "https://example.com/audio3"),
-                verificationStatus = AudioVerificationStatus.APPROVED,
-                playCount = 3000,
-            ),
-            AudioTrack(
-                id = "a4",
-                title = "بودكاست سراج - الحلقة 1",
-                speaker = "عمر",
-                category = "podcast",
-                durationSeconds = 1200,
-                source = "منصة سراج",
-                rights = AudioRights("Exclusive", "https://siraj.app/podcast/1"),
-                verificationStatus = AudioVerificationStatus.APPROVED,
-                playCount = 800,
-            ),
-            AudioTrack(
-                id = "a5",
-                title = "تلاوة غير موثقة (للاختبار)",
-                speaker = "مجهول",
-                category = "recitation",
-                durationSeconds = 600,
-                source = "منتدى غير معروف",
-                rights = AudioRights("Unknown", ""),
-                verificationStatus = AudioVerificationStatus.PENDING_REVIEW,
-                playCount = 10,
-            ),
-        )
+class AudioRepositoryImpl(
+    private val firestore: FirebaseFirestore? = try { FirebaseFirestore.getInstance() } catch (_: Throwable) { null }
+) : AudioRepository {
+
+    private val localTracks = mutableListOf<AudioTrack>()
 
     override suspend fun getTracks(
         filter: AudioFilter,
         page: Int,
         pageSize: Int,
     ): Resource<List<AudioTrack>> {
-        delay(500) // Simulate network/cache
+        val fs = firestore
+        if (fs != null) {
+            try {
+                val snapshot = fs.collection("audio_tracks")
+                    .whereEqualTo("verificationStatus", AudioVerificationStatus.APPROVED.name)
+                    .get()
+                    .await()
 
-        // Always filter by APPROVED first
-        var result = mockTracks.filter { it.verificationStatus == AudioVerificationStatus.APPROVED }
+                val remoteTracks = snapshot.documents.mapNotNull { doc ->
+                    try {
+                        AudioTrack(
+                            id = doc.id,
+                            title = doc.getString("title") ?: "",
+                            speaker = doc.getString("speaker") ?: "",
+                            category = doc.getString("category") ?: "recitation",
+                            durationSeconds = doc.getLong("durationSeconds")?.toInt() ?: 0,
+                            source = doc.getString("source") ?: "",
+                            rights = AudioRights(
+                                licenseType = doc.getString("rightsLicense") ?: "All Rights Reserved",
+                                sourceUrl = doc.getString("rightsUrl") ?: "",
+                            ),
+                            verificationStatus = AudioVerificationStatus.APPROVED,
+                            playCount = doc.getLong("playCount")?.toInt() ?: 0,
+                            listenProgressSeconds = 0,
+                            isFavorite = false,
+                            isDownloaded = false
+                        )
+                    } catch (_: Exception) {
+                        null
+                    }
+                }
+                if (remoteTracks.isNotEmpty()) {
+                    localTracks.clear()
+                    localTracks.addAll(remoteTracks)
+                }
+            } catch (_: Exception) {
+                // Return local tracks
+            }
+        }
 
-        // Category filter
+        var result = localTracks.filter { it.verificationStatus == AudioVerificationStatus.APPROVED }
+
         if (filter.categoryId != null && filter.categoryId != "all") {
             if (filter.categoryId == "favorites") {
                 result = result.filter { it.isFavorite }
@@ -89,24 +69,19 @@ class AudioRepositoryImpl : AudioRepository {
             }
         }
 
-        // Query filter
         if (filter.query.isNotBlank()) {
-            result =
-                result.filter {
-                    it.title.contains(filter.query, ignoreCase = true) ||
-                        it.speaker.contains(filter.query, ignoreCase = true)
-                }
+            result = result.filter {
+                it.title.contains(filter.query, ignoreCase = true) ||
+                    it.speaker.contains(filter.query, ignoreCase = true)
+            }
         }
 
-        // Sort
-        result =
-            when (filter.sortOption) {
-                AudioSortOption.NEWEST -> result.sortedByDescending { it.id } // Mocking newest by ID
-                AudioSortOption.MOST_LISTENED -> result.sortedByDescending { it.playCount }
-                AudioSortOption.ALPHABETICAL -> result.sortedBy { it.title }
-            }
+        result = when (filter.sortOption) {
+            AudioSortOption.NEWEST -> result.sortedByDescending { it.id }
+            AudioSortOption.MOST_LISTENED -> result.sortedByDescending { it.playCount }
+            AudioSortOption.ALPHABETICAL -> result.sortedBy { it.title }
+        }
 
-        // Pagination
         val startIndex = (page - 1) * pageSize
         if (startIndex >= result.size) return Resource.Success(emptyList())
         val endIndex = minOf(startIndex + pageSize, result.size)
@@ -115,10 +90,10 @@ class AudioRepositoryImpl : AudioRepository {
     }
 
     override suspend fun toggleFavorite(trackId: String): Resource<Boolean> {
-        val index = mockTracks.indexOfFirst { it.id == trackId }
+        val index = localTracks.indexOfFirst { it.id == trackId }
         if (index != -1) {
-            val track = mockTracks[index]
-            mockTracks[index] = track.copy(isFavorite = !track.isFavorite)
+            val track = localTracks[index]
+            localTracks[index] = track.copy(isFavorite = !track.isFavorite)
             return Resource.Success(true)
         }
         return Resource.Error("Track not found")
@@ -128,10 +103,10 @@ class AudioRepositoryImpl : AudioRepository {
         trackId: String,
         progressSeconds: Int,
     ): Resource<Boolean> {
-        val index = mockTracks.indexOfFirst { it.id == trackId }
+        val index = localTracks.indexOfFirst { it.id == trackId }
         if (index != -1) {
-            val track = mockTracks[index]
-            mockTracks[index] = track.copy(listenProgressSeconds = progressSeconds)
+            val track = localTracks[index]
+            localTracks[index] = track.copy(listenProgressSeconds = progressSeconds)
             return Resource.Success(true)
         }
         return Resource.Error("Track not found")
@@ -141,7 +116,6 @@ class AudioRepositoryImpl : AudioRepository {
         trackId: String,
         reason: String,
     ): Resource<Boolean> {
-        delay(300)
         return Resource.Success(true)
     }
 }

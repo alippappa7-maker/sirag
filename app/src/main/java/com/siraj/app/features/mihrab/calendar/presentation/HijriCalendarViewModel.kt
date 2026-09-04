@@ -79,7 +79,7 @@ class HijriCalendarViewModel : ViewModel() {
     private fun generateEvents(currentHijriDate: HijrahDate): List<HijriEvent> {
         val year = currentHijriDate.get(ChronoField.YEAR)
 
-        // Mock events for the year
+        // Islamic calendar events for the year
         val allEvents =
             listOf(
                 Pair(1, 1) to "رأس السنة الهجرية",

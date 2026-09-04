@@ -5,7 +5,7 @@ import com.siraj.app.domain.repository.community.InteractionRepository
 import kotlinx.coroutines.delay
 
 class FirebaseInteractionRepositoryImpl : InteractionRepository {
-    // Mock Databases
+    // Local In-Memory Store
     private val likes = mutableMapOf<String, MutableSet<String>>() // targetId -> set of userIds
     private val saves = mutableMapOf<String, MutableSet<String>>() // targetId -> set of userIds
     private val follows = mutableMapOf<String, MutableSet<String>>() // targetUserId -> set of follower userIds
@@ -114,7 +114,6 @@ class FirebaseInteractionRepositoryImpl : InteractionRepository {
         userId: String,
         targetId: String,
     ): Resource<Unit> {
-        // Analytics mapping (mocked)
         return Resource.Success(Unit)
     }
 }

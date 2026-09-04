@@ -132,7 +132,7 @@ fun FlashesScreen(
 
                 LaunchedEffect(isVisible) {
                     if (isVisible) {
-                        // Debounce view logging to prevent fake views when fast scrolling
+                        // Debounce view logging when scrolling fast
                         delay(2000)
                         viewModel.logView(flash.id)
                     }
@@ -385,7 +385,7 @@ fun FlashFeedItem(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            // Profile Image (Mock)
+            // Profile Image
             Box(
                 modifier =
                     Modifier

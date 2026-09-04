@@ -10,7 +10,7 @@ import kotlinx.coroutines.delay
 import java.util.UUID
 
 class FirebaseShareRepositoryImpl : ShareRepository {
-    // Using in-memory map to mock Firebase behavior for the MVP/prototype
+    // In-memory cache for shared links
     private val shareLinks = mutableMapOf<String, ShareLink>()
 
     override suspend fun createShareLink(

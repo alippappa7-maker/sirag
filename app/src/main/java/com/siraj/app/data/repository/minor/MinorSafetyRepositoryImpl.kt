@@ -10,63 +10,9 @@ import kotlinx.coroutines.flow.map
 import java.util.UUID
 
 class MinorSafetyRepositoryImpl : MinorSafetyRepository {
-    private val policiesMap =
-        MutableStateFlow<Map<String, MinorSafetyPolicy>>(
-            mapOf(
-                "default_user" to
-                    MinorSafetyEngine.generatePolicyForAgeBracket(
-                        userId = "default_user",
-                        ageBracket = UserAgeBracket.ADULT_18_PLUS,
-                    ),
-                "teen_user_sample" to
-                    MinorSafetyEngine.generatePolicyForAgeBracket(
-                        userId = "teen_user_sample",
-                        ageBracket = UserAgeBracket.TEEN_13_TO_17,
-                        guardianEmail = "parent@example.com",
-                    ),
-                "child_user_sample" to
-                    MinorSafetyEngine.generatePolicyForAgeBracket(
-                        userId = "child_user_sample",
-                        ageBracket = UserAgeBracket.CHILD_UNDER_13,
-                        guardianEmail = "father@example.com",
-                        isParentalConsentVerified = false,
-                    ),
-            ),
-        )
-
-    private val consentsFlow =
-        MutableStateFlow<List<ParentalConsentRecord>>(
-            listOf(
-                ParentalConsentRecord(
-                    consentId = "consent_sample_01",
-                    childUserId = "child_user_sample",
-                    guardianEmail = "father@example.com",
-                    guardianName = "أبو عبد الله",
-                    status = ParentalConsentStatus.PENDING_VERIFICATION,
-                    verificationCodeHash = MinorSafetyEngine.sha256("123456"),
-                    requestedAt = System.currentTimeMillis() - 3600000L,
-                    permissionsGranted = listOf("quran_learning", "adhkar", "safe_ai_prompts"),
-                ),
-            ),
-        )
-
-    private val incidentReportsFlow =
-        MutableStateFlow<List<ChildSafetyIncidentReport>>(
-            listOf(
-                ChildSafetyIncidentReport(
-                    reportId = "inc_child_001",
-                    incidentType = ChildSafetyIncidentType.EXPLOITATION_OR_ABUSE,
-                    urgency = IncidentUrgency.CRITICAL_EMERGENCY,
-                    reportedUserId = "suspicious_acc_99",
-                    reportedContentId = "media_flag_55",
-                    reporterUserId = "concerned_parent_01",
-                    description = "اشتباه في محاولة نشر وسائط غير لائقة تستهدف بيئة الأطفال.",
-                    timestamp = System.currentTimeMillis() - 7200000L,
-                    status = IncidentResolutionStatus.OPEN_ESCALATED,
-                    internalNotes = "تم الحظر المؤقت وتصعيد الملف فوراً لفريق التدقيق والسلامة.",
-                ),
-            ),
-        )
+    private val policiesMap = MutableStateFlow<Map<String, MinorSafetyPolicy>>(emptyMap())
+    private val consentsFlow = MutableStateFlow<List<ParentalConsentRecord>>(emptyList())
+    private val incidentReportsFlow = MutableStateFlow<List<ChildSafetyIncidentReport>>(emptyList())
 
     override fun getMinorSafetyPolicy(userId: String): Flow<MinorSafetyPolicy> =
         policiesMap.map { map ->
@@ -113,7 +59,7 @@ class MinorSafetyRepositoryImpl : MinorSafetyRepository {
             return Resource.Error("يرجى إدخال بريد إلكتروني صالح لولي الأمر.")
         }
 
-        val code = "123456" // Mock verification code sent via backend email
+        val code = String.format("%06d", (100000..999999).random())
         val newRecord =
             ParentalConsentRecord(
                 consentId = "consent_${UUID.randomUUID().toString().take(8)}",

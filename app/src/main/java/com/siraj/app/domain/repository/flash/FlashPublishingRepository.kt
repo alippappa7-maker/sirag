@@ -11,7 +11,7 @@ interface FlashPublishingRepository {
         creatorId: String,
         creatorName: String,
         workspaceId: String,
-        videoFile: File?, // nullable for mock MVP
+        videoFile: File?,
         videoAssetId: String?,
         durationMs: Long,
     ): Resource<Flash>

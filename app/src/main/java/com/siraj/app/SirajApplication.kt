@@ -70,10 +70,10 @@ class SirajApplication :
                     val options =
                         FirebaseOptions
                             .Builder()
-                            .setApplicationId(context.packageName.ifEmpty { "com.aistudio.siraj" })
+                            .setApplicationId("1:603236184136:android:8ea8cec39cb7978453e87d")
                             .setApiKey(BuildConfig.FIREBASE_API_KEY)
-                            .setProjectId("siraj-applet-dev")
-                            .setStorageBucket("siraj-applet-dev.appspot.com")
+                            .setProjectId("siraj-development")
+                            .setStorageBucket("siraj-development.firebasestorage.app")
                             .build()
                     FirebaseApp.initializeApp(context.applicationContext, options)
                     SanitizedLogger.d("SirajApplication", "Firebase initialized with fallback configuration.")

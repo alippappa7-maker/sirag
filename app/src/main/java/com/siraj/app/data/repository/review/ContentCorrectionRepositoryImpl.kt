@@ -20,68 +20,6 @@ class ContentCorrectionRepositoryImpl : ContentCorrectionRepository {
     private val affectedAssetsMap = ConcurrentHashMap<String, MutableStateFlow<List<AffectedAsset>>>()
     private val reviewsMap = ConcurrentHashMap<String, MutableStateFlow<List<CorrectionReview>>>()
 
-    init {
-        seedSampleData()
-    }
-
-    private fun seedSampleData() {
-        val sampleContentId = "proj_siraj_101"
-
-        // Initial Version 1
-        val v1 =
-            ContentVersion(
-                id = "ver_101_v1",
-                contentId = sampleContentId,
-                versionNumber = 1,
-                title = "فضل طلب العلم وسلوك طريقه إلى الجنة",
-                fullContentText = "من سلك طريقاً يلتمس فيه علماً سهّل الله له به طريقاً إلى الجنة، وإن الملائكة لتضع أجنحتها رضاً لطالب العلم.",
-                claims =
-                    listOf(
-                        ShariaClaim(
-                            id = "claim_1",
-                            claimText = "من سلك طريقاً يلتمس فيه علماً سهّل الله له به طريقاً إلى الجنة",
-                            positionContext = "المشهد 1 (00:00 - 00:20)",
-                            sourceType = "HADITH",
-                            sourceTitle = "صحيح مسلم",
-                            sourceReference = "كتاب الذكر والدعاء والتوبة، باب فضل الاجتماع على تلاوة القرآن، رقم 2699",
-                            originalSourceText = "من سلك طريقا يلتمس فيه علما سهل الله له به طريقا إلى الجنة",
-                            hadithGrade = "صحيح",
-                            hadithNarrator = "أبو هريرة رضي الله عنه",
-                            isVerified = true,
-                        ),
-                    ),
-                sources =
-                    listOf(
-                        Source(
-                            id = "src_1",
-                            type = SourceType.HADITH,
-                            title = "صحيح مسلم",
-                            authorOrNarrator = "أبو هريرة رضي الله عنه",
-                            originalText = "من سلك طريقا يلتمس فيه علما سهل الله له به طريقا إلى الجنة",
-                            reference = "رقم 2699",
-                            reviewStatus = SourceVerificationStatus.VERIFIED,
-                        ),
-                    ),
-                status = VersionStatus.ACTIVE_PUBLISHED,
-                createdBy = "creator_ahmed",
-                createdByName = "أحمد المنصور",
-                createdAt = System.currentTimeMillis() - 7 * 24 * 3600 * 1000L,
-                publishedAt = System.currentTimeMillis() - 6 * 24 * 3600 * 1000L,
-                immutableHash =
-                    ContentCorrectionEngine.computeHash(
-                        contentId = sampleContentId,
-                        version = 1,
-                        text = "من سلك طريقاً يلتمس فيه علماً سهّل الله له به طريقاً إلى الجنة",
-                        timestamp = System.currentTimeMillis() - 7 * 24 * 3600 * 1000L,
-                    ),
-                changeSummary = "الإصدار التأسيسي الأول المعتمد",
-            )
-
-        val versionsList = MutableStateFlow(listOf(v1))
-        versionsMap[sampleContentId] = versionsList
-        noticesMap[sampleContentId] = MutableStateFlow(emptyList())
-    }
-
     override fun getContentVersions(contentId: String): Flow<List<ContentVersion>> {
         val flow = versionsMap.getOrPut(contentId) { MutableStateFlow(emptyList()) }
         return flow.map { list -> list.sortedByDescending { it.versionNumber } }

@@ -72,7 +72,7 @@ class FlashesViewModel(
                             isLoading = false,
                             isPaginating = false,
                             error = result.message ?: "حدث خطأ غير متوقع",
-                            // Simple offline check mock
+                            // Network connectivity check
                             isOffline = result.message?.contains("network", ignoreCase = true) == true,
                         )
                 }

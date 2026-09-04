@@ -11,17 +11,8 @@ class MigrationRepositoryImpl : MigrationRepository {
     private val jobs = mutableMapOf<String, MigrationJob>()
     private var activeLock: String? = null
 
-    // In-memory mock database for testing
-    private val mockDb = mutableMapOf<String, MutableMap<String, DocumentSchemaState>>()
-
-    init {
-        // Pre-populate some mock data for tests
-        mockDb["users"] =
-            mutableMapOf(
-                "user1" to DocumentSchemaState("user1", "users", 1, mapOf("name" to "Ali")),
-                "user2" to DocumentSchemaState("user2", "users", 1, mapOf("name" to "Omar")),
-            )
-    }
+    // In-memory document storage
+    private val inMemoryStore = mutableMapOf<String, MutableMap<String, DocumentSchemaState>>()
 
     override suspend fun acquireMigrationLock(jobId: String): Resource<Boolean> {
         delay(100)
@@ -76,7 +67,7 @@ class MigrationRepositoryImpl : MigrationRepository {
         limit: Int,
         lastDocumentId: String?,
     ): Resource<List<DocumentSchemaState>> {
-        val collection = mockDb[collectionName] ?: return Resource.Success(emptyList())
+        val collection = inMemoryStore[collectionName] ?: return Resource.Success(emptyList())
 
         val outdated =
             collection.values
@@ -104,7 +95,7 @@ class MigrationRepositoryImpl : MigrationRepository {
         var successes = 0
         val failures = mutableListOf<Pair<String, String>>()
 
-        val collection = mockDb.getOrPut(collectionName) { mutableMapOf() }
+        val collection = inMemoryStore.getOrPut(collectionName) { mutableMapOf() }
 
         for (doc in migratedDocuments) {
             try {

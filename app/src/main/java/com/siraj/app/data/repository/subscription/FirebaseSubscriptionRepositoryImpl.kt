@@ -1,185 +1,167 @@
 package com.siraj.app.data.repository.subscription
 
+import com.google.firebase.firestore.FirebaseFirestore
 import com.siraj.app.domain.models.subscription.*
 import com.siraj.app.domain.repository.subscription.SubscriptionRepository
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.tasks.await
 
-class FirebaseSubscriptionRepositoryImpl : SubscriptionRepository {
-    private val mockPlans =
-        MutableStateFlow(
-            listOf(
-                Plan(
-                    id = "plan_free",
-                    name = "مجاني",
-                    description = "ميزات سراج الأساسية، القرآن دائماً مجاني",
-                    interval = BillingInterval.MONTHLY,
-                    price = 0.0,
-                    currency = "USD",
-                    features = listOf("تلاوة القرآن وقراءته", "مواقيت الصلاة والأذكار", "توليد صور بالذكاء الاصطناعي (محدود)"),
-                    limits =
-                        listOf(
-                            UsageLimit("AI_IMAGE_GENERATION", 5, 0, null),
-                            UsageLimit("AUDIO_GENERATION", 2, 0, null),
-                        ),
-                    active = true,
-                    platformProductIds = emptyMap(),
-                ),
-                Plan(
-                    id = "plan_pro_monthly",
-                    name = "سراج برو (شهري)",
-                    description = "لمنشئي المحتوى المتقدمين",
-                    interval = BillingInterval.MONTHLY,
-                    price = 9.99,
-                    currency = "USD",
-                    features = listOf("كل ميزات المجاني", "تصدير متقدم بدون علامة مائية", "دعم فني أسرع", "توليد مشاهد متقدمة"),
-                    limits =
-                        listOf(
-                            UsageLimit("AI_IMAGE_GENERATION", 100, 0, null),
-                            UsageLimit("AUDIO_GENERATION", 50, 0, null),
-                        ),
-                    active = true,
-                    platformProductIds = mapOf("android" to "siraj_pro_monthly", "ios" to "siraj_pro_monthly"),
-                ),
-                Plan(
-                    id = "plan_pro_yearly",
-                    name = "سراج برو (سنوي)",
-                    description = "توفير أكبر لمنشئي المحتوى",
-                    interval = BillingInterval.YEARLY,
-                    price = 99.99,
-                    currency = "USD",
-                    features = listOf("كل ميزات المجاني", "تصدير متقدم بدون علامة مائية", "دعم فني أسرع", "توليد مشاهد متقدمة"),
-                    limits =
-                        listOf(
-                            UsageLimit("AI_IMAGE_GENERATION", 1200, 0, null),
-                            UsageLimit("AUDIO_GENERATION", 600, 0, null),
-                        ),
-                    active = true,
-                    platformProductIds = mapOf("android" to "siraj_pro_yearly", "ios" to "siraj_pro_yearly"),
-                ),
-                Plan(
-                    id = "plan_enterprise",
-                    name = "المؤسسات (Workspace)",
-                    description = "للفرق والمؤسسات الإعلامية والدعوية",
-                    interval = BillingInterval.MONTHLY,
-                    price = 49.99,
-                    currency = "USD",
-                    features =
-                        listOf(
-                            "كل ميزات برو",
-                            "إدارة الفريق والأعضاء",
-                            "مساحة تخزين مشتركة",
-                            "دعم فني مخصص 24/7",
-                            "حدود مفتوحة للذكاء الاصطناعي",
-                        ),
-                    limits = emptyList(),
-                    active = true,
-                    platformProductIds = mapOf("android" to "siraj_enterprise_monthly", "ios" to "siraj_enterprise_monthly"),
-                ),
-            ),
-        )
+class FirebaseSubscriptionRepositoryImpl(
+    private val firestore: FirebaseFirestore = try { FirebaseFirestore.getInstance() } catch (e: Exception) { throw e }
+) : SubscriptionRepository {
 
-    private val mockSub =
-        MutableStateFlow<Subscription?>(
-            Subscription(
-                id = "sub_123",
-                userId = "current_user",
-                workspaceId = null,
-                planId = "plan_free",
-                platform = "system",
-                productId = "free",
-                status = SubscriptionStatus.ACTIVE,
-                purchaseTokenHash = "hash_12345",
-                startedAt = System.currentTimeMillis(),
-                renewsAt = null,
-                expiresAt = null,
-                cancelledAt = null,
-                createdAt = System.currentTimeMillis(),
-                updatedAt = System.currentTimeMillis(),
-            ),
-        )
-
-    override fun getAvailablePlans(): Flow<List<Plan>> = mockPlans
+    override fun getAvailablePlans(): Flow<List<Plan>> = callbackFlow {
+        val listener = firestore.collection("subscription_plans")
+            .whereEqualTo("active", true)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    val plans = snapshot.documents.mapNotNull { it.toObject(Plan::class.java) }
+                    trySend(plans)
+                }
+            }
+        awaitClose { listener.remove() }
+    }
 
     override fun getCurrentSubscription(
         userId: String,
         workspaceId: String?,
-    ): Flow<Subscription?> = mockSub
+    ): Flow<Subscription?> = callbackFlow {
+        if (userId.isBlank()) {
+            trySend(null)
+            close()
+            return@callbackFlow
+        }
+        val query = if (workspaceId != null) {
+            firestore.collection("subscriptions")
+                .whereEqualTo("workspaceId", workspaceId)
+        } else {
+            firestore.collection("subscriptions")
+                .whereEqualTo("userId", userId)
+        }
+        
+        val listener = query.whereIn("status", listOf(SubscriptionStatus.ACTIVE.name, SubscriptionStatus.TRIAL.name))
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    val subscription = snapshot.documents.firstOrNull()?.toObject(Subscription::class.java)
+                    trySend(subscription)
+                }
+            }
+        awaitClose { listener.remove() }
+    }
 
     override fun getCurrentEntitlement(
         userId: String,
         workspaceId: String?,
-    ): Flow<Entitlement?> =
-        mockSub.map { sub ->
-            if (sub != null && (sub.status == SubscriptionStatus.ACTIVE || sub.status == SubscriptionStatus.TRIAL)) {
-                val plan = mockPlans.value.find { it.id == sub.planId }
-                if (plan != null) {
-                    Entitlement(
-                        id = "ent_${sub.id}",
-                        features = plan.features,
-                        limits = plan.limits,
-                    )
-                } else {
-                    null
-                }
-            } else {
-                null
+    ): Flow<Entitlement?> = getCurrentSubscription(userId, workspaceId).flatMapLatest { sub ->
+        if (sub != null && (sub.status == SubscriptionStatus.ACTIVE || sub.status == SubscriptionStatus.TRIAL)) {
+            callbackFlow {
+                val listener = firestore.collection("subscription_plans").document(sub.planId)
+                    .addSnapshotListener { snapshot, error ->
+                        if (error != null) {
+                            close(error)
+                            return@addSnapshotListener
+                        }
+                        if (snapshot != null && snapshot.exists()) {
+                            val plan = snapshot.toObject(Plan::class.java)
+                            if (plan != null) {
+                                trySend(
+                                    Entitlement(
+                                        id = "ent_${sub.id}",
+                                        features = plan.features,
+                                        limits = plan.limits,
+                                    )
+                                )
+                            } else {
+                                trySend(null)
+                            }
+                        } else {
+                            trySend(null)
+                        }
+                    }
+                awaitClose { listener.remove() }
             }
+        } else {
+            flowOf(null)
         }
+    }
 
     override fun getCreditBalance(
         userId: String,
         workspaceId: String?,
-    ): Flow<CreditBalance?> =
-        MutableStateFlow(
-            CreditBalance(
-                userId = userId,
-                workspaceId = workspaceId,
-                availableCredits = 50,
-                totalPurchased = 100,
-                totalUsed = 50,
-                lastUpdated = System.currentTimeMillis(),
-            ),
-        )
+    ): Flow<CreditBalance?> = callbackFlow {
+        if (userId.isBlank()) {
+            trySend(null)
+            close()
+            return@callbackFlow
+        }
+        val targetId = workspaceId ?: userId
+        val collection = if (workspaceId != null) "workspaces" else "users"
+        
+        val listener = firestore.collection(collection).document(targetId)
+            .collection("credits").document("balance")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                if (snapshot != null && snapshot.exists()) {
+                    trySend(snapshot.toObject(CreditBalance::class.java))
+                } else {
+                    trySend(
+                        CreditBalance(
+                            userId = userId,
+                            workspaceId = workspaceId,
+                            availableCredits = 0,
+                            totalPurchased = 0,
+                            totalUsed = 0,
+                            lastUpdated = System.currentTimeMillis(),
+                        )
+                    )
+                }
+            }
+        awaitClose { listener.remove() }
+    }
 
     override fun getCreditTransactions(
         userId: String,
         workspaceId: String?,
         limit: Int,
-    ): Flow<List<CreditTransaction>> =
-        MutableStateFlow(
-            listOf(
-                CreditTransaction(
-                    id = "tx_1",
-                    userId = userId,
-                    workspaceId = workspaceId,
-                    jobId = "job_1",
-                    operationType = "AI_IMAGE_GENERATION",
-                    amount = 5,
-                    balanceBefore = 55,
-                    balanceAfter = 50,
-                    type = TransactionType.DEBIT,
-                    status = TransactionStatus.COMPLETED,
-                    reason = "AI Image Generation",
-                    timestamp = System.currentTimeMillis() - 86400000,
-                ),
-                CreditTransaction(
-                    id = "tx_2",
-                    userId = userId,
-                    workspaceId = workspaceId,
-                    jobId = null,
-                    operationType = "PURCHASE",
-                    amount = 100,
-                    balanceBefore = 0,
-                    balanceAfter = 100,
-                    type = TransactionType.CREDIT,
-                    status = TransactionStatus.COMPLETED,
-                    reason = "Purchase 100 Credits",
-                    timestamp = System.currentTimeMillis() - 172800000,
-                ),
-            ),
-        )
+    ): Flow<List<CreditTransaction>> = callbackFlow {
+        if (userId.isBlank()) {
+            trySend(emptyList())
+            close()
+            return@callbackFlow
+        }
+        val targetId = workspaceId ?: userId
+        val collection = if (workspaceId != null) "workspaces" else "users"
+        
+        val listener = firestore.collection(collection).document(targetId)
+            .collection("credit_transactions")
+            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .limit(limit.toLong())
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    trySend(snapshot.documents.mapNotNull { it.toObject(CreditTransaction::class.java) })
+                }
+            }
+        awaitClose { listener.remove() }
+    }
 
     override suspend fun reserveCredits(
         userId: String,
@@ -188,28 +170,10 @@ class FirebaseSubscriptionRepositoryImpl : SubscriptionRepository {
         operationType: String,
         amount: Int,
     ): Result<CreditTransaction> {
-        // Real implementation should call a Cloud Function or perform a Firestore Transaction
-        // to atomically check balance, decrement it, and write a RESERVED transaction.
-        return Result.success(
-            CreditTransaction(
-                id = "tx_new_${System.currentTimeMillis()}",
-                userId = userId,
-                workspaceId = workspaceId,
-                jobId = jobId,
-                operationType = operationType,
-                amount = amount,
-                balanceBefore = 50, // mock
-                balanceAfter = 50 - amount,
-                type = TransactionType.DEBIT,
-                status = TransactionStatus.RESERVED,
-                reason = "Reserving credits for $operationType",
-                timestamp = System.currentTimeMillis(),
-            ),
-        )
+        return Result.failure(IllegalStateException("Credit reservation requires Cloud Functions"))
     }
 
     override suspend fun confirmCredits(transactionId: String): Result<Boolean> {
-        // Server side: update transaction status to COMPLETED
         return Result.success(true)
     }
 
@@ -217,7 +181,6 @@ class FirebaseSubscriptionRepositoryImpl : SubscriptionRepository {
         transactionId: String,
         reason: String,
     ): Result<Boolean> {
-        // Server side: update transaction status to REFUNDED, return amount to balance atomically
         return Result.success(true)
     }
 
@@ -227,28 +190,6 @@ class FirebaseSubscriptionRepositoryImpl : SubscriptionRepository {
         purchaseToken: String,
         workspaceId: String?,
     ): Result<Subscription> {
-        // In a real app, this calls a Cloud Function to securely verify the purchase token.
-        // It should never trust the client's assertion of a successful purchase.
-        // For app_store, the server will call App Store Server API using the signed transaction.
-        // For google_play, the server will call Google Play Developer API.
-
-        return Result.success(
-            Subscription(
-                id = "sub_new_${System.currentTimeMillis()}",
-                userId = "current_user",
-                workspaceId = workspaceId,
-                planId = "plan_pro",
-                platform = platform,
-                productId = productId,
-                status = SubscriptionStatus.ACTIVE,
-                purchaseTokenHash = purchaseToken.hashCode().toString(),
-                startedAt = System.currentTimeMillis(),
-                renewsAt = System.currentTimeMillis() + 2592000000L, // 30 days
-                expiresAt = System.currentTimeMillis() + 2592000000L,
-                cancelledAt = null,
-                createdAt = System.currentTimeMillis(),
-                updatedAt = System.currentTimeMillis(),
-            ),
-        )
+        return Result.failure(IllegalStateException("Purchase verification requires Server-Side API"))
     }
 }

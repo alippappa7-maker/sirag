@@ -47,9 +47,6 @@ object EnvironmentConfig {
                 1
             }
 
-    val allowMockData: Boolean
-        get() = false
-
     val apiBaseUrl: String
         get() =
             when (currentEnvironment) {

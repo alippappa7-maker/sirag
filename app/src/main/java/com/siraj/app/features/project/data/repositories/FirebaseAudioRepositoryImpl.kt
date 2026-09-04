@@ -24,23 +24,14 @@ class FirebaseAudioRepositoryImpl(
     private val storage: FirebaseStorage = FirebaseStorage.getInstance(),
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
 ) : AudioRepository {
-    override fun getAvailableVoices(): List<VoiceOption> =
-        listOf(
-            VoiceOption(
-                id = "ar-male-faseeh-1",
-                name = "راشد (فصيح وقور وسردي)",
-                gender = AudioVoiceGender.MALE,
-                dialect = "العربية الفصحى",
-                description = "مناسب للأفلام الوثائقية والقصص التاريخية والدروس",
-                previewSampleUrl = "https://actions.google.com/sounds/v1/water/rain_heavy.ogg",
-            ),
+    override fun getAvailableVoices(): List<VoiceOption> = emptyList()
             VoiceOption(
                 id = "ar-male-faseeh-2",
                 name = "طارق (إخباري سريع وحيوي)",
                 gender = AudioVoiceGender.MALE,
                 dialect = "العربية الفصحى",
                 description = "مناسب للفيديوهات القصيرة (Reels/Shorts) والمقدمات المشوقة",
-                previewSampleUrl = "https://actions.google.com/sounds/v1/water/rain_heavy.ogg",
+                previewAudioUrl = "https://actions.google.com/sounds/v1/water/rain_heavy.ogg",
             ),
             VoiceOption(
                 id = "ar-male-warm-3",
@@ -48,7 +39,7 @@ class FirebaseAudioRepositoryImpl(
                 gender = AudioVoiceGender.MALE,
                 dialect = "العربية الفصحى التراثية",
                 description = "مناسب للأذكار والتأملات والمواعظ الهادئة",
-                previewSampleUrl = "https://actions.google.com/sounds/v1/water/rain_heavy.ogg",
+                previewAudioUrl = "https://actions.google.com/sounds/v1/water/rain_heavy.ogg",
             ),
             VoiceOption(
                 id = "ar-female-faseeh-1",
@@ -56,7 +47,7 @@ class FirebaseAudioRepositoryImpl(
                 gender = AudioVoiceGender.FEMALE,
                 dialect = "العربية الفصحى",
                 description = "مناسبة للمحتوى التعليمي والتربوي وشرح السير والقصص",
-                previewSampleUrl = "https://actions.google.com/sounds/v1/water/rain_heavy.ogg",
+                previewAudioUrl = "https://actions.google.com/sounds/v1/water/rain_heavy.ogg",
             ),
             VoiceOption(
                 id = "ar-female-faseeh-2",
@@ -64,7 +55,7 @@ class FirebaseAudioRepositoryImpl(
                 gender = AudioVoiceGender.FEMALE,
                 dialect = "العربية الفصحى",
                 description = "مناسبة للمراجعات التاريخية والتسجيلات الوثائقية الطويلة",
-                previewSampleUrl = "https://actions.google.com/sounds/v1/water/rain_heavy.ogg",
+                previewAudioUrl = "https://actions.google.com/sounds/v1/water/rain_heavy.ogg",
             ),
         )
 

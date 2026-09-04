@@ -11,44 +11,23 @@ import kotlinx.coroutines.flow.map
 import java.util.UUID
 
 class FirebaseContentManagementRepositoryImpl : ContentManagementRepository {
-    private val mockItems =
-        MutableStateFlow(
-            listOf(
-                AdminContentItem(
-                    id = "item-1",
-                    title = "نصيحة الصباح",
-                    type = "FLASH",
-                    status = AdminContentStatus.APPROVED,
-                    ownerId = "user123",
-                    createdAt = System.currentTimeMillis() - 86400000,
-                    isReligiousText = false,
-                ),
-                AdminContentItem(
-                    id = "item-2",
-                    title = "تلاوة سورة الفاتحة",
-                    type = "AUDIO",
-                    status = AdminContentStatus.PENDING_REVIEW,
-                    ownerId = "user456",
-                    createdAt = System.currentTimeMillis() - 3600000,
-                    isReligiousText = true,
-                ),
-            ),
-        )
+    private val itemsFlow =
+        MutableStateFlow<List<AdminContentItem>>(emptyList())
 
-    private val mockAuditLogs = mutableMapOf<String, MutableList<AuditLogEntry>>()
+    private val auditLogsStore = mutableMapOf<String, MutableList<AuditLogEntry>>()
 
     override fun getManagedContent(
         filter: ContentManagementFilter,
         page: Int,
         limit: Int,
     ): Flow<List<AdminContentItem>> =
-        mockItems.map { items ->
+        itemsFlow.map { items ->
             items
                 .filter { item ->
                     (filter.type == null || item.type == filter.type) &&
                         (filter.status == null || item.status == filter.status) &&
                         (filter.query.isEmpty() || item.title.contains(filter.query, ignoreCase = true))
-                }.take(limit) // simple mock pagination
+                }.take(limit)
         }
 
     override suspend fun updateContentStatus(
@@ -56,13 +35,13 @@ class FirebaseContentManagementRepositoryImpl : ContentManagementRepository {
         newStatus: AdminContentStatus,
         reason: String?,
     ) {
-        val currentItems = mockItems.value.toMutableList()
+        val currentItems = itemsFlow.value.toMutableList()
         val index = currentItems.indexOfFirst { it.id == contentId }
         if (index != -1) {
             val oldItem = currentItems[index]
             val newItem = oldItem.copy(status = newStatus)
             currentItems[index] = newItem
-            mockItems.value = currentItems
+            itemsFlow.value = currentItems
 
             addAuditLog(contentId, oldItem.type, "STATUS_CHANGE", oldItem.status.name, newStatus.name)
         }
@@ -90,7 +69,7 @@ class FirebaseContentManagementRepositoryImpl : ContentManagementRepository {
         addAuditLog(contentId, "UNKNOWN", "SCHEDULE_PUBLISH", "None", "Publish at: $publishAt")
     }
 
-    override suspend fun getAuditLogs(entityId: String): List<AuditLogEntry> = mockAuditLogs[entityId] ?: emptyList()
+    override suspend fun getAuditLogs(entityId: String): List<AuditLogEntry> = auditLogsStore[entityId] ?: emptyList()
 
     override suspend fun exportAdminReport(): String = "https://siraj.app/reports/admin_report_${System.currentTimeMillis()}.pdf"
 
@@ -101,7 +80,7 @@ class FirebaseContentManagementRepositoryImpl : ContentManagementRepository {
         oldState: String?,
         newState: String?,
     ) {
-        val list = mockAuditLogs.getOrPut(entityId) { mutableListOf() }
+        val list = auditLogsStore.getOrPut(entityId) { mutableListOf() }
         list.add(
             AuditLogEntry(
                 id = UUID.randomUUID().toString(),

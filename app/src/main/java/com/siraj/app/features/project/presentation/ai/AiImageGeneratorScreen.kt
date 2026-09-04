@@ -64,7 +64,7 @@ fun AiImageGeneratorScreen(
         }
     }
 
-    val samplePrompts =
+    val suggestedPrompts =
         listOf(
             "مسجد أندلسي أثري عند الغروب مع انعكاس الماء",
             "مخطوطة عربية مذهبة بإضاءة سينمائية دافئة",
@@ -192,7 +192,7 @@ fun AiImageGeneratorScreen(
                     modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    samplePrompts.forEach { p ->
+                    suggestedPrompts.forEach { p ->
                         SuggestionChip(
                             onClick = { viewModel.updatePrompt(p) },
                             label = { Text(p, style = MaterialTheme.typography.labelSmall) },

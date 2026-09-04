@@ -88,7 +88,7 @@ fun FlashPublishingScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (state.currentFlash == null) {
-                // Step 1: Upload / Create Draft Mock
+                // Step 1: Upload / Create Draft
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
@@ -210,7 +210,7 @@ fun FlashPublishingScreen(
                                 tags = emptyList(),
                                 visibility = visibility,
                                 showCreatorInfo = true,
-                                sourceIds = listOf("src_1"), // mock source
+                                sourceIds = emptyList(),
                             )
                         },
                         modifier = Modifier.fillMaxWidth(),

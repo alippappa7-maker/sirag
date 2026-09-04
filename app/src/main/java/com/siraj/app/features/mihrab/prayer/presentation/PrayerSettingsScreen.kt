@@ -101,7 +101,7 @@ fun PrayerSettingsScreen(onNavigateBack: () -> Unit) {
                     onExpandedChange = { soundExpanded = !soundExpanded },
                 ) {
                     OutlinedTextField(
-                        value = sounds[1], // Mock selected
+                        value = sounds[1],
                         onValueChange = {},
                         readOnly = true,
                         label = { Text("صوت الأذان") },

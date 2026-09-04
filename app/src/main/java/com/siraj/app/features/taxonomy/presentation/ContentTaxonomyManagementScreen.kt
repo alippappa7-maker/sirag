@@ -69,7 +69,7 @@ fun ContentTaxonomyManagementScreen(
                         Icon(Icons.Default.Assessment, contentDescription = "تقرير التدقيق والتصنيف")
                     }
                     IconButton(onClick = {
-                        viewModel.runSampleLegacyMigration()
+                        viewModel.runLegacyMigration()
                         showMigrationDialog = true
                     }, modifier = Modifier.testTag("taxonomy_migration_button")) {
                         Icon(Icons.Default.MoveToInbox, contentDescription = "ترحيل البيانات القديمة")

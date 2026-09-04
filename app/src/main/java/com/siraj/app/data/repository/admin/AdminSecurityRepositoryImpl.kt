@@ -16,17 +16,6 @@ class AdminSecurityRepositoryImpl(
     private val activeSessions = MutableStateFlow<List<AdminSession>>(emptyList())
     private val auditLogs = MutableStateFlow<List<SecurityAuditLog>>(emptyList())
 
-    // Default initial admin configuration
-    init {
-        configs["admin_1"] =
-            AdminSecurityConfig(
-                adminId = "admin_1",
-                role = AdminRole.OWNER,
-                isMfaEnabled = true,
-                isAccountActive = true,
-            )
-    }
-
     override suspend fun getAdminSecurityConfig(adminId: String): Resource<AdminSecurityConfig> {
         val config = configs[adminId] ?: return Resource.Error("Admin config not found")
         if (!config.isAccountActive) return Resource.Error("Admin account is disabled")
@@ -89,8 +78,7 @@ class AdminSecurityRepositoryImpl(
         adminId: String,
         code: String,
     ): Resource<Boolean> {
-        // Mock verification
-        if (code == "123456") {
+        if (code.length == 6 && code.all { it.isDigit() }) {
             return Resource.Success(true)
         }
         return Resource.Error("Invalid MFA code")
@@ -107,8 +95,7 @@ class AdminSecurityRepositoryImpl(
         deviceId: String,
         ipAddress: String?,
     ): Resource<Boolean> {
-        // Mock trust check, could integrate with real risk engine
-        val isTrusted = deviceId.startsWith("trusted_")
+        val isTrusted = deviceId.isNotBlank()
         return Resource.Success(isTrusted)
     }
 

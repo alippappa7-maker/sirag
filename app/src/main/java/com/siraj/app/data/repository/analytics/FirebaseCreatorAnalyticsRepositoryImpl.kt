@@ -5,9 +5,9 @@ import com.siraj.app.domain.models.analytics.AnalyticsTimeFilter
 import com.siraj.app.domain.models.analytics.CreatorAnalyticsDashboard
 import com.siraj.app.domain.models.analytics.FlashAnalyticsSummary
 import com.siraj.app.domain.repository.analytics.CreatorAnalyticsRepository
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.tasks.await
 
 class FirebaseCreatorAnalyticsRepositoryImpl(
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
@@ -17,75 +17,108 @@ class FirebaseCreatorAnalyticsRepositoryImpl(
         timeFilter: AnalyticsTimeFilter,
     ): Flow<CreatorAnalyticsDashboard> =
         flow {
-            // In a real app, this would query aggregated analytics subcollections.
-            // For MVP, we provide mocked aggregated data to simulate the privacy-first backend aggregation.
-            delay(1000)
+            try {
+                val flashesSnapshot =
+                    firestore
+                        .collection("flashes")
+                        .whereEqualTo("creatorId", userId)
+                        .get()
+                        .await()
 
-            val multiplier =
-                when (timeFilter) {
-                    AnalyticsTimeFilter.LAST_7_DAYS -> 1
-                    AnalyticsTimeFilter.LAST_30_DAYS -> 4
-                    AnalyticsTimeFilter.ALL_TIME -> 12
+                var totalViews = 0L
+                var totalLikes = 0L
+                var totalSaves = 0L
+                var totalShares = 0L
+                val flashSummaries = mutableListOf<FlashAnalyticsSummary>()
+
+                for (doc in flashesSnapshot.documents) {
+                    val views = doc.getLong("views") ?: 0L
+                    val likes = doc.getLong("likes") ?: 0L
+                    val saves = doc.getLong("saves") ?: 0L
+                    val shares = doc.getLong("shares") ?: 0L
+                    totalViews += views
+                    totalLikes += likes
+                    totalSaves += saves
+                    totalShares += shares
+
+                    flashSummaries.add(
+                        FlashAnalyticsSummary(
+                            flashId = doc.id,
+                            title = doc.getString("title") ?: "",
+                            views = views,
+                            estimatedUniqueViews = (views * 0.85).toLong(),
+                            completionRatePercentage = (doc.getDouble("completionRate") ?: 0.0).toFloat(),
+                            averageWatchTimeSeconds = (doc.getDouble("avgWatchTime") ?: 0.0).toFloat(),
+                            saves = saves,
+                            shares = shares,
+                            likes = likes,
+                            trafficSources = emptyMap(),
+                            topCountries = emptyMap(),
+                            templateUsed = doc.getString("template") ?: "عام",
+                            publishedAt = doc.getLong("publishedAt") ?: doc.getLong("createdAt") ?: System.currentTimeMillis(),
+                        ),
+                    )
                 }
 
-            val dashboard =
-                CreatorAnalyticsDashboard(
-                    totalViews = 15000L * multiplier,
-                    followerGrowth = 120L * multiplier,
-                    estimatedUniqueViews = 12500L * multiplier,
-                    bestPostingTimes = listOf("المساء (6-9 م)", "بعد الفجر"),
-                    topPerformingTemplates = mapOf("تلاوة هادئة" to 5000L * multiplier, "حديث شريف" to 3000L * multiplier),
-                    flashes =
-                        listOf(
-                            FlashAnalyticsSummary(
-                                flashId = "f1",
-                                title = "فضل يوم الجمعة",
-                                views = 5000L * multiplier,
-                                estimatedUniqueViews = 4200L * multiplier,
-                                completionRatePercentage = 68.5f,
-                                averageWatchTimeSeconds = 25.4f,
-                                saves = 340L * multiplier,
-                                shares = 120L * multiplier,
-                                likes = 800L * multiplier,
-                                trafficSources = mapOf("الموجز العام" to 75f, "الملف الشخصي" to 15f, "مشاركة خارجية" to 10f),
-                                topCountries = mapOf("مصر" to 40f, "السعودية" to 30f, "أخرى" to 30f),
-                                templateUsed = "حديث شريف",
-                                publishedAt = System.currentTimeMillis() - 86400000L * 2,
-                            ),
-                            FlashAnalyticsSummary(
-                                flashId = "f2",
-                                title = "تلاوة سورة الكهف",
-                                views = 10000L * multiplier,
-                                estimatedUniqueViews = 8500L * multiplier,
-                                completionRatePercentage = 82.1f,
-                                averageWatchTimeSeconds = 45.0f,
-                                saves = 1200L * multiplier,
-                                shares = 500L * multiplier,
-                                likes = 2500L * multiplier,
-                                trafficSources = mapOf("الموجز العام" to 85f, "بحث" to 10f, "أخرى" to 5f),
-                                topCountries = mapOf("السعودية" to 50f, "مصر" to 25f, "المغرب" to 25f),
-                                templateUsed = "تلاوة هادئة",
-                                publishedAt = System.currentTimeMillis() - 86400000L * 5,
-                            ),
-                        ),
-                    timeFilter = timeFilter,
+                val dashboard =
+                    CreatorAnalyticsDashboard(
+                        totalViews = totalViews,
+                        followerGrowth = 0L,
+                        estimatedUniqueViews = (totalViews * 0.85).toLong(),
+                        bestPostingTimes = emptyList(),
+                        topPerformingTemplates = emptyMap(),
+                        flashes = flashSummaries,
+                        timeFilter = timeFilter,
+                    )
+                emit(dashboard)
+            } catch (e: Exception) {
+                emit(
+                    CreatorAnalyticsDashboard(
+                        totalViews = 0L,
+                        followerGrowth = 0L,
+                        estimatedUniqueViews = 0L,
+                        bestPostingTimes = emptyList(),
+                        topPerformingTemplates = emptyMap(),
+                        flashes = emptyList(),
+                        timeFilter = timeFilter,
+                    ),
                 )
-            emit(dashboard)
+            }
         }
 
     override suspend fun generateExportReport(
         userId: String,
         timeFilter: AnalyticsTimeFilter,
     ): String {
-        // Generates a CSV or structured text format for export
-        return """
+        return try {
+            val flashesSnapshot =
+                firestore
+                    .collection("flashes")
+                    .whereEqualTo("creatorId", userId)
+                    .get()
+                    .await()
+
+            var totalViews = 0L
+            for (doc in flashesSnapshot.documents) {
+                totalViews += doc.getLong("views") ?: 0L
+            }
+            val uniqueViews = (totalViews * 0.85).toLong()
+
+            """
             تقرير أداء صانع المحتوى
             الفترة: ${timeFilter.displayName}
             ملاحظة: بعض الأرقام (مثل المشاهدات الفريدة) تقديرية لأغراض الخصوصية.
             البيانات الواردة هنا تقيس الأداء الفني ولا تعكس بالضرورة القيمة الشرعية للمحتوى.
 
             إجمالي المشاهدات,نمو المتابعين,المشاهدات الفريدة التقديرية
-            15000,120,12500
+            $totalViews,0,$uniqueViews
             """.trimIndent()
+        } catch (e: Exception) {
+            """
+            تقرير أداء صانع المحتوى
+            الفترة: ${timeFilter.displayName}
+            لا تتوفر بيانات حالياً
+            """.trimIndent()
+        }
     }
 }

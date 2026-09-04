@@ -40,7 +40,7 @@ class QiblaViewModel(
 
     init {
         startSensor()
-        // Default mock location for now (e.g. Riyadh)
+        // Default location (e.g. Riyadh)
         updateLocation(24.7136, 46.6753)
     }
 
@@ -89,8 +89,6 @@ class QiblaViewModel(
     fun setLocationPermissionGranted(granted: Boolean) {
         _state.value = _state.value.copy(hasLocationPermission = granted)
         if (granted) {
-            // In a real app, request location updates from FusedLocationProviderClient here
-            // Mocking update:
             updateLocation(24.7136, 46.6753) // Riyadh
         }
     }

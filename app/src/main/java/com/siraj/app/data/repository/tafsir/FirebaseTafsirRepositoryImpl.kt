@@ -11,32 +11,9 @@ class FirebaseTafsirRepositoryImpl(
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) : TafsirRepository {
 
-    private val defaultEditions = listOf(
-        TafsirEdition("saadi", "تفسير السعدي (تيسير الكريم الرحمن)", "الشيخ عبد الرحمن بن ناصر السعدي", "مجمع الملك فهد لطباعة المصحف الشريف", true),
-        TafsirEdition("ibnkathir", "تفسير ابن كثير", "الإمام الحافظ ابن كثير الدمشقي", "دار طيبة للنشر والتوزيع", true),
-        TafsirEdition("muyassar", "التفسير الميسر", "نخبة من العلماء", "مجمع الملك فهد لطباعة المصحف الشريف", true)
-    )
+    private val defaultEditions = emptyList<TafsirEdition>()
 
-    private val defaultSurahs = listOf(
-        TafsirSurah(1, "الفاتحة", 7, "مكية"),
-        TafsirSurah(2, "البقرة", 286, "مدنية"),
-        TafsirSurah(3, "آل عمران", 200, "مدنية"),
-        TafsirSurah(4, "النساء", 176, "مدنية"),
-        TafsirSurah(5, "المائدة", 120, "مدنية"),
-        TafsirSurah(6, "الأنعام", 165, "مكية"),
-        TafsirSurah(7, "الأعراف", 206, "مكية"),
-        TafsirSurah(8, "الأنفال", 75, "مدنية"),
-        TafsirSurah(9, "التوبة", 129, "مدنية"),
-        TafsirSurah(10, "يونس", 109, "مكية"),
-        TafsirSurah(11, "هود", 123, "مكية"),
-        TafsirSurah(12, "يوسف", 111, "مكية"),
-        TafsirSurah(18, "الكهف", 110, "مكية"),
-        TafsirSurah(36, "يس", 83, "مكية"),
-        TafsirSurah(67, "الملك", 30, "مكية"),
-        TafsirSurah(112, "الإخلاص", 4, "مكية"),
-        TafsirSurah(113, "الفلق", 5, "مكية"),
-        TafsirSurah(114, "الناس", 6, "مكية")
-    )
+    private val defaultSurahs = emptyList<TafsirSurah>()
 
     override suspend fun getEditions(): List<TafsirEdition> {
         return try {

@@ -1029,30 +1029,37 @@ private fun NewCorrectionDialog(
                     Button(
                         onClick = {
                             if (reason.isNotBlank() && explanation.isNotBlank() && discoverer.isNotBlank()) {
-                                val sampleSourceRev =
-                                    SourceRevision(
-                                        correctionNoticeId = "",
-                                        originalSourceId = "src_old",
-                                        originalSourceTitle = oldSourceTitle,
-                                        originalReference = "رقم غير دقيق",
-                                        originalText = currentVersion?.fullContentText ?: "",
-                                        correctedSourceTitle = correctedSourceTitle,
-                                        correctedReference = correctedRef,
-                                        correctedText = correctedText,
-                                        correctedGrade = correctedGrade,
-                                        correctionReason = reason,
+                                val sourceRevisions = if (correctedSourceTitle.isNotBlank()) {
+                                    listOf(
+                                        SourceRevision(
+                                            correctionNoticeId = "",
+                                            originalSourceId = "src_original",
+                                            originalSourceTitle = oldSourceTitle,
+                                            originalReference = "",
+                                            originalText = currentVersion?.fullContentText ?: "",
+                                            correctedSourceTitle = correctedSourceTitle,
+                                            correctedReference = correctedRef,
+                                            correctedText = correctedText,
+                                            correctedGrade = correctedGrade,
+                                            correctionReason = reason,
+                                        ),
                                     )
-                                val sampleAffectedAsset =
-                                    AffectedAsset(
-                                        contentId = currentVersion?.contentId ?: "",
-                                        correctionNoticeId = "",
-                                        projectId = "proj_siraj_101",
-                                        projectTitle = currentVersion?.title ?: "مشروع سراج",
-                                        assetType = AffectedAssetType.SCENE,
-                                        assetName = "المشهد 1 - الركيزة النصية",
-                                        impactDescription = "يتضمن اللفظ المراد استدراكه",
-                                        remediationAction = "تحديث بطاقة النص وإعادة الرندرة",
+                                } else emptyList()
+
+                                val affectedAssets = if (currentVersion != null) {
+                                    listOf(
+                                        AffectedAsset(
+                                            contentId = currentVersion.contentId,
+                                            correctionNoticeId = "",
+                                            projectId = currentVersion.contentId,
+                                            projectTitle = currentVersion.title,
+                                            assetType = AffectedAssetType.SCENE,
+                                            assetName = "المحتوى النصي المستدرك",
+                                            impactDescription = "يتضمن اللفظ المراد استدراكه",
+                                            remediationAction = "تحديث الركيزة النصية",
+                                        ),
                                     )
+                                } else emptyList()
 
                                 onConfirm(
                                     selectedType,
@@ -1064,8 +1071,8 @@ private fun NewCorrectionDialog(
                                     correctedText,
                                     emptyList(),
                                     emptyList(),
-                                    listOf(sampleSourceRev),
-                                    listOf(sampleAffectedAsset),
+                                    sourceRevisions,
+                                    affectedAssets,
                                     changeSummary,
                                     publicNoticeText,
                                     forceSuspend,

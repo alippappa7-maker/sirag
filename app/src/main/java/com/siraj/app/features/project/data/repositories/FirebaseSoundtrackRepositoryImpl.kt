@@ -14,26 +14,7 @@ import kotlinx.coroutines.tasks.await
 class FirebaseSoundtrackRepositoryImpl(
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
 ) : SoundtrackRepository {
-    private val staticSoundtracks: List<SoundtrackItem> =
-        listOf(
-            // Nature & Ambience (No Music)
-            SoundtrackItem(
-                id = "sfx-nature-rain-1",
-                title = "صوت المطر الغزير الرطب",
-                description = "أصوات زخات المطر الهادئة على الأرض، مناسبة للتأمل والقصص",
-                category = SoundtrackCategory.NATURE_AMBIENCE,
-                audioUrl = "https://actions.google.com/sounds/v1/weather/rain_heavy.ogg",
-                durationMs = 30000L,
-                isMusic = false,
-                tags = listOf("مطر", "طبيعة", "ماء", "غيث", "هدوء"),
-                authorOrCreator = "Google Sound Actions",
-                provider = "Google Sound Library",
-                licenseType = SoundLicenseType.CC0_PUBLIC_DOMAIN,
-                attributionText = "Public Domain (CC0)",
-                sourceUrl = "https://actions.google.com/sounds/v1/weather/rain_heavy.ogg",
-                usageRestrictions = "مرخص للاستخدام العام والتجاري بدون قيود",
-                defaultVolume = 0.4f,
-            ),
+    private val staticSoundtracks: List<SoundtrackItem> = emptyList()
             SoundtrackItem(
                 id = "sfx-nature-birds-2",
                 title = "تغريد طيور الصباح ونسيم الحديقة",

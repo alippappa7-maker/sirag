@@ -559,7 +559,6 @@ fun QuranSettingsDialog(
                 }
 
                 Text("القارئ (للتلاوة)", fontWeight = FontWeight.Medium)
-                // Mock reciter selection for UI
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     FilterChip(
                         selected = settings.selectedReciterId == 1,

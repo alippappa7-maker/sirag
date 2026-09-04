@@ -21,7 +21,6 @@ interface NetworkClient {
 
 /**
  * Production-ready NetworkClient implementation using OkHttp.
- * Replaces the previous TODO() stubs that crashed at runtime.
  */
 class SirajNetworkClient(
     private val client: OkHttpClient =

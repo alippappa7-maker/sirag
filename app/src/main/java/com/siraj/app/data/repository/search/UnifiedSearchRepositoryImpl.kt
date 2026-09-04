@@ -31,22 +31,7 @@ class UnifiedSearchRepositoryImpl(
     private val historyDao: SearchHistoryDao,
 ) : SearchRepository {
     // Verified Islamic Sources Catalog
-    private val verifiedSourcesCatalog =
-        listOf(
-            SearchResultItem(
-                id = "src_bukhari",
-                title = "صحيح البخاري",
-                snippet = "الجامع المسند الصحيح المختصر من أمور رسول الله صلى الله عليه وسلم وسننه وأيامه للإمام محمد بن إسماعيل البخاري.",
-                category = SearchCategory.SOURCE,
-                sourceName = "دار طوق النجاة (طبعة معتمدة)",
-                authorOrReciter = "الإمام البخاري (ت 256هـ)",
-                referenceUrl = "https://sunnah.com/bukhari",
-                verificationStatus = "موثق ومعتمد",
-                isVerified = true,
-                language = "العربية",
-                targetRoute = Screen.Details.createRoute("src_bukhari"),
-                extraMetadata = mapOf("grade" to "صحيح مجمع عليه", "type" to "حديث نبوي"),
-            ),
+    private val verifiedSourcesCatalog = emptyList<SearchResultItem>()
             SearchResultItem(
                 id = "src_muslim",
                 title = "صحيح مسلم",
@@ -393,39 +378,7 @@ class UnifiedSearchRepositoryImpl(
         }
 
         // Search famous verses / Ayahs keywords (e.g. آية الكرسي, سورة الفاتحة, أواخر البقرة, خواتيم سورة الحشر)
-        val famousAyahs =
-            listOf(
-                Triple(
-                    "آية الكرسي - سورة البقرة (آية 255)",
-                    "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ...",
-                    2 to 255,
-                ),
-                Triple(
-                    "سورة الإخلاص (التوحيد)",
-                    "قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ",
-                    112 to 1,
-                ),
-                Triple(
-                    "سورة الفلق (المعوذات)",
-                    "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِن شَرِّ مَا خَلَقَ ۝ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ...",
-                    113 to 1,
-                ),
-                Triple(
-                    "سورة الناس (المعوذات)",
-                    "قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ ۝ مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ...",
-                    114 to 1,
-                ),
-                Triple(
-                    "أواخر سورة البقرة (آية 285-286)",
-                    "آمَنَ الرَّسُولُ بِمَا أُنزِلَ إِلَيْهِ مِن رَّبِّهِ وَالْمُؤْمِنُونَ ۚ كُلٌّ آمَنَ بِاللَّهِ وَمَلَائِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ...",
-                    2 to 285,
-                ),
-                Triple(
-                    "سورة الملك (المنجية من عذاب القبر)",
-                    "تَبَارَكَ الَّذِي بِيَدِهِ الْمُلْكُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ ۝ الَّذِي خَلَقَ الْمَوْتَ وَالْحَيَاةَ لِيَبْلُوَكُمْ أَيُّكُمْ أَحْسَنُ عَمَلًا...",
-                    67 to 1,
-                ),
-            )
+        val famousAyahs = emptyList<Triple<String, String, Pair<Int, Int>>>()
 
         famousAyahs.forEach { (title, text, location) ->
             if (query.isBlank() || ArabicSearchUtils.matches(title, query) || ArabicSearchUtils.matches(text, query)) {

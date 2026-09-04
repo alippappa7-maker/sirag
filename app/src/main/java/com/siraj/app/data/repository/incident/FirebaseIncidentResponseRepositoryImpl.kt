@@ -19,79 +19,11 @@ import kotlinx.coroutines.flow.combine
 class FirebaseIncidentResponseRepositoryImpl : IncidentResponseRepository {
     private val isGlobalPublishingHalted = MutableStateFlow(false)
 
-    private val emergencyActions =
-        MutableStateFlow<List<EmergencyActionRecord>>(
-            listOf(
-                EmergencyActionRecord(
-                    actionType = EmergencyActionType.ROTATE_SECRET_CREDENTIAL,
-                    executedByUserId = "USR-SEC-01",
-                    executedByRole = IncidentRole.SECURITY_OFFICER,
-                    targetResource = "GEMINI_SERVICE_ACCOUNT_KEY",
-                    reasonArabic = "تدوير دوري وقائي كل 90 يوماً للمفاتيح السحابية",
-                    auditLogNotes = "Rotation executed successfully via Secret Manager",
-                ),
-            ),
-        )
+    private val emergencyActions = MutableStateFlow<List<EmergencyActionRecord>>(emptyList())
 
-    private val shariaCorrections =
-        MutableStateFlow<List<ShariaIncidentCorrection>>(
-            listOf(
-                ShariaIncidentCorrection(
-                    incidentId = "INC-SHARIA-001",
-                    projectId = "PRJ-TAFSIR-104",
-                    faultyText = "نقل غير دقيق لكلمة في تفسير سورة النور",
-                    verifiedCorrectText = "تفسير ابن كثير المعتمد - طبعة دار طيبة ج 6 ص 44",
-                    primarySourceReference = "تفسير ابن كثير (المعتمد)",
-                    reviewer1Id = "REV-SCHOLAR-01",
-                    reviewer1NotesArabic = "تمت المطابقة مع طبعة دار طيبة المعتمدة وتصحيح العبارة بدقة",
-                    reviewer2Id = "REV-SCHOLAR-02",
-                    reviewer2NotesArabic = "أؤكد دقة التصحيح واستيفاء سند النقل",
-                    approvedByBothReviewers = true,
-                    publishedVersion = 2,
-                ),
-            ),
-        )
+    private val shariaCorrections = MutableStateFlow<List<ShariaIncidentCorrection>>(emptyList())
 
-    private val postMortemReports =
-        MutableStateFlow<List<IncidentPostMortemReport>>(
-            listOf(
-                IncidentPostMortemReport(
-                    reportId = "REP-2026-08A",
-                    incidentId = "INC-OUTAGE-001",
-                    incidentType = IncidentType.SERVICE_OUTAGE,
-                    severity = IncidentSeverity.P1_HIGH,
-                    titleArabic = "تأخر في معالجة طابور تصيير الفيديو في منطقة غرب أوروبا",
-                    leadInvestigator = "م. خالد المنصور (Tech Lead)",
-                    detectionTimestamp = System.currentTimeMillis() - 86400000L,
-                    containmentTimestamp = System.currentTimeMillis() - 82800000L,
-                    resolutionTimestamp = System.currentTimeMillis() - 79200000L,
-                    totalDowntimeMinutes = 60,
-                    affectedUsersCount = 18,
-                    rootCauseSummaryArabic = "زيادة مفاجئة في مشاريع التصدير المتزامنة وتأخر التوسع التلقائي لحاويات Cloud Run",
-                    containmentStepsArabic =
-                        listOf(
-                            "تفعيل التوسع اليدوي للحاويات إلى 30 حاوية",
-                            "إعطاء الأولوية للوظائف المعلقة عبر طابور المعالجة السريعة",
-                        ),
-                    correctiveActionsArabic =
-                        listOf(
-                            "تعديل سياسة التوسع التلقائي لتبدأ عند 60% استهلاك بدلاً من 80%",
-                            "إضافة حاويات دافئة جاهزة (Warm Instances)",
-                        ),
-                    preventiveTasksArabic =
-                        listOf(
-                            "تحديث إعدادات Cloud Run Auto-scaler",
-                            "ربط تنبيهات Cloud Monitoring بـ PagerDuty",
-                        ),
-                    userNotificationIssued = true,
-                    userNoticeContentArabic =
-                        IncidentResponseEngine.sanitizePublicIncidentNotice(
-                            IncidentType.SERVICE_OUTAGE,
-                            "Cloud Run Scale Delay",
-                        ),
-                ),
-            ),
-        )
+    private val postMortemReports = MutableStateFlow<List<IncidentPostMortemReport>>(emptyList())
 
     private val contactsMatrix = MutableStateFlow(IncidentResponseEngine.STANDARD_CONTACTS_MATRIX)
 

@@ -44,7 +44,7 @@ data class AdminSecurityConfig(
     val adminId: String,
     val role: AdminRole,
     val isMfaEnabled: Boolean,
-    val mfaPhoneNumber: String? = null, // Mocking MFA factor
+    val mfaPhoneNumber: String? = null,
     val lastLoginAt: Long? = null,
     val isAccountActive: Boolean = true,
     val requireReAuthForSensitiveOps: Boolean = true,

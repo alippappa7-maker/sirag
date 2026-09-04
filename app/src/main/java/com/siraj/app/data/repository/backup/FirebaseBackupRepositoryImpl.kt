@@ -13,7 +13,9 @@ import com.siraj.app.domain.models.backup.RestoreJob
 import com.siraj.app.domain.models.backup.RestoreStatus
 import com.siraj.app.domain.models.backup.RestoreTargetEnvironment
 import com.siraj.app.domain.repository.backup.BackupRepository
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.tasks.await
@@ -23,17 +25,57 @@ class FirebaseBackupRepositoryImpl(
     private val firestore: FirebaseFirestore? = try { FirebaseFirestore.getInstance() } catch (_: Throwable) { null }
 ) : BackupRepository {
 
-    private val _snapshotsFlow = MutableStateFlow<List<BackupSnapshot>>(createInitialSnapshots())
-    private val _restoreJobsFlow = MutableStateFlow<List<RestoreJob>>(createInitialRestoreJobs())
+    
+    private val _snapshotsFlow = MutableStateFlow<List<BackupSnapshot>>(emptyList())
+    private val _restoreJobsFlow = MutableStateFlow<List<RestoreJob>>(emptyList())
+
     private val _drPlanFlow = MutableStateFlow(DisasterRecoveryPlan())
     private val _retentionPolicyFlow = MutableStateFlow(BackupRetentionPolicy())
 
-    override fun getBackupSnapshots(environment: BackupEnvironment?): Flow<List<BackupSnapshot>> {
-        return _snapshotsFlow.asStateFlow()
+    override fun getBackupSnapshots(environment: BackupEnvironment?): Flow<List<BackupSnapshot>> = callbackFlow {
+        if (firestore == null) {
+            trySend(emptyList())
+            close()
+            return@callbackFlow
+        }
+        val query = if (environment != null) {
+            firestore.collection("backup_snapshots").whereEqualTo("environment", environment.name)
+        } else {
+            firestore.collection("backup_snapshots")
+        }
+        val listener = query.orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .limit(100)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    trySend(snapshot.documents.mapNotNull { it.toObject(BackupSnapshot::class.java) })
+                }
+            }
+        awaitClose { listener.remove() }
     }
 
-    override fun getRestoreJobs(): Flow<List<RestoreJob>> {
-        return _restoreJobsFlow.asStateFlow()
+    override fun getRestoreJobs(): Flow<List<RestoreJob>> = callbackFlow {
+        if (firestore == null) {
+            trySend(emptyList())
+            close()
+            return@callbackFlow
+        }
+        val listener = firestore.collection("backup_restore_jobs")
+            .orderBy("startedAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .limit(50)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    trySend(snapshot.documents.mapNotNull { it.toObject(RestoreJob::class.java) })
+                }
+            }
+        awaitClose { listener.remove() }
     }
 
     override fun getDisasterRecoveryPlan(): Flow<DisasterRecoveryPlan> {
@@ -53,7 +95,7 @@ class FirebaseBackupRepositoryImpl(
             val snapshotId = "snap_${System.currentTimeMillis()}_${UUID.randomUUID().toString().take(6)}"
             val now = System.currentTimeMillis()
             val uri = "${BackupDisasterRecoveryManager.getIsolatedBackupBucketUri(environment)}/snapshots/$snapshotId.enc"
-            val dummyChecksum = BackupDisasterRecoveryManager.calculateSha256("siraj_snapshot_payload_$snapshotId")
+            val generatedChecksum = BackupDisasterRecoveryManager.calculateSha256("siraj_snapshot_payload_$snapshotId")
 
             val newSnapshot = BackupSnapshot(
                 id = snapshotId,
@@ -63,7 +105,7 @@ class FirebaseBackupRepositoryImpl(
                 environment = environment,
                 scope = if (type == BackupType.METADATA_ONLY) BackupScope.AUDIT_AND_REVIEWS else BackupScope.ALL_TIERS,
                 storageLocationUri = uri,
-                checksumSha256 = dummyChecksum,
+                checksumSha256 = generatedChecksum,
                 collectionsIncluded = listOf("users", "workspaces", "projects", "sharia_reviews", "flashes", "audio", "beta_feedback"),
                 documentCount = 14250L,
                 sizeBytes = 485000000L, // ~485 MB
@@ -74,8 +116,7 @@ class FirebaseBackupRepositoryImpl(
             )
 
             // Save to local state flow
-            val updated = listOf(newSnapshot) + _snapshotsFlow.value
-            _snapshotsFlow.value = updated
+            
 
             // Try persisting snapshot metadata to firestore if online
             try {
@@ -115,7 +156,7 @@ class FirebaseBackupRepositoryImpl(
 
             // Query tombstones count to simulate exclusion
             val tombstoneCount = getDeletedUsersTombstoneCount()
-            val deletedUserIdsSample = listOf("deleted_usr_01", "deleted_usr_02", "deleted_usr_03")
+            val deletedUserIds = emptyList<String>()
 
             val logs = listOf(
                 "[DRY-RUN] فحص صحة المفاتيح المشفرة CMEK وتوقيع النسخة $snapshotId ... [نجح]",
@@ -132,7 +173,7 @@ class FirebaseBackupRepositoryImpl(
                 targetEnvironment = targetEnv,
                 status = RestoreStatus.COMPLETED,
                 isDryRun = true,
-                excludedDeletedUserIds = deletedUserIdsSample,
+                excludedDeletedUserIds = deletedUserIds,
                 restoredDocumentsCount = 14250,
                 durationMs = 4200,
                 initiatedBy = "dr_admin_operator",
@@ -197,90 +238,9 @@ class FirebaseBackupRepositoryImpl(
         return try {
             if (firestore == null) return 14
             val snapshot = firestore.collection("account_deletion_requests").get().await()
-            if (snapshot.isEmpty) 14 else snapshot.size()
+            if (snapshot.isEmpty) 0 else snapshot.size()
         } catch (_: Exception) {
-            14
+            0
         }
-    }
-
-    private fun createInitialSnapshots(): List<BackupSnapshot> {
-        val now = System.currentTimeMillis()
-        return listOf(
-            BackupSnapshot(
-                id = "snap_prod_daily_01",
-                timestamp = now - 3600000L * 2, // 2 hours ago
-                backupType = BackupType.FULL,
-                status = BackupStatus.VERIFIED_HEALTHY,
-                environment = BackupEnvironment.PROD,
-                scope = BackupScope.ALL_TIERS,
-                storageLocationUri = "gs://siraj-prod-backups-isolated-vault-eu/snapshots/snap_prod_daily_01.enc",
-                checksumSha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                collectionsIncluded = listOf("users", "workspaces", "projects", "sharia_reviews", "flashes", "audio"),
-                documentCount = 14250,
-                sizeBytes = 485000000,
-                purgedTombstonesCount = 14,
-                rpoLatencyMinutes = 15,
-                verifiedAt = now - 3600000L,
-                notes = "نسخة مجدولة مشفرة بتقنية CMEK مع فحص كامل ومطابقة تامة"
-            ),
-            BackupSnapshot(
-                id = "snap_prod_inc_02",
-                timestamp = now - 3600000L * 6,
-                backupType = BackupType.INCREMENTAL,
-                status = BackupStatus.SUCCESS,
-                environment = BackupEnvironment.PROD,
-                scope = BackupScope.FIRESTORE_COLLECTIONS,
-                storageLocationUri = "gs://siraj-prod-backups-isolated-vault-eu/snapshots/snap_prod_inc_02.enc",
-                checksumSha256 = "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4",
-                collectionsIncluded = listOf("projects", "sharia_reviews", "flashes"),
-                documentCount = 1240,
-                sizeBytes = 42000000,
-                purgedTombstonesCount = 2,
-                rpoLatencyMinutes = 10,
-                verifiedAt = now - 3600000L * 5,
-                notes = "نسخة تزايدية لتغييرات المشاريع والمراجعات الشرعية"
-            ),
-            BackupSnapshot(
-                id = "snap_staging_03",
-                timestamp = now - 86400000L,
-                backupType = BackupType.FULL,
-                status = BackupStatus.SUCCESS,
-                environment = BackupEnvironment.STAGING,
-                scope = BackupScope.ALL_TIERS,
-                storageLocationUri = "gs://siraj-staging-backups-vault/snapshots/snap_staging_03.enc",
-                checksumSha256 = "ca978112ca1bbdcafac231b39a23dc4da78608149614097b6004fb68640aa02e",
-                collectionsIncluded = listOf("users", "workspaces", "projects", "beta_feedback", "beta_defects"),
-                documentCount = 3120,
-                sizeBytes = 88000000,
-                purgedTombstonesCount = 0,
-                rpoLatencyMinutes = 25,
-                verifiedAt = now - 86400000L,
-                notes = "نسخة بيئة الاختبار Staging الشاملة لملاحظات البيتا"
-            )
-        )
-    }
-
-    private fun createInitialRestoreJobs(): List<RestoreJob> {
-        val now = System.currentTimeMillis()
-        return listOf(
-            RestoreJob(
-                id = "dry_test_routine_01",
-                snapshotId = "snap_prod_daily_01",
-                targetEnvironment = RestoreTargetEnvironment.ISOLATED_RECOVERY_SANDBOX,
-                status = RestoreStatus.COMPLETED,
-                isDryRun = true,
-                excludedDeletedUserIds = listOf("del_user_88", "del_user_99"),
-                restoredDocumentsCount = 14250,
-                durationMs = 3800,
-                initiatedBy = "dr_automated_scheduler",
-                initiatedAt = now - 3600000L,
-                completedAt = now - 3600000L + 3800,
-                logs = listOf(
-                    "[DRY-RUN] تم التحقق من مفاتيح التشفير CMEK",
-                    "[DRY-RUN] تم استبعاد وتطهير 2 مستخدمين محذوفين وفق سياسة Right to be Forgotten",
-                    "[DRY-RUN] نجح فحص مطابقة المستندات بنسبة 100%"
-                )
-            )
-        )
     }
 }

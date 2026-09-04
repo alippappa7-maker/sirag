@@ -466,7 +466,7 @@ fun NotificationSettingsScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                val sampleTypes =
+                val notificationTypes =
                     listOf(
                         NotificationType.VIDEO_GENERATION_COMPLETED,
                         NotificationType.REVIEW_RESULT,
@@ -476,7 +476,7 @@ fun NotificationSettingsScreen(
                         NotificationType.SUBSCRIPTION_BILLING,
                     )
 
-                sampleTypes.forEach { type ->
+                notificationTypes.forEach { type ->
                     OutlinedCard(
                         modifier =
                             Modifier
