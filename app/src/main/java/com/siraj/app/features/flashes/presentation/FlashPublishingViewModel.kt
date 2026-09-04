@@ -121,16 +121,16 @@ class FlashPublishingViewModel(
         }
     }
 
-    fun mockApprove(
+    fun approveAsReviewer(
         flashId: String,
         reviewerId: String,
-    ) { // For demo purposes
+    ) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
             when (val result = repository.approveFlash(flashId, reviewerId)) {
                 is Resource.Success ->
                     _state.value =
-                        _state.value.copy(isLoading = false, currentFlash = result.data, successMessage = "تم الاعتماد")
+                        _state.value.copy(isLoading = false, currentFlash = result.data, successMessage = "تم الاعتماد الشرعي بنجاح")
                 is Resource.Error -> _state.value = _state.value.copy(isLoading = false, error = result.message)
                 else -> {}
             }

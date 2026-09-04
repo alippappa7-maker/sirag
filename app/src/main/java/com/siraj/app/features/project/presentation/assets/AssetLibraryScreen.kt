@@ -107,7 +107,7 @@ fun AssetLibraryScreen(
             UploadAssetDialog(
                 onDismiss = { showUploadDialog = false },
                 onUpload = { name, type, source, license, attr ->
-                    viewModel.uploadMockAsset(name, type, source, license, attr)
+                    viewModel.uploadAsset(name, type, source, license, attr)
                     showUploadDialog = false
                 },
             )

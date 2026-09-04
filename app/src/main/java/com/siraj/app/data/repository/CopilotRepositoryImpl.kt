@@ -49,7 +49,7 @@ class CopilotRepositoryImpl : CopilotRepository {
             .create(GeminiApiService::class.java)
     }
 
-    // مفتاح Gemini API — يُضعه المطور في local.properties
+    // مفتاح Gemini API — يُدار عبر لوحة الأسرار أو .env
     var geminiApiKey: String = ""
 
     private val surahNames = mapOf(

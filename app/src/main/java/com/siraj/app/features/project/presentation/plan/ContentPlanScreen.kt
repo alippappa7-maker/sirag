@@ -121,7 +121,7 @@ fun ContentPlanScreen(
                             Text("الخطة غير موجودة", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                             Text("قم بتوليد الخطة والسيناريو بناءً على فكرة الاستوديو.", style = MaterialTheme.typography.bodyMedium)
                             Spacer(modifier = Modifier.height(24.dp))
-                            Button(onClick = { viewModel.generateMockPlan() }) {
+                            Button(onClick = { viewModel.generatePlan() }) {
                                 Text("توليد السيناريو الآن")
                             }
                         }

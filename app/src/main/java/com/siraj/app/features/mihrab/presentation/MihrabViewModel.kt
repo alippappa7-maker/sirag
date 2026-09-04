@@ -54,9 +54,7 @@ class MihrabViewModel : ViewModel() {
     private fun loadMihrabData() {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
-            delay(1000) // Simulate network/db load
 
-            // Mock data - adhering to rule: NO fake religious data, using placeholders
             _state.value =
                 _state.value.copy(
                     isLoading = false,

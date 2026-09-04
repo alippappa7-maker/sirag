@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.siraj.app.core.utils.Resource
-import com.siraj.app.data.repository.TafsirRepositoryImpl
+import com.siraj.app.data.repository.tafsir.FirebaseTafsirRepositoryImpl
 import com.siraj.app.domain.models.tafsir.TafsirEdition
 import com.siraj.app.domain.models.tafsir.TafsirSurah
 import com.siraj.app.domain.models.tafsir.TafsirVerse
@@ -30,7 +30,7 @@ data class TafsirUiState(
 class TafsirViewModel(
     application: Application,
 ) : ViewModel() {
-    private val repository = TafsirRepositoryImpl()
+    private val repository = FirebaseTafsirRepositoryImpl()
     private val _uiState = MutableStateFlow(TafsirUiState())
     val uiState: StateFlow<TafsirUiState> = _uiState.asStateFlow()
 

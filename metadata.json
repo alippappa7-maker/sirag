@@ -1,0 +1,6 @@
+{
+  "name": "سراج",
+  "description": "منصة وتطبيق سراج لصناعة المحتوى الإسلامي والمحراب الذكي",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

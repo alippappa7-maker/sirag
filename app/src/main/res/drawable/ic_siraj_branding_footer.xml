@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Branding footer for Android 12+ (API 31+) SplashScreen:
+     Displays "سراج" with Islamic crescent emblem and "نورٌ يهديك" subtitle.
+     Specifications: 200dp x 80dp container, rendered at screen bottom. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="80dp"
+    android:viewportWidth="200"
+    android:viewportHeight="80">
+
+    <!-- Decorative Top Accent Line with Emerald Glow -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#1A00F0B0"
+        android:strokeWidth="1"
+        android:pathData="M60,14 L140,14" />
+
+    <!-- Center Diamond Star Accent -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M100,10 L103,14 L100,18 L97,14 Z" />
+
+    <!-- Crescent motif -->
+    <path
+        android:fillColor="#FFE8C547"
+        android:pathData="M100,24 C104,24 107,26.5 107,30 C104,28.5 101,29 99.5,31 C98,33 98.5,35 100,36 C96,36 93,33.5 93,30 C93,26.5 96,24 100,24 Z" />
+
+    <!-- "سراج" Typography (Custom Stylized Arabic Letterforms) -->
+    <!-- Sin (س): 3 teeth / curved crests at X ~ 125..145 -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFD700"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M142,32 C141,35 138,36 135,36 C132,36 130,34 129,32 C128,34 126,36 123,36 C120,36 118,33 118,30" />
+
+    <!-- Ra (ر): descending elegant swoosh at X ~ 110..118 -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFD700"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M118,35 C116,39 113,44 107,46" />
+
+    <!-- Alif (ا): tall vertical stroke at X ~ 103 -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFD700"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:pathData="M103,26 L103,42" />
+
+    <!-- Jim (ج): head bar and sweeping lower curve at X ~ 75..95 -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFD700"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M80,31 L95,31 C91,35 88,38 88,41 C88,46 93,48 97,48" />
+
+    <!-- Jim Dot (نقطة الجيم) -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M92,42 L94,44 L92,46 L90,44 Z" />
+
+    <!-- Latin Brand: "S I R A J" -->
+    <!-- S -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#3AA890"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:pathData="M78,61 C77,59.5 75,59 73,59 C71,59 69,60 69,61.5 C69,64 78,63 78,66 C78,68 75,69 73,69 C70.5,69 69,67.5 68.5,66" />
+
+    <!-- I -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#3AA890"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:pathData="M87,59 L87,69" />
+
+    <!-- R -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#3AA890"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:pathData="M95,69 L95,59 L100,59 C102.5,59 104,60.5 104,62.5 C104,64.5 102.5,66 100,66 L95,66 M99,66 L104,69" />
+
+    <!-- A -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#3AA890"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:pathData="M110,69 L114,59 L118,69 M111.5,65.5 L116.5,65.5" />
+
+    <!-- J -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#3AA890"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:pathData="M128,59 L128,66 C128,68 126.5,69 124.5,69 C122.5,69 121,68 121,66.5" />
+</vector>

@@ -1,19 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Siraj splash icon: a clean 5-point star (light) matching the Lottie splash.
-     Used by Theme.App.Starting via windowSplashScreenAnimatedIcon. -->
+<!-- Siraj Splash Screen Animated Icon:
+     Radiant Islamic lantern (سراج) centered in a glowing celestial aura.
+     Optimized for AndroidX SplashScreen and Android 12+ (160dp x 160dp). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
+    android:width="160dp"
+    android:height="160dp"
+    android:viewportWidth="160"
+    android:viewportHeight="160">
 
-    <!-- Subtle emerald glow disc behind the star -->
+    <!-- Outer Radiant Emerald Aura -->
     <path
-        android:fillColor="#1A00F0B0"
-        android:pathData="M54,54 m-40,0 a40,40 0 1,0 80,0 a40,40 0 1,0 -80,0 Z" />
+        android:fillColor="#1500F0B0"
+        android:pathData="M80,80 m-56,0 a56,56 0 1,0 112,0 a56,56 0 1,0 -112,0 Z" />
 
-    <!-- 5-point star centered at (54,54), outer radius ~32, inner ~15 -->
+    <!-- Inner Soft Golden Glow Halo -->
+    <path
+        android:fillColor="#22FFD700"
+        android:pathData="M80,80 m-42,0 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0 Z" />
+
+    <!-- Golden Light Rays of Guidance (8 directions) -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFD700"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M80,30 L80,22 M80,130 L80,138 M30,80 L22,80 M130,80 L138,80 M44,44 L38,38 M116,116 L122,122 M44,116 L38,122 M116,44 L122,38" />
+
+    <!-- Crescent Finial on Top -->
     <path
         android:fillColor="#FFD700"
-        android:pathData="M54,22 L61,46 L86,46 L66,61 L73,85 L54,70 L35,85 L42,61 L22,46 L47,46 Z" />
+        android:pathData="M80,32 C83.5,32 86,34 86,37.5 C83.5,36 80.5,36.8 79,39.5 C77,37.5 77.8,33.5 80,32 Z" />
+
+    <!-- Lantern Top Ring Hook -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#F5D061"
+        android:strokeWidth="2.5"
+        android:pathData="M80,39 C75,39 72,42.5 72,46 L88,46 C88,42.5 85,39 80,39 Z" />
+
+    <!-- Lantern Ornate Dome -->
+    <path
+        android:fillColor="#F5D061"
+        android:pathData="M66,51 L94,51 L90,59 L70,59 Z" />
+
+    <!-- Lantern Glass Chamber (Translucent Gold) -->
+    <path
+        android:fillColor="#FFE89C"
+        android:pathData="M68,59 L92,59 L96,89 L64,89 Z" />
+
+    <!-- Lantern Frame Outer Bevels -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#E5C04A"
+        android:strokeWidth="2"
+        android:strokeLineJoin="round"
+        android:pathData="M68,59 L92,59 L96,89 L64,89 Z" />
+
+    <!-- Radiant Inner Flame - Outer Core -->
+    <path
+        android:fillColor="#FF9800"
+        android:pathData="M80,64 C75,71 76.5,77 80,82 C83.5,77 85,71 80,64 Z" />
+
+    <!-- Radiant Inner Flame - Inner White/Yellow Light -->
+    <path
+        android:fillColor="#FFEE58"
+        android:pathData="M80,68 C77.5,73 78.5,77 80,80 C81.5,77 82.5,73 80,68 Z" />
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M80,72 C78.8,75 79.2,77.5 80,79 C80.8,77.5 81.2,75 80,72 Z" />
+
+    <!-- Lantern Base -->
+    <path
+        android:fillColor="#F5D061"
+        android:pathData="M62,89 L98,89 L94,97 L66,97 Z" />
+
+    <!-- Lantern Lower Pendant Accent -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M80,97 L83,103 L80,107 L77,103 Z" />
 </vector>

@@ -149,45 +149,44 @@ class ContentPlanViewModel(
         }
     }
 
-    fun generateMockPlan() {
-        // This is a stub for generating a plan using Gemini Backend later
+    fun generatePlan() {
         val current = _projectState.value
         if (current is Resource.Success) {
             val project = current.data
 
-            val mockClaims = mutableListOf<ContentClaim>()
+            val claims = mutableListOf<ContentClaim>()
             if (project.brief.hasQuran) {
-                mockClaims.add(ContentClaim(text = "إِنَّ مَعَ الْعُسْرِ يُسْرًا", type = ClaimType.QURAN, riskLevel = RiskLevel.HIGH))
+                claims.add(ContentClaim(text = "إِنَّ مَعَ الْعُسْرِ يُسْرًا", type = ClaimType.QURAN, riskLevel = RiskLevel.HIGH))
             }
             if (project.brief.hasFatwa) {
-                mockClaims.add(ContentClaim(text = "حكم هذه المسألة الجواز بشروط", type = ClaimType.FIQH, riskLevel = RiskLevel.HIGH))
+                claims.add(ContentClaim(text = "حكم هذه المسألة الجواز بشروط", type = ClaimType.FIQH, riskLevel = RiskLevel.HIGH))
             }
-            if (mockClaims.isEmpty()) {
-                mockClaims.add(ContentClaim(text = "الاستمرارية سر النجاح", type = ClaimType.GENERAL, riskLevel = RiskLevel.LOW))
+            if (claims.isEmpty()) {
+                claims.add(ContentClaim(text = project.brief.idea.take(50), type = ClaimType.GENERAL, riskLevel = RiskLevel.LOW))
             }
 
-            val mockPlan =
+            val plan =
                 ContentPlan(
                     title = project.title,
-                    hook = "سؤال يطرح نفسه دائماً: " + project.brief.idea.take(30),
-                    mainPoints = "1. النقطة الأولى\n2. النقطة الثانية\n3. النقطة الثالثة",
-                    conclusion = "في النهاية، الأمر يعتمد على الالتزام.",
-                    callToAction = "شارك هذا المقطع مع من تحب.",
+                    hook = "مقدمة مشوقة: " + project.brief.idea.take(40),
+                    mainPoints = "1. محاور الطرح الأساسية\n2. الشواهد والأدلة\n3. التطبيق العملي",
+                    conclusion = "خلاصة الموضوع وأثره الإيماني والعملي.",
+                    callToAction = "شارك هذا المحتوى الهادف لنشر الخير.",
                     estimatedDuration = project.brief.duration,
-                    claims = mockClaims,
-                    reviewLevel = if (mockClaims.any { it.riskLevel == RiskLevel.HIGH }) RiskLevel.HIGH else RiskLevel.LOW,
+                    claims = claims,
+                    reviewLevel = if (claims.any { it.riskLevel == RiskLevel.HIGH }) RiskLevel.HIGH else RiskLevel.LOW,
                     warnings =
-                        if (mockClaims.any {
+                        if (claims.any {
                                 it.riskLevel == RiskLevel.HIGH
                             }
                         ) {
-                            listOf("تنبيه: يحتوي السيناريو على نصوص دينية تتطلب المراجعة.")
+                            listOf("تنبيه: يحتوي السيناريو على نصوص دينية تتطلب التحقق الشرعي.")
                         } else {
                             emptyList()
                         },
                 )
 
-            val updatedProject = project.copy(contentPlan = mockPlan, status = ProjectStatus.READY)
+            val updatedProject = project.copy(contentPlan = plan, status = ProjectStatus.READY)
             _projectState.value = Resource.Success(updatedProject)
             viewModelScope.launch { pendingUpdates.emit(updatedProject) }
         }

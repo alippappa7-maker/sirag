@@ -3,7 +3,7 @@ package com.siraj.app.features.mihrab.adhkar.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.siraj.app.core.utils.Resource
-import com.siraj.app.data.repository.adhkar.AdhkarRepositoryImpl
+import com.siraj.app.data.repository.adhkar.FirebaseAdhkarRepositoryImpl
 import com.siraj.app.domain.models.adhkar.AdhkarSettings
 import com.siraj.app.domain.models.adhkar.DhikrItem
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +17,7 @@ data class DhikrState(
 )
 
 class AdhkarReaderViewModel : ViewModel() {
-    private val repository = AdhkarRepositoryImpl()
+    private val repository = FirebaseAdhkarRepositoryImpl()
 
     private val _adhkarStates = MutableStateFlow<Resource<List<DhikrState>>>(Resource.Loading)
     val adhkarStates = _adhkarStates.asStateFlow()

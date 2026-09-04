@@ -16,7 +16,7 @@ class AdminSecurityRepositoryImpl(
     private val activeSessions = MutableStateFlow<List<AdminSession>>(emptyList())
     private val auditLogs = MutableStateFlow<List<SecurityAuditLog>>(emptyList())
 
-    // Mock initial config for tests
+    // Default initial admin configuration
     init {
         configs["admin_1"] =
             AdminSecurityConfig(

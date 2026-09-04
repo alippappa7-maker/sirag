@@ -10,11 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.siraj.app.core.ui.components.EmptyScreen
 import com.siraj.app.core.ui.components.SirajAudioCard
-import com.siraj.app.mock.MockData
+import com.siraj.app.domain.models.AudioItem
 
 @Composable
-fun AudioLibraryScreen() {
-    if (MockData.audios.isEmpty()) {
+fun AudioLibraryScreen(
+    audios: List<AudioItem> = emptyList()
+) {
+    if (audios.isEmpty()) {
         EmptyScreen(message = "المكتبة الصوتية فارغة حالياً.")
     } else {
         LazyColumn(
@@ -22,7 +24,7 @@ fun AudioLibraryScreen() {
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            items(MockData.audios) { audio ->
+            items(audios) { audio ->
                 SirajAudioCard(audio = audio)
             }
         }

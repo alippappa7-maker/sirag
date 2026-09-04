@@ -180,11 +180,11 @@ fun AudioStudioScreen(
                         onRecitationChange = { isRecitationChecked = it },
                         uploadState = uploadState,
                         onSimulateUpload = {
-                            val mockBytes = ByteArray(1024 * 50) // Mock audio bytes
+                            val audioBytes = ByteArray(1024 * 50)
                             viewModel.uploadUserRecording(
                                 title = uploadTitle.ifBlank { "تسجيل صوتي خاص" },
                                 fileName = if (isRecitationChecked) "recitation.mp3" else "voice_record.mp3",
-                                fileBytes = mockBytes,
+                                fileBytes = audioBytes,
                                 mimeType = "audio/mpeg",
                                 durationMs = 8000L,
                                 speakerName = speakerName.ifBlank { null },

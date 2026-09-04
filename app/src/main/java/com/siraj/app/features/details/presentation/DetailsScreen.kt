@@ -8,13 +8,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.siraj.app.core.ui.components.EmptyScreen
 import com.siraj.app.core.ui.components.SirajSourceCard
 import com.siraj.app.core.ui.components.SkeletonList
-import com.siraj.app.mock.MockData
+import com.siraj.app.domain.models.SourcePreview
 
 @Composable
-fun DetailsScreen(id: String) {
-    val isLoading = id.isEmpty() // Fake loading check
+fun DetailsScreen(
+    id: String,
+    sources: List<SourcePreview> = emptyList(),
+) {
+    val isLoading = id.isEmpty()
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -33,8 +37,12 @@ fun DetailsScreen(id: String) {
             item {
                 SkeletonList(itemCount = 3)
             }
+        } else if (sources.isEmpty()) {
+            item {
+                EmptyScreen(message = "لا توجد مصادر مرفقة حالياً لهذا العنصر.")
+            }
         } else {
-            items(MockData.sources) { source ->
+            items(sources) { source ->
                 SirajSourceCard(source = source)
             }
         }

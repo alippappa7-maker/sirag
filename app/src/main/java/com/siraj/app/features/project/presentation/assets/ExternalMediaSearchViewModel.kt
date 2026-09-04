@@ -10,13 +10,13 @@ import com.siraj.app.domain.repository.MediaSearchProvider
 import com.siraj.app.domain.repository.ProjectRepository
 import com.siraj.app.data.repository.FirebaseAssetRepositoryImpl
 import com.siraj.app.data.repository.FirebaseProjectRepositoryImpl
-import com.siraj.app.data.repository.MockMediaSearchProviderImpl
+import com.siraj.app.data.repository.FirebaseMediaSearchProviderImpl
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class ExternalMediaSearchViewModel(
     private val projectId: String,
-    private val searchProvider: MediaSearchProvider = MockMediaSearchProviderImpl(),
+    private val searchProvider: MediaSearchProvider = FirebaseMediaSearchProviderImpl(),
     private val assetRepository: AssetRepository = FirebaseAssetRepositoryImpl(),
     private val projectRepository: ProjectRepository = FirebaseProjectRepositoryImpl()
 ) : ViewModel() {

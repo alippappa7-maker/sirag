@@ -254,13 +254,11 @@ fun FlashPublishingScreen(
                         )
                     }
                     FlashPublishingState.PENDING_REVIEW, FlashPublishingState.SCANNING -> {
-                        // Mock Admin Approval for testing
-                        OutlinedButton(
-                            onClick = { viewModel.mockApprove(flash.id, "admin_user") },
+                        SirajButton(
+                            text = "اعتماد المقطع كمراجع شرعي",
+                            onClick = { viewModel.approveAsReviewer(flash.id, currentUserId) },
                             modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Text("[محاكاة] اعتماد كمراجع")
-                        }
+                        )
                     }
                     FlashPublishingState.APPROVED -> {
                         SirajButton(

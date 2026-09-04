@@ -3,12 +3,16 @@ package com.siraj.app.features.prayer_intelligence.presentation
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.siraj.app.core.utils.Resource
+import com.siraj.app.data.repository.prayer.AladhanPrayerRepositoryImpl
 import com.siraj.app.domain.models.prayer.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 import kotlin.math.max
 import kotlin.math.min
 
@@ -24,61 +28,71 @@ data class PrayerIntelligenceUiState(
 
 class PrayerIntelligenceViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val repository = AladhanPrayerRepositoryImpl()
     private val _uiState = MutableStateFlow(PrayerIntelligenceUiState())
     val uiState: StateFlow<PrayerIntelligenceUiState> = _uiState.asStateFlow()
 
     init {
-        loadMockSchedule()
+        loadSchedule()
     }
 
-    private fun loadMockSchedule() {
-        val calendar = Calendar.getInstance()
-        val today = calendar.apply {
-            set(Calendar.HOUR_OF_DAY, 4)
-            set(Calendar.MINUTE, 42)
-        }.timeInMillis
+    private fun loadSchedule() {
+        viewModelScope.launch {
+            val result = repository.getPrayerTimes(PrayerSettings())
+            val calendar = Calendar.getInstance()
+            val baseDateStr = "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
 
-        val schedule = SmartPrayerSchedule(
-            fajr = PrayerTime("Fajr", "الفجر", "04:42", "4:42 ص", today),
-            sunrise = PrayerTime("Sunrise", "الشروق", "06:15", "6:15 ص", calendar.apply { set(Calendar.HOUR_OF_DAY, 6); set(Calendar.MINUTE, 15) }.timeInMillis),
-            dhuhr = PrayerTime("Dhuhr", "الظهر", "12:30", "12:30 م", calendar.apply { set(Calendar.HOUR_OF_DAY, 12); set(Calendar.MINUTE, 30) }.timeInMillis),
-            asr = PrayerTime("Asr", "العصر", "16:18", "4:18 م", calendar.apply { set(Calendar.HOUR_OF_DAY, 16); set(Calendar.MINUTE, 18) }.timeInMillis),
-            maghrib = PrayerTime("Maghrib", "المغرب", "19:02", "7:02 م", calendar.apply { set(Calendar.HOUR_OF_DAY, 19); set(Calendar.MINUTE, 2) }.timeInMillis),
-            isha = PrayerTime("Isha", "العشاء", "20:32", "8:32 م", calendar.apply { set(Calendar.HOUR_OF_DAY, 20); set(Calendar.MINUTE, 32) }.timeInMillis),
-            location = "موقعك الحالي",
-            date = "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}",
-        )
+            if (result is Resource.Success) {
+                val times = result.data
+                val sdf = SimpleDateFormat("HH:mm", Locale.US)
 
-        val timeline = listOf(
-            schedule.fajr,
-            schedule.sunrise,
-            schedule.dhuhr,
-            schedule.asr,
-            schedule.maghrib,
-            schedule.isha,
-        )
+                fun parseToTodayMillis(timeStr: String): Long {
+                    return try {
+                        val parsed = sdf.parse(timeStr)
+                        if (parsed != null) {
+                            val c = Calendar.getInstance()
+                            val parsedCal = Calendar.getInstance().apply { time = parsed }
+                            c.set(Calendar.HOUR_OF_DAY, parsedCal.get(Calendar.HOUR_OF_DAY))
+                            c.set(Calendar.MINUTE, parsedCal.get(Calendar.MINUTE))
+                            c.set(Calendar.SECOND, 0)
+                            c.timeInMillis
+                        } else System.currentTimeMillis()
+                    } catch (e: Exception) {
+                        System.currentTimeMillis()
+                    }
+                }
 
-        val nextPrayer = calculateNextPrayer(timeline)
-        val progress = calculateTodayProgress(timeline)
-        val stats = PrayerIntelligenceStats(
-            onTimeCount = 142,
-            missedCount = 8,
-            earlyCount = 23,
-            lateCount = 15,
-            averageDelayMinutes = 3,
-            streak = 12,
-            bestStreak = 27,
-            weeklyTrend = listOf(0.8f, 0.9f, 0.7f, 1.0f, 0.85f, 0.92f, 0.88f),
-            mostMissedPrayer = "الفجر",
-        )
+                val schedule = SmartPrayerSchedule(
+                    fajr = PrayerTime("Fajr", "الفجر", times.fajr, times.fajr, parseToTodayMillis(times.fajr)),
+                    sunrise = PrayerTime("Sunrise", "الشروق", times.sunrise, times.sunrise, parseToTodayMillis(times.sunrise)),
+                    dhuhr = PrayerTime("Dhuhr", "الظهر", times.dhuhr, times.dhuhr, parseToTodayMillis(times.dhuhr)),
+                    asr = PrayerTime("Asr", "العصر", times.asr, times.asr, parseToTodayMillis(times.asr)),
+                    maghrib = PrayerTime("Maghrib", "المغرب", times.maghrib, times.maghrib, parseToTodayMillis(times.maghrib)),
+                    isha = PrayerTime("Isha", "العشاء", times.isha, times.isha, parseToTodayMillis(times.isha)),
+                    location = times.meta.city,
+                    date = baseDateStr,
+                )
 
-        _uiState.value = _uiState.value.copy(
-            schedule = schedule,
-            nextPrayer = nextPrayer,
-            todayProgress = progress,
-            prayerTimeline = timeline,
-            stats = stats,
-        )
+                val timeline = listOf(
+                    schedule.fajr,
+                    schedule.sunrise,
+                    schedule.dhuhr,
+                    schedule.asr,
+                    schedule.maghrib,
+                    schedule.isha,
+                )
+
+                val nextPrayer = calculateNextPrayer(timeline)
+                val progress = calculateTodayProgress(timeline)
+
+                _uiState.value = _uiState.value.copy(
+                    schedule = schedule,
+                    nextPrayer = nextPrayer,
+                    todayProgress = progress,
+                    prayerTimeline = timeline,
+                )
+            }
+        }
     }
 
     private fun calculateNextPrayer(timeline: List<PrayerTime>): NextPrayerInfo? {

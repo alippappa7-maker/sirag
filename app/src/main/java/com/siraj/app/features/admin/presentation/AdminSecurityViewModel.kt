@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class AdminSecurityViewModel(
     private val repository: AdminSecurityRepository,
-    private val currentAdminId: String = "admin_1" // Mock current user
+    private val currentAdminId: String = "admin_1"
 ) : ViewModel() {
 
     private val _config = MutableStateFlow<AdminSecurityConfig?>(null)

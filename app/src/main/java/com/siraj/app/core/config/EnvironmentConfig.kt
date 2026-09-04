@@ -48,12 +48,7 @@ object EnvironmentConfig {
             }
 
     val allowMockData: Boolean
-        get() =
-            try {
-                BuildConfig.ALLOW_MOCK_DATA && currentEnvironment != EnvironmentType.PRODUCTION
-            } catch (e: Throwable) {
-                currentEnvironment != EnvironmentType.PRODUCTION
-            }
+        get() = false
 
     val apiBaseUrl: String
         get() =

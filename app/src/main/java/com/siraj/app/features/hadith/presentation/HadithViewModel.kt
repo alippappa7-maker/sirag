@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.siraj.app.data.repository.HadithRepositoryImpl
+import com.siraj.app.data.repository.hadith.FirebaseHadithRepositoryImpl
 import com.siraj.app.domain.models.hadith.Hadith
 import com.siraj.app.domain.models.hadith.HadithCollection
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +26,7 @@ data class HadithUiState(
 class HadithViewModel(
     application: Application,
 ) : ViewModel() {
-    private val repository = HadithRepositoryImpl()
+    private val repository = FirebaseHadithRepositoryImpl()
     private val _uiState = MutableStateFlow(HadithUiState())
     val uiState: StateFlow<HadithUiState> = _uiState.asStateFlow()
 

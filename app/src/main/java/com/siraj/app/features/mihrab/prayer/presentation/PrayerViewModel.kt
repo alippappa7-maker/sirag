@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.siraj.app.core.utils.Resource
-import com.siraj.app.data.repository.prayer.PrayerRepositoryImpl
+import com.siraj.app.data.repository.prayer.AladhanPrayerRepositoryImpl
 import com.siraj.app.domain.models.prayer.PrayerSettings
 import com.siraj.app.domain.models.prayer.PrayerTimes
 import kotlinx.coroutines.delay
@@ -20,7 +20,7 @@ data class NextPrayer(
 )
 
 class PrayerViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository = PrayerRepositoryImpl()
+    private val repository = AladhanPrayerRepositoryImpl()
 
     private val _prayerTimes = MutableStateFlow<Resource<PrayerTimes>>(Resource.Loading)
     val prayerTimes = _prayerTimes.asStateFlow()

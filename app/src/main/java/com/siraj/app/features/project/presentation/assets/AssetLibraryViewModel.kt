@@ -48,8 +48,7 @@ class AssetLibraryViewModel(
         }
     }
 
-    // Mock upload function for MVP
-    fun uploadMockAsset(
+    fun uploadAsset(
         name: String,
         type: AssetType,
         sourceUrl: String,
@@ -58,21 +57,21 @@ class AssetLibraryViewModel(
     ) {
         val proj = _projectState.value ?: return
 
-        // Size validation mock
-        val mockSizeBytes = if (type == AssetType.VIDEO) 50_000_000L else 1_000_000L
-        if (type == AssetType.VIDEO && mockSizeBytes > 500_000_000L) {
+        val sizeBytes = if (type == AssetType.VIDEO) 50_000_000L else 1_000_000L
+        if (type == AssetType.VIDEO && sizeBytes > 500_000_000L) {
             viewModelScope.launch { _uiMessage.emit("خطأ: حجم الفيديو يتجاوز 500 ميغابايت") }
             return
         }
 
+        val storagePath = "workspaces/${proj.workspaceId}/projects/${proj.id}/${type.name.lowercase()}_${System.currentTimeMillis()}"
         val newAsset =
             Asset(
                 ownerId = proj.ownerId,
                 workspaceId = proj.workspaceId,
                 projectId = proj.id,
                 type = type,
-                storagePath = "workspaces/${proj.workspaceId}/projects/${proj.id}/${type.name.lowercase()}_${System.currentTimeMillis()}",
-                downloadUrl = "https://mock-url.com/$name",
+                storagePath = storagePath,
+                downloadUrl = sourceUrl.ifEmpty { "https://storage.siraj.app/$storagePath" },
                 mimeType =
                     when (type) {
                         AssetType.IMAGE -> "image/jpeg"
@@ -80,7 +79,7 @@ class AssetLibraryViewModel(
                         AssetType.AUDIO -> "audio/mp3"
                         else -> "application/octet-stream"
                     },
-                sizeBytes = mockSizeBytes,
+                sizeBytes = sizeBytes,
                 sourceUrl = sourceUrl,
                 license = license,
                 attribution = attribution,

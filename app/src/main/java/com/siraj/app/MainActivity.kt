@@ -1,11 +1,19 @@
 package com.siraj.app
 
 // Activity entry point
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.animation.doOnEnd
 import androidx.core.os.LocaleListCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -24,15 +32,55 @@ import com.siraj.app.domain.models.ThemeMode
 import com.siraj.app.domain.models.analytics.AnalyticsEvent
 
 class MainActivity : ComponentActivity() {
+    private var isInitializing = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        // Ensure Firebase initialization
-        SirajApplication.ensureFirebase(this)
+        // Keep branding splash screen visible during app initialization
+        splashScreen.setKeepOnScreenCondition { isInitializing }
 
-        // Initialize Audio Controller for background playback
-        AudioController.initialize(this)
+        // Provide a smooth branded exit animation transitioning into the app content
+        splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->
+            val splashScreenView = splashScreenViewProvider.view
+            val iconView = splashScreenViewProvider.iconView
+
+            val fadeOut = ObjectAnimator.ofFloat(splashScreenView, View.ALPHA, 1f, 0f).apply {
+                duration = 350L
+                interpolator = AccelerateDecelerateInterpolator()
+            }
+
+            val scaleX = ObjectAnimator.ofFloat(iconView, View.SCALE_X, 1f, 1.12f).apply {
+                duration = 350L
+                interpolator = AccelerateDecelerateInterpolator()
+            }
+
+            val scaleY = ObjectAnimator.ofFloat(iconView, View.SCALE_Y, 1f, 1.12f).apply {
+                duration = 350L
+                interpolator = AccelerateDecelerateInterpolator()
+            }
+
+            val animatorSet = AnimatorSet()
+            animatorSet.playTogether(fadeOut, scaleX, scaleY)
+            animatorSet.doOnEnd {
+                splashScreenViewProvider.remove()
+            }
+            animatorSet.start()
+        }
+
+        // Initialize core application dependencies during startup
+        lifecycleScope.launch {
+            try {
+                SirajApplication.ensureFirebase(this@MainActivity)
+                AudioController.initialize(this@MainActivity)
+            } catch (_: Exception) {
+            } finally {
+                // Ensure layout and resources are stabilized before dismissing splash
+                delay(300L)
+                isInitializing = false
+            }
+        }
 
         enableEdgeToEdge()
         setContent {

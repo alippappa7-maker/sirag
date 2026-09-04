@@ -12,4 +12,5 @@
     <color name="siraj_silver">#FFE8E6E1</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="splash_background">#060B14</color>
 </resources>
