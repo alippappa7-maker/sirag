@@ -25,39 +25,6 @@ class FirebaseAudioRepositoryImpl(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
 ) : AudioRepository {
     override fun getAvailableVoices(): List<VoiceOption> = emptyList()
-            VoiceOption(
-                id = "ar-male-faseeh-2",
-                name = "طارق (إخباري سريع وحيوي)",
-                gender = AudioVoiceGender.MALE,
-                dialect = "العربية الفصحى",
-                description = "مناسب للفيديوهات القصيرة (Reels/Shorts) والمقدمات المشوقة",
-                previewAudioUrl = "https://actions.google.com/sounds/v1/water/rain_heavy.ogg",
-            ),
-            VoiceOption(
-                id = "ar-male-warm-3",
-                name = "عمران (دافئ وتأملي)",
-                gender = AudioVoiceGender.MALE,
-                dialect = "العربية الفصحى التراثية",
-                description = "مناسب للأذكار والتأملات والمواعظ الهادئة",
-                previewAudioUrl = "https://actions.google.com/sounds/v1/water/rain_heavy.ogg",
-            ),
-            VoiceOption(
-                id = "ar-female-faseeh-1",
-                name = "سلمى (فصيحة واضحة وهادئة)",
-                gender = AudioVoiceGender.FEMALE,
-                dialect = "العربية الفصحى",
-                description = "مناسبة للمحتوى التعليمي والتربوي وشرح السير والقصص",
-                previewAudioUrl = "https://actions.google.com/sounds/v1/water/rain_heavy.ogg",
-            ),
-            VoiceOption(
-                id = "ar-female-faseeh-2",
-                name = "مريم (وثائقية عميقة)",
-                gender = AudioVoiceGender.FEMALE,
-                dialect = "العربية الفصحى",
-                description = "مناسبة للمراجعات التاريخية والتسجيلات الوثائقية الطويلة",
-                previewAudioUrl = "https://actions.google.com/sounds/v1/water/rain_heavy.ogg",
-            ),
-        )
 
     override suspend fun generateVoiceover(request: GenerateAudioRequest): Result<AudioItem> {
         return try {

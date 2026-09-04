@@ -1,6 +1,14 @@
 package com.siraj.app.features.admin.presentation
 
 import androidx.compose.foundation.layout.*
+
+import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
+import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
+import com.patrykandpatrick.vico.compose.chart.Chart
+import com.patrykandpatrick.vico.compose.chart.column.columnChart
+import com.patrykandpatrick.vico.compose.component.lineComponent
+import com.patrykandpatrick.vico.core.entry.entryModelOf
+
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -71,6 +79,33 @@ fun AnalyticsDashboardScreen(
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(bottom = 16.dp),
                 )
+            }
+
+            
+            item {
+                if (eventCounts.isNotEmpty()) {
+                    Card(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text("رسم بياني للأحداث", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(bottom = 16.dp))
+                            
+                            val chartEntryModel = entryModelOf(*eventCounts.values.map { it.toFloat() }.toTypedArray())
+                            
+                            Chart(
+                                chart = columnChart(),
+                                model = chartEntryModel,
+                                startAxis = rememberStartAxis(),
+                                bottomAxis = rememberBottomAxis(
+                                    valueFormatter = { value, _ -> 
+                                        val keys = eventCounts.keys.toList()
+                                        val index = value.toInt()
+                                        if (index >= 0 && index < keys.size) keys[index].take(5) else ""
+                                    }
+                                ),
+                                modifier = Modifier.height(200.dp).fillMaxWidth()
+                            )
+                        }
+                    }
+                }
             }
 
             items(eventCounts.entries.toList()) { entry ->

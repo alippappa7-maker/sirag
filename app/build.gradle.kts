@@ -97,6 +97,11 @@ android {
 }
 
 dependencies {
+    // Vico Charts
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m3)
+    implementation(libs.vico.core)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation("androidx.appcompat:appcompat:1.6.1")
