@@ -51,25 +51,100 @@ class FirebaseFlashRepositoryImpl(
     }
 
     override suspend fun toggleLike(flashId: String): Resource<Boolean> {
-        return Resource.Success(true)
+        val fs = firestore ?: return Resource.Error("Firestore غير مهيأ")
+        val uid =
+            com.google.firebase.auth.FirebaseAuth
+                .getInstance()
+                .currentUser
+                ?.uid ?: return Resource.Error("يجب تسجيل الدخول")
+        return com.siraj.app.data.repository.community
+            .FirebaseInteractionRepositoryImpl(fs)
+            .toggleLike(uid, flashId)
     }
 
     override suspend fun toggleSave(flashId: String): Resource<Boolean> {
-        return Resource.Success(true)
+        val fs = firestore ?: return Resource.Error("Firestore غير مهيأ")
+        val uid =
+            com.google.firebase.auth.FirebaseAuth
+                .getInstance()
+                .currentUser
+                ?.uid ?: return Resource.Error("يجب تسجيل الدخول")
+        return com.siraj.app.data.repository.community
+            .FirebaseInteractionRepositoryImpl(fs)
+            .toggleSave(uid, flashId)
     }
 
     override suspend fun logView(flashId: String) {
+        val fs = firestore ?: return
+        try {
+            fs
+                .collection("interaction_counters")
+                .document(flashId)
+                .set(
+                    mapOf(
+                        "viewCount" to com.google.firebase.firestore.FieldValue.increment(1),
+                        "targetId" to flashId,
+                    ),
+                    com.google.firebase.firestore.SetOptions.merge(),
+                ).await()
+        } catch (_: Exception) {
+        }
     }
 
     override suspend fun reportFlash(
         flashId: String,
         reason: String,
     ): Resource<Unit> {
-        return Resource.Success(Unit)
+        val fs = firestore ?: return Resource.Error("Firestore غير مهيأ")
+        val uid =
+            com.google.firebase.auth.FirebaseAuth
+                .getInstance()
+                .currentUser
+                ?.uid ?: return Resource.Error("يجب تسجيل الدخول")
+        return try {
+            val id =
+                java.util.UUID
+                    .randomUUID()
+                    .toString()
+            fs
+                .collection("reports")
+                .document(id)
+                .set(
+                    mapOf(
+                        "id" to id,
+                        "reporterId" to uid,
+                        "targetType" to "FLASH",
+                        "targetId" to flashId,
+                        "targetOwnerId" to "",
+                        "reportType" to "OTHER",
+                        "description" to reason,
+                        "status" to "PENDING",
+                        "createdAt" to System.currentTimeMillis(),
+                    ),
+                ).await()
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(e.localizedMessage ?: "تعذر إرسال البلاغ")
+        }
     }
 
     override suspend fun followCreator(creatorId: String): Resource<Unit> {
-        return Resource.Success(Unit)
+        val fs = firestore ?: return Resource.Error("Firestore غير مهيأ")
+        val uid =
+            com.google.firebase.auth.FirebaseAuth
+                .getInstance()
+                .currentUser
+                ?.uid ?: return Resource.Error("يجب تسجيل الدخول")
+        return when (
+            val result =
+                com.siraj.app.data.repository.community
+                    .FirebaseInteractionRepositoryImpl(fs)
+                    .toggleFollow(uid, creatorId)
+        ) {
+            is Resource.Success -> Resource.Success(Unit)
+            is Resource.Error -> Resource.Error(result.message.ifBlank { "تعذر المتابعة" }, result.error)
+            else -> Resource.Error("تعذر المتابعة")
+        }
     }
 }
 

@@ -58,6 +58,10 @@ object EnvironmentConfig {
     val isDebugEnabled: Boolean
         get() = currentEnvironment != EnvironmentType.PRODUCTION
 
+    /** Production must never fall back to seeded/mock persistence. */
+    val allowMockData: Boolean
+        get() = currentEnvironment != EnvironmentType.PRODUCTION
+
     val buildIdentifier: String
         get() = "v$versionName ($versionCode) - ${currentEnvironment.name}"
 
