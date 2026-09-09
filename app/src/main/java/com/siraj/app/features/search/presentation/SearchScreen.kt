@@ -19,6 +19,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -227,6 +229,16 @@ fun SearchScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.03f),
+                                MaterialTheme.colorScheme.background,
+                            ),
+                            center = Offset(0.5f, 0f),
+                            radius = 500f,
+                        )
+                    )
                     .padding(paddingValues),
         ) {
             when {

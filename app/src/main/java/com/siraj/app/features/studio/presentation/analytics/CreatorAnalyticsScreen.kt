@@ -12,6 +12,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -69,7 +71,16 @@ fun CreatorAnalyticsScreen(
             )
         },
     ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+        Column(modifier = Modifier.padding(paddingValues).fillMaxSize().background(
+            Brush.radialGradient(
+                colors = listOf(
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.04f),
+                    MaterialTheme.colorScheme.background,
+                ),
+                center = Offset(0.5f, 0f),
+                radius = 500f,
+            )
+        )) {
             // Time Filter Row
             ScrollableTabRow(
                 selectedTabIndex = timeFilter.ordinal,

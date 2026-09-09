@@ -17,6 +17,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -149,6 +151,16 @@ fun NotificationCenterScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.04f),
+                                MaterialTheme.colorScheme.background,
+                            ),
+                            center = Offset(0.5f, 0f),
+                            radius = 500f,
+                        )
+                    )
                     .padding(padding),
         ) {
             // Category Filter Row
@@ -266,7 +278,7 @@ fun NotificationCard(
                     Modifier
                         .size(44.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(iconColor.copy(alpha = 0.15f)),
+                        .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(

@@ -1,6 +1,7 @@
 package com.siraj.app.features.studio.presentation
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,6 +15,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.siraj.app.core.ui.components.SirajSectionHeader
@@ -71,6 +74,16 @@ fun StudioScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.04f),
+                                MaterialTheme.colorScheme.background,
+                            ),
+                            center = Offset(0.5f, 0f),
+                            radius = 500f,
+                        )
+                    )
                     .padding(paddingValues)
                     .padding(spacing.medium),
             verticalArrangement = Arrangement.spacedBy(spacing.medium),
@@ -87,7 +100,7 @@ fun StudioScreen(
                         Icon(
                             Icons.Default.Search,
                             contentDescription = "بحث",
-                            tint = MaterialTheme.colorScheme.tertiary,
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -123,7 +136,7 @@ fun StudioScreen(
                 when (projectsRes) {
                     is Resource.Loading -> {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator(color = MaterialTheme.colorScheme.tertiary)
+                            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                         }
                     }
                     is Resource.Error -> {
