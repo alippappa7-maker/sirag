@@ -29,15 +29,21 @@ class FirebaseBackupRepositoryImpl(
     private val _snapshotsFlow = MutableStateFlow<List<BackupSnapshot>>(
         listOf(
             BackupSnapshot(
-                snapshotId = "snap_seed_1",
-                environment = BackupEnvironment.PROD,
+                id = "snap_seed_1",
+                timestamp = System.currentTimeMillis() - 86400000L,
                 backupType = BackupType.FULL,
                 status = BackupStatus.VERIFIED_HEALTHY,
-                createdAt = System.currentTimeMillis() - 86400000L,
-                encryptedWithCmek = true,
-                sha256Signature = "abc123def456",
-                initiatedBy = "system",
-                sizeBytes = 1024000L,
+                environment = BackupEnvironment.PROD,
+                scope = BackupScope.ALL_TIERS,
+                storageLocationUri = "gs://siraj-prod-backups-isolated-vault-eu/snapshots/snap_seed_1.enc",
+                checksumSha256 = "abc123def456789",
+                collectionsIncluded = listOf("users", "workspaces", "projects", "scenes", "sharia_reviews"),
+                documentCount = 14250L,
+                sizeBytes = 485000000L,
+                purgedTombstonesCount = 14,
+                rpoLatencyMinutes = 12,
+                verifiedAt = System.currentTimeMillis() - 86400000L,
+                notes = "نسخة مشفرة ومحققة آلياً",
             ),
         )
     )
