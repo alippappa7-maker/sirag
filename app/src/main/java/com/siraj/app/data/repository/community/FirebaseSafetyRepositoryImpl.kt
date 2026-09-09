@@ -18,6 +18,13 @@ class FirebaseSafetyRepositoryImpl(
             null
         },
 ) : SafetyRepository {
+    // In-memory storage for offline/testing mode
+    private val inMemoryTerms = mutableMapOf<String, TermsOfServiceConsent>()
+    private val inMemoryBlockedUsers = mutableMapOf<String, MutableSet<String>>()
+    private val inMemorySuspensions = mutableMapOf<String, Any>()
+    private val inMemoryAppeals = mutableListOf<UgcAppeal>()
+    private val inMemoryModLogs = mutableListOf<ModerationDecisionLog>()
+
     private fun dbOrError(): Resource.Error? =
         if (firestore == null) Resource.Error("Firestore غير مهيأ") else null
 

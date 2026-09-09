@@ -30,7 +30,7 @@ class FirebaseShariaReviewRepositoryImpl : ShariaReviewRepository {
                 id = "review_item_003", projectId = "proj_003", contentTitle = "حكم الصلاة",
                 creatorId = "creator_3", creatorName = "خالد", fullContentText = "من فاتته صلاة فليقضها كما فاتته...",
                 category = "الفقه وأصوله", riskLevel = RiskLevel.CRITICAL,
-                criticalTopics = listOf(CriticalTopic.FATWA, CriticalTopic.CREED),
+                criticalTopics = listOf(CriticalTopic.FATWA, CriticalTopic.CREED_DISPUTES),
                 status = ShariaReviewStatus.PENDING,
             ),
         )
