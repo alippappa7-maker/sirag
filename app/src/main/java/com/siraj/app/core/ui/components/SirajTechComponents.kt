@@ -19,13 +19,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.siraj.app.ui.theme.LocalSpacing
 import com.siraj.app.ui.theme.MyApplicationTheme
+import com.siraj.app.ui.theme.SirajGlow
 import com.siraj.app.ui.theme.extendedColors
+
+// Siraj Techno-Spiritual — Purple Glow Enhancements
 
 @Composable
 fun SirajGlowContainer(
@@ -34,25 +39,40 @@ fun SirajGlowContainer(
     glowColor: Color = MaterialTheme.colorScheme.primary,
     content: @Composable () -> Unit,
 ) {
-    val borderWidth by animateDpAsState(targetValue = if (isActive) 1.dp else 0.dp, label = "borderWidth")
-    val borderAlpha by animateFloatAsState(targetValue = if (isActive) 0.5f else 0.1f, label = "borderAlpha")
-    val elevation by animateDpAsState(targetValue = if (isActive) LocalSpacing.current.elevations.small else 0.dp, label = "elevation")
+    val borderWidth by animateDpAsState(targetValue = if (isActive) 1.5.dp else 0.dp, label = "borderWidth")
+    val borderAlpha by animateFloatAsState(targetValue = if (isActive) 0.6f else 0.1f, label = "borderAlpha")
+    val elevation by animateDpAsState(targetValue = if (isActive) LocalSpacing.current.elevations.medium else 0.dp, label = "elevation")
 
-    // Subtle glow using M3 shadow and a distinct border layer
+    val surfaceBackground = if (isActive) {
+        Brush.linearGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f),
+                MaterialTheme.colorScheme.surface,
+            ),
+        )
+    } else {
+        Brush.linearGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.surface,
+                MaterialTheme.colorScheme.surface,
+            ),
+        )
+    }
+
     Box(
         modifier =
             modifier
                 .shadow(
                     elevation = elevation,
                     shape = MaterialTheme.shapes.medium,
-                    ambientColor = glowColor,
-                    spotColor = glowColor,
+                    ambientColor = glowColor.copy(alpha = if (isActive) 0.3f else 0f),
+                    spotColor = glowColor.copy(alpha = if (isActive) 0.2f else 0f),
                 ).border(
                     width = borderWidth,
                     color = glowColor.copy(alpha = borderAlpha),
                     shape = MaterialTheme.shapes.medium,
                 ).clip(MaterialTheme.shapes.medium)
-                .background(MaterialTheme.colorScheme.surface),
+                .background(surfaceBackground),
     ) {
         content()
     }
@@ -91,7 +111,7 @@ fun SirajAiStatusChip(
     isProcessing: Boolean = false,
 ) {
     val extendedColors = MaterialTheme.extendedColors
-    val bgColor = if (isProcessing) extendedColors.processing.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surfaceVariant
+    val bgColor = if (isProcessing) extendedColors.processing.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceVariant
     val contentColor = if (isProcessing) extendedColors.processing else MaterialTheme.colorScheme.onSurfaceVariant
     val icon = if (isProcessing) Icons.Default.AutoAwesome else Icons.Default.CheckCircle
 
@@ -99,7 +119,7 @@ fun SirajAiStatusChip(
         modifier = modifier,
         shape = MaterialTheme.shapes.small,
         color = bgColor,
-        border = BorderStroke(1.dp, contentColor.copy(alpha = 0.2f)),
+        border = BorderStroke(1.dp, contentColor.copy(alpha = 0.25f)),
     ) {
         Row(
             modifier = Modifier.padding(horizontal = LocalSpacing.current.small, vertical = LocalSpacing.current.extraSmall),
@@ -160,8 +180,8 @@ fun SirajSectionHeader(
             TextButton(onClick = onActionClick) {
                 Text(
                     text = actionText,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
         }
@@ -174,30 +194,18 @@ fun SirajPrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    icon: ImageVector? = null,
 ) {
     Button(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
-        shape = MaterialTheme.shapes.medium,
-        colors =
-            ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-            ),
+        shape = MaterialTheme.shapes.small,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+        ),
     ) {
-        if (icon != null) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier =
-                    Modifier
-                        .size(18.dp)
-                        .padding(end = LocalSpacing.current.small), // Auto handles RTL
-            )
-        }
-        Text(text = text, style = MaterialTheme.typography.labelLarge)
+        Text(text = text, style = MaterialTheme.typography.labelMedium)
     }
 }
 
@@ -207,34 +215,24 @@ fun SirajSecondaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    icon: ImageVector? = null,
 ) {
     OutlinedButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
-        shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
-        colors =
-            ButtonDefaults.outlinedButtonColors(
-                contentColor = MaterialTheme.colorScheme.primary,
-            ),
+        shape = MaterialTheme.shapes.small,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = MaterialTheme.colorScheme.primary,
+        ),
     ) {
-        if (icon != null) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier =
-                    Modifier
-                        .size(18.dp)
-                        .padding(end = LocalSpacing.current.small),
-            )
-        }
-        Text(text = text, style = MaterialTheme.typography.labelLarge)
+        Text(text = text, style = MaterialTheme.typography.labelMedium)
     }
 }
 
-enum class StatusType { SUCCESS, WARNING, ERROR, INFO }
+enum class StatusType {
+    SUCCESS, WARNING, ERROR, INFO, NEUTRAL
+}
 
 @Composable
 fun SirajStatusBadge(
@@ -242,39 +240,44 @@ fun SirajStatusBadge(
     statusType: StatusType,
     modifier: Modifier = Modifier,
 ) {
-    val extendedColors = MaterialTheme.extendedColors
-    val (bgColor, contentColor) =
+    val statusColors = MaterialTheme.extendedColors
+    val (bgColor, fgColor) =
         when (statusType) {
-            StatusType.SUCCESS -> extendedColors.success.copy(alpha = 0.1f) to extendedColors.success
-            StatusType.WARNING -> extendedColors.warning.copy(alpha = 0.1f) to extendedColors.warning
-            StatusType.ERROR -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.error
-            StatusType.INFO -> extendedColors.processing.copy(alpha = 0.1f) to extendedColors.processing
+            StatusType.SUCCESS -> statusColors.success.copy(alpha = 0.12f) to statusColors.success
+            StatusType.WARNING -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
+            StatusType.ERROR -> MaterialTheme.colorScheme.error.copy(alpha = 0.12f) to MaterialTheme.colorScheme.error
+            StatusType.INFO -> MaterialTheme.colorScheme.tertiary.copy(alpha = 0.12f) to MaterialTheme.colorScheme.tertiary
+            StatusType.NEUTRAL -> MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
         }
+
     Surface(
         modifier = modifier,
-        color = bgColor,
         shape = MaterialTheme.shapes.extraSmall,
+        color = bgColor,
     ) {
         Text(
             text = text,
-            modifier = Modifier.padding(horizontal = LocalSpacing.current.small, vertical = 2.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             style = MaterialTheme.typography.labelSmall,
-            color = contentColor,
+            color = fgColor,
         )
     }
 }
 
 @Composable
 fun SirajMetricCard(
+    modifier: Modifier = Modifier,
     title: String,
     value: String,
-    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     trend: String? = null,
     isPositiveTrend: Boolean = true,
 ) {
     val spacing = LocalSpacing.current
-    SirajGlowContainer(modifier = modifier) {
+    SirajTechCard(
+        modifier = modifier,
+        isActive = false,
+    ) {
         Column(
             modifier =
                 Modifier
@@ -378,7 +381,7 @@ fun SirajTechComponentsPreview() {
                     Text(text = "بطاقة تقنية مفعلة", style = MaterialTheme.typography.titleMedium)
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "تستخدم هذه البطاقة الحدود الدقيقة والتوهج الخفيف المتوافق مع الهوية.",
+                        text = "تستخدم هذه البطاقة الحدود الدقيقة والتوهج البنفسجي المتوافق مع الهوية.",
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
