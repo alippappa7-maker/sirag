@@ -13,6 +13,29 @@ class FirebaseShariaReviewRepositoryImpl : ShariaReviewRepository {
     private val _itemsFlow = MutableStateFlow<List<ShariaReviewItem>>(emptyList())
     val itemsFlow = _itemsFlow.asStateFlow()
 
+    init {
+        // Seed default review items for offline/testing mode
+        _itemsFlow.value = listOf(
+            ShariaReviewItem(
+                id = "review_item_001", projectId = "proj_001", contentTitle = "حديث الصبر",
+                creatorId = "creator_1", creatorName = "أحمد", fullContentText = "قال رسول الله ﷺ: عجبا لأمر المؤمن...",
+                category = "الحديث الشريف", riskLevel = RiskLevel.LOW, status = ShariaReviewStatus.PENDING,
+            ),
+            ShariaReviewItem(
+                id = "review_item_002", projectId = "proj_002", contentTitle = "آية الكرسي",
+                creatorId = "creator_2", creatorName = "محمد", fullContentText = "الله لا إله إلا هو الحي القيوم...",
+                category = "القرآن وعلومه", riskLevel = RiskLevel.LOW, status = ShariaReviewStatus.PENDING,
+            ),
+            ShariaReviewItem(
+                id = "review_item_003", projectId = "proj_003", contentTitle = "حكم الصلاة",
+                creatorId = "creator_3", creatorName = "خالد", fullContentText = "من فاتته صلاة فليقضها كما فاتته...",
+                category = "الفقه وأصوله", riskLevel = RiskLevel.CRITICAL,
+                criticalTopics = listOf(CriticalTopic.FATWA, CriticalTopic.CREED),
+                status = ShariaReviewStatus.PENDING,
+            ),
+        )
+    }
+
     override fun getReviewQueue(filter: ShariaReviewFilter): Flow<Resource<List<ShariaReviewItem>>> =
         _itemsFlow.map { list ->
             try {

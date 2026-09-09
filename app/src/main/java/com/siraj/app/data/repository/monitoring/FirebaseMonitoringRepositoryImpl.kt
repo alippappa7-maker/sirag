@@ -33,7 +33,7 @@ class FirebaseMonitoringRepositoryImpl(
 
     override fun getServicesHealthStream(): Flow<List<ServiceHealthCheck>> = callbackFlow {
         if (firestore == null) {
-            trySend(emptyList())
+            trySend(_servicesHealthFlow.value)
             close()
             return@callbackFlow
         }

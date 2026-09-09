@@ -12,7 +12,7 @@ import java.util.UUID
 class AdminSecurityRepositoryImpl(
     private val engine: AdminSecurityEngine,
 ) : AdminSecurityRepository {
-    private val configs = mutableMapOf<String, AdminSecurityConfig>()
+    internal val configs = mutableMapOf<String, AdminSecurityConfig>()
     private val activeSessions = MutableStateFlow<List<AdminSession>>(emptyList())
     private val auditLogs = MutableStateFlow<List<SecurityAuditLog>>(emptyList())
 

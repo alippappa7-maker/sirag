@@ -22,6 +22,10 @@ class AdminSecurityTest {
     fun setup() {
         engine = AdminSecurityEngine()
         repository = AdminSecurityRepositoryImpl(engine)
+        // Seed admin configs for tests
+        repository.configs["admin_1"] = AdminSecurityConfig("admin_1", AdminRole.OWNER, isMfaEnabled = true)
+        repository.configs["admin_2"] = AdminSecurityConfig("admin_2", AdminRole.ADMIN, isMfaEnabled = false)
+        repository.configs["admin_3"] = AdminSecurityConfig("admin_3", AdminRole.REVIEWER, isMfaEnabled = false)
     }
 
     @Test

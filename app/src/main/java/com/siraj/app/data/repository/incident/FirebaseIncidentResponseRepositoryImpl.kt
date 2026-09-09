@@ -23,7 +23,26 @@ class FirebaseIncidentResponseRepositoryImpl : IncidentResponseRepository {
 
     private val shariaCorrections = MutableStateFlow<List<ShariaIncidentCorrection>>(emptyList())
 
-    private val postMortemReports = MutableStateFlow<List<IncidentPostMortemReport>>(emptyList())
+    private val postMortemReports = MutableStateFlow<List<IncidentPostMortemReport>>(
+        listOf(
+            IncidentPostMortemReport(
+                incidentId = "INC-SEED-001",
+                incidentType = IncidentType.SERVICE_OUTAGE,
+                severity = IncidentSeverity.P2_MEDIUM,
+                titleArabic = "انقطاع خدمة Firestore لمدة 5 دقائق",
+                leadInvestigator = "فريق DevOps",
+                detectionTimestamp = System.currentTimeMillis() - 86400000L,
+                containmentTimestamp = System.currentTimeMillis() - 86340000L,
+                resolutionTimestamp = System.currentTimeMillis() - 86300000L,
+                totalDowntimeMinutes = 5,
+                affectedUsersCount = 0,
+                rootCauseSummaryArabic = "تحديث غير متوافق لقواعد Firestore",
+                containmentStepsArabic = listOf("إيقاف التحديث مؤقتاً"),
+                correctiveActionsArabic = listOf("مراجعة قواعد النشر"),
+                preventiveTasksArabic = listOf("اختبار التحديثات مسبقاً"),
+            ),
+        )
+    )
 
     private val contactsMatrix = MutableStateFlow(IncidentResponseEngine.STANDARD_CONTACTS_MATRIX)
 

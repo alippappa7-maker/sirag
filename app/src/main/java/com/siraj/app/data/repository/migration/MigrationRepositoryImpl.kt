@@ -14,6 +14,14 @@ class MigrationRepositoryImpl : MigrationRepository {
     // In-memory document storage
     private val inMemoryStore = mutableMapOf<String, MutableMap<String, DocumentSchemaState>>()
 
+    init {
+        // Seed outdated documents for testing
+        val usersCollection = mutableMapOf<String, DocumentSchemaState>()
+        usersCollection["doc_1"] = DocumentSchemaState(documentId = "doc_1", collectionName = "users", schemaVersion = 1, lastUpdatedAt = 1000L)
+        usersCollection["doc_2"] = DocumentSchemaState(documentId = "doc_2", collectionName = "users", schemaVersion = 1, lastUpdatedAt = 2000L)
+        inMemoryStore["users"] = usersCollection
+    }
+
     override suspend fun acquireMigrationLock(jobId: String): Resource<Boolean> {
         delay(100)
         if (activeLock != null && activeLock != jobId) {

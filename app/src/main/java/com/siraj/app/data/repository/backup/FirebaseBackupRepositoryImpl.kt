@@ -34,7 +34,7 @@ class FirebaseBackupRepositoryImpl(
 
     override fun getBackupSnapshots(environment: BackupEnvironment?): Flow<List<BackupSnapshot>> = callbackFlow {
         if (firestore == null) {
-            trySend(emptyList())
+            trySend(_snapshotsFlow.value)
             close()
             return@callbackFlow
         }
@@ -59,7 +59,7 @@ class FirebaseBackupRepositoryImpl(
 
     override fun getRestoreJobs(): Flow<List<RestoreJob>> = callbackFlow {
         if (firestore == null) {
-            trySend(emptyList())
+            trySend(_restoreJobsFlow.value)
             close()
             return@callbackFlow
         }

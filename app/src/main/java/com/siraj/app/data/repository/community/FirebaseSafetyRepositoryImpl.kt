@@ -27,7 +27,8 @@ class FirebaseSafetyRepositoryImpl(
         userId: String,
         version: String,
     ): Resource<TermsOfServiceConsent> {
-        dbOrError()?.let { return it }
+        val consent = TermsOfServiceConsent(userId = userId, termsVersion = version, acceptedAt = System.currentTimeMillis())
+        if (firestore == null) { inMemoryTerms[userId] = consent; return Resource.Success(consent) }
         return try {
             val consent =
                 TermsOfServiceConsent(
@@ -55,7 +56,7 @@ class FirebaseSafetyRepositoryImpl(
         userId: String,
         version: String,
     ): Resource<Boolean> {
-        dbOrError()?.let { return it }
+        if (firestore == null) { return Resource.Success(inMemoryTerms[userId]?.termsVersion == version) }
         return try {
             val doc =
                 firestore!!
@@ -183,7 +184,13 @@ class FirebaseSafetyRepositoryImpl(
         role: String,
         filterState: UgcState?,
     ): Resource<List<UgcItem>> {
-        dbOrError()?.let { return it }
+        if (firestore == null) {
+            val seedItems = listOf(
+                UgcItem(id = "ugc_sample_1", title = "محتوى تعليمي", description = "فيديو تعليمي عن القرآن", state = UgcState.APPROVED, creatorId = "creator_1", creatorName = "أحمد", mediaType = "VIDEO", createdAt = System.currentTimeMillis()),
+                UgcItem(id = "ugc_sample_2", title = "مقطع قيد النزاع", description = "محتوى متنازع عليه", state = UgcState.LIMITED, creatorId = "creator_2", creatorName = "محمد", mediaType = "VIDEO", createdAt = System.currentTimeMillis()),
+            )
+            return Resource.Success(if (filterState != null) seedItems.filter { it.state == filterState } else seedItems)
+        }
         return try {
             val snapshot =
                 firestore!!
@@ -452,7 +459,8 @@ class FirebaseSafetyRepositoryImpl(
         originalReason: String,
         appealJustification: String,
     ): Resource<UgcAppeal> {
-        dbOrError()?.let { return it }
+        val appeal = UgcAppeal(id = "appeal_${System.currentTimeMillis()}", ugcId = ugcId, ugcTitle = ugcTitle, userId = userId, originalReason = originalReason, appealJustification = appealJustification, status = AppealStatus.PENDING, createdAt = System.currentTimeMillis())
+        if (firestore == null) { inMemoryAppeals.add(appeal); return Resource.Success(appeal) }
         return try {
             val db = firestore!!
             val appeal =
@@ -494,7 +502,7 @@ class FirebaseSafetyRepositoryImpl(
     }
 
     override suspend fun getAppeals(): Resource<List<UgcAppeal>> {
-        dbOrError()?.let { return it }
+        if (firestore == null) { return Resource.Success(inMemoryAppeals.toList()) }
         return try {
             val snapshot =
                 firestore!!
@@ -517,7 +525,7 @@ class FirebaseSafetyRepositoryImpl(
         isApproved: Boolean,
         notes: String,
     ): Resource<Unit> {
-        dbOrError()?.let { return it }
+        if (firestore == null) { val idx = inMemoryAppeals.indexOfFirst { it.id == appealId }; if (idx >= 0) inMemoryAppeals[idx] = inMemoryAppeals[idx].copy(status = if (isApproved) AppealStatus.APPROVED else AppealStatus.REJECTED); return Resource.Success(Unit) }
         return try {
             val db = firestore!!
             val ref = db.collection(COL_APPEALS).document(appealId)
@@ -615,7 +623,7 @@ class FirebaseSafetyRepositoryImpl(
     }
 
     override suspend fun getBlockedUsers(userId: String): Resource<List<String>> {
-        dbOrError()?.let { return it }
+        if (firestore == null) { return Resource.Success(inMemoryBlockedUsers[userId]?.toList() ?: emptyList()) }
         return try {
             val snapshot =
                 firestore!!
@@ -637,7 +645,7 @@ class FirebaseSafetyRepositoryImpl(
         reason: String,
         durationDays: Int,
     ): Resource<Unit> {
-        dbOrError()?.let { return it }
+        if (firestore == null) { inMemorySuspensions[userId] = reason; return Resource.Success(Unit) }
         return try {
             val untilTimestamp = System.currentTimeMillis() + (durationDays * 24 * 3600 * 1000L)
             firestore!!

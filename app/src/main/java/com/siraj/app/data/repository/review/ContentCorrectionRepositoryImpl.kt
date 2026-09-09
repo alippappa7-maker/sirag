@@ -20,6 +20,22 @@ class ContentCorrectionRepositoryImpl : ContentCorrectionRepository {
     private val affectedAssetsMap = ConcurrentHashMap<String, MutableStateFlow<List<AffectedAsset>>>()
     private val reviewsMap = ConcurrentHashMap<String, MutableStateFlow<List<CorrectionReview>>>()
 
+    init {
+        // Seed default content version for testing
+        val seedVersion = ContentVersion(
+            id = "ver_v1",
+            contentId = "proj_siraj_101",
+            versionNumber = 1,
+            title = "فضل طلب العلم",
+            fullContentText = "من سلك طريقا يلتمس فيه علما سهل الله له به طريقا إلى الجنة",
+            claims = listOf(ShariaClaim(id = "claim_1", claimText = "من سلك طريقا...", positionContext = "المشهد 1", sourceType = "HADITH", sourceTitle = "صحيح مسلم", sourceReference = "2699", originalSourceText = "من سلك طريقا يلتمس فيه علما", isVerified = true)),
+            sources = listOf(Source(id = "src_1", type = SourceType.HADITH, title = "صحيح مسلم", reference = "2699", reviewStatus = SourceVerificationStatus.VERIFIED)),
+            status = VersionStatus.ACTIVE_PUBLISHED,
+            createdBy = "creator_1", createdByName = "أحمد", createdAt = 1000L, publishedAt = 1000L,
+        )
+        versionsMap["proj_siraj_101"] = MutableStateFlow(listOf(seedVersion))
+    }
+
     override fun getContentVersions(contentId: String): Flow<List<ContentVersion>> {
         val flow = versionsMap.getOrPut(contentId) { MutableStateFlow(emptyList()) }
         return flow.map { list -> list.sortedByDescending { it.versionNumber } }
