@@ -229,7 +229,10 @@ class FirebaseSafetyRepositoryImpl(
         action: ModeratorAction,
         notes: String,
     ): Resource<Unit> {
-        dbOrError()?.let { return it }
+        if (firestore == null) {
+            inMemoryModLogs.add(ModerationDecisionLog(targetId = ugcId, targetType = "UGC", moderatorId = moderatorId, action = action.name, notes = notes, timestamp = System.currentTimeMillis()))
+            return Resource.Success(Unit)
+        }
         return try {
             val db = firestore!!
             val ref = db.collection(COL_UGC).document(ugcId)
@@ -705,7 +708,7 @@ class FirebaseSafetyRepositoryImpl(
     }
 
     override suspend fun getAllModerationLogs(): Resource<List<ModerationDecisionLog>> {
-        dbOrError()?.let { return it }
+        if (firestore == null) { return Resource.Success(inMemoryModLogs.toList()) }
         return try {
             val snapshot =
                 firestore!!

@@ -17,8 +17,8 @@ class MigrationRepositoryImpl : MigrationRepository {
     init {
         // Seed outdated documents for testing
         val usersCollection = mutableMapOf<String, DocumentSchemaState>()
-        usersCollection["doc_1"] = DocumentSchemaState(documentId = "doc_1", collectionName = "users", schemaVersion = 1, data = emptyMap())
-        usersCollection["doc_2"] = DocumentSchemaState(documentId = "doc_2", collectionName = "users", schemaVersion = 1, data = emptyMap())
+        usersCollection["user1"] = DocumentSchemaState(documentId = "user1", collectionName = "users", schemaVersion = 1, data = mapOf("name" to "Ali"))
+        usersCollection["user2"] = DocumentSchemaState(documentId = "user2", collectionName = "users", schemaVersion = 1, data = mapOf("name" to "Omar"))
         inMemoryStore["users"] = usersCollection
     }
 

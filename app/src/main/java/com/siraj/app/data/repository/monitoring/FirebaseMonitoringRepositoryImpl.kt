@@ -351,6 +351,13 @@ class FirebaseMonitoringRepositoryImpl(
     }
 
     private fun createInitialHealthChecks(): List<ServiceHealthCheck> {
+        val fallbacks = mapOf(
+            MonitoredService.GEMINI_AI_PROVIDER to MonitoredService.CLOUD_RUN,
+            MonitoredService.QURAN_API_PROVIDER to MonitoredService.FIRESTORE,
+            MonitoredService.IMAGE_GENERATION_PROVIDER to MonitoredService.CLOUD_RUN,
+            MonitoredService.AUDIO_SYNTH_PROVIDER to MonitoredService.CLOUD_RUN,
+            MonitoredService.VIDEO_RENDERING_QUEUE to MonitoredService.CLOUD_RUN,
+        )
         return MonitoredService.entries.map { service ->
             ServiceHealthCheck(
                 service = service,
@@ -362,6 +369,7 @@ class FirebaseMonitoringRepositoryImpl(
                 queueDepth = 0,
                 failedPaymentsCountLastHour = 0,
                 statusMessageArabic = "الخدمة متصلة وجاهزة للعمل",
+                fallbackService = fallbacks[service],
             )
         }
     }

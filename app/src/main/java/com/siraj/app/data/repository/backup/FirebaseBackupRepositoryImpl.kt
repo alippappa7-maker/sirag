@@ -26,7 +26,21 @@ class FirebaseBackupRepositoryImpl(
 ) : BackupRepository {
 
 
-    private val _snapshotsFlow = MutableStateFlow<List<BackupSnapshot>>(emptyList())
+    private val _snapshotsFlow = MutableStateFlow<List<BackupSnapshot>>(
+        listOf(
+            BackupSnapshot(
+                snapshotId = "snap_seed_1",
+                environment = BackupEnvironment.PROD,
+                backupType = BackupType.FULL,
+                status = BackupStatus.VERIFIED_HEALTHY,
+                createdAt = System.currentTimeMillis() - 86400000L,
+                encryptedWithCmek = true,
+                sha256Signature = "abc123def456",
+                initiatedBy = "system",
+                sizeBytes = 1024000L,
+            ),
+        )
+    )
     private val _restoreJobsFlow = MutableStateFlow<List<RestoreJob>>(emptyList())
 
     private val _drPlanFlow = MutableStateFlow(DisasterRecoveryPlan())
