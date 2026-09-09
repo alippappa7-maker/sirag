@@ -6,10 +6,8 @@ plugins {
     id("com.diffplug.spotless")
 }
 
-if (file("google-services.json").exists()) {
-    apply(plugin = "com.google.gms.google-services")
-    apply(plugin = "com.google.firebase.crashlytics")
-}
+apply(plugin = "com.google.gms.google-services")
+apply(plugin = "com.google.firebase.crashlytics")
 
 val byteBuddyAgent by configurations.creating
 
@@ -32,8 +30,7 @@ android {
         buildConfigField("String", "APP_STORE_ENVIRONMENT", "\"dummy\"")
         buildConfigField("String", "APP_STORE_ISSUER_ID", "\"dummy\"")
         buildConfigField("String", "APP_STORE_KEY_ID", "\"dummy\"")
-        buildConfigField("String", "APP_STORE_PRIVATE_KEY", "\"dummy\"")
-        vectorDrawables {
+        buildConfigField("String", "APP_STORE_PRIVATE_KEY", "\"dummy\"")        vectorDrawables {
             useSupportLibrary = true
         }
     }
