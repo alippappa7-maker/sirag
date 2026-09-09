@@ -70,18 +70,18 @@ object ScenarioToProjectConverter {
     }
 
     private fun parseTransition(transition: String): TransitionType = when {
-        transition.contains("قطع") || transition.contains("cut") -> TransitionType.CUT
+        transition.contains("قطع") || transition.contains("cut") -> TransitionType.NONE
         transition.contains("تلاشي") || transition.contains("fade") -> TransitionType.FADE
-        transition.contains("انزلاق") || transition.contains("slide") -> TransitionType.SLIDE_LEFT
-        transition.contains("تدوير") || transition.contains("spin") -> TransitionType.CROSS_DISSOLVE
+        transition.contains("انزلاق") || transition.contains("slide") -> TransitionType.SLIDE
+        transition.contains("تدوير") || transition.contains("spin") -> TransitionType.DISSOLVE
         else -> TransitionType.FADE
     }
 
     private fun parseBackgroundType(type: SceneType): BackgroundType = when (type) {
         SceneType.VISUAL -> BackgroundType.IMAGE
-        SceneType.QURAN -> BackgroundType.SOLID
-        SceneType.TEXT -> BackgroundType.SOLID
+        SceneType.QURAN -> BackgroundType.SOLID_COLOR
+        SceneType.TEXT -> BackgroundType.SOLID_COLOR
         SceneType.NARRATION -> BackgroundType.IMAGE
-        SceneType.TRANSITION -> BackgroundType.SOLID
+        SceneType.TRANSITION -> BackgroundType.SOLID_COLOR
     }
 }

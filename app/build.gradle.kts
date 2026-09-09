@@ -30,7 +30,8 @@ android {
         buildConfigField("String", "APP_STORE_ENVIRONMENT", "\"dummy\"")
         buildConfigField("String", "APP_STORE_ISSUER_ID", "\"dummy\"")
         buildConfigField("String", "APP_STORE_KEY_ID", "\"dummy\"")
-        buildConfigField("String", "APP_STORE_PRIVATE_KEY", "\"dummy\"")        vectorDrawables {
+        buildConfigField("String", "APP_STORE_PRIVATE_KEY", "\"dummy\"")
+        vectorDrawables {
             useSupportLibrary = true
         }
     }
