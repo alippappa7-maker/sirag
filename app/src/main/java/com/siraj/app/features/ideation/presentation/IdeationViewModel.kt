@@ -57,6 +57,7 @@ class IdeationViewModel(
                     _uiState.update { it.copy(isGenerating = false, generatedIdeas = res.data) }
                 is Resource.Error ->
                     _uiState.update { it.copy(isGenerating = false, error = res.message) }
+                is Resource.Loading -> {}
             }
         }
     }
@@ -80,6 +81,7 @@ class IdeationViewModel(
                     _uiState.update { it.copy(isGeneratingScenario = false, scenario = res.data) }
                 is Resource.Error ->
                     _uiState.update { it.copy(isGeneratingScenario = false, error = res.message) }
+                is Resource.Loading -> {}
             }
         }
     }
@@ -123,6 +125,7 @@ class IdeationViewModel(
                     )
                 val result = projectRepository.createProject(project)
                 when (result) {
+                    is Resource.Loading -> {}
                     is Resource.Success -> {
                         // إنشاء المشاهد من السيناريو
                         val projectId = result.data
