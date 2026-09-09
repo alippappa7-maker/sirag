@@ -81,21 +81,21 @@ fun AnalyticsDashboardScreen(
                 )
             }
 
-            
+
             item {
                 if (eventCounts.isNotEmpty()) {
                     Card(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text("رسم بياني للأحداث", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(bottom = 16.dp))
-                            
+
                             val chartEntryModel = entryModelOf(*eventCounts.values.map { it.toFloat() }.toTypedArray())
-                            
+
                             Chart(
                                 chart = columnChart(),
                                 model = chartEntryModel,
                                 startAxis = rememberStartAxis(),
                                 bottomAxis = rememberBottomAxis(
-                                    valueFormatter = { value, _ -> 
+                                    valueFormatter = { value, _ ->
                                         val keys = eventCounts.keys.toList()
                                         val index = value.toInt()
                                         if (index >= 0 && index < keys.size) keys[index].take(5) else ""

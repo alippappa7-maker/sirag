@@ -25,7 +25,7 @@ class FirebaseBackupRepositoryImpl(
     private val firestore: FirebaseFirestore? = try { FirebaseFirestore.getInstance() } catch (_: Throwable) { null }
 ) : BackupRepository {
 
-    
+
     private val _snapshotsFlow = MutableStateFlow<List<BackupSnapshot>>(emptyList())
     private val _restoreJobsFlow = MutableStateFlow<List<RestoreJob>>(emptyList())
 
@@ -116,7 +116,7 @@ class FirebaseBackupRepositoryImpl(
             )
 
             // Save to local state flow
-            
+
 
             // Try persisting snapshot metadata to firestore if online
             try {

@@ -152,7 +152,7 @@ class FirebaseMonitoringRepositoryImpl(
 
             val latency = (System.currentTimeMillis() - startTime) + (50..220).random()
             val computedStatus = ServiceHealthStatus.HEALTHY
-            
+
             val updated = ServiceHealthCheck(
                 service = service,
                 status = computedStatus,

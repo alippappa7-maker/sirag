@@ -46,7 +46,7 @@ class FirebaseSubscriptionRepositoryImpl(
             firestore.collection("subscriptions")
                 .whereEqualTo("userId", userId)
         }
-        
+
         val listener = query.whereIn("status", listOf(SubscriptionStatus.ACTIVE.name, SubscriptionStatus.TRIAL.name))
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
@@ -108,7 +108,7 @@ class FirebaseSubscriptionRepositoryImpl(
         }
         val targetId = workspaceId ?: userId
         val collection = if (workspaceId != null) "workspaces" else "users"
-        
+
         val listener = firestore.collection(collection).document(targetId)
             .collection("credits").document("balance")
             .addSnapshotListener { snapshot, error ->
@@ -146,7 +146,7 @@ class FirebaseSubscriptionRepositoryImpl(
         }
         val targetId = workspaceId ?: userId
         val collection = if (workspaceId != null) "workspaces" else "users"
-        
+
         val listener = firestore.collection(collection).document(targetId)
             .collection("credit_transactions")
             .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)

@@ -81,13 +81,13 @@ class FirebaseFlashPublishingRepositoryImpl(
         return try {
             val doc = firestore.collection("flashes").document(flashId).get().await()
             val flash = doc.toObject(Flash::class.java) ?: return Resource.Error("الومضة غير موجودة")
-            
+
             val newState = if (flash.publishingState == FlashPublishingState.APPROVED) {
                 FlashPublishingState.PENDING_REVIEW
             } else {
                 flash.publishingState
             }
-            
+
             val updated = flash.copy(
                 title = title,
                 description = description,
@@ -97,7 +97,7 @@ class FirebaseFlashPublishingRepositoryImpl(
                 showCreatorInfo = showCreatorInfo,
                 publishingState = newState,
             )
-            
+
             firestore.collection("flashes").document(flashId).set(updated).await()
             if (newState != flash.publishingState) {
                 logTransition(flashId, flash.publishingState, newState, "System", "تعديل تفاصيل الومضة")
@@ -239,13 +239,13 @@ class FirebaseFlashPublishingRepositoryImpl(
             Resource.Success(emptyList())
         }
     }
-    
+
     private suspend fun updateState(flashId: String, newState: FlashPublishingState, userId: String, reason: String?): Resource<Flash> {
         if (firestore == null) return Resource.Error("Firestore not initialized")
         return try {
             val doc = firestore.collection("flashes").document(flashId).get().await()
             val flash = doc.toObject(Flash::class.java) ?: return Resource.Error("الومضة غير موجودة")
-            
+
             val updated = flash.copy(publishingState = newState, rejectionReason = reason)
             firestore.collection("flashes").document(flashId).set(updated).await()
             logTransition(flashId, flash.publishingState, newState, userId, reason)
