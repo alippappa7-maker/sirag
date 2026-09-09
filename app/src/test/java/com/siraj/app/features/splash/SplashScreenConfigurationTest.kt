@@ -21,9 +21,9 @@ class SplashScreenConfigurationTest {
     @Test
     fun verifySplashBackgroundColorResource() {
         val color = ContextCompat.getColor(context, R.color.splash_background)
-        // 0xFF060B14
-        val expectedColor = 0xFF060B14.toInt()
-        assertTrue("Splash background color should match brand palette #060B14", color == expectedColor)
+        // 0xFF0B0F1A — Deep Space (Siraj Techno-Spiritual Purple v4.0)
+        val expectedColor = 0xFF0B0F1A.toInt()
+        assertTrue("Splash background color should match brand palette #0B0F1A", color == expectedColor)
     }
 
     @Test

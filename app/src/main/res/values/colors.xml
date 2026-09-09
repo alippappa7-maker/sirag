@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- سراج 2.0 — Islamic Premium Colors -->
-    <color name="siraj_emerald">#FF0A7C66</color>
-    <color name="siraj_emerald_light">#FF3AA890</color>
-    <color name="siraj_gold">#FFC9A227</color>
-    <color name="siraj_gold_light">#FFE8C547</color>
-    <color name="siraj_cream">#FFFAF8F5</color>
-    <color name="siraj_navy">#FF0D1B2A</color>
-    <color name="siraj_navy_light">#FF1B2D44</color>
-    <color name="siraj_ink">#FF1A1A2E</color>
-    <color name="siraj_silver">#FFE8E6E1</color>
+    <!-- Siraj 4.0 — Techno-Spiritual Purple Design System -->
+    <color name="siraj_violet">#FF7C3AED</color>
+    <color name="siraj_violet_light">#FFA78BFA</color>
+    <color name="siraj_cyan">#FF22D3EE</color>
+    <color name="siraj_pink">#FFEC4899</color>
+    <color name="siraj_lavender">#FFFAF5FF</color>
+    <color name="siraj_deep_space">#FF0B0F1A</color>
+    <color name="siraj_dark_surface">#FF111827</color>
+    <color name="siraj_ink">#FF1E1B4B</color>
+    <color name="siraj_lavender_mist">#FFF3EEFF</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="splash_background">#060B14</color>
+    <color name="splash_background">#0B0F1A</color>
 </resources>

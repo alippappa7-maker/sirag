@@ -190,7 +190,7 @@ fun QiblaScreen(onNavigateBack: () -> Unit) {
                                     lineTo(0f, size.height)
                                     close()
                                 }
-                            drawPath(path = path, color = SirajAccentDim) // Emerald green for Qibla
+                            drawPath(path = path, color = SirajAccentDim) // Siraj violet for Qibla
                         }
                     }
                 }

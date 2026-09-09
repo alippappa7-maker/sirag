@@ -27,6 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
@@ -36,10 +38,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.siraj.app.R
 import com.siraj.app.core.accessibility.LocalAccessibilityConfig
-import com.siraj.app.ui.theme.SirajAccent
 import kotlinx.coroutines.delay
 
-private val SplashBackground = Color(0xFF041021) // A deep, premium navy blue
+// Siraj Techno-Spiritual — Cosmic Purple Splash
+private val SplashBackgroundStart = Color(0xFF0B0F1A)  // Deep space
+private val SplashBackgroundEnd = Color(0xFF1E1B4B)    // Deep violet
+private val SplashAccentPurple = Color(0xFFA78BFA)     // Electric violet
+private val SplashAccentCyan = Color(0xFF22D3EE)       // Neon cyan
 
 @Composable
 fun SplashScreen(onNavigateToHome: () -> Unit) {
@@ -63,12 +68,22 @@ fun SplashScreen(onNavigateToHome: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(SplashBackground)
+            .background(
+                Brush.radialGradient(
+                    colors = listOf(
+                        Color(0xFF7C3AED).copy(alpha = 0.25f),
+                        SplashBackgroundEnd,
+                        SplashBackgroundStart,
+                    ),
+                    center = Offset(0.5f, 0.4f),
+                    radius = 800f,
+                )
+            )
             .testTag("splash_screen_container"),
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            
+
             AnimatedVisibility(
                 visible = startAnimation,
                 enter = fadeIn(animationSpec = tween(durationMillis = 1000))
@@ -102,7 +117,7 @@ fun SplashScreen(onNavigateToHome: () -> Unit) {
                         fontSize = 36.sp,
                         letterSpacing = 2.sp,
                     ),
-                    color = Color(0xFFD4AF37), // Metallic gold
+                    color = SplashAccentPurple,
                     modifier = Modifier.testTag("splash_app_title"),
                 )
             }
@@ -116,7 +131,7 @@ fun SplashScreen(onNavigateToHome: () -> Unit) {
                 Text(
                     text = "نورٌ يهديك",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color(0xFFEAF4F0).copy(alpha = 0.8f),
+                    color = SplashAccentCyan.copy(alpha = 0.85f),
                     letterSpacing = 1.sp
                 )
             }

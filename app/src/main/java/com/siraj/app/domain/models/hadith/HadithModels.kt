@@ -6,8 +6,8 @@ package com.siraj.app.domain.models.hadith
  */
 
 enum class HadithGrade(val arabicName: String, val color: Long) {
-    SAHIH("صحيح", 0xFF0A7C66),
-    HASAN("حسن", 0xFFC9A227),
+    SAHIH("صحيح", 0xFF34D399),
+    HASAN("حسن", 0xFFFBBF24),
     DAIF("ضعيف", 0xFFB3261E),
     UNKNOWN("غير محدد", 0xFF6A7A8A),
 }

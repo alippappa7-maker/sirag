@@ -63,7 +63,7 @@ import com.siraj.app.core.utils.Resource
 import com.siraj.app.features.auth.presentation.AuthViewModel
 import com.siraj.app.features.auth.presentation.AuthViewModelFactory
 
-private val OnboardingBackground = Color(0xFF060B14)
+private val OnboardingBackground = Color(0xFF0B0F1A)
 private val OnboardingSurface = Color(0xFF0D1521)
 private val AccentGold = Color(0xFFFFD54F)
 private val AccentEmerald = Color(0xFF00F0B0)

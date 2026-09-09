@@ -12,10 +12,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.siraj.app.domain.models.*
 import com.siraj.app.ui.theme.statusColors
+
+// Siraj Techno-Spiritual — Purple Card Accents
+private val CardPurpleGradient = Brush.linearGradient(
+    colors = listOf(Color(0xFF7C3AED).copy(alpha = 0.06f), Color(0xFFA78BFA).copy(alpha = 0.02f))
+)
+private val CardPurpleAccent = Color(0xFF7C3AED)
 
 @Composable
 fun SirajProjectCard(
@@ -27,7 +35,7 @@ fun SirajProjectCard(
             Text(
                 text = project.title,
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
+                color = CardPurpleAccent,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -61,13 +69,17 @@ fun SirajVideoCard(
                     Modifier
                         .size(64.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer),
+                        .background(
+                            Brush.linearGradient(
+                                colors = listOf(Color(0xFF4C1D95), Color(0xFF3B1A7E))
+                            )
+                        ),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
                     contentDescription = "تشغيل",
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = Color(0xFFA78BFA),
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
@@ -115,7 +127,7 @@ fun SirajAudioCard(
                 Text(
                     text = audio.duration,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = CardPurpleAccent,
                 )
             }
         }
@@ -171,9 +183,9 @@ fun VerificationStatusBadge(
     Box(
         modifier =
             modifier
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(8.dp))
                 .background(backgroundColor)
-                .padding(horizontal = 8.dp, vertical = 4.dp),
+                .padding(horizontal = 10.dp, vertical = 5.dp),
     ) {
         Text(
             text = status.label,
@@ -203,7 +215,7 @@ fun SirajFlashCard(
                 Text(
                     text = flash.author,
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = CardPurpleAccent,
                 )
                 Text(
                     text = flash.timestamp,

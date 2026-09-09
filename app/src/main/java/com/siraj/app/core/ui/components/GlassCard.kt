@@ -11,17 +11,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 /**
- * بطاقة زجاجية شفافة (Glassmorphism)
- * خلفية ضبابية شفافة مع حدود رفيعة
+ * بطاقة زجاجية شفافة — Siraj Techno-Spiritual v4.0
+ * خلفية بنفسجية ضبابية مع حدود متوهجة
  */
 @Composable
 fun GlassCard(
@@ -35,15 +35,15 @@ fun GlassCard(
         .clip(shape)
         .background(
             Brush.linearGradient(
-                listOf(
-                    Color.White.copy(alpha = 0.15f),
-                    Color.White.copy(alpha = 0.05f),
+                colors = listOf(
+                    Color(0xFFA78BFA).copy(alpha = 0.08f),
+                    Color(0xFFA78BFA).copy(alpha = 0.02f),
                 ),
             ),
         )
         .border(
             width = 1.dp,
-            color = Color.White.copy(alpha = 0.2f),
+            color = Color(0xFFA78BFA).copy(alpha = 0.15f),
             shape = shape,
         )
         .shadow(elevation = 0.dp)
@@ -60,8 +60,8 @@ fun GlassCard(
 }
 
 /**
- * بطاقة زجاجية متوهجة
- * تومض عند النشاط
+ * بطاقة زجاجية متوهجة — Siraj Glow System
+ * تومض بنفسجي عند النشاط
  */
 @Composable
 fun GlowingGlassCard(
@@ -86,15 +86,15 @@ fun GlowingGlassCard(
             .clip(shape)
             .background(
                 Brush.linearGradient(
-                    listOf(
-                        Color.White.copy(alpha = 0.15f),
-                        Color.White.copy(alpha = 0.05f),
+                    colors = listOf(
+                        Color(0xFFA78BFA).copy(alpha = 0.1f),
+                        Color(0xFFA78BFA).copy(alpha = 0.03f),
                     ),
                 ),
             )
             .border(
                 width = 1.dp,
-                color = if (isActive) glowColor.copy(alpha = pulseAlpha) else Color.White.copy(alpha = 0.2f),
+                color = if (isActive) glowColor.copy(alpha = pulseAlpha) else Color(0xFFA78BFA).copy(alpha = 0.15f),
                 shape = shape,
             ),
         contentAlignment = Alignment.Center,
@@ -104,7 +104,7 @@ fun GlowingGlassCard(
 }
 
 /**
- * بطاقة إحصائية زجاجية
+ * بطاقة إحصائية زجاجية — Siraj Purple Stats
  */
 @Composable
 fun GlassStatCard(
