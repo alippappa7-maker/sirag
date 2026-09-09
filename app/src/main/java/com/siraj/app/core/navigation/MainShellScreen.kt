@@ -49,13 +49,6 @@ fun MainShellScreen(
                             icon = { Icon(item.icon, contentDescription = item.title) },
                             label = { Text(item.title) },
                             selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
-                            colors = NavigationRailItemDefaults.colors(
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = MaterialTheme.colorScheme.primary,
-                                    selectedTextColor = MaterialTheme.colorScheme.primary,
-                                    indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                                ),
-                            ),
                             onClick = {
                                 navController.navigate(item.route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
@@ -88,11 +81,7 @@ fun MainShellScreen(
                                 icon = { Icon(item.icon, contentDescription = item.title) },
                                 label = { Text(item.title) },
                                 selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = MaterialTheme.colorScheme.primary,
-                                    selectedTextColor = MaterialTheme.colorScheme.primary,
-                                    indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                                ),
+
                                 onClick = {
                                     navController.navigate(item.route) {
                                         popUpTo(navController.graph.findStartDestination().id) {

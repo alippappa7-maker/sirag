@@ -232,6 +232,7 @@ class IdeationViewModel(
                     is Resource.Success -> onProjectCreated(result.data)
                     is Resource.Error ->
                         _uiState.update { it.copy(error = result.message) }
+                    is Resource.Loading -> {}
                 }
             } else {
                 _uiState.update { it.copy(error = "لا توجد مساحة عمل نشطة") }
